@@ -13,3 +13,6 @@
 [submodule "android/Kegtap/ext/cwac-cache"]
 	path = android/Kegtap/ext/cwac-cache
 	url = https://github.com/commonsguy/cwac-cache.git
+[submodule "android/Kegtap/ext/cwac-thumbnail"]
+	path = android/Kegtap/ext/cwac-thumbnail
+	url = https://github.com/commonsguy/cwac-thumbnail.git
