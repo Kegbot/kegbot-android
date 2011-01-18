@@ -1,0 +1,3 @@
+[submodule "android/Kegtap/ext/retrofit"]
+	path = android/Kegtap/ext/retrofit
+	url = https://github.com/square/retrofit.git
