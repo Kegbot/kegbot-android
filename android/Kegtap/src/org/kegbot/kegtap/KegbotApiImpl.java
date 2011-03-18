@@ -5,7 +5,7 @@ import retrofit.core.Callback;
 import retrofit.http.RestAdapter;
 
 
-public class KegbotApiImpl extends RestAdapter implements KegbotApi{
+public class KegbotApiImpl extends RestAdapter implements IKegbotApi{
   
   private final String LOG_TAG = "KegbotApiImpl";
 
