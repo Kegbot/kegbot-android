@@ -21,5 +21,7 @@
 	<classpathentry kind="lib" path="lib/httpcomponents-client-4.0.3/lib/commons-codec-1.3.jar"/>
 	<classpathentry kind="lib" path="lib/httpcomponents-client-4.0.3/lib/commons-logging-1.1.1.jar"/>
 	<classpathentry kind="lib" path="lib/protobuf/protobuf-java-2.4.1-pre.jar"/>
+	<classpathentry kind="lib" path="lib/jackson/jackson-core-asl-1.7.4.jar"/>
+	<classpathentry kind="lib" path="lib/jackson/jackson-mapper-asl-1.7.4.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
