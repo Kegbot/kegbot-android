@@ -20,5 +20,6 @@
 	<classpathentry kind="lib" path="lib/httpcomponents-client-4.0.3/lib/apache-mime4j-0.6.jar"/>
 	<classpathentry kind="lib" path="lib/httpcomponents-client-4.0.3/lib/commons-codec-1.3.jar"/>
 	<classpathentry kind="lib" path="lib/httpcomponents-client-4.0.3/lib/commons-logging-1.1.1.jar"/>
+	<classpathentry kind="lib" path="lib/protobuf/protobuf-java-2.4.1-pre.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
