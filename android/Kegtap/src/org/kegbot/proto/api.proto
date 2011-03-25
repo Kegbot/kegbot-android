@@ -18,6 +18,47 @@ message DrinkSet {
 
 message KegSet {
   repeated Keg kegs = 1;
+  optional Paging paging = 2;
+}
+
+message SessionSet {
+  repeated Session sessions = 1;
+  optional Paging paging = 2;
+}
+
+message SystemEventSet {
+  repeated SystemEvent events = 1;
+  optional Paging paging = 2;
+}
+
+message SystemEventHtmlSet {
+  repeated SystemEventHtml events = 1;
+  optional Paging paging = 2;
+}
+
+message SoundEventSet {
+  repeated SoundEvent events = 1;
+  optional Paging paging = 2;
+}
+
+message TapDetailSet {
+  repeated TapDetail taps = 1;
+  optional Paging paging = 2;
+}
+
+message DrinkDetailHtmlSet {
+  repeated DrinkDetailHtml drinks = 1;
+  optional Paging paging = 2;
+}
+
+message ThermoSensorSet {
+  repeated ThermoSensor sensors = 1;
+  optional Paging paging = 2;
+}
+
+message ThermoLogSet {
+  repeated ThermoLog logs = 1;
+  optional Paging paging = 2;
 }
 
 message TapDetail {
@@ -46,6 +87,10 @@ message KegDetail {
   optional KegSize size = 3;
   repeated Drink drinks = 4;
   repeated Session sessions = 5;
+}
+
+message UserDetail {
+  required User user = 1;
 }
 
 message SystemEventHtml {

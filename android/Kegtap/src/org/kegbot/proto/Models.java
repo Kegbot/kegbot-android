@@ -9423,11 +9423,15 @@ public final class Models {
   public interface ThermoSensorOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
     
-    // required string sensor_name = 1;
+    // required string id = 1;
+    boolean hasId();
+    String getId();
+    
+    // required string sensor_name = 2;
     boolean hasSensorName();
     String getSensorName();
     
-    // optional string nice_name = 2;
+    // optional string nice_name = 3;
     boolean hasNiceName();
     String getNiceName();
   }
@@ -9460,11 +9464,43 @@ public final class Models {
     }
     
     private int bitField0_;
-    // required string sensor_name = 1;
-    public static final int SENSOR_NAME_FIELD_NUMBER = 1;
+    // required string id = 1;
+    public static final int ID_FIELD_NUMBER = 1;
+    private Object id_;
+    public boolean hasId() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    public String getId() {
+      Object ref = id_;
+      if (ref instanceof String) {
+        return (String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        String s = bs.toStringUtf8();
+        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+          id_ = s;
+        }
+        return s;
+      }
+    }
+    private com.google.protobuf.ByteString getIdBytes() {
+      Object ref = id_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+        id_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    
+    // required string sensor_name = 2;
+    public static final int SENSOR_NAME_FIELD_NUMBER = 2;
     private Object sensorName_;
     public boolean hasSensorName() {
-      return ((bitField0_ & 0x00000001) == 0x00000001);
+      return ((bitField0_ & 0x00000002) == 0x00000002);
     }
     public String getSensorName() {
       Object ref = sensorName_;
@@ -9492,11 +9528,11 @@ public final class Models {
       }
     }
     
-    // optional string nice_name = 2;
-    public static final int NICE_NAME_FIELD_NUMBER = 2;
+    // optional string nice_name = 3;
+    public static final int NICE_NAME_FIELD_NUMBER = 3;
     private Object niceName_;
     public boolean hasNiceName() {
-      return ((bitField0_ & 0x00000002) == 0x00000002);
+      return ((bitField0_ & 0x00000004) == 0x00000004);
     }
     public String getNiceName() {
       Object ref = niceName_;
@@ -9525,6 +9561,7 @@ public final class Models {
     }
     
     private void initFields() {
+      id_ = "";
       sensorName_ = "";
       niceName_ = "";
     }
@@ -9533,6 +9570,10 @@ public final class Models {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized != -1) return isInitialized == 1;
       
+      if (!hasId()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
       if (!hasSensorName()) {
         memoizedIsInitialized = 0;
         return false;
@@ -9545,10 +9586,13 @@ public final class Models {
                         throws java.io.IOException {
       getSerializedSize();
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeBytes(1, getSensorNameBytes());
+        output.writeBytes(1, getIdBytes());
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        output.writeBytes(2, getNiceNameBytes());
+        output.writeBytes(2, getSensorNameBytes());
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeBytes(3, getNiceNameBytes());
       }
       getUnknownFields().writeTo(output);
     }
@@ -9561,11 +9605,15 @@ public final class Models {
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(1, getSensorNameBytes());
+          .computeBytesSize(1, getIdBytes());
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(2, getNiceNameBytes());
+          .computeBytesSize(2, getSensorNameBytes());
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(3, getNiceNameBytes());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -9689,10 +9737,12 @@ public final class Models {
       
       public Builder clear() {
         super.clear();
-        sensorName_ = "";
+        id_ = "";
         bitField0_ = (bitField0_ & ~0x00000001);
-        niceName_ = "";
+        sensorName_ = "";
         bitField0_ = (bitField0_ & ~0x00000002);
+        niceName_ = "";
+        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
       
@@ -9734,9 +9784,13 @@ public final class Models {
         if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
           to_bitField0_ |= 0x00000001;
         }
-        result.sensorName_ = sensorName_;
+        result.id_ = id_;
         if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
           to_bitField0_ |= 0x00000002;
+        }
+        result.sensorName_ = sensorName_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
         }
         result.niceName_ = niceName_;
         result.bitField0_ = to_bitField0_;
@@ -9755,6 +9809,9 @@ public final class Models {
       
       public Builder mergeFrom(org.kegbot.proto.Models.ThermoSensor other) {
         if (other == org.kegbot.proto.Models.ThermoSensor.getDefaultInstance()) return this;
+        if (other.hasId()) {
+          setId(other.getId());
+        }
         if (other.hasSensorName()) {
           setSensorName(other.getSensorName());
         }
@@ -9766,6 +9823,10 @@ public final class Models {
       }
       
       public final boolean isInitialized() {
+        if (!hasId()) {
+          
+          return false;
+        }
         if (!hasSensorName()) {
           
           return false;
@@ -9798,11 +9859,16 @@ public final class Models {
             }
             case 10: {
               bitField0_ |= 0x00000001;
-              sensorName_ = input.readBytes();
+              id_ = input.readBytes();
               break;
             }
             case 18: {
               bitField0_ |= 0x00000002;
+              sensorName_ = input.readBytes();
+              break;
+            }
+            case 26: {
+              bitField0_ |= 0x00000004;
               niceName_ = input.readBytes();
               break;
             }
@@ -9812,10 +9878,46 @@ public final class Models {
       
       private int bitField0_;
       
-      // required string sensor_name = 1;
+      // required string id = 1;
+      private Object id_ = "";
+      public boolean hasId() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      public String getId() {
+        Object ref = id_;
+        if (!(ref instanceof String)) {
+          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+          id_ = s;
+          return s;
+        } else {
+          return (String) ref;
+        }
+      }
+      public Builder setId(String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        id_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearId() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        id_ = getDefaultInstance().getId();
+        onChanged();
+        return this;
+      }
+      void setId(com.google.protobuf.ByteString value) {
+        bitField0_ |= 0x00000001;
+        id_ = value;
+        onChanged();
+      }
+      
+      // required string sensor_name = 2;
       private Object sensorName_ = "";
       public boolean hasSensorName() {
-        return ((bitField0_ & 0x00000001) == 0x00000001);
+        return ((bitField0_ & 0x00000002) == 0x00000002);
       }
       public String getSensorName() {
         Object ref = sensorName_;
@@ -9831,27 +9933,27 @@ public final class Models {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000001;
+  bitField0_ |= 0x00000002;
         sensorName_ = value;
         onChanged();
         return this;
       }
       public Builder clearSensorName() {
-        bitField0_ = (bitField0_ & ~0x00000001);
+        bitField0_ = (bitField0_ & ~0x00000002);
         sensorName_ = getDefaultInstance().getSensorName();
         onChanged();
         return this;
       }
       void setSensorName(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000001;
+        bitField0_ |= 0x00000002;
         sensorName_ = value;
         onChanged();
       }
       
-      // optional string nice_name = 2;
+      // optional string nice_name = 3;
       private Object niceName_ = "";
       public boolean hasNiceName() {
-        return ((bitField0_ & 0x00000002) == 0x00000002);
+        return ((bitField0_ & 0x00000004) == 0x00000004);
       }
       public String getNiceName() {
         Object ref = niceName_;
@@ -9867,19 +9969,19 @@ public final class Models {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000002;
+  bitField0_ |= 0x00000004;
         niceName_ = value;
         onChanged();
         return this;
       }
       public Builder clearNiceName() {
-        bitField0_ = (bitField0_ & ~0x00000002);
+        bitField0_ = (bitField0_ & ~0x00000004);
         niceName_ = getDefaultInstance().getNiceName();
         onChanged();
         return this;
       }
       void setNiceName(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000002;
+        bitField0_ |= 0x00000004;
         niceName_ = value;
         onChanged();
       }
@@ -15311,29 +15413,29 @@ public final class Models {
       "\tvolume_ml\030\004 \002(\002\022\014\n\004name\030\005 \001(\t\022\014\n\004slug\030\006" +
       " \001(\t\"V\n\tThermoLog\022\n\n\002id\030\001 \002(\t\022\021\n\tsensor_" +
       "id\030\002 \002(\t\022\025\n\rtemperature_c\030\003 \002(\002\022\023\n\013recor" +
-      "d_time\030\004 \002(\t\"6\n\014ThermoSensor\022\023\n\013sensor_n" +
-      "ame\030\001 \002(\t\022\021\n\tnice_name\030\002 \001(\t\"\234\001\n\020ThermoS" +
-      "ummaryLog\022\n\n\002id\030\001 \002(\t\022\021\n\tsensor_id\030\002 \002(\t",
-      "\022\014\n\004date\030\003 \002(\t\022\016\n\006period\030\004 \002(\t\022\024\n\014num_re" +
-      "adings\030\005 \002(\r\022\020\n\010min_temp\030\006 \002(\002\022\020\n\010max_te" +
-      "mp\030\007 \002(\002\022\021\n\tmean_temp\030\010 \002(\002\"\337\001\n\004User\022\020\n\010" +
-      "username\030\001 \002(\t\022\023\n\013mugshot_url\030\002 \001(\t\022\027\n\ti" +
-      "s_active\030\003 \002(\010:\004true\022\022\n\nfirst_name\030\004 \001(\t" +
-      "\022\021\n\tlast_name\030\005 \001(\t\022\r\n\005email\030\006 \001(\t\022\020\n\010pa" +
-      "ssword\030\007 \001(\t\022\020\n\010is_staff\030\010 \001(\010\022\024\n\014is_sup" +
-      "eruser\030\t \001(\010\022\022\n\nlast_login\030\n \001(\t\022\023\n\013date" +
-      "_joined\030\013 \001(\t\"?\n\013UserProfile\022\020\n\010username" +
-      "\030\001 \002(\t\022\016\n\006gender\030\002 \001(\t\022\016\n\006weight\030\003 \001(\002\"\211",
-      "\001\n\014SessionChunk\022\n\n\002id\030\001 \002(\t\022\022\n\nsession_i" +
-      "d\030\002 \002(\t\022\020\n\010username\030\003 \002(\t\022\016\n\006keg_id\030\004 \002(" +
-      "\t\022\022\n\nstart_time\030\005 \002(\t\022\020\n\010end_time\030\006 \002(\t\022" +
-      "\021\n\tvolume_ml\030\007 \002(\002\"|\n\013SystemEvent\022\n\n\002id\030" +
-      "\001 \002(\t\022\014\n\004kind\030\002 \002(\t\022\014\n\004time\030\003 \002(\t\022\020\n\010dri" +
-      "nk_id\030\004 \001(\t\022\016\n\006keg_id\030\005 \001(\t\022\022\n\nsession_i" +
-      "d\030\006 \001(\t\022\017\n\007user_id\030\007 \001(\t\"Z\n\nSoundEvent\022\022" +
-      "\n\nevent_name\030\001 \002(\t\022\027\n\017event_predicate\030\002 " +
-      "\001(\t\022\021\n\tsound_url\030\003 \002(\t\022\014\n\004user\030\004 \001(\tB\022\n\020" +
-      "org.kegbot.proto"
+      "d_time\030\004 \002(\t\"B\n\014ThermoSensor\022\n\n\002id\030\001 \002(\t" +
+      "\022\023\n\013sensor_name\030\002 \002(\t\022\021\n\tnice_name\030\003 \001(\t" +
+      "\"\234\001\n\020ThermoSummaryLog\022\n\n\002id\030\001 \002(\t\022\021\n\tsen",
+      "sor_id\030\002 \002(\t\022\014\n\004date\030\003 \002(\t\022\016\n\006period\030\004 \002" +
+      "(\t\022\024\n\014num_readings\030\005 \002(\r\022\020\n\010min_temp\030\006 \002" +
+      "(\002\022\020\n\010max_temp\030\007 \002(\002\022\021\n\tmean_temp\030\010 \002(\002\"" +
+      "\337\001\n\004User\022\020\n\010username\030\001 \002(\t\022\023\n\013mugshot_ur" +
+      "l\030\002 \001(\t\022\027\n\tis_active\030\003 \002(\010:\004true\022\022\n\nfirs" +
+      "t_name\030\004 \001(\t\022\021\n\tlast_name\030\005 \001(\t\022\r\n\005email" +
+      "\030\006 \001(\t\022\020\n\010password\030\007 \001(\t\022\020\n\010is_staff\030\010 \001" +
+      "(\010\022\024\n\014is_superuser\030\t \001(\010\022\022\n\nlast_login\030\n" +
+      " \001(\t\022\023\n\013date_joined\030\013 \001(\t\"?\n\013UserProfile" +
+      "\022\020\n\010username\030\001 \002(\t\022\016\n\006gender\030\002 \001(\t\022\016\n\006we",
+      "ight\030\003 \001(\002\"\211\001\n\014SessionChunk\022\n\n\002id\030\001 \002(\t\022" +
+      "\022\n\nsession_id\030\002 \002(\t\022\020\n\010username\030\003 \002(\t\022\016\n" +
+      "\006keg_id\030\004 \002(\t\022\022\n\nstart_time\030\005 \002(\t\022\020\n\010end" +
+      "_time\030\006 \002(\t\022\021\n\tvolume_ml\030\007 \002(\002\"|\n\013System" +
+      "Event\022\n\n\002id\030\001 \002(\t\022\014\n\004kind\030\002 \002(\t\022\014\n\004time\030" +
+      "\003 \002(\t\022\020\n\010drink_id\030\004 \001(\t\022\016\n\006keg_id\030\005 \001(\t\022" +
+      "\022\n\nsession_id\030\006 \001(\t\022\017\n\007user_id\030\007 \001(\t\"Z\n\n" +
+      "SoundEvent\022\022\n\nevent_name\030\001 \002(\t\022\027\n\017event_" +
+      "predicate\030\002 \001(\t\022\021\n\tsound_url\030\003 \002(\t\022\014\n\004us" +
+      "er\030\004 \001(\tB\022\n\020org.kegbot.proto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -15425,7 +15527,7 @@ public final class Models {
           internal_static_ThermoSensor_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ThermoSensor_descriptor,
-              new java.lang.String[] { "SensorName", "NiceName", },
+              new java.lang.String[] { "Id", "SensorName", "NiceName", },
               org.kegbot.proto.Models.ThermoSensor.class,
               org.kegbot.proto.Models.ThermoSensor.Builder.class);
           internal_static_ThermoSummaryLog_descriptor =
