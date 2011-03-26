@@ -3,13 +3,18 @@
       package="org.kegbot.kegtap"
       android:versionCode="1"
       android:versionName="1.0">
+
+    <uses-sdk android:targetSdkVersion="11" android:minSdkVersion="11"></uses-sdk>
+
     <uses-permission android:name="android.permission.INTERNET"></uses-permission>
+
     <application
         android:icon="@drawable/icon"
         android:label="@string/app_name"
         android:theme="@android:style/Theme.Holo"
         android:hardwareAccelerated="true"
         >
+
         <activity android:name=".KegtapActivity"
               android:label="@string/app_name"
               android:theme="@android:style/Theme.Holo.NoActionBar"
@@ -20,7 +25,9 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".SplashScreenActivity" />
+        <!-- KegbotCoreService -->
+        <service android:name=".KegbotCoreService" />
+
     </application>
-    <uses-sdk android:targetSdkVersion="11" android:minSdkVersion="11"></uses-sdk>
+
 </manifest> 
