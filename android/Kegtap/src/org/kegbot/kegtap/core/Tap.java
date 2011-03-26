@@ -25,6 +25,19 @@ public class Tap {
    */
   private String mRelayName;
 
+  /**
+   * Constructs a new tap instance.
+   * 
+   * @param name
+   *          the name of the tap
+   * @param mlPerTick
+   *          number of milliliters per flow meter tick
+   * @param meterName
+   *          meter name, which should match the meter's name in the kegbot
+   *          backend
+   * @param relayName
+   *          relay name, if any
+   */
   Tap(String name, float mlPerTick, String meterName, String relayName) {
     mName = name;
     mMlPerTick = mlPerTick;
@@ -32,6 +45,12 @@ public class Tap {
     mRelayName = relayName;
   }
 
+  /**
+   * Returns the volume corresponding to the number of ticks given.
+   * 
+   * @param ticks
+   * @return
+   */
   public double getVolumeMlForTicks(int ticks) {
     return ticks * mMlPerTick;
   }

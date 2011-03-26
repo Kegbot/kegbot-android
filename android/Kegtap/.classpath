@@ -2,18 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
-	<classpathentry kind="src" path="ext/retrofit/modules/android/src"/>
-	<classpathentry kind="src" path="ext/retrofit/modules/http/src"/>
-	<classpathentry kind="src" path="ext/retrofit/modules/io/src"/>
-	<classpathentry kind="src" path="ext/retrofit/modules/core/src"/>
-	<classpathentry kind="src" path="ext/cwac-adapter/src"/>
-	<classpathentry excluding="com/commonsware/cwac/bus/demo/" kind="src" path="ext/cwac-bus/src"/>
-	<classpathentry excluding="com/commonsware/cwac/cache/demo/" kind="src" path="ext/cwac-cache/src"/>
-	<classpathentry excluding="com/commonsware/cwac/task/demo/" kind="src" path="ext/cwac-task/src"/>
-	<classpathentry excluding="com/commonsware/cwac/thumbnail/demo/" kind="src" path="ext/cwac-thumbnail/src"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
-	<classpathentry kind="lib" path="lib/google-gson-1.6/gson-1.6.jar"/>
-	<classpathentry kind="lib" path="lib/guice-2.0/guice-2.0.jar"/>
 	<classpathentry kind="lib" path="lib/httpcomponents-client-4.0.3/lib/httpclient-4.0.3.jar"/>
 	<classpathentry kind="lib" path="lib/httpcomponents-client-4.0.3/lib/httpcore-4.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/httpcomponents-client-4.0.3/lib/httpmime-4.0.3.jar"/>
