@@ -11,6 +11,7 @@ git submodules
 --------------
 
 To add a new submodule::
+
   git submodule add https://github.com/square/retrofit.git android/Kegtap/ext/retrofit
   git submodule init
   git submodule update
