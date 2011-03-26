@@ -23,5 +23,9 @@ public class KegtapActivity extends Activity {
     TapListFragment taps = (TapListFragment) getFragmentManager().findFragmentById(R.id.tap_list);
     taps.setKegbotApi(mApi);
     taps.loadTaps();
+    EventListFragment events = (EventListFragment) getFragmentManager().findFragmentById(
+        R.id.event_list);
+    events.setKegbotApi(mApi);
+    events.loadEvents();
   }
 }
