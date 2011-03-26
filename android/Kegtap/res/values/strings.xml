@@ -2,4 +2,6 @@
 <resources>
     <string name="hello">Give me a beer!</string>
     <string name="app_name">Kegbot</string>
+    <string name="events_title">recent events</string>
+    <string name="kegs_title">on tap</string>
 </resources>
