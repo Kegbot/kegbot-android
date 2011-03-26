@@ -20,9 +20,12 @@ public class KegbotCore {
    */
   private final Logger mLog;
 
-  public KegbotCore(Logger log, KegbotApi api) {
+  private final KegboardHardware mHw;
+
+  public KegbotCore(Logger log, KegbotApi api, KegboardHardware hw) {
     mLog = log;
     mApi = api;
+    mHw = hw;
     mLog.i(TAG, "Kegbot Core starting up.");
   }
 
@@ -57,5 +60,6 @@ public class KegbotCore {
   public void run() {
     // TODO(mikey): implement me
   }
+
 
 }
