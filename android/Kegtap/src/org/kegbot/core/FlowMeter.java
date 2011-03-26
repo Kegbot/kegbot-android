@@ -1,4 +1,4 @@
-package org.kegbot.kegtap.core;
+package org.kegbot.core;
 
 /**
  * Holds the state of a flow meter input managed by a kegboard.

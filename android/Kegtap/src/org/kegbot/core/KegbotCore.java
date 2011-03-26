@@ -1,4 +1,4 @@
-package org.kegbot.kegtap.core;
+package org.kegbot.core;
 
 import org.kegbot.api.KegbotApi;
 

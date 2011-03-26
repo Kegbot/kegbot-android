@@ -1,4 +1,4 @@
-package org.kegbot.kegtap.core;
+package org.kegbot.core;
 
 public interface FlowListener {
 

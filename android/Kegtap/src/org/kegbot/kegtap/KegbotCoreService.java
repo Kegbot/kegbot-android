@@ -3,9 +3,9 @@ package org.kegbot.kegtap;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiImpl;
-import org.kegbot.kegtap.core.KegboardHardware;
-import org.kegbot.kegtap.core.KegbotCore;
-import org.kegbot.kegtap.core.android.AndroidLogger;
+import org.kegbot.core.KegboardHardware;
+import org.kegbot.core.KegbotCore;
+import org.kegbot.kegtap.core.AndroidLogger;
 
 import android.app.IntentService;
 import android.content.Intent;

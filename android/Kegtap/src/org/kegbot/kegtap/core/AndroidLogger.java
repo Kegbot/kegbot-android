@@ -1,6 +1,6 @@
-package org.kegbot.kegtap.core.android;
+package org.kegbot.kegtap.core;
 
-import org.kegbot.kegtap.core.Logger;
+import org.kegbot.core.Logger;
 
 import android.util.Log;
 
