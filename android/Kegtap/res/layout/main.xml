@@ -1,19 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:orientation="vertical" android:layout_width="fill_parent"
-	android:layout_height="fill_parent">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	>
 
-	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-		android:orientation="horizontal" android:layout_width="fill_parent"
-		android:layout_height="wrap_content" android:background="@drawable/header_bg_square"
-			android:paddingBottom="10px">
-
-		<ImageView android:id="@+id/kegbotLogo" android:src="@drawable/kegbot_logo"
-			android:layout_width="wrap_content" android:layout_height="48px"></ImageView>
+	<LinearLayout android:id="@+id/title"
+	    android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+        android:gravity="left|center_vertical"
+		android:orientation="horizontal"
+		android:background="@drawable/header_bg_square"
+	    android:paddingBottom="10px">
+	    
+		<ImageView android:id="@+id/kegbotLogo"
+		    android:src="@drawable/kegbot_logo"
+			android:layout_width="wrap_content"
+			android:layout_height="48px"/>
 
 	</LinearLayout>
 
-	
+    <TextView android:id="@+id/kegs_title"
+        android:layout_width="300dip"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/title"
+        android:text="@string/kegs_title"
+        style="@style/ListTitle"
+        />
+    <fragment android:id="@+id/keg_list"
+        class="org.kegbot.kegtap.KegListFragment"
+        android:layout_width="300dip"
+        android:layout_height="match_parent"
+        android:layout_below="@id/kegs_title"
+        />
 
-<ListView android:id="@+id/drinkList" android:layout_width="wrap_content" android:layout_height="wrap_content"></ListView>
-</LinearLayout>
+    <TextView android:id="@+id/events_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/kegs_title"
+        android:layout_below="@id/title"
+        android:text="@string/events_title"
+        style="@style/ListTitle"
+        />
+	<fragment android:id="@+id/event_list"
+	    class="org.kegbot.kegtap.EventListFragment"
+	    android:layout_width="300dip"
+	    android:layout_height="match_parent"
+	    android:layout_below="@id/events_title"
+	    android:layout_toRightOf="@id/kegs_title"
+	    />
+</RelativeLayout>
