@@ -3,5 +3,7 @@
     <string name="hello">Give me a beer!</string>
     <string name="app_name">Kegbot</string>
     <string name="events_title">recent events</string>
-    <string name="kegs_title">on tap</string>
+    <string name="taps_title">on tap</string>
+    <string name="tap_name"><xliff id="tap_name">%s</xliff>: <xliff id="beverage_name">%s</xliff></string>
+    <string name="empty_tap"><i>empty</i></string>
 </resources>

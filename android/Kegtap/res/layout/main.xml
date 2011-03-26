@@ -20,25 +20,25 @@
 
 	</LinearLayout>
 
-    <TextView android:id="@+id/kegs_title"
+    <TextView android:id="@+id/taps_title"
         android:layout_width="300dip"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_below="@id/title"
-        android:text="@string/kegs_title"
+        android:text="@string/taps_title"
         style="@style/ListTitle"
         />
-    <fragment android:id="@+id/keg_list"
-        class="org.kegbot.kegtap.KegListFragment"
+    <fragment android:id="@+id/tap_list"
+        class="org.kegbot.kegtap.TapListFragment"
         android:layout_width="300dip"
         android:layout_height="match_parent"
-        android:layout_below="@id/kegs_title"
+        android:layout_below="@id/taps_title"
         />
 
     <TextView android:id="@+id/events_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/kegs_title"
+        android:layout_toRightOf="@id/taps_title"
         android:layout_below="@id/title"
         android:text="@string/events_title"
         style="@style/ListTitle"
@@ -48,6 +48,6 @@
 	    android:layout_width="300dip"
 	    android:layout_height="match_parent"
 	    android:layout_below="@id/events_title"
-	    android:layout_toRightOf="@id/kegs_title"
+	    android:layout_toRightOf="@id/taps_title"
 	    />
 </RelativeLayout>
