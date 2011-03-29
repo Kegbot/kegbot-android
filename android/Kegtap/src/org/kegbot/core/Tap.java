@@ -38,7 +38,7 @@ public class Tap {
    * @param relayName
    *          relay name, if any
    */
-  Tap(String name, float mlPerTick, String meterName, String relayName) {
+  public Tap(String name, float mlPerTick, String meterName, String relayName) {
     mName = name;
     mMlPerTick = mlPerTick;
     mMeterName = meterName;
@@ -48,7 +48,7 @@ public class Tap {
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder("[Tap").append(" meterName=").append(mMeterName)
-        .append(" name=").append(mName).append("]");
+    .append(" name=").append(mName).append("]");
     return builder.toString();
   }
 

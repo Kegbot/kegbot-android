@@ -1,11 +1,17 @@
 package org.kegbot.kegtap.service;
 
+import org.kegbot.api.KegbotApiException;
 import org.kegbot.core.AuthenticationToken;
+import org.kegbot.core.Flow;
+import org.kegbot.core.FlowManager;
 import org.kegbot.core.FlowMeter;
-import org.kegbot.core.KegbotCore;
+import org.kegbot.core.Tap;
 import org.kegbot.core.ThermoSensor;
-import org.kegbot.kegtap.core.AndroidLogger;
 import org.kegbot.kegtap.service.KegbotApiService.ConnectionState;
+import org.kegbot.proto.Api;
+import org.kegbot.proto.Api.TapDetailSet;
+import org.kegbot.proto.Models;
+import org.kegbot.proto.Models.Drink;
 
 import android.app.IntentService;
 import android.content.ComponentName;
@@ -26,7 +32,7 @@ public class KegbotCoreService extends IntentService {
 
   private static String ACTION_HARDWARE_EVENT = "org.kegbot.kegtap.service.HARDWARE_EVENT";
 
-  private KegbotCore mCore;
+  private final FlowManager mFlowManager = new FlowManager();
 
   //
   // Connections to other services
@@ -147,12 +153,8 @@ public class KegbotCoreService extends IntentService {
     return mBinder;
   }
 
-  public KegbotCore getCore() {
-    return mCore;
-  }
-
   private void attachApiListener() {
-    KegbotApiService.Listener listener = new KegbotApiService.Listener() {
+    mApiService.attachListener(new KegbotApiService.Listener() {
       @Override
       public void onConnectionStateChange(ConnectionState newState) {
         // TODO
@@ -162,12 +164,11 @@ public class KegbotCoreService extends IntentService {
       public void onConfigurationUpdate() {
         // TODO
       }
-    };
-    mApiService.attachListener(listener);
+    });
   }
 
   private void attachHardwareListener() {
-    KegbotHardwareService.Listener listener = new KegbotHardwareService.Listener() {
+    mHardwareService.attachListener(new KegbotHardwareService.Listener() {
 
       @Override
       public void onTokenSwiped(AuthenticationToken token, String tapName) {
@@ -187,10 +188,9 @@ public class KegbotCoreService extends IntentService {
 
       @Override
       public void onMeterUpdate(FlowMeter meter) {
+        mFlowManager.handleMeterActivity(meter.getName(), (int) meter.getTicks());
       }
-    };
-
-    mHardwareService.attachListener(listener);
+    });
   }
 
   /*
@@ -206,8 +206,67 @@ public class KegbotCoreService extends IntentService {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
-    mCore = new KegbotCore(new AndroidLogger(), mApiService, mHardwareService);
-    mCore.run();
+    run();
+  }
+
+  /**
+   * Main event loop for the core.
+   */
+  public void run() {
+    Log.i(TAG, "Kegbot core starting up!");
+
+    try {
+      configure();
+    } catch (KegbotApiException e1) {
+      Log.e(TAG, "Api failed.", e1);
+    }
+
+    while (true) {
+
+      for (Flow flow : mFlowManager.getIdleFlows()) {
+        Log.d(TAG, "Ending idle flow: " + flow);
+        mFlowManager.endFlow(flow);
+        recordDrinkForFlow(flow);
+      }
+
+      try {
+        Thread.sleep(1000);
+      } catch (InterruptedException e) {
+        break;
+      }
+    }
+  }
+
+  public void stop() {
+    mFlowManager.stop();
+  }
+
+  /**
+   * @param ended
+   */
+  private void recordDrinkForFlow(Flow ended) {
+    Log.d(TAG, "Recording dring for flow: " + ended);
+    try {
+      Drink d = mApiService.recordDrink(ended.getTap().getMeterName(), ended.getTicks());
+      Log.i(TAG, "Recorded drink! " + d);
+    } catch (KegbotApiException e) {
+      Log.e(TAG, "Error recording drink", e);
+    }
+  }
+
+  /**
+   * @throws KegbotApiException
+   * 
+   */
+  private void configure() throws KegbotApiException {
+    final TapDetailSet taps = mApiService.getAllTaps();
+    for (Api.TapDetail tapDetail : taps.getTapsList()) {
+      Models.KegTap tapInfo = tapDetail.getTap();
+      Log.d(TAG, "Adding tap: " + tapInfo.getDescription());
+      final Tap tap = new Tap(tapInfo.getDescription(), tapInfo.getMlPerTick(),
+          tapInfo.getMeterName(), tapInfo.getRelayName());
+      mFlowManager.addTap(tap);
+    }
   }
 
 }

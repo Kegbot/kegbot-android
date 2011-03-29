@@ -8,7 +8,6 @@ import java.util.Set;
 
 import org.kegbot.core.AuthenticationToken;
 import org.kegbot.core.FlowMeter;
-import org.kegbot.core.KegboardHardware;
 import org.kegbot.core.ThermoSensor;
 import org.kegbot.core.net.KegnetMessage;
 import org.kegbot.core.net.KegnetServer;
@@ -26,7 +25,7 @@ import com.google.common.collect.Sets;
  * This service listens to and manages kegbot hardware: attached kegboards,
  * sensors, and so on.
  */
-public class KegbotHardwareService extends IntentService implements KegboardHardware {
+public class KegbotHardwareService extends IntentService {
 
   private static String TAG = KegbotHardwareService.class.getSimpleName();
 
@@ -191,24 +190,65 @@ public class KegbotHardwareService extends IntentService implements KegboardHard
     }
   }
 
-  @Override
   public Collection<FlowMeter> getAllFlowMeters() {
     return ImmutableList.copyOf(mFlowMeters);
   }
 
-  @Override
   public Collection<ThermoSensor> getAllThermoSensors() {
     return ImmutableList.copyOf(mThermoSensors);
   }
 
-  @Override
   public boolean attachListener(Listener listener) {
     return mListeners.add(listener);
   }
 
-  @Override
   public boolean removeListener(Listener listener) {
     return mListeners.remove(listener);
   }
 
+  /**
+   * Receives notifications for hardware events.
+   */
+  public interface Listener {
+
+    /**
+     * Notifies the listener that a flow meter's state has changed.
+     * 
+     * @param meter
+     *          the meter that was updated
+     */
+    public void onMeterUpdate(FlowMeter meter);
+
+    /**
+     * Notifies the listener that a thermo sensor's state has changed.
+     * 
+     * @param sensor
+     *          the sensor that was updated
+     */
+    public void onThermoSensorUpdate(ThermoSensor sensor);
+
+    /**
+     * An authentication token was momentarily swiped.
+     * 
+     * @param token
+     * @param tapName
+     */
+    public void onTokenSwiped(AuthenticationToken token, String tapName);
+
+    /**
+     * A token was attached.
+     * 
+     * @param token
+     * @param tapName
+     */
+    public void onTokenAttached(AuthenticationToken token, String tapName);
+
+    /**
+     * A token was removed.
+     * 
+     * @param token
+     * @param tapName
+     */
+    public void onTokenRemoved(AuthenticationToken token, String tapName);
+  }
 }
