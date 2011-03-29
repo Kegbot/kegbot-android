@@ -9,7 +9,7 @@ public class FlowMeter {
 
   private long mTicks;
 
-  FlowMeter(String name) {
+  public FlowMeter(String name) {
     mName = name;
     mTicks = 0;
   }

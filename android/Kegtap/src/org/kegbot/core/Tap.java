@@ -8,7 +8,7 @@ public class Tap {
   /**
    * Name of this tap.
    */
-  private String mName;
+  private final String mName;
 
   /**
    * Number of milliliters per flow meter tick. May be zero.
@@ -18,12 +18,12 @@ public class Tap {
   /**
    * Name of the flow meter backing this tap.
    */
-  private String mMeterName;
+  private final String mMeterName;
 
   /**
    * Name of the relay backing this tap, if any.
    */
-  private String mRelayName;
+  private final String mRelayName;
 
   /**
    * Constructs a new tap instance.
@@ -45,6 +45,13 @@ public class Tap {
     mRelayName = relayName;
   }
 
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder("[Tap").append(" meterName=").append(mMeterName)
+        .append(" name=").append(mName).append("]");
+    return builder.toString();
+  }
+
   /**
    * Returns the volume corresponding to the number of ticks given.
    * 
@@ -53,6 +60,26 @@ public class Tap {
    */
   public double getVolumeMlForTicks(int ticks) {
     return ticks * mMlPerTick;
+  }
+
+  public double getMlPerTick() {
+    return mMlPerTick;
+  }
+
+  public void setMlPerTick(double mlPerTick) {
+    mMlPerTick = mlPerTick;
+  }
+
+  public String getName() {
+    return mName;
+  }
+
+  public String getMeterName() {
+    return mMeterName;
+  }
+
+  public String getRelayName() {
+    return mRelayName;
   }
 
 }

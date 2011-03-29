@@ -3,7 +3,7 @@ package org.kegbot.core;
 /**
  * Holds the state of a temperature sensor managed by a kegboard.
  */
-class ThermoSensor {
+public class ThermoSensor {
 
   /**
    * Constant reported when there is no valid temperature.
@@ -20,7 +20,7 @@ class ThermoSensor {
    */
   private double mTemperatureC;
 
-  ThermoSensor(String name) {
+  public ThermoSensor(String name) {
     mName = name;
     mTemperatureC = TEMPERATURE_INVALID;
   }

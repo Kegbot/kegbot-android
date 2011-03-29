@@ -15,6 +15,7 @@ import org.kegbot.proto.Api.TapDetailSet;
 import org.kegbot.proto.Api.ThermoLogSet;
 import org.kegbot.proto.Api.ThermoSensorSet;
 import org.kegbot.proto.Models.AuthenticationToken;
+import org.kegbot.proto.Models.Drink;
 import org.kegbot.proto.Models.User;
 
 public interface KegbotApi {
@@ -46,7 +47,7 @@ public interface KegbotApi {
    * @throws KegbotApiException
    */
   public AuthenticationToken getAuthToken(String authDevice, String tokenValue)
-      throws KegbotApiException;
+  throws KegbotApiException;
 
   /**
    * Returns details for a specific drink.
@@ -105,7 +106,7 @@ public interface KegbotApi {
    * @throws KegbotApiException
    */
   public DrinkDetailHtmlSet getRecentDrinksHtml()
-      throws KegbotApiException;
+  throws KegbotApiException;
 
   /**
    * Returns recent system events.
@@ -145,7 +146,7 @@ public interface KegbotApi {
    * @throws KegbotApiException
    */
   public ThermoLogSet getThermoSensorLogs(String sensorId)
-      throws KegbotApiException;
+  throws KegbotApiException;
 
   /**
    * @return
@@ -165,6 +166,8 @@ public interface KegbotApi {
   public DrinkSet getUserDrinks(String username) throws KegbotApiException;
 
   public SystemEventSet getUserEvents(String username)
-      throws KegbotApiException;
+  throws KegbotApiException;
+
+  public Drink recordDrink(String tapName, int ticks) throws KegbotApiException;
 
 }

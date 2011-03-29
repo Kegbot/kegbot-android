@@ -2,7 +2,23 @@ package org.kegbot.core;
 
 import org.kegbot.proto.Models.User;
 
+import com.google.common.base.Predicate;
+
 public class Flow {
+
+  public static Predicate<Flow> PREDICATE_IDLE = new Predicate<Flow>() {
+    @Override
+    public boolean apply(Flow flow) {
+      return flow.getState() == State.IDLE;
+    }
+  };
+
+  public static Predicate<Flow> PREDICATE_COMPLETED = new Predicate<Flow>() {
+    @Override
+    public boolean apply(Flow flow) {
+      return flow.getState() == State.COMPLETED;
+    }
+  };
 
   public static enum State {
     INITIAL, ACTIVE, IDLE, COMPLETED,
@@ -70,6 +86,14 @@ public class Flow {
     mStartTime = mUpdateTime = System.currentTimeMillis();
   }
 
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder("Flow").append(" id=").append(mFlowId)
+    .append(" state=").append(mState).append(" tap=").append(mTap).append(" user=")
+    .append(mUser).append(" ticks=").append(mTicks);
+    return builder.toString();
+  }
+
   /**
    * Factory method. Generates a new Flow object with a unique flow id.
    * 
@@ -123,16 +147,6 @@ public class Flow {
     pokeActivity();
   }
 
-  /**
-   * Sets the tick count to the value given. The recorded volume is not changed.
-   * 
-   * @param ticks
-   */
-  public void setTicks(int ticks) {
-    mTicks = ticks;
-    pokeActivity();
-  }
-
   public User getUser() {
     return mUser;
   }
@@ -155,6 +169,22 @@ public class Flow {
 
   public int getTicks() {
     return mTicks;
+  }
+
+  public long getMaxIdleTimeMs() {
+    return mMaxIdleTimeMs;
+  }
+
+  public void setState(State state) {
+    mState = state;
+  }
+
+  public void setStartTime(long startTime) {
+    mStartTime = startTime;
+  }
+
+  public void setUpdateTime(long updateTime) {
+    mUpdateTime = updateTime;
   }
 
   public State getState() {
@@ -181,7 +211,7 @@ public class Flow {
     if (mMaxIdleTimeMs <= 0) {
       return false;
     }
-    return (mUpdateTime - mStartTime) > mMaxIdleTimeMs;
+    return (System.currentTimeMillis() - mUpdateTime) > mMaxIdleTimeMs;
   }
 
   public boolean isAuthenticated() {
