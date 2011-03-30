@@ -12,8 +12,8 @@ import org.kegbot.proto.Api.KegSet;
 import org.kegbot.proto.Api.SessionDetail;
 import org.kegbot.proto.Api.SessionSet;
 import org.kegbot.proto.Api.SoundEventSet;
+import org.kegbot.proto.Api.SystemEventDetailSet;
 import org.kegbot.proto.Api.SystemEventHtmlSet;
-import org.kegbot.proto.Api.SystemEventSet;
 import org.kegbot.proto.Api.TapDetail;
 import org.kegbot.proto.Api.TapDetailSet;
 import org.kegbot.proto.Api.ThermoLogSet;
@@ -163,7 +163,7 @@ public class KegbotApiService extends BackgroundService implements KegbotApi {
   }
 
   @Override
-  public SystemEventSet getKegEvents(String kegId) throws KegbotApiException {
+  public SystemEventDetailSet getKegEvents(String kegId) throws KegbotApiException {
     return mApi.getKegEvents(kegId);
   }
 
@@ -188,7 +188,7 @@ public class KegbotApiService extends BackgroundService implements KegbotApi {
   }
 
   @Override
-  public SystemEventSet getRecentEvents() throws KegbotApiException {
+  public SystemEventDetailSet getRecentEvents() throws KegbotApiException {
     return mApi.getRecentEvents();
   }
 
@@ -228,7 +228,7 @@ public class KegbotApiService extends BackgroundService implements KegbotApi {
   }
 
   @Override
-  public SystemEventSet getUserEvents(String username) throws KegbotApiException {
+  public SystemEventDetailSet getUserEvents(String username) throws KegbotApiException {
     return mApi.getUserEvents(username);
   }
 

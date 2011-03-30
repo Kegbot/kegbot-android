@@ -8,8 +8,8 @@ import org.kegbot.proto.Api.KegSet;
 import org.kegbot.proto.Api.SessionDetail;
 import org.kegbot.proto.Api.SessionSet;
 import org.kegbot.proto.Api.SoundEventSet;
+import org.kegbot.proto.Api.SystemEventDetailSet;
 import org.kegbot.proto.Api.SystemEventHtmlSet;
-import org.kegbot.proto.Api.SystemEventSet;
 import org.kegbot.proto.Api.TapDetail;
 import org.kegbot.proto.Api.TapDetailSet;
 import org.kegbot.proto.Api.ThermoLogSet;
@@ -78,7 +78,7 @@ public interface KegbotApi {
    * @return
    * @throws KegbotApiException
    */
-  public SystemEventSet getKegEvents(String kegId) throws KegbotApiException;
+  public SystemEventDetailSet getKegEvents(String kegId) throws KegbotApiException;
 
   /**
    * @param kegId
@@ -114,7 +114,7 @@ public interface KegbotApi {
    * @return the events
    * @throws KegbotApiException
    */
-  public SystemEventSet getRecentEvents() throws KegbotApiException;
+  public SystemEventDetailSet getRecentEvents() throws KegbotApiException;
 
   /**
    * @return
@@ -165,7 +165,7 @@ public interface KegbotApi {
 
   public DrinkSet getUserDrinks(String username) throws KegbotApiException;
 
-  public SystemEventSet getUserEvents(String username)
+  public SystemEventDetailSet getUserEvents(String username)
   throws KegbotApiException;
 
   public Drink recordDrink(String tapName, int ticks) throws KegbotApiException;

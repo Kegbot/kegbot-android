@@ -26,8 +26,8 @@ import org.kegbot.proto.Api.KegSet;
 import org.kegbot.proto.Api.SessionDetail;
 import org.kegbot.proto.Api.SessionSet;
 import org.kegbot.proto.Api.SoundEventSet;
+import org.kegbot.proto.Api.SystemEventDetailSet;
 import org.kegbot.proto.Api.SystemEventHtmlSet;
-import org.kegbot.proto.Api.SystemEventSet;
 import org.kegbot.proto.Api.TapDetail;
 import org.kegbot.proto.Api.TapDetailSet;
 import org.kegbot.proto.Api.ThermoLogSet;
@@ -190,9 +190,9 @@ public class KegbotApiImpl implements KegbotApi {
   }
 
   @Override
-  public SystemEventSet getKegEvents(String kegId) throws KegbotApiException {
-    return (SystemEventSet) getProto("/keg/" + kegId + "/events/",
-        SystemEventSet.newBuilder());
+  public SystemEventDetailSet getKegEvents(String kegId) throws KegbotApiException {
+    return (SystemEventDetailSet) getProto("/keg/" + kegId + "/events/",
+        SystemEventDetailSet.newBuilder());
   }
 
   @Override
@@ -219,8 +219,8 @@ public class KegbotApiImpl implements KegbotApi {
   }
 
   @Override
-  public SystemEventSet getRecentEvents() throws KegbotApiException {
-    return (SystemEventSet) getProto("/events/", SystemEventSet.newBuilder());
+  public SystemEventDetailSet getRecentEvents() throws KegbotApiException {
+    return (SystemEventDetailSet) getProto("/events/", SystemEventDetailSet.newBuilder());
   }
 
   @Override
@@ -265,10 +265,10 @@ public class KegbotApiImpl implements KegbotApi {
   }
 
   @Override
-  public SystemEventSet getUserEvents(String username)
+  public SystemEventDetailSet getUserEvents(String username)
   throws KegbotApiException {
-    return (SystemEventSet) getProto("/users/" + username + "/events/",
-        SystemEventSet.newBuilder());
+    return (SystemEventDetailSet) getProto("/users/" + username + "/events/",
+        SystemEventDetailSet.newBuilder());
   }
 
   @Override
