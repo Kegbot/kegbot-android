@@ -1,10 +1,10 @@
 package org.kegbot.kegtap;
 
 import java.text.ParseException;
-import java.util.Date;
 
 import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiException;
+import org.kegbot.kegtap.util.image.ImageDownloader;
 import org.kegbot.proto.Api.TapDetail;
 import org.kegbot.proto.Api.TapDetailSet;
 
@@ -25,36 +25,39 @@ public class TapListFragment extends ListFragment {
 
   private KegbotApi mApi;
 
+  private ImageDownloader mImageDownloader;
+
   @Override
   public void onActivityCreated(Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
-    mAdapter = new ArrayAdapter<TapDetail>(getActivity(), R.layout.tap_list_item, R.id.title) {
+    mAdapter = new ArrayAdapter<TapDetail>(getActivity(), R.layout.tap_list_item, R.id.tapTitle) {
 
       @Override
       public View getView(int position, View convertView, ViewGroup parent) {
         View view =  super.getView(position, convertView, parent);
         TapDetail tap = getItem(position);
-        TextView title = (TextView) view.findViewById(R.id.title);
-        TextView subtitle = (TextView) view.findViewById(R.id.subtitle);
+        TextView title = (TextView) view.findViewById(R.id.tapTitle);
+        title.setText(tap.getTap().getName());
+        TextView subtitle = (TextView) view.findViewById(R.id.tapSubtitle);
+        if (tap.hasBeverage()) {
+          subtitle.setText(tap.getBeverage().getName());
+        }
 
         CharSequence relTime;
         try {
-          Date tapDate;
-          tapDate = Utils.dateFromIso8601String(tap.getKeg().getStartedTime());
-          relTime = DateUtils.getRelativeTimeSpanString(tapDate.getTime());
+          long tapDate = Utils.dateFromIso8601String(tap.getKeg().getStartedTime());
+          relTime = DateUtils.getRelativeTimeSpanString(tapDate);
         } catch (ParseException e) {
           relTime = null;
         }
 
-        TextView date = (TextView) view.findViewById(R.id.date_tapped);
+        TextView date = (TextView) view.findViewById(R.id.tapDateTapped);
         if (relTime != null) {
           date.setText("Tapped " + relTime);
         } else {
           date.setVisibility(View.GONE);
         }
 
-        title.setText(getTitle(tap));
-        subtitle.setText("Left: " + tap.getKeg().getPercentFull());
         return view;
       }
 
@@ -64,6 +67,10 @@ public class TapListFragment extends ListFragment {
 
   void setKegbotApi(KegbotApi api) {
     mApi = api;
+  }
+
+  void setImageDownloader(ImageDownloader imageDownloader) {
+    mImageDownloader = imageDownloader;
   }
 
   void loadTaps() {

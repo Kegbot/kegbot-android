@@ -1,26 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- An event in the event list. -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  android:orientation="vertical"
+  android:minHeight="64dip"
+  android:gravity="center">
+
+  <TextView
+    android:id="@+id/tapTitle"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:minHeight="64dip"
-    >
-    <ImageView android:id="@+id/icon"
-        android:layout_width="32dip"
-        android:layout_height="32dip"
-        />
-    <TextView android:id="@+id/title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        />
-    <TextView android:id="@+id/subtitle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        />
-    <TextView android:id="@+id/date_tapped"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        />
-        
+    android:textStyle="bold"
+    android:textSize="28dip" />
+
+  <TextView
+    android:id="@+id/tapSubtitle"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:textColor="#888"
+    android:textSize="22dip" />
+
+  <FrameLayout
+    android:padding="2dip"
+    android:background="#ccc"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <ImageView
+      android:id="@+id/tapImage"
+      android:layout_width="256dip"
+      android:layout_height="256dip" />
+
+  </FrameLayout>
+
+  <TextView
+    android:id="@+id/tapDateTapped"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" />
+
 </LinearLayout>
