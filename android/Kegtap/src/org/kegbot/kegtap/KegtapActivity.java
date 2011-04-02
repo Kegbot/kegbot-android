@@ -21,7 +21,6 @@ public class KegtapActivity extends Activity {
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.main);
-    Log.w(LOG_TAG, "Main view!");
     setupActionBar();
     
     TapListFragment taps = (TapListFragment) getFragmentManager().findFragmentById(R.id.tap_list);
@@ -49,6 +48,6 @@ public class KegtapActivity extends Activity {
     ActionBar actionBar = getActionBar();
     actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.header_bg_square));
     actionBar.setDisplayShowTitleEnabled(false);
-    actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME);
+    actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_USE_LOGO);
   }
 }
