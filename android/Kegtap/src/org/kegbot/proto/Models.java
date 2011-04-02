@@ -1653,6 +1653,11 @@ public final class Models {
     // optional float original_gravity = 11;
     boolean hasOriginalGravity();
     float getOriginalGravity();
+    
+    // optional .Image image = 12;
+    boolean hasImage();
+    org.kegbot.proto.Models.Image getImage();
+    org.kegbot.proto.Models.ImageOrBuilder getImageOrBuilder();
   }
   public static final class BeerType extends
       com.google.protobuf.GeneratedMessage
@@ -1893,6 +1898,19 @@ public final class Models {
       return originalGravity_;
     }
     
+    // optional .Image image = 12;
+    public static final int IMAGE_FIELD_NUMBER = 12;
+    private org.kegbot.proto.Models.Image image_;
+    public boolean hasImage() {
+      return ((bitField0_ & 0x00000400) == 0x00000400);
+    }
+    public org.kegbot.proto.Models.Image getImage() {
+      return image_;
+    }
+    public org.kegbot.proto.Models.ImageOrBuilder getImageOrBuilder() {
+      return image_;
+    }
+    
     private void initFields() {
       id_ = "";
       name_ = "";
@@ -1904,6 +1922,7 @@ public final class Models {
       carbsOz_ = 0F;
       specificGravity_ = 0F;
       originalGravity_ = 0F;
+      image_ = org.kegbot.proto.Models.Image.getDefaultInstance();
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -1925,6 +1944,12 @@ public final class Models {
       if (!hasStyleId()) {
         memoizedIsInitialized = 0;
         return false;
+      }
+      if (hasImage()) {
+        if (!getImage().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
       }
       memoizedIsInitialized = 1;
       return true;
@@ -1962,6 +1987,9 @@ public final class Models {
       }
       if (((bitField0_ & 0x00000200) == 0x00000200)) {
         output.writeFloat(11, originalGravity_);
+      }
+      if (((bitField0_ & 0x00000400) == 0x00000400)) {
+        output.writeMessage(12, image_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -2011,6 +2039,10 @@ public final class Models {
       if (((bitField0_ & 0x00000200) == 0x00000200)) {
         size += com.google.protobuf.CodedOutputStream
           .computeFloatSize(11, originalGravity_);
+      }
+      if (((bitField0_ & 0x00000400) == 0x00000400)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(12, image_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -2126,6 +2158,7 @@ public final class Models {
       }
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          getImageFieldBuilder();
         }
       }
       private static Builder create() {
@@ -2154,6 +2187,12 @@ public final class Models {
         bitField0_ = (bitField0_ & ~0x00000100);
         originalGravity_ = 0F;
         bitField0_ = (bitField0_ & ~0x00000200);
+        if (imageBuilder_ == null) {
+          image_ = org.kegbot.proto.Models.Image.getDefaultInstance();
+        } else {
+          imageBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000400);
         return this;
       }
       
@@ -2232,6 +2271,14 @@ public final class Models {
           to_bitField0_ |= 0x00000200;
         }
         result.originalGravity_ = originalGravity_;
+        if (((from_bitField0_ & 0x00000400) == 0x00000400)) {
+          to_bitField0_ |= 0x00000400;
+        }
+        if (imageBuilder_ == null) {
+          result.image_ = image_;
+        } else {
+          result.image_ = imageBuilder_.build();
+        }
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -2278,6 +2325,9 @@ public final class Models {
         if (other.hasOriginalGravity()) {
           setOriginalGravity(other.getOriginalGravity());
         }
+        if (other.hasImage()) {
+          mergeImage(other.getImage());
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
@@ -2298,6 +2348,12 @@ public final class Models {
         if (!hasStyleId()) {
           
           return false;
+        }
+        if (hasImage()) {
+          if (!getImage().isInitialized()) {
+            
+            return false;
+          }
         }
         return true;
       }
@@ -2373,6 +2429,15 @@ public final class Models {
             case 93: {
               bitField0_ |= 0x00000200;
               originalGravity_ = input.readFloat();
+              break;
+            }
+            case 98: {
+              org.kegbot.proto.Models.Image.Builder subBuilder = org.kegbot.proto.Models.Image.newBuilder();
+              if (hasImage()) {
+                subBuilder.mergeFrom(getImage());
+              }
+              input.readMessage(subBuilder, extensionRegistry);
+              setImage(subBuilder.buildPartial());
               break;
             }
           }
@@ -2666,6 +2731,96 @@ public final class Models {
         return this;
       }
       
+      // optional .Image image = 12;
+      private org.kegbot.proto.Models.Image image_ = org.kegbot.proto.Models.Image.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          org.kegbot.proto.Models.Image, org.kegbot.proto.Models.Image.Builder, org.kegbot.proto.Models.ImageOrBuilder> imageBuilder_;
+      public boolean hasImage() {
+        return ((bitField0_ & 0x00000400) == 0x00000400);
+      }
+      public org.kegbot.proto.Models.Image getImage() {
+        if (imageBuilder_ == null) {
+          return image_;
+        } else {
+          return imageBuilder_.getMessage();
+        }
+      }
+      public Builder setImage(org.kegbot.proto.Models.Image value) {
+        if (imageBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          image_ = value;
+          onChanged();
+        } else {
+          imageBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000400;
+        return this;
+      }
+      public Builder setImage(
+          org.kegbot.proto.Models.Image.Builder builderForValue) {
+        if (imageBuilder_ == null) {
+          image_ = builderForValue.build();
+          onChanged();
+        } else {
+          imageBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000400;
+        return this;
+      }
+      public Builder mergeImage(org.kegbot.proto.Models.Image value) {
+        if (imageBuilder_ == null) {
+          if (((bitField0_ & 0x00000400) == 0x00000400) &&
+              image_ != org.kegbot.proto.Models.Image.getDefaultInstance()) {
+            image_ =
+              org.kegbot.proto.Models.Image.newBuilder(image_).mergeFrom(value).buildPartial();
+          } else {
+            image_ = value;
+          }
+          onChanged();
+        } else {
+          imageBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000400;
+        return this;
+      }
+      public Builder clearImage() {
+        if (imageBuilder_ == null) {
+          image_ = org.kegbot.proto.Models.Image.getDefaultInstance();
+          onChanged();
+        } else {
+          imageBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000400);
+        return this;
+      }
+      public org.kegbot.proto.Models.Image.Builder getImageBuilder() {
+        bitField0_ |= 0x00000400;
+        onChanged();
+        return getImageFieldBuilder().getBuilder();
+      }
+      public org.kegbot.proto.Models.ImageOrBuilder getImageOrBuilder() {
+        if (imageBuilder_ != null) {
+          return imageBuilder_.getMessageOrBuilder();
+        } else {
+          return image_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          org.kegbot.proto.Models.Image, org.kegbot.proto.Models.Image.Builder, org.kegbot.proto.Models.ImageOrBuilder> 
+          getImageFieldBuilder() {
+        if (imageBuilder_ == null) {
+          imageBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              org.kegbot.proto.Models.Image, org.kegbot.proto.Models.Image.Builder, org.kegbot.proto.Models.ImageOrBuilder>(
+                  image_,
+                  getParentForChildren(),
+                  isClean());
+          image_ = null;
+        }
+        return imageBuilder_;
+      }
+      
       // @@protoc_insertion_point(builder_scope:BeerType)
     }
     
@@ -2711,6 +2866,11 @@ public final class Models {
     // optional string description = 8 [default = ""];
     boolean hasDescription();
     String getDescription();
+    
+    // optional .Image image = 9;
+    boolean hasImage();
+    org.kegbot.proto.Models.Image getImage();
+    org.kegbot.proto.Models.ImageOrBuilder getImageOrBuilder();
   }
   public static final class Brewer extends
       com.google.protobuf.GeneratedMessage
@@ -2997,6 +3157,19 @@ public final class Models {
       }
     }
     
+    // optional .Image image = 9;
+    public static final int IMAGE_FIELD_NUMBER = 9;
+    private org.kegbot.proto.Models.Image image_;
+    public boolean hasImage() {
+      return ((bitField0_ & 0x00000100) == 0x00000100);
+    }
+    public org.kegbot.proto.Models.Image getImage() {
+      return image_;
+    }
+    public org.kegbot.proto.Models.ImageOrBuilder getImageOrBuilder() {
+      return image_;
+    }
+    
     private void initFields() {
       id_ = "";
       name_ = "";
@@ -3006,6 +3179,7 @@ public final class Models {
       production_ = "";
       url_ = "";
       description_ = "";
+      image_ = org.kegbot.proto.Models.Image.getDefaultInstance();
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -3019,6 +3193,12 @@ public final class Models {
       if (!hasName()) {
         memoizedIsInitialized = 0;
         return false;
+      }
+      if (hasImage()) {
+        if (!getImage().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
       }
       memoizedIsInitialized = 1;
       return true;
@@ -3050,6 +3230,9 @@ public final class Models {
       }
       if (((bitField0_ & 0x00000080) == 0x00000080)) {
         output.writeBytes(8, getDescriptionBytes());
+      }
+      if (((bitField0_ & 0x00000100) == 0x00000100)) {
+        output.writeMessage(9, image_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -3091,6 +3274,10 @@ public final class Models {
       if (((bitField0_ & 0x00000080) == 0x00000080)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(8, getDescriptionBytes());
+      }
+      if (((bitField0_ & 0x00000100) == 0x00000100)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(9, image_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -3206,6 +3393,7 @@ public final class Models {
       }
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          getImageFieldBuilder();
         }
       }
       private static Builder create() {
@@ -3230,6 +3418,12 @@ public final class Models {
         bitField0_ = (bitField0_ & ~0x00000040);
         description_ = "";
         bitField0_ = (bitField0_ & ~0x00000080);
+        if (imageBuilder_ == null) {
+          image_ = org.kegbot.proto.Models.Image.getDefaultInstance();
+        } else {
+          imageBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000100);
         return this;
       }
       
@@ -3300,6 +3494,14 @@ public final class Models {
           to_bitField0_ |= 0x00000080;
         }
         result.description_ = description_;
+        if (((from_bitField0_ & 0x00000100) == 0x00000100)) {
+          to_bitField0_ |= 0x00000100;
+        }
+        if (imageBuilder_ == null) {
+          result.image_ = image_;
+        } else {
+          result.image_ = imageBuilder_.build();
+        }
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -3340,6 +3542,9 @@ public final class Models {
         if (other.hasDescription()) {
           setDescription(other.getDescription());
         }
+        if (other.hasImage()) {
+          mergeImage(other.getImage());
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
@@ -3352,6 +3557,12 @@ public final class Models {
         if (!hasName()) {
           
           return false;
+        }
+        if (hasImage()) {
+          if (!getImage().isInitialized()) {
+            
+            return false;
+          }
         }
         return true;
       }
@@ -3417,6 +3628,15 @@ public final class Models {
             case 66: {
               bitField0_ |= 0x00000080;
               description_ = input.readBytes();
+              break;
+            }
+            case 74: {
+              org.kegbot.proto.Models.Image.Builder subBuilder = org.kegbot.proto.Models.Image.newBuilder();
+              if (hasImage()) {
+                subBuilder.mergeFrom(getImage());
+              }
+              input.readMessage(subBuilder, extensionRegistry);
+              setImage(subBuilder.buildPartial());
               break;
             }
           }
@@ -3711,6 +3931,96 @@ public final class Models {
         bitField0_ |= 0x00000080;
         description_ = value;
         onChanged();
+      }
+      
+      // optional .Image image = 9;
+      private org.kegbot.proto.Models.Image image_ = org.kegbot.proto.Models.Image.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          org.kegbot.proto.Models.Image, org.kegbot.proto.Models.Image.Builder, org.kegbot.proto.Models.ImageOrBuilder> imageBuilder_;
+      public boolean hasImage() {
+        return ((bitField0_ & 0x00000100) == 0x00000100);
+      }
+      public org.kegbot.proto.Models.Image getImage() {
+        if (imageBuilder_ == null) {
+          return image_;
+        } else {
+          return imageBuilder_.getMessage();
+        }
+      }
+      public Builder setImage(org.kegbot.proto.Models.Image value) {
+        if (imageBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          image_ = value;
+          onChanged();
+        } else {
+          imageBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000100;
+        return this;
+      }
+      public Builder setImage(
+          org.kegbot.proto.Models.Image.Builder builderForValue) {
+        if (imageBuilder_ == null) {
+          image_ = builderForValue.build();
+          onChanged();
+        } else {
+          imageBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000100;
+        return this;
+      }
+      public Builder mergeImage(org.kegbot.proto.Models.Image value) {
+        if (imageBuilder_ == null) {
+          if (((bitField0_ & 0x00000100) == 0x00000100) &&
+              image_ != org.kegbot.proto.Models.Image.getDefaultInstance()) {
+            image_ =
+              org.kegbot.proto.Models.Image.newBuilder(image_).mergeFrom(value).buildPartial();
+          } else {
+            image_ = value;
+          }
+          onChanged();
+        } else {
+          imageBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000100;
+        return this;
+      }
+      public Builder clearImage() {
+        if (imageBuilder_ == null) {
+          image_ = org.kegbot.proto.Models.Image.getDefaultInstance();
+          onChanged();
+        } else {
+          imageBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000100);
+        return this;
+      }
+      public org.kegbot.proto.Models.Image.Builder getImageBuilder() {
+        bitField0_ |= 0x00000100;
+        onChanged();
+        return getImageFieldBuilder().getBuilder();
+      }
+      public org.kegbot.proto.Models.ImageOrBuilder getImageOrBuilder() {
+        if (imageBuilder_ != null) {
+          return imageBuilder_.getMessageOrBuilder();
+        } else {
+          return image_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          org.kegbot.proto.Models.Image, org.kegbot.proto.Models.Image.Builder, org.kegbot.proto.Models.ImageOrBuilder> 
+          getImageFieldBuilder() {
+        if (imageBuilder_ == null) {
+          imageBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              org.kegbot.proto.Models.Image, org.kegbot.proto.Models.Image.Builder, org.kegbot.proto.Models.ImageOrBuilder>(
+                  image_,
+                  getParentForChildren(),
+                  isClean());
+          image_ = null;
+        }
+        return imageBuilder_;
       }
       
       // @@protoc_insertion_point(builder_scope:Brewer)
@@ -4878,6 +5188,501 @@ public final class Models {
     }
     
     // @@protoc_insertion_point(class_scope:Drink)
+  }
+  
+  public interface ImageOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+    
+    // required string url = 1;
+    boolean hasUrl();
+    String getUrl();
+    
+    // optional uint32 width = 2;
+    boolean hasWidth();
+    int getWidth();
+    
+    // optional uint32 height = 3;
+    boolean hasHeight();
+    int getHeight();
+  }
+  public static final class Image extends
+      com.google.protobuf.GeneratedMessage
+      implements ImageOrBuilder {
+    // Use Image.newBuilder() to construct.
+    private Image(Builder builder) {
+      super(builder);
+    }
+    private Image(boolean noInit) {}
+    
+    private static final Image defaultInstance;
+    public static Image getDefaultInstance() {
+      return defaultInstance;
+    }
+    
+    public Image getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+    
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return org.kegbot.proto.Models.internal_static_Image_descriptor;
+    }
+    
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return org.kegbot.proto.Models.internal_static_Image_fieldAccessorTable;
+    }
+    
+    private int bitField0_;
+    // required string url = 1;
+    public static final int URL_FIELD_NUMBER = 1;
+    private Object url_;
+    public boolean hasUrl() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    public String getUrl() {
+      Object ref = url_;
+      if (ref instanceof String) {
+        return (String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        String s = bs.toStringUtf8();
+        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+          url_ = s;
+        }
+        return s;
+      }
+    }
+    private com.google.protobuf.ByteString getUrlBytes() {
+      Object ref = url_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+        url_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    
+    // optional uint32 width = 2;
+    public static final int WIDTH_FIELD_NUMBER = 2;
+    private int width_;
+    public boolean hasWidth() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    public int getWidth() {
+      return width_;
+    }
+    
+    // optional uint32 height = 3;
+    public static final int HEIGHT_FIELD_NUMBER = 3;
+    private int height_;
+    public boolean hasHeight() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    public int getHeight() {
+      return height_;
+    }
+    
+    private void initFields() {
+      url_ = "";
+      width_ = 0;
+      height_ = 0;
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+      
+      if (!hasUrl()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+    
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeBytes(1, getUrlBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeUInt32(2, width_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeUInt32(3, height_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+    
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+    
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(1, getUrlBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(2, width_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(3, height_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+    
+    @java.lang.Override
+    protected Object writeReplace() throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+    
+    public static org.kegbot.proto.Models.Image parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static org.kegbot.proto.Models.Image parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static org.kegbot.proto.Models.Image parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static org.kegbot.proto.Models.Image parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static org.kegbot.proto.Models.Image parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static org.kegbot.proto.Models.Image parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    public static org.kegbot.proto.Models.Image parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static org.kegbot.proto.Models.Image parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static org.kegbot.proto.Models.Image parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static org.kegbot.proto.Models.Image parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(org.kegbot.proto.Models.Image prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+    
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements org.kegbot.proto.Models.ImageOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return org.kegbot.proto.Models.internal_static_Image_descriptor;
+      }
+      
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return org.kegbot.proto.Models.internal_static_Image_fieldAccessorTable;
+      }
+      
+      // Construct using org.kegbot.proto.Models.Image.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+      
+      private Builder(BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+      
+      public Builder clear() {
+        super.clear();
+        url_ = "";
+        bitField0_ = (bitField0_ & ~0x00000001);
+        width_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        height_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        return this;
+      }
+      
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+      
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return org.kegbot.proto.Models.Image.getDescriptor();
+      }
+      
+      public org.kegbot.proto.Models.Image getDefaultInstanceForType() {
+        return org.kegbot.proto.Models.Image.getDefaultInstance();
+      }
+      
+      public org.kegbot.proto.Models.Image build() {
+        org.kegbot.proto.Models.Image result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+      
+      private org.kegbot.proto.Models.Image buildParsed()
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        org.kegbot.proto.Models.Image result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(
+            result).asInvalidProtocolBufferException();
+        }
+        return result;
+      }
+      
+      public org.kegbot.proto.Models.Image buildPartial() {
+        org.kegbot.proto.Models.Image result = new org.kegbot.proto.Models.Image(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.url_ = url_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.width_ = width_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.height_ = height_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+      
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof org.kegbot.proto.Models.Image) {
+          return mergeFrom((org.kegbot.proto.Models.Image)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+      
+      public Builder mergeFrom(org.kegbot.proto.Models.Image other) {
+        if (other == org.kegbot.proto.Models.Image.getDefaultInstance()) return this;
+        if (other.hasUrl()) {
+          setUrl(other.getUrl());
+        }
+        if (other.hasWidth()) {
+          setWidth(other.getWidth());
+        }
+        if (other.hasHeight()) {
+          setHeight(other.getHeight());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+      
+      public final boolean isInitialized() {
+        if (!hasUrl()) {
+          
+          return false;
+        }
+        return true;
+      }
+      
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder(
+            this.getUnknownFields());
+        while (true) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              this.setUnknownFields(unknownFields.build());
+              onChanged();
+              return this;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                this.setUnknownFields(unknownFields.build());
+                onChanged();
+                return this;
+              }
+              break;
+            }
+            case 10: {
+              bitField0_ |= 0x00000001;
+              url_ = input.readBytes();
+              break;
+            }
+            case 16: {
+              bitField0_ |= 0x00000002;
+              width_ = input.readUInt32();
+              break;
+            }
+            case 24: {
+              bitField0_ |= 0x00000004;
+              height_ = input.readUInt32();
+              break;
+            }
+          }
+        }
+      }
+      
+      private int bitField0_;
+      
+      // required string url = 1;
+      private Object url_ = "";
+      public boolean hasUrl() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      public String getUrl() {
+        Object ref = url_;
+        if (!(ref instanceof String)) {
+          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+          url_ = s;
+          return s;
+        } else {
+          return (String) ref;
+        }
+      }
+      public Builder setUrl(String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        url_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearUrl() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        url_ = getDefaultInstance().getUrl();
+        onChanged();
+        return this;
+      }
+      void setUrl(com.google.protobuf.ByteString value) {
+        bitField0_ |= 0x00000001;
+        url_ = value;
+        onChanged();
+      }
+      
+      // optional uint32 width = 2;
+      private int width_ ;
+      public boolean hasWidth() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      public int getWidth() {
+        return width_;
+      }
+      public Builder setWidth(int value) {
+        bitField0_ |= 0x00000002;
+        width_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearWidth() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        width_ = 0;
+        onChanged();
+        return this;
+      }
+      
+      // optional uint32 height = 3;
+      private int height_ ;
+      public boolean hasHeight() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      public int getHeight() {
+        return height_;
+      }
+      public Builder setHeight(int value) {
+        bitField0_ |= 0x00000004;
+        height_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearHeight() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        height_ = 0;
+        onChanged();
+        return this;
+      }
+      
+      // @@protoc_insertion_point(builder_scope:Image)
+    }
+    
+    static {
+      defaultInstance = new Image(true);
+      defaultInstance.initFields();
+    }
+    
+    // @@protoc_insertion_point(class_scope:Image)
   }
   
   public interface KegOrBuilder
@@ -10951,9 +11756,10 @@ public final class Models {
     boolean hasUsername();
     String getUsername();
     
-    // optional string mugshot_url = 2;
-    boolean hasMugshotUrl();
-    String getMugshotUrl();
+    // optional .Image image = 2;
+    boolean hasImage();
+    org.kegbot.proto.Models.Image getImage();
+    org.kegbot.proto.Models.ImageOrBuilder getImageOrBuilder();
     
     // required bool is_active = 3 [default = true];
     boolean hasIsActive();
@@ -11052,36 +11858,17 @@ public final class Models {
       }
     }
     
-    // optional string mugshot_url = 2;
-    public static final int MUGSHOT_URL_FIELD_NUMBER = 2;
-    private Object mugshotUrl_;
-    public boolean hasMugshotUrl() {
+    // optional .Image image = 2;
+    public static final int IMAGE_FIELD_NUMBER = 2;
+    private org.kegbot.proto.Models.Image image_;
+    public boolean hasImage() {
       return ((bitField0_ & 0x00000002) == 0x00000002);
     }
-    public String getMugshotUrl() {
-      Object ref = mugshotUrl_;
-      if (ref instanceof String) {
-        return (String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
-          mugshotUrl_ = s;
-        }
-        return s;
-      }
+    public org.kegbot.proto.Models.Image getImage() {
+      return image_;
     }
-    private com.google.protobuf.ByteString getMugshotUrlBytes() {
-      Object ref = mugshotUrl_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
-        mugshotUrl_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+    public org.kegbot.proto.Models.ImageOrBuilder getImageOrBuilder() {
+      return image_;
     }
     
     // required bool is_active = 3 [default = true];
@@ -11308,7 +12095,7 @@ public final class Models {
     
     private void initFields() {
       username_ = "";
-      mugshotUrl_ = "";
+      image_ = org.kegbot.proto.Models.Image.getDefaultInstance();
       isActive_ = true;
       firstName_ = "";
       lastName_ = "";
@@ -11332,6 +12119,12 @@ public final class Models {
         memoizedIsInitialized = 0;
         return false;
       }
+      if (hasImage()) {
+        if (!getImage().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
       memoizedIsInitialized = 1;
       return true;
     }
@@ -11343,7 +12136,7 @@ public final class Models {
         output.writeBytes(1, getUsernameBytes());
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        output.writeBytes(2, getMugshotUrlBytes());
+        output.writeMessage(2, image_);
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         output.writeBool(3, isActive_);
@@ -11387,7 +12180,7 @@ public final class Models {
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(2, getMugshotUrlBytes());
+          .computeMessageSize(2, image_);
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         size += com.google.protobuf.CodedOutputStream
@@ -11539,6 +12332,7 @@ public final class Models {
       }
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          getImageFieldBuilder();
         }
       }
       private static Builder create() {
@@ -11549,7 +12343,11 @@ public final class Models {
         super.clear();
         username_ = "";
         bitField0_ = (bitField0_ & ~0x00000001);
-        mugshotUrl_ = "";
+        if (imageBuilder_ == null) {
+          image_ = org.kegbot.proto.Models.Image.getDefaultInstance();
+        } else {
+          imageBuilder_.clear();
+        }
         bitField0_ = (bitField0_ & ~0x00000002);
         isActive_ = true;
         bitField0_ = (bitField0_ & ~0x00000004);
@@ -11614,7 +12412,11 @@ public final class Models {
         if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
           to_bitField0_ |= 0x00000002;
         }
-        result.mugshotUrl_ = mugshotUrl_;
+        if (imageBuilder_ == null) {
+          result.image_ = image_;
+        } else {
+          result.image_ = imageBuilder_.build();
+        }
         if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
           to_bitField0_ |= 0x00000004;
         }
@@ -11670,8 +12472,8 @@ public final class Models {
         if (other.hasUsername()) {
           setUsername(other.getUsername());
         }
-        if (other.hasMugshotUrl()) {
-          setMugshotUrl(other.getMugshotUrl());
+        if (other.hasImage()) {
+          mergeImage(other.getImage());
         }
         if (other.hasIsActive()) {
           setIsActive(other.getIsActive());
@@ -11713,6 +12515,12 @@ public final class Models {
           
           return false;
         }
+        if (hasImage()) {
+          if (!getImage().isInitialized()) {
+            
+            return false;
+          }
+        }
         return true;
       }
       
@@ -11745,8 +12553,12 @@ public final class Models {
               break;
             }
             case 18: {
-              bitField0_ |= 0x00000002;
-              mugshotUrl_ = input.readBytes();
+              org.kegbot.proto.Models.Image.Builder subBuilder = org.kegbot.proto.Models.Image.newBuilder();
+              if (hasImage()) {
+                subBuilder.mergeFrom(getImage());
+              }
+              input.readMessage(subBuilder, extensionRegistry);
+              setImage(subBuilder.buildPartial());
               break;
             }
             case 24: {
@@ -11836,40 +12648,94 @@ public final class Models {
         onChanged();
       }
       
-      // optional string mugshot_url = 2;
-      private Object mugshotUrl_ = "";
-      public boolean hasMugshotUrl() {
+      // optional .Image image = 2;
+      private org.kegbot.proto.Models.Image image_ = org.kegbot.proto.Models.Image.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          org.kegbot.proto.Models.Image, org.kegbot.proto.Models.Image.Builder, org.kegbot.proto.Models.ImageOrBuilder> imageBuilder_;
+      public boolean hasImage() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
       }
-      public String getMugshotUrl() {
-        Object ref = mugshotUrl_;
-        if (!(ref instanceof String)) {
-          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
-          mugshotUrl_ = s;
-          return s;
+      public org.kegbot.proto.Models.Image getImage() {
+        if (imageBuilder_ == null) {
+          return image_;
         } else {
-          return (String) ref;
+          return imageBuilder_.getMessage();
         }
       }
-      public Builder setMugshotUrl(String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000002;
-        mugshotUrl_ = value;
-        onChanged();
-        return this;
-      }
-      public Builder clearMugshotUrl() {
-        bitField0_ = (bitField0_ & ~0x00000002);
-        mugshotUrl_ = getDefaultInstance().getMugshotUrl();
-        onChanged();
-        return this;
-      }
-      void setMugshotUrl(com.google.protobuf.ByteString value) {
+      public Builder setImage(org.kegbot.proto.Models.Image value) {
+        if (imageBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          image_ = value;
+          onChanged();
+        } else {
+          imageBuilder_.setMessage(value);
+        }
         bitField0_ |= 0x00000002;
-        mugshotUrl_ = value;
+        return this;
+      }
+      public Builder setImage(
+          org.kegbot.proto.Models.Image.Builder builderForValue) {
+        if (imageBuilder_ == null) {
+          image_ = builderForValue.build();
+          onChanged();
+        } else {
+          imageBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000002;
+        return this;
+      }
+      public Builder mergeImage(org.kegbot.proto.Models.Image value) {
+        if (imageBuilder_ == null) {
+          if (((bitField0_ & 0x00000002) == 0x00000002) &&
+              image_ != org.kegbot.proto.Models.Image.getDefaultInstance()) {
+            image_ =
+              org.kegbot.proto.Models.Image.newBuilder(image_).mergeFrom(value).buildPartial();
+          } else {
+            image_ = value;
+          }
+          onChanged();
+        } else {
+          imageBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000002;
+        return this;
+      }
+      public Builder clearImage() {
+        if (imageBuilder_ == null) {
+          image_ = org.kegbot.proto.Models.Image.getDefaultInstance();
+          onChanged();
+        } else {
+          imageBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000002);
+        return this;
+      }
+      public org.kegbot.proto.Models.Image.Builder getImageBuilder() {
+        bitField0_ |= 0x00000002;
         onChanged();
+        return getImageFieldBuilder().getBuilder();
+      }
+      public org.kegbot.proto.Models.ImageOrBuilder getImageOrBuilder() {
+        if (imageBuilder_ != null) {
+          return imageBuilder_.getMessageOrBuilder();
+        } else {
+          return image_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          org.kegbot.proto.Models.Image, org.kegbot.proto.Models.Image.Builder, org.kegbot.proto.Models.ImageOrBuilder> 
+          getImageFieldBuilder() {
+        if (imageBuilder_ == null) {
+          imageBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              org.kegbot.proto.Models.Image, org.kegbot.proto.Models.Image.Builder, org.kegbot.proto.Models.ImageOrBuilder>(
+                  image_,
+                  getParentForChildren(),
+                  isClean());
+          image_ = null;
+        }
+        return imageBuilder_;
       }
       
       // required bool is_active = 3 [default = true];
@@ -15308,6 +16174,11 @@ public final class Models {
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_Drink_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_Image_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_Image_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
     internal_static_Keg_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
@@ -15382,60 +16253,63 @@ public final class Models {
       "ame\030\005 \001(\t\022\017\n\007enabled\030\006 \001(\010\022\024\n\014created_ti" +
       "me\030\007 \002(\t\022\023\n\013expire_time\030\010 \001(\t\022\013\n\003pin\030\t \001" +
       "(\t\"%\n\tBeerStyle\022\n\n\002id\030\001 \002(\t\022\014\n\004name\030\002 \002(" +
-      "\t\"\302\001\n\010BeerType\022\n\n\002id\030\001 \002(\t\022\014\n\004name\030\002 \002(\t" +
+      "\t\"\331\001\n\010BeerType\022\n\n\002id\030\001 \002(\t\022\014\n\004name\030\002 \002(\t" +
       "\022\021\n\tbrewer_id\030\003 \002(\t\022\020\n\010style_id\030\004 \002(\t\022\017\n" +
       "\007edition\030\006 \001(\t\022\013\n\003abv\030\007 \001(\002\022\023\n\013calories_" +
       "oz\030\010 \001(\002\022\020\n\010carbs_oz\030\t \001(\002\022\030\n\020specific_g",
-      "ravity\030\n \001(\002\022\030\n\020original_gravity\030\013 \001(\002\"\240" +
-      "\001\n\006Brewer\022\n\n\002id\030\001 \002(\t\022\014\n\004name\030\002 \002(\t\022\021\n\007c" +
-      "ountry\030\003 \001(\t:\000\022\026\n\014origin_state\030\004 \001(\t:\000\022\025" +
-      "\n\013origin_city\030\005 \001(\t:\000\022\024\n\nproduction\030\006 \001(" +
-      "\t:\000\022\r\n\003url\030\007 \001(\t:\000\022\025\n\013description\030\010 \001(\t:" +
-      "\000\"\266\001\n\005Drink\022\n\n\002id\030\001 \002(\t\022\r\n\005ticks\030\002 \002(\r\022\021" +
-      "\n\tvolume_ml\030\003 \002(\002\022\022\n\nsession_id\030\004 \002(\t\022\021\n" +
-      "\tpour_time\030\005 \002(\t\022\020\n\010duration\030\006 \001(\r\022\016\n\006st" +
-      "atus\030\007 \002(\t\022\016\n\006keg_id\030\010 \001(\t\022\017\n\007user_id\030\t " +
-      "\001(\t\022\025\n\rauth_token_id\030\n \001(\t\"\364\001\n\003Keg\022\n\n\002id",
-      "\030\001 \002(\t\022\017\n\007type_id\030\002 \002(\t\022\017\n\007size_id\030\003 \002(\t" +
-      "\022\021\n\tsize_name\030\004 \001(\t\022\026\n\016size_volume_ml\030\005 " +
-      "\001(\002\022\030\n\020volume_ml_remain\030\006 \002(\002\022\024\n\014percent" +
-      "_full\030\007 \002(\002\022\024\n\014started_time\030\010 \002(\t\022\025\n\rfin" +
-      "ished_time\030\t \002(\t\022\016\n\006status\030\n \002(\t\022\023\n\013desc" +
-      "ription\030\013 \001(\t\022\022\n\nspilled_ml\030\014 \001(\002\"6\n\007Keg" +
-      "Size\022\n\n\002id\030\001 \002(\t\022\014\n\004name\030\002 \002(\t\022\021\n\tvolume" +
-      "_ml\030\003 \002(\002\"\314\001\n\006KegTap\022\n\n\002id\030\001 \002(\t\022\014\n\004name" +
-      "\030\002 \002(\t\022\022\n\nmeter_name\030\003 \002(\t\022\022\n\nrelay_name" +
-      "\030\004 \001(\t\022\023\n\013ml_per_tick\030\005 \002(\002\022\023\n\013descripti",
-      "on\030\006 \001(\t\022\026\n\016current_keg_id\030\007 \001(\t\022\030\n\020ther" +
-      "mo_sensor_id\030\010 \001(\t\022$\n\020last_temperature\030\t" +
-      " \001(\0132\n.ThermoLog\"j\n\007Session\022\n\n\002id\030\001 \002(\t\022" +
-      "\022\n\nstart_time\030\002 \002(\t\022\020\n\010end_time\030\003 \002(\t\022\021\n" +
-      "\tvolume_ml\030\004 \002(\002\022\014\n\004name\030\005 \001(\t\022\014\n\004slug\030\006" +
-      " \001(\t\"V\n\tThermoLog\022\n\n\002id\030\001 \002(\t\022\021\n\tsensor_" +
-      "id\030\002 \002(\t\022\025\n\rtemperature_c\030\003 \002(\002\022\023\n\013recor" +
-      "d_time\030\004 \002(\t\"B\n\014ThermoSensor\022\n\n\002id\030\001 \002(\t" +
-      "\022\023\n\013sensor_name\030\002 \002(\t\022\021\n\tnice_name\030\003 \001(\t" +
-      "\"\234\001\n\020ThermoSummaryLog\022\n\n\002id\030\001 \002(\t\022\021\n\tsen",
-      "sor_id\030\002 \002(\t\022\014\n\004date\030\003 \002(\t\022\016\n\006period\030\004 \002" +
-      "(\t\022\024\n\014num_readings\030\005 \002(\r\022\020\n\010min_temp\030\006 \002" +
-      "(\002\022\020\n\010max_temp\030\007 \002(\002\022\021\n\tmean_temp\030\010 \002(\002\"" +
-      "\337\001\n\004User\022\020\n\010username\030\001 \002(\t\022\023\n\013mugshot_ur" +
-      "l\030\002 \001(\t\022\027\n\tis_active\030\003 \002(\010:\004true\022\022\n\nfirs" +
-      "t_name\030\004 \001(\t\022\021\n\tlast_name\030\005 \001(\t\022\r\n\005email" +
-      "\030\006 \001(\t\022\020\n\010password\030\007 \001(\t\022\020\n\010is_staff\030\010 \001" +
-      "(\010\022\024\n\014is_superuser\030\t \001(\010\022\022\n\nlast_login\030\n" +
-      " \001(\t\022\023\n\013date_joined\030\013 \001(\t\"?\n\013UserProfile" +
-      "\022\020\n\010username\030\001 \002(\t\022\016\n\006gender\030\002 \001(\t\022\016\n\006we",
-      "ight\030\003 \001(\002\"\211\001\n\014SessionChunk\022\n\n\002id\030\001 \002(\t\022" +
-      "\022\n\nsession_id\030\002 \002(\t\022\020\n\010username\030\003 \002(\t\022\016\n" +
-      "\006keg_id\030\004 \002(\t\022\022\n\nstart_time\030\005 \002(\t\022\020\n\010end" +
-      "_time\030\006 \002(\t\022\021\n\tvolume_ml\030\007 \002(\002\"|\n\013System" +
-      "Event\022\n\n\002id\030\001 \002(\t\022\014\n\004kind\030\002 \002(\t\022\014\n\004time\030" +
-      "\003 \002(\t\022\020\n\010drink_id\030\004 \001(\t\022\016\n\006keg_id\030\005 \001(\t\022" +
-      "\022\n\nsession_id\030\006 \001(\t\022\017\n\007user_id\030\007 \001(\t\"Z\n\n" +
-      "SoundEvent\022\022\n\nevent_name\030\001 \002(\t\022\027\n\017event_" +
-      "predicate\030\002 \001(\t\022\021\n\tsound_url\030\003 \002(\t\022\014\n\004us" +
-      "er\030\004 \001(\tB\022\n\020org.kegbot.proto"
+      "ravity\030\n \001(\002\022\030\n\020original_gravity\030\013 \001(\002\022\025" +
+      "\n\005image\030\014 \001(\0132\006.Image\"\267\001\n\006Brewer\022\n\n\002id\030\001" +
+      " \002(\t\022\014\n\004name\030\002 \002(\t\022\021\n\007country\030\003 \001(\t:\000\022\026\n" +
+      "\014origin_state\030\004 \001(\t:\000\022\025\n\013origin_city\030\005 \001" +
+      "(\t:\000\022\024\n\nproduction\030\006 \001(\t:\000\022\r\n\003url\030\007 \001(\t:" +
+      "\000\022\025\n\013description\030\010 \001(\t:\000\022\025\n\005image\030\t \001(\0132" +
+      "\006.Image\"\266\001\n\005Drink\022\n\n\002id\030\001 \002(\t\022\r\n\005ticks\030\002" +
+      " \002(\r\022\021\n\tvolume_ml\030\003 \002(\002\022\022\n\nsession_id\030\004 " +
+      "\002(\t\022\021\n\tpour_time\030\005 \002(\t\022\020\n\010duration\030\006 \001(\r" +
+      "\022\016\n\006status\030\007 \002(\t\022\016\n\006keg_id\030\010 \001(\t\022\017\n\007user",
+      "_id\030\t \001(\t\022\025\n\rauth_token_id\030\n \001(\t\"3\n\005Imag" +
+      "e\022\013\n\003url\030\001 \002(\t\022\r\n\005width\030\002 \001(\r\022\016\n\006height\030" +
+      "\003 \001(\r\"\364\001\n\003Keg\022\n\n\002id\030\001 \002(\t\022\017\n\007type_id\030\002 \002" +
+      "(\t\022\017\n\007size_id\030\003 \002(\t\022\021\n\tsize_name\030\004 \001(\t\022\026" +
+      "\n\016size_volume_ml\030\005 \001(\002\022\030\n\020volume_ml_rema" +
+      "in\030\006 \002(\002\022\024\n\014percent_full\030\007 \002(\002\022\024\n\014starte" +
+      "d_time\030\010 \002(\t\022\025\n\rfinished_time\030\t \002(\t\022\016\n\006s" +
+      "tatus\030\n \002(\t\022\023\n\013description\030\013 \001(\t\022\022\n\nspil" +
+      "led_ml\030\014 \001(\002\"6\n\007KegSize\022\n\n\002id\030\001 \002(\t\022\014\n\004n" +
+      "ame\030\002 \002(\t\022\021\n\tvolume_ml\030\003 \002(\002\"\314\001\n\006KegTap\022",
+      "\n\n\002id\030\001 \002(\t\022\014\n\004name\030\002 \002(\t\022\022\n\nmeter_name\030" +
+      "\003 \002(\t\022\022\n\nrelay_name\030\004 \001(\t\022\023\n\013ml_per_tick" +
+      "\030\005 \002(\002\022\023\n\013description\030\006 \001(\t\022\026\n\016current_k" +
+      "eg_id\030\007 \001(\t\022\030\n\020thermo_sensor_id\030\010 \001(\t\022$\n" +
+      "\020last_temperature\030\t \001(\0132\n.ThermoLog\"j\n\007S" +
+      "ession\022\n\n\002id\030\001 \002(\t\022\022\n\nstart_time\030\002 \002(\t\022\020" +
+      "\n\010end_time\030\003 \002(\t\022\021\n\tvolume_ml\030\004 \002(\002\022\014\n\004n" +
+      "ame\030\005 \001(\t\022\014\n\004slug\030\006 \001(\t\"V\n\tThermoLog\022\n\n\002" +
+      "id\030\001 \002(\t\022\021\n\tsensor_id\030\002 \002(\t\022\025\n\rtemperatu" +
+      "re_c\030\003 \002(\002\022\023\n\013record_time\030\004 \002(\t\"B\n\014Therm",
+      "oSensor\022\n\n\002id\030\001 \002(\t\022\023\n\013sensor_name\030\002 \002(\t" +
+      "\022\021\n\tnice_name\030\003 \001(\t\"\234\001\n\020ThermoSummaryLog" +
+      "\022\n\n\002id\030\001 \002(\t\022\021\n\tsensor_id\030\002 \002(\t\022\014\n\004date\030" +
+      "\003 \002(\t\022\016\n\006period\030\004 \002(\t\022\024\n\014num_readings\030\005 " +
+      "\002(\r\022\020\n\010min_temp\030\006 \002(\002\022\020\n\010max_temp\030\007 \002(\002\022" +
+      "\021\n\tmean_temp\030\010 \002(\002\"\341\001\n\004User\022\020\n\010username\030" +
+      "\001 \002(\t\022\025\n\005image\030\002 \001(\0132\006.Image\022\027\n\tis_activ" +
+      "e\030\003 \002(\010:\004true\022\022\n\nfirst_name\030\004 \001(\t\022\021\n\tlas" +
+      "t_name\030\005 \001(\t\022\r\n\005email\030\006 \001(\t\022\020\n\010password\030" +
+      "\007 \001(\t\022\020\n\010is_staff\030\010 \001(\010\022\024\n\014is_superuser\030",
+      "\t \001(\010\022\022\n\nlast_login\030\n \001(\t\022\023\n\013date_joined" +
+      "\030\013 \001(\t\"?\n\013UserProfile\022\020\n\010username\030\001 \002(\t\022" +
+      "\016\n\006gender\030\002 \001(\t\022\016\n\006weight\030\003 \001(\002\"\211\001\n\014Sess" +
+      "ionChunk\022\n\n\002id\030\001 \002(\t\022\022\n\nsession_id\030\002 \002(\t" +
+      "\022\020\n\010username\030\003 \002(\t\022\016\n\006keg_id\030\004 \002(\t\022\022\n\nst" +
+      "art_time\030\005 \002(\t\022\020\n\010end_time\030\006 \002(\t\022\021\n\tvolu" +
+      "me_ml\030\007 \002(\002\"|\n\013SystemEvent\022\n\n\002id\030\001 \002(\t\022\014" +
+      "\n\004kind\030\002 \002(\t\022\014\n\004time\030\003 \002(\t\022\020\n\010drink_id\030\004" +
+      " \001(\t\022\016\n\006keg_id\030\005 \001(\t\022\022\n\nsession_id\030\006 \001(\t" +
+      "\022\017\n\007user_id\030\007 \001(\t\"Z\n\nSoundEvent\022\022\n\nevent",
+      "_name\030\001 \002(\t\022\027\n\017event_predicate\030\002 \001(\t\022\021\n\t" +
+      "sound_url\030\003 \002(\t\022\014\n\004user\030\004 \001(\tB\022\n\020org.keg" +
+      "bot.proto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -15463,7 +16337,7 @@ public final class Models {
           internal_static_BeerType_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_BeerType_descriptor,
-              new java.lang.String[] { "Id", "Name", "BrewerId", "StyleId", "Edition", "Abv", "CaloriesOz", "CarbsOz", "SpecificGravity", "OriginalGravity", },
+              new java.lang.String[] { "Id", "Name", "BrewerId", "StyleId", "Edition", "Abv", "CaloriesOz", "CarbsOz", "SpecificGravity", "OriginalGravity", "Image", },
               org.kegbot.proto.Models.BeerType.class,
               org.kegbot.proto.Models.BeerType.Builder.class);
           internal_static_Brewer_descriptor =
@@ -15471,7 +16345,7 @@ public final class Models {
           internal_static_Brewer_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_Brewer_descriptor,
-              new java.lang.String[] { "Id", "Name", "Country", "OriginState", "OriginCity", "Production", "Url", "Description", },
+              new java.lang.String[] { "Id", "Name", "Country", "OriginState", "OriginCity", "Production", "Url", "Description", "Image", },
               org.kegbot.proto.Models.Brewer.class,
               org.kegbot.proto.Models.Brewer.Builder.class);
           internal_static_Drink_descriptor =
@@ -15482,8 +16356,16 @@ public final class Models {
               new java.lang.String[] { "Id", "Ticks", "VolumeMl", "SessionId", "PourTime", "Duration", "Status", "KegId", "UserId", "AuthTokenId", },
               org.kegbot.proto.Models.Drink.class,
               org.kegbot.proto.Models.Drink.Builder.class);
-          internal_static_Keg_descriptor =
+          internal_static_Image_descriptor =
             getDescriptor().getMessageTypes().get(5);
+          internal_static_Image_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_Image_descriptor,
+              new java.lang.String[] { "Url", "Width", "Height", },
+              org.kegbot.proto.Models.Image.class,
+              org.kegbot.proto.Models.Image.Builder.class);
+          internal_static_Keg_descriptor =
+            getDescriptor().getMessageTypes().get(6);
           internal_static_Keg_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_Keg_descriptor,
@@ -15491,7 +16373,7 @@ public final class Models {
               org.kegbot.proto.Models.Keg.class,
               org.kegbot.proto.Models.Keg.Builder.class);
           internal_static_KegSize_descriptor =
-            getDescriptor().getMessageTypes().get(6);
+            getDescriptor().getMessageTypes().get(7);
           internal_static_KegSize_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_KegSize_descriptor,
@@ -15499,7 +16381,7 @@ public final class Models {
               org.kegbot.proto.Models.KegSize.class,
               org.kegbot.proto.Models.KegSize.Builder.class);
           internal_static_KegTap_descriptor =
-            getDescriptor().getMessageTypes().get(7);
+            getDescriptor().getMessageTypes().get(8);
           internal_static_KegTap_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_KegTap_descriptor,
@@ -15507,7 +16389,7 @@ public final class Models {
               org.kegbot.proto.Models.KegTap.class,
               org.kegbot.proto.Models.KegTap.Builder.class);
           internal_static_Session_descriptor =
-            getDescriptor().getMessageTypes().get(8);
+            getDescriptor().getMessageTypes().get(9);
           internal_static_Session_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_Session_descriptor,
@@ -15515,7 +16397,7 @@ public final class Models {
               org.kegbot.proto.Models.Session.class,
               org.kegbot.proto.Models.Session.Builder.class);
           internal_static_ThermoLog_descriptor =
-            getDescriptor().getMessageTypes().get(9);
+            getDescriptor().getMessageTypes().get(10);
           internal_static_ThermoLog_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ThermoLog_descriptor,
@@ -15523,7 +16405,7 @@ public final class Models {
               org.kegbot.proto.Models.ThermoLog.class,
               org.kegbot.proto.Models.ThermoLog.Builder.class);
           internal_static_ThermoSensor_descriptor =
-            getDescriptor().getMessageTypes().get(10);
+            getDescriptor().getMessageTypes().get(11);
           internal_static_ThermoSensor_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ThermoSensor_descriptor,
@@ -15531,7 +16413,7 @@ public final class Models {
               org.kegbot.proto.Models.ThermoSensor.class,
               org.kegbot.proto.Models.ThermoSensor.Builder.class);
           internal_static_ThermoSummaryLog_descriptor =
-            getDescriptor().getMessageTypes().get(11);
+            getDescriptor().getMessageTypes().get(12);
           internal_static_ThermoSummaryLog_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ThermoSummaryLog_descriptor,
@@ -15539,15 +16421,15 @@ public final class Models {
               org.kegbot.proto.Models.ThermoSummaryLog.class,
               org.kegbot.proto.Models.ThermoSummaryLog.Builder.class);
           internal_static_User_descriptor =
-            getDescriptor().getMessageTypes().get(12);
+            getDescriptor().getMessageTypes().get(13);
           internal_static_User_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_User_descriptor,
-              new java.lang.String[] { "Username", "MugshotUrl", "IsActive", "FirstName", "LastName", "Email", "Password", "IsStaff", "IsSuperuser", "LastLogin", "DateJoined", },
+              new java.lang.String[] { "Username", "Image", "IsActive", "FirstName", "LastName", "Email", "Password", "IsStaff", "IsSuperuser", "LastLogin", "DateJoined", },
               org.kegbot.proto.Models.User.class,
               org.kegbot.proto.Models.User.Builder.class);
           internal_static_UserProfile_descriptor =
-            getDescriptor().getMessageTypes().get(13);
+            getDescriptor().getMessageTypes().get(14);
           internal_static_UserProfile_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_UserProfile_descriptor,
@@ -15555,7 +16437,7 @@ public final class Models {
               org.kegbot.proto.Models.UserProfile.class,
               org.kegbot.proto.Models.UserProfile.Builder.class);
           internal_static_SessionChunk_descriptor =
-            getDescriptor().getMessageTypes().get(14);
+            getDescriptor().getMessageTypes().get(15);
           internal_static_SessionChunk_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_SessionChunk_descriptor,
@@ -15563,7 +16445,7 @@ public final class Models {
               org.kegbot.proto.Models.SessionChunk.class,
               org.kegbot.proto.Models.SessionChunk.Builder.class);
           internal_static_SystemEvent_descriptor =
-            getDescriptor().getMessageTypes().get(15);
+            getDescriptor().getMessageTypes().get(16);
           internal_static_SystemEvent_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_SystemEvent_descriptor,
@@ -15571,7 +16453,7 @@ public final class Models {
               org.kegbot.proto.Models.SystemEvent.class,
               org.kegbot.proto.Models.SystemEvent.Builder.class);
           internal_static_SoundEvent_descriptor =
-            getDescriptor().getMessageTypes().get(16);
+            getDescriptor().getMessageTypes().get(17);
           internal_static_SoundEvent_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_SoundEvent_descriptor,

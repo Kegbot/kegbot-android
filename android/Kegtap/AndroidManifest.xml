@@ -26,7 +26,13 @@
         </activity>
 
         <!-- KegbotCoreService -->
-        <service android:name=".KegbotCoreService" />
+        <service android:name=".service.KegbotCoreService" />
+
+        <!-- KegbotApiService `-->
+        <service android:name=".service.KegbotApiService" />
+
+        <!-- KegbotHardwareService-->
+        <service android:name=".service.KegbotHardwareService" />
 
     </application>
 
