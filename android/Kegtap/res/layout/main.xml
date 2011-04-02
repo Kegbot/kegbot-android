@@ -5,26 +5,11 @@
 	android:layout_height="fill_parent"
 	>
 
-	<LinearLayout android:id="@+id/title"
-	    android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-        android:gravity="left|center_vertical"
-		android:orientation="horizontal"
-		android:background="@drawable/header_bg_square"
-	    android:paddingBottom="10px">
-	    
-		<ImageView android:id="@+id/kegbotLogo"
-		    android:src="@drawable/kegbot_logo"
-			android:layout_width="wrap_content"
-			android:layout_height="48px"/>
-
-	</LinearLayout>
-
     <TextView android:id="@+id/taps_title"
         android:layout_width="300dip"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_below="@id/title"
+        android:layout_alignParentTop="true"
         android:text="@string/taps_title"
         style="@style/ListTitle"
         />
@@ -39,7 +24,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
-        android:layout_below="@id/title"
+        android:layout_alignParentTop="true"
         android:text="@string/events_title"
         style="@style/ListTitle"
         />
@@ -54,7 +39,7 @@
     <FrameLayout android:id="@+id/content"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/title"
+        android:layout_alignParentTop="true"
         android:layout_toLeftOf="@id/event_list"
         android:layout_toRightOf="@id/tap_list"
         android:layout_alignParentBottom="true"
