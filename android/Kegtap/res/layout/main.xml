@@ -1,48 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:orientation="vertical"
-	android:layout_width="fill_parent"
-	android:layout_height="fill_parent"
-	>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:orientation="horizontal"
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent"
+  android:weightSum="1.0">
 
-    <TextView android:id="@+id/taps_title"
-        android:layout_width="300dip"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:text="@string/taps_title"
-        style="@style/ListTitle"
-        />
-    <fragment android:id="@+id/tap_list"
-        class="org.kegbot.kegtap.TapListFragment"
-        android:layout_width="300dip"
-        android:layout_height="match_parent"
-        android:layout_below="@id/taps_title"
-        />
+  <fragment
+    android:id="@+id/tap_status"
+    class="org.kegbot.kegtap.TapStatusFragment"
+    android:layout_weight="0.6"
+    android:layout_width="0dip"
+    android:layout_height="match_parent" />
 
-    <TextView android:id="@+id/events_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:text="@string/events_title"
-        style="@style/ListTitle"
-        />
-	<fragment android:id="@+id/event_list"
-	    class="org.kegbot.kegtap.EventListFragment"
-	    android:layout_width="400dip"
-	    android:layout_height="match_parent"
-	    android:layout_below="@id/events_title"
-        android:layout_alignParentRight="true"
-	    />
+  <LinearLayout
+    android:orientation="vertical"
+    android:layout_weight="0.4"
+    android:layout_width="0dip"
+    android:layout_height="fill_parent"
+    android:weightSum="1.0">
 
-    <FrameLayout android:id="@+id/content"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_toLeftOf="@id/event_list"
-        android:layout_toRightOf="@id/tap_list"
-        android:layout_alignParentBottom="true"
-        />
+    <fragment
+      android:id="@+id/controls"
+      class="org.kegbot.kegtap.ControlsFragment"
+      android:layout_weight="0.5"
+      android:layout_width="match_parent"
+      android:layout_height="0dip" />
+      
+    <fragment
+      android:id="@+id/event_list"
+      class="org.kegbot.kegtap.EventListFragment"
+      android:layout_weight="0.5"
+      android:layout_width="match_parent"
+      android:layout_height="0dip" />
 
-</RelativeLayout>
+  </LinearLayout>
+</LinearLayout>

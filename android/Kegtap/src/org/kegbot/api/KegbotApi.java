@@ -20,6 +20,10 @@ import org.kegbot.proto.Models.User;
 
 public interface KegbotApi {
 
+  public boolean setAccountCredentials(String username, String password);
+
+  public void setApiKey(String apiKey);
+
   /**
    * Returns all kegs known to the system.
    *

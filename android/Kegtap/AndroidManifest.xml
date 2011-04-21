@@ -1,43 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-      package="org.kegbot.kegtap"
-      android:versionCode="1"
-      android:versionName="1.0">
+<manifest
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  package="org.kegbot.kegtap"
+  android:versionCode="1"
+  android:versionName="1.0">
 
-    <uses-sdk android:targetSdkVersion="11" android:minSdkVersion="11"></uses-sdk>
+  <uses-sdk
+    android:targetSdkVersion="11"
+    android:minSdkVersion="11"></uses-sdk>
 
-    <uses-permission android:name="android.permission.INTERNET"></uses-permission>
+  <uses-permission
+    android:name="android.permission.INTERNET"></uses-permission>
 
-    <application
-        android:icon="@drawable/icon"
-        android:logo="@drawable/kegbot_logo"
-        android:label="@string/app_name"
-        android:theme="@android:style/Theme.Holo"
-        android:hardwareAccelerated="true"
-        >
+  <application
+    android:icon="@drawable/icon"
+    android:logo="@drawable/kegbot_logo"
+    android:label="@string/app_name"
+    android:theme="@android:style/Theme.Holo"
+    android:hardwareAccelerated="true">
 
-        <activity android:name=".KegtapActivity"
-            android:label="@string/app_name"
-            >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        
-        <activity android:name=".SettingsActivity"
-            android:label="@string/settings_name"
-            />
+    <activity
+      android:name=".KegtapActivity"
+      android:label="@string/app_name">
+      <intent-filter>
+        <action
+          android:name="android.intent.action.MAIN" />
+        <category
+          android:name="android.intent.category.LAUNCHER" />
+      </intent-filter>
+    </activity>
 
-        <!-- KegbotCoreService -->
-        <service android:name=".service.KegbotCoreService" />
+    <activity
+      android:name=".SettingsActivity"
+      android:label="@string/settings_name" />
 
-        <!-- KegbotApiService `-->
-        <service android:name=".service.KegbotApiService" />
+    <!-- KegbotCoreService -->
+    <service
+      android:name=".service.KegbotCoreService" />
 
-        <!-- KegbotHardwareService-->
-        <service android:name=".service.KegbotHardwareService" />
+    <!-- KegbotApiService ` -->
+    <service
+      android:name=".service.KegbotApiService" />
 
-    </application>
+    <!-- KegbotHardwareService -->
+    <service
+      android:name=".service.KegbotHardwareService" />
+
+  </application>
 
 </manifest> 

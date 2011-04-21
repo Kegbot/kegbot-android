@@ -100,7 +100,7 @@ public class KegbotApiService extends BackgroundService implements KegbotApi {
   public void onCreate() {
     super.onCreate();
     mApi = new KegbotApiImpl(new DefaultHttpClient(), "http://oldgertie.kegbot.net/api");
-    mApi.setApiAccessToken("ddbb9c0b65d0a9c7");
+    mApi.setApiKey("ddbb9c0b65d0a9c7");
   }
 
   @Override
@@ -125,6 +125,16 @@ public class KegbotApiService extends BackgroundService implements KegbotApi {
   // KegbotApi methods
   //
 
+
+  @Override
+  public boolean setAccountCredentials(String username, String password) {
+    return mApi.setAccountCredentials(username, password);
+  }
+
+  @Override
+  public void setApiKey(String apiKey) {
+    mApi.setApiKey(apiKey);
+  }
 
   @Override
   public KegSet getAllKegs() throws KegbotApiException {

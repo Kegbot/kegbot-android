@@ -1,5 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen
   xmlns:android="http://schemas.android.com/apk/res/android">
-    <ListPreference android:title="Kegbot" android:summary="Select the Kegbot to control" android:key="selected_kegbot"></ListPreference>
+  <EditTextPreference
+    android:key="kegbot_url"
+    android:title="Kegbot URL"
+    android:inputType="textUri"
+    android:summary="Base URL of the Kegbot system">
+  </EditTextPreference>
+  <EditTextPreference
+    android:key="username"
+    android:title="Username"
+    android:inputType="textWebEmailAddress"
+    android:summary="Username for accessing Kegbot">
+  </EditTextPreference>
+  <EditTextPreference
+    android:key="password"
+    android:title="Password"
+    android:inputType="textWebPassword"
+    android:summary="Password for accessing Kegbot">
+  </EditTextPreference>
 </PreferenceScreen>

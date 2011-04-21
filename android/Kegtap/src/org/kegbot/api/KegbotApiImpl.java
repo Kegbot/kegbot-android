@@ -45,16 +45,14 @@ public class KegbotApiImpl implements KegbotApi {
 
   private final HttpClient httpClient;
   private final String baseUrl;
+  private String username = "";
+  private String password = "";
 
-  private String apiAccessToken = null;
+  private String apiKey = null;
 
   public KegbotApiImpl(HttpClient httpClient, String baseUrl) {
     this.httpClient = httpClient;
     this.baseUrl = baseUrl;
-  }
-
-  public void setApiAccessToken(String token) {
-    apiAccessToken = token;
   }
 
   private JsonNode toJson(HttpResponse response) throws KegbotApiException {
@@ -86,6 +84,12 @@ public class KegbotApiImpl implements KegbotApi {
   }
 
   private JsonNode doPost(String path, Map<String, String> params) throws KegbotApiException {
+    login();
+    return toJson(doRawPost(path, params));
+  }
+
+  private HttpResponse doRawPost(String path, Map<String, String> params)
+  throws KegbotApiException {
     HttpPost request = new HttpPost(getRequestUrl(path));
     List<NameValuePair> pairs = Lists.newArrayList();
     for (Map.Entry<String, String> entry : params.entrySet()) {
@@ -96,7 +100,7 @@ public class KegbotApiImpl implements KegbotApi {
     } catch (UnsupportedEncodingException e) {
       throw new KegbotApiException(e);
     }
-    return toJson(execute(request));
+    return execute(request);
   }
 
   private HttpResponse execute(HttpUriRequest request)
@@ -106,14 +110,14 @@ public class KegbotApiImpl implements KegbotApi {
       final int statusCode = response.getStatusLine().getStatusCode();
       if (statusCode != HttpStatus.SC_OK) {
         final String reason = response.getStatusLine().getReasonPhrase();
+        final String message = "Error fetching " + request.getURI()
+        + ": statusCode=" + statusCode + ", reason=" + reason;
 
         switch (statusCode) {
-          case HttpStatus.SC_NOT_FOUND:
-            throw new KegbotApiNotFoundError(reason);
-          default:
-            throw new KegbotApiServerError("Error fetching " + request.getURI()
-                + ": Got code " + statusCode + ", reason="
-                + reason);
+        case HttpStatus.SC_NOT_FOUND:
+          throw new KegbotApiNotFoundError(message);
+        default:
+          throw new KegbotApiServerError(message);
         }
       }
       return response;
@@ -148,6 +152,37 @@ public class KegbotApiImpl implements KegbotApi {
   private Message postProto(String path, Builder builder, Map<String, String> params)
   throws KegbotApiException {
     return ProtoEncoder.toProto(builder, postJson(path, params)).build();
+  }
+
+  @Override
+  public boolean setAccountCredentials(String username, String password) {
+    this.username = username;
+    this.password = password;
+    return true;
+  }
+
+  @Override
+  public void setApiKey(String apiKey) {
+    this.apiKey = apiKey;
+  }
+
+  private void login() throws KegbotApiException {
+    if (apiKey == null || apiKey.isEmpty()) {
+      Map<String, String> params = Maps.newLinkedHashMap();
+      params.put("username", username);
+      params.put("password", password);
+      HttpResponse response = doRawPost("/login/", params);
+
+      // Made it this far -- login succeeded.
+      JsonNode result = getJson("/api/get-api-key");
+      final String apiKey = result.get("result").get("api_key")
+          .getValueAsText();
+      setApiKey(apiKey);
+    }
+    /*
+     * final int statusCode = response.getStatusLine().getStatusCode(); throw
+     * new IllegalStateException("Got status code: " + statusCode);
+     */
   }
 
   @Override
@@ -275,8 +310,8 @@ public class KegbotApiImpl implements KegbotApi {
   public Drink recordDrink(String tapName, int ticks) throws KegbotApiException {
     Map<String, String> params = Maps.newLinkedHashMap();
     params.put("ticks", String.valueOf(ticks));
-    if (apiAccessToken != null) {
-      params.put("api_auth_token", apiAccessToken);
+    if (apiKey != null) {
+      params.put("api_auth_token", apiKey);
     }
     return (Drink) postProto("/taps/" + tapName, Drink.newBuilder(), params);
   }

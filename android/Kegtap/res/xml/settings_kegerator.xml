@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+  xmlns:android="http://schemas.android.com/apk/res/android">
+  <CheckBoxPreference
+    android:key="run_core"
+    android:title="Run Kegerator Controller"
+    android:summary="Enable this tablet as a Kegerator Controller">
+  </CheckBoxPreference>
+  <ListPreference
+    android:title="Controller"
+    android:summary="Select the type of controller"
+    android:key="controller_type"
+    android:entries="@array/controllerTypeLabels"
+    android:entryValues="@array/controllerTypeValues"
+    android:defaultValue="fake">
+  </ListPreference>
+</PreferenceScreen>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string-array
+    name="controllerTypeLabels">
+    <item>Fake</item>
+    <item>USB</item>
+    <item>Network</item>
+  </string-array>
+  <string-array
+    name="controllerTypeValues">
+    <item>fake</item>
+    <item>usb</item>
+    <item>net</item>
+  </string-array>
+</resources>

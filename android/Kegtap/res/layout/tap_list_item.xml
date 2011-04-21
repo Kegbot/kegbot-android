@@ -6,15 +6,15 @@
   android:layout_height="wrap_content"
   android:orientation="vertical"
   android:minHeight="64dip"
-  android:gravity="center">
+  android:gravity="top">
 
   <TextView
     android:id="@+id/tapTitle"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:textStyle="bold"
-    android:textSize="28dip" />
-
+    android:textSize="48dip" />
+    
   <TextView
     android:id="@+id/tapSubtitle"
     android:layout_width="match_parent"
@@ -22,22 +22,29 @@
     android:textColor="#888"
     android:textSize="22dip" />
 
-  <FrameLayout
-    android:padding="2dip"
-    android:background="#ccc"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
-
-    <ImageView
-      android:id="@+id/tapImage"
-      android:layout_width="256dip"
-      android:layout_height="256dip" />
-
-  </FrameLayout>
-
-  <TextView
-    android:id="@+id/tapDateTapped"
+  <LinearLayout
     android:layout_width="match_parent"
-    android:layout_height="wrap_content" />
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:gravity="center">
 
+    <FrameLayout
+      android:padding="2dip"
+      android:background="#cccccc88"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content">
+
+      <ImageView
+        android:id="@+id/tapImage"
+        android:layout_width="384dip"
+        android:layout_height="384dip" />
+
+    </FrameLayout>
+
+    <TextView
+      android:id="@+id/tapDateTapped"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content" />
+
+  </LinearLayout>
 </LinearLayout>

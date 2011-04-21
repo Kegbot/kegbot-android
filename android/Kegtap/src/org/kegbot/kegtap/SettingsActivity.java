@@ -1,24 +1,25 @@
 package org.kegbot.kegtap;
 
+import static org.kegbot.kegtap.util.PreferenceUtils.SELECTED_KEGBOT_KEY;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import org.kegbot.kegtap.util.KegbotDescriptor;
 import org.kegbot.kegtap.util.PreferenceUtils;
 
-import static org.kegbot.kegtap.util.PreferenceUtils.SELECTED_KEGBOT_KEY;
-import static org.kegbot.kegtap.util.PreferenceUtils.SELECTED_KEGBOT_NAME_KEY;
-
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
-import android.preference.PreferenceManager;
 import android.preference.Preference.OnPreferenceChangeListener;
+import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
+import android.preference.PreferenceManager;
 
 public class SettingsActivity extends PreferenceActivity {
 
@@ -30,15 +31,15 @@ public class SettingsActivity extends PreferenceActivity {
   public static class GeneralFragment extends PreferenceFragment {
 
     private SharedPreferences mPreferences;
-    
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
       addPreferencesFromResource(R.xml.settings_general);
       mPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-      setupKegbotSelectPreference();
+      // setupKegbotSelectPreference();
     }
-    
+
     private void setupKegbotSelectPreference() {
       ListPreference preference = (ListPreference) findPreference(SELECTED_KEGBOT_KEY);
       preference.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
@@ -53,7 +54,7 @@ public class SettingsActivity extends PreferenceActivity {
       });
       new GetSelectionsTask().execute();
     }
-    
+
     private class GetSelectionsTask extends AsyncTask<Void, Void, List<KegbotDescriptor>> {
 
       @Override
@@ -81,4 +82,55 @@ public class SettingsActivity extends PreferenceActivity {
       }
     }
   }
+
+  public static class KegeratorFragment extends PreferenceFragment {
+
+    private SharedPreferences mPreferences;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+      super.onCreate(savedInstanceState);
+      addPreferencesFromResource(R.xml.settings_kegerator);
+
+      setEnabledStates();
+
+      mPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+
+      CheckBoxPreference enablePref = (CheckBoxPreference) findPreference("run_core");
+      enablePref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+        @Override
+        public boolean onPreferenceClick(Preference preference) {
+          setEnabledStates();
+          return true;
+        }
+      });
+
+      ListPreference controllerTypePref = (ListPreference) findPreference("controller_type");
+      controllerTypePref
+      .setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+        @Override
+        public boolean onPreferenceChange(Preference preference,
+            Object newValue) {
+          handleControllerTypeChanged();
+          return true;
+        }
+      });
+
+      // setupKegbotSelectPreference();
+    }
+
+    private void setEnabledStates() {
+      CheckBoxPreference enablePref = (CheckBoxPreference) findPreference("run_core");
+
+      boolean enabled = enablePref.isChecked();
+      findPreference("controller_type").setEnabled(enabled);
+    }
+
+    private void handleControllerTypeChanged() {
+      ListPreference controllerTypePref = (ListPreference) findPreference("controller_type");
+    }
+
+  }
+
+
 }

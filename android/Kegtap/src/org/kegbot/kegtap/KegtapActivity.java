@@ -17,7 +17,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -27,10 +26,12 @@ public class KegtapActivity extends Activity {
 
   private final ImageDownloader mImageDownloader = new ImageDownloader();
 
-  private TapListFragment mTaps;
+  private TapStatusFragment mTapStatus;
 
   private EventListFragment mEvents;
-  
+
+  private ControlsFragment mControls;
+
   private SharedPreferences mPreferences;
   private OnSharedPreferenceChangeListener mPreferenceListener;
 
@@ -42,7 +43,7 @@ public class KegtapActivity extends Activity {
 
     mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
     mPreferenceListener = new OnSharedPreferenceChangeListener() {
-      
+
       @Override
       public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
           String key) {
@@ -51,18 +52,22 @@ public class KegtapActivity extends Activity {
         }
       }
     };
-    
-    mTaps = (TapListFragment) getFragmentManager().findFragmentById(R.id.tap_list);
-    mTaps.setImageDownloader(mImageDownloader);
+
+    mTapStatus = (TapStatusFragment) getFragmentManager().findFragmentById(
+        R.id.tap_status);
+    mTapStatus.setImageDownloader(mImageDownloader);
 
     mEvents = (EventListFragment) getFragmentManager().findFragmentById(
         R.id.event_list);
     mEvents.setImageDownloader(mImageDownloader);
 
+    mControls = (ControlsFragment) getFragmentManager().findFragmentById(
+        R.id.controls);
+
     Intent intent = new Intent(this, KegbotCoreService.class);
     startService(intent);
   }
-  
+
   @Override
   public void onStart() {
     super.onStart();
@@ -85,24 +90,24 @@ public class KegtapActivity extends Activity {
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
     switch (item.getItemId()) {
-      case R.id.settings:
-    	  launchSettings();
-    	  return true;
-      case android.R.id.home:
-    	  // TODO: navigate up
-    	  return true;
-      default:
-        return super.onOptionsItemSelected(item);
+    case R.id.settings:
+      launchSettings();
+      return true;
+    case android.R.id.home:
+      // TODO: navigate up
+      return true;
+    default:
+      return super.onOptionsItemSelected(item);
     }
   }
-  
+
   private void setupActionBar() {
-	  ActionBar actionBar = getActionBar();
-	  actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.header_bg_square));
-	  actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_USE_LOGO);
-	  actionBar.setTitle("");
+    ActionBar actionBar = getActionBar();
+    actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.header_bg_square));
+    actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_USE_LOGO);
+    actionBar.setTitle("");
   }
-  
+
   private void launchSettings() {
     Intent intent = new Intent(this, SettingsActivity.class);
     startActivity(intent);
@@ -116,7 +121,7 @@ public class KegtapActivity extends Activity {
    * If so, loads from last known kegbot.
    */
   private void initializeUi() {
-    String kegbotUrl = PreferenceUtils.getKeybotUrl(mPreferences);
+    String kegbotUrl = PreferenceUtils.getKegbotUrl(mPreferences);
     if (TextUtils.isEmpty(kegbotUrl)) {
       launchSettings();
     } else {
@@ -124,17 +129,20 @@ public class KegtapActivity extends Activity {
       updateApiUrl(KegbotDescriptor.getApiUrl(kegbotUrl));
     }
   }
-  
+
   private void updateApiUrl(Uri apiUrl) {
     KegbotApi api = new KegbotApiImpl(new DefaultHttpClient(), apiUrl.toString());
-    mTaps.setKegbotApi(api);
+    String username = PreferenceUtils.getUsername(mPreferences);
+    String password = PreferenceUtils.getPassword(mPreferences);
+    api.setAccountCredentials(username, password);
+    mTapStatus.setKegbotApi(api);
     api = new KegbotApiImpl(new DefaultHttpClient(), apiUrl.toString());
     mEvents.setKegbotApi(api);
     loadUiFragments();
   }
-  
+
   private void loadUiFragments() {
-    mTaps.loadTaps();
+    mTapStatus.loadTap();
     mEvents.loadEvents();
   }
 }

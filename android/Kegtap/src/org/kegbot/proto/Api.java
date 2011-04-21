@@ -8248,10 +8248,10 @@ public final class Api {
     org.kegbot.proto.Models.Keg getKeg();
     org.kegbot.proto.Models.KegOrBuilder getKegOrBuilder();
     
-    // optional .BeerType beverage = 3;
-    boolean hasBeverage();
-    org.kegbot.proto.Models.BeerType getBeverage();
-    org.kegbot.proto.Models.BeerTypeOrBuilder getBeverageOrBuilder();
+    // optional .BeerType beer_type = 3;
+    boolean hasBeerType();
+    org.kegbot.proto.Models.BeerType getBeerType();
+    org.kegbot.proto.Models.BeerTypeOrBuilder getBeerTypeOrBuilder();
     
     // optional .Brewer brewer = 4;
     boolean hasBrewer();
@@ -8313,17 +8313,17 @@ public final class Api {
       return keg_;
     }
     
-    // optional .BeerType beverage = 3;
-    public static final int BEVERAGE_FIELD_NUMBER = 3;
-    private org.kegbot.proto.Models.BeerType beverage_;
-    public boolean hasBeverage() {
+    // optional .BeerType beer_type = 3;
+    public static final int BEER_TYPE_FIELD_NUMBER = 3;
+    private org.kegbot.proto.Models.BeerType beerType_;
+    public boolean hasBeerType() {
       return ((bitField0_ & 0x00000004) == 0x00000004);
     }
-    public org.kegbot.proto.Models.BeerType getBeverage() {
-      return beverage_;
+    public org.kegbot.proto.Models.BeerType getBeerType() {
+      return beerType_;
     }
-    public org.kegbot.proto.Models.BeerTypeOrBuilder getBeverageOrBuilder() {
-      return beverage_;
+    public org.kegbot.proto.Models.BeerTypeOrBuilder getBeerTypeOrBuilder() {
+      return beerType_;
     }
     
     // optional .Brewer brewer = 4;
@@ -8342,7 +8342,7 @@ public final class Api {
     private void initFields() {
       tap_ = org.kegbot.proto.Models.KegTap.getDefaultInstance();
       keg_ = org.kegbot.proto.Models.Keg.getDefaultInstance();
-      beverage_ = org.kegbot.proto.Models.BeerType.getDefaultInstance();
+      beerType_ = org.kegbot.proto.Models.BeerType.getDefaultInstance();
       brewer_ = org.kegbot.proto.Models.Brewer.getDefaultInstance();
     }
     private byte memoizedIsInitialized = -1;
@@ -8364,8 +8364,8 @@ public final class Api {
           return false;
         }
       }
-      if (hasBeverage()) {
-        if (!getBeverage().isInitialized()) {
+      if (hasBeerType()) {
+        if (!getBeerType().isInitialized()) {
           memoizedIsInitialized = 0;
           return false;
         }
@@ -8390,7 +8390,7 @@ public final class Api {
         output.writeMessage(2, keg_);
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        output.writeMessage(3, beverage_);
+        output.writeMessage(3, beerType_);
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         output.writeMessage(4, brewer_);
@@ -8414,7 +8414,7 @@ public final class Api {
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(3, beverage_);
+          .computeMessageSize(3, beerType_);
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
@@ -8536,7 +8536,7 @@ public final class Api {
         if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
           getTapFieldBuilder();
           getKegFieldBuilder();
-          getBeverageFieldBuilder();
+          getBeerTypeFieldBuilder();
           getBrewerFieldBuilder();
         }
       }
@@ -8558,10 +8558,10 @@ public final class Api {
           kegBuilder_.clear();
         }
         bitField0_ = (bitField0_ & ~0x00000002);
-        if (beverageBuilder_ == null) {
-          beverage_ = org.kegbot.proto.Models.BeerType.getDefaultInstance();
+        if (beerTypeBuilder_ == null) {
+          beerType_ = org.kegbot.proto.Models.BeerType.getDefaultInstance();
         } else {
-          beverageBuilder_.clear();
+          beerTypeBuilder_.clear();
         }
         bitField0_ = (bitField0_ & ~0x00000004);
         if (brewerBuilder_ == null) {
@@ -8627,10 +8627,10 @@ public final class Api {
         if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
           to_bitField0_ |= 0x00000004;
         }
-        if (beverageBuilder_ == null) {
-          result.beverage_ = beverage_;
+        if (beerTypeBuilder_ == null) {
+          result.beerType_ = beerType_;
         } else {
-          result.beverage_ = beverageBuilder_.build();
+          result.beerType_ = beerTypeBuilder_.build();
         }
         if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
           to_bitField0_ |= 0x00000008;
@@ -8662,8 +8662,8 @@ public final class Api {
         if (other.hasKeg()) {
           mergeKeg(other.getKeg());
         }
-        if (other.hasBeverage()) {
-          mergeBeverage(other.getBeverage());
+        if (other.hasBeerType()) {
+          mergeBeerType(other.getBeerType());
         }
         if (other.hasBrewer()) {
           mergeBrewer(other.getBrewer());
@@ -8687,8 +8687,8 @@ public final class Api {
             return false;
           }
         }
-        if (hasBeverage()) {
-          if (!getBeverage().isInitialized()) {
+        if (hasBeerType()) {
+          if (!getBeerType().isInitialized()) {
             
             return false;
           }
@@ -8745,11 +8745,11 @@ public final class Api {
             }
             case 26: {
               org.kegbot.proto.Models.BeerType.Builder subBuilder = org.kegbot.proto.Models.BeerType.newBuilder();
-              if (hasBeverage()) {
-                subBuilder.mergeFrom(getBeverage());
+              if (hasBeerType()) {
+                subBuilder.mergeFrom(getBeerType());
               }
               input.readMessage(subBuilder, extensionRegistry);
-              setBeverage(subBuilder.buildPartial());
+              setBeerType(subBuilder.buildPartial());
               break;
             }
             case 34: {
@@ -8947,94 +8947,94 @@ public final class Api {
         return kegBuilder_;
       }
       
-      // optional .BeerType beverage = 3;
-      private org.kegbot.proto.Models.BeerType beverage_ = org.kegbot.proto.Models.BeerType.getDefaultInstance();
+      // optional .BeerType beer_type = 3;
+      private org.kegbot.proto.Models.BeerType beerType_ = org.kegbot.proto.Models.BeerType.getDefaultInstance();
       private com.google.protobuf.SingleFieldBuilder<
-          org.kegbot.proto.Models.BeerType, org.kegbot.proto.Models.BeerType.Builder, org.kegbot.proto.Models.BeerTypeOrBuilder> beverageBuilder_;
-      public boolean hasBeverage() {
+          org.kegbot.proto.Models.BeerType, org.kegbot.proto.Models.BeerType.Builder, org.kegbot.proto.Models.BeerTypeOrBuilder> beerTypeBuilder_;
+      public boolean hasBeerType() {
         return ((bitField0_ & 0x00000004) == 0x00000004);
       }
-      public org.kegbot.proto.Models.BeerType getBeverage() {
-        if (beverageBuilder_ == null) {
-          return beverage_;
+      public org.kegbot.proto.Models.BeerType getBeerType() {
+        if (beerTypeBuilder_ == null) {
+          return beerType_;
         } else {
-          return beverageBuilder_.getMessage();
+          return beerTypeBuilder_.getMessage();
         }
       }
-      public Builder setBeverage(org.kegbot.proto.Models.BeerType value) {
-        if (beverageBuilder_ == null) {
+      public Builder setBeerType(org.kegbot.proto.Models.BeerType value) {
+        if (beerTypeBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
           }
-          beverage_ = value;
+          beerType_ = value;
           onChanged();
         } else {
-          beverageBuilder_.setMessage(value);
+          beerTypeBuilder_.setMessage(value);
         }
         bitField0_ |= 0x00000004;
         return this;
       }
-      public Builder setBeverage(
+      public Builder setBeerType(
           org.kegbot.proto.Models.BeerType.Builder builderForValue) {
-        if (beverageBuilder_ == null) {
-          beverage_ = builderForValue.build();
+        if (beerTypeBuilder_ == null) {
+          beerType_ = builderForValue.build();
           onChanged();
         } else {
-          beverageBuilder_.setMessage(builderForValue.build());
+          beerTypeBuilder_.setMessage(builderForValue.build());
         }
         bitField0_ |= 0x00000004;
         return this;
       }
-      public Builder mergeBeverage(org.kegbot.proto.Models.BeerType value) {
-        if (beverageBuilder_ == null) {
+      public Builder mergeBeerType(org.kegbot.proto.Models.BeerType value) {
+        if (beerTypeBuilder_ == null) {
           if (((bitField0_ & 0x00000004) == 0x00000004) &&
-              beverage_ != org.kegbot.proto.Models.BeerType.getDefaultInstance()) {
-            beverage_ =
-              org.kegbot.proto.Models.BeerType.newBuilder(beverage_).mergeFrom(value).buildPartial();
+              beerType_ != org.kegbot.proto.Models.BeerType.getDefaultInstance()) {
+            beerType_ =
+              org.kegbot.proto.Models.BeerType.newBuilder(beerType_).mergeFrom(value).buildPartial();
           } else {
-            beverage_ = value;
+            beerType_ = value;
           }
           onChanged();
         } else {
-          beverageBuilder_.mergeFrom(value);
+          beerTypeBuilder_.mergeFrom(value);
         }
         bitField0_ |= 0x00000004;
         return this;
       }
-      public Builder clearBeverage() {
-        if (beverageBuilder_ == null) {
-          beverage_ = org.kegbot.proto.Models.BeerType.getDefaultInstance();
+      public Builder clearBeerType() {
+        if (beerTypeBuilder_ == null) {
+          beerType_ = org.kegbot.proto.Models.BeerType.getDefaultInstance();
           onChanged();
         } else {
-          beverageBuilder_.clear();
+          beerTypeBuilder_.clear();
         }
         bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
-      public org.kegbot.proto.Models.BeerType.Builder getBeverageBuilder() {
+      public org.kegbot.proto.Models.BeerType.Builder getBeerTypeBuilder() {
         bitField0_ |= 0x00000004;
         onChanged();
-        return getBeverageFieldBuilder().getBuilder();
+        return getBeerTypeFieldBuilder().getBuilder();
       }
-      public org.kegbot.proto.Models.BeerTypeOrBuilder getBeverageOrBuilder() {
-        if (beverageBuilder_ != null) {
-          return beverageBuilder_.getMessageOrBuilder();
+      public org.kegbot.proto.Models.BeerTypeOrBuilder getBeerTypeOrBuilder() {
+        if (beerTypeBuilder_ != null) {
+          return beerTypeBuilder_.getMessageOrBuilder();
         } else {
-          return beverage_;
+          return beerType_;
         }
       }
       private com.google.protobuf.SingleFieldBuilder<
           org.kegbot.proto.Models.BeerType, org.kegbot.proto.Models.BeerType.Builder, org.kegbot.proto.Models.BeerTypeOrBuilder> 
-          getBeverageFieldBuilder() {
-        if (beverageBuilder_ == null) {
-          beverageBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+          getBeerTypeFieldBuilder() {
+        if (beerTypeBuilder_ == null) {
+          beerTypeBuilder_ = new com.google.protobuf.SingleFieldBuilder<
               org.kegbot.proto.Models.BeerType, org.kegbot.proto.Models.BeerType.Builder, org.kegbot.proto.Models.BeerTypeOrBuilder>(
-                  beverage_,
+                  beerType_,
                   getParentForChildren(),
                   isClean());
-          beverage_ = null;
+          beerType_ = null;
         }
-        return beverageBuilder_;
+        return beerTypeBuilder_;
       }
       
       // optional .Brewer brewer = 4;
@@ -14889,26 +14889,26 @@ public final class Api {
       "J\n\017ThermoSensorSet\022\036\n\007sensors\030\001 \003(\0132\r.Th" +
       "ermoSensor\022\027\n\006paging\030\002 \001(\0132\007.Paging\"A\n\014T",
       "hermoLogSet\022\030\n\004logs\030\001 \003(\0132\n.ThermoLog\022\027\n" +
-      "\006paging\030\002 \001(\0132\007.Paging\"j\n\tTapDetail\022\024\n\003t" +
-      "ap\030\001 \002(\0132\007.KegTap\022\021\n\003keg\030\002 \001(\0132\004.Keg\022\033\n\010" +
-      "beverage\030\003 \001(\0132\t.BeerType\022\027\n\006brewer\030\004 \001(" +
-      "\0132\007.Brewer\"g\n\013DrinkDetail\022\025\n\005drink\030\001 \002(\013" +
-      "2\006.Drink\022\023\n\004user\030\002 \001(\0132\005.User\022\021\n\003keg\030\003 \001" +
-      "(\0132\004.Keg\022\031\n\007session\030\004 \001(\0132\010.Session\"M\n\rS" +
-      "essionDetail\022\031\n\007session\030\001 \002(\0132\010.Session\022" +
-      "\r\n\005stats\030\002 \001(\t\022\022\n\004kegs\030\003 \003(\0132\004.Keg\"\203\001\n\tK" +
-      "egDetail\022\021\n\003keg\030\001 \002(\0132\004.Keg\022\027\n\004type\030\002 \001(",
-      "\0132\t.BeerType\022\026\n\004size\030\003 \001(\0132\010.KegSize\022\026\n\006" +
-      "drinks\030\004 \003(\0132\006.Drink\022\032\n\010sessions\030\005 \003(\0132\010" +
-      ".Session\"!\n\nUserDetail\022\023\n\004user\030\001 \002(\0132\005.U" +
-      "ser\"G\n\021SystemEventDetail\022\033\n\005event\030\001 \002(\0132" +
-      "\014.SystemEvent\022\025\n\005image\030\002 \001(\0132\006.Image\"+\n\017" +
-      "SystemEventHtml\022\n\n\002id\030\001 \002(\t\022\014\n\004html\030\002 \001(" +
-      "\t\"Y\n\022ThermoSensorDetail\022\035\n\006sensor\030\001 \002(\0132" +
-      "\r.ThermoSensor\022\021\n\tlast_temp\030\002 \001(\002\022\021\n\tlas" +
-      "t_time\030\003 \001(\t\"/\n\017DrinkDetailHtml\022\n\n\002id\030\001 " +
-      "\002(\t\022\020\n\010box_html\030\002 \002(\t2\013\n\tKegwebApiB\022\n\020or",
-      "g.kegbot.proto"
+      "\006paging\030\002 \001(\0132\007.Paging\"k\n\tTapDetail\022\024\n\003t" +
+      "ap\030\001 \002(\0132\007.KegTap\022\021\n\003keg\030\002 \001(\0132\004.Keg\022\034\n\t" +
+      "beer_type\030\003 \001(\0132\t.BeerType\022\027\n\006brewer\030\004 \001" +
+      "(\0132\007.Brewer\"g\n\013DrinkDetail\022\025\n\005drink\030\001 \002(" +
+      "\0132\006.Drink\022\023\n\004user\030\002 \001(\0132\005.User\022\021\n\003keg\030\003 " +
+      "\001(\0132\004.Keg\022\031\n\007session\030\004 \001(\0132\010.Session\"M\n\r" +
+      "SessionDetail\022\031\n\007session\030\001 \002(\0132\010.Session" +
+      "\022\r\n\005stats\030\002 \001(\t\022\022\n\004kegs\030\003 \003(\0132\004.Keg\"\203\001\n\t" +
+      "KegDetail\022\021\n\003keg\030\001 \002(\0132\004.Keg\022\027\n\004type\030\002 \001",
+      "(\0132\t.BeerType\022\026\n\004size\030\003 \001(\0132\010.KegSize\022\026\n" +
+      "\006drinks\030\004 \003(\0132\006.Drink\022\032\n\010sessions\030\005 \003(\0132" +
+      "\010.Session\"!\n\nUserDetail\022\023\n\004user\030\001 \002(\0132\005." +
+      "User\"G\n\021SystemEventDetail\022\033\n\005event\030\001 \002(\013" +
+      "2\014.SystemEvent\022\025\n\005image\030\002 \001(\0132\006.Image\"+\n" +
+      "\017SystemEventHtml\022\n\n\002id\030\001 \002(\t\022\014\n\004html\030\002 \001" +
+      "(\t\"Y\n\022ThermoSensorDetail\022\035\n\006sensor\030\001 \002(\013" +
+      "2\r.ThermoSensor\022\021\n\tlast_temp\030\002 \001(\002\022\021\n\tla" +
+      "st_time\030\003 \001(\t\"/\n\017DrinkDetailHtml\022\n\n\002id\030\001" +
+      " \002(\t\022\020\n\010box_html\030\002 \002(\t2\013\n\tKegwebApiB\022\n\020o",
+      "rg.kegbot.proto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -15016,7 +15016,7 @@ public final class Api {
           internal_static_TapDetail_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_TapDetail_descriptor,
-              new java.lang.String[] { "Tap", "Keg", "Beverage", "Brewer", },
+              new java.lang.String[] { "Tap", "Keg", "BeerType", "Brewer", },
               org.kegbot.proto.Api.TapDetail.class,
               org.kegbot.proto.Api.TapDetail.Builder.class);
           internal_static_DrinkDetail_descriptor =
