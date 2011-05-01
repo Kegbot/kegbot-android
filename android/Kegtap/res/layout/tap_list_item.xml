@@ -26,7 +26,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
-    android:gravity="center">
+    android:gravity="top">
 
     <FrameLayout
       android:padding="2dip"
@@ -45,6 +45,5 @@
       android:id="@+id/tapDateTapped"
       android:layout_width="match_parent"
       android:layout_height="wrap_content" />
-
   </LinearLayout>
 </LinearLayout>

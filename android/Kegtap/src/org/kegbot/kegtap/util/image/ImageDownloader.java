@@ -99,25 +99,25 @@ public class ImageDownloader {
 
     if (cancelPotentialDownload(url, imageView)) {
       switch (mode) {
-        case NO_ASYNC_TASK:
-          Bitmap bitmap = downloadBitmap(url);
-          addBitmapToCache(url, bitmap);
-          imageView.setImageBitmap(bitmap);
-          break;
+      case NO_ASYNC_TASK:
+        Bitmap bitmap = downloadBitmap(url);
+        addBitmapToCache(url, bitmap);
+        imageView.setImageBitmap(bitmap);
+        break;
 
-        case NO_DOWNLOADED_DRAWABLE:
-          imageView.setMinimumHeight(156);
-          BitmapDownloaderTask task = new BitmapDownloaderTask(imageView);
-          task.execute(url);
-          break;
+      case NO_DOWNLOADED_DRAWABLE:
+        imageView.setMinimumHeight(156);
+        BitmapDownloaderTask task = new BitmapDownloaderTask(imageView);
+        task.execute(url);
+        break;
 
-        case CORRECT:
-          task = new BitmapDownloaderTask(imageView);
-          DownloadedDrawable downloadedDrawable = new DownloadedDrawable(task);
-          imageView.setImageDrawable(downloadedDrawable);
-          imageView.setMinimumHeight(156);
-          task.execute(url);
-          break;
+      case CORRECT:
+        task = new BitmapDownloaderTask(imageView);
+        DownloadedDrawable downloadedDrawable = new DownloadedDrawable(task);
+        imageView.setImageDrawable(downloadedDrawable);
+        imageView.setMinimumHeight(156);
+        task.execute(url);
+        break;
       }
     }
   }
@@ -183,7 +183,7 @@ public class ImageDownloader {
         InputStream inputStream = null;
         try {
           BitmapFactory.Options options = new BitmapFactory.Options();
-          options.inSampleSize = 4;
+          options.inSampleSize = 2;
 
           inputStream = entity.getContent();
           return BitmapFactory.decodeStream(inputStream, null, options);
