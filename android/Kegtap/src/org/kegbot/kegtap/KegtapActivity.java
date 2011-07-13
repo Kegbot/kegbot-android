@@ -3,24 +3,25 @@ package org.kegbot.kegtap;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiImpl;
-import org.kegbot.kegtap.service.KegbotCoreService;
+import org.kegbot.kegtap.service.KegboardService;
 import org.kegbot.kegtap.util.KegbotDescriptor;
 import org.kegbot.kegtap.util.PreferenceUtils;
 import org.kegbot.kegtap.util.image.ImageDownloader;
 
 import android.app.ActionBar;
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.hardware.usb.UsbManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class KegtapActivity extends Activity {
+public class KegtapActivity extends CoreActivity {
 
   public final String LOG_TAG = "KegtapActivity";
 
@@ -33,25 +34,25 @@ public class KegtapActivity extends Activity {
   private ControlsFragment mControls;
 
   private SharedPreferences mPreferences;
-  private OnSharedPreferenceChangeListener mPreferenceListener;
+
+  private final OnSharedPreferenceChangeListener mPreferenceListener =
+      new OnSharedPreferenceChangeListener() {
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+      if (PreferenceUtils.SELECTED_KEGBOT_KEY.equals(key)) {
+        initializeUi();
+      }
+    }
+  };
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.main);
     setupActionBar();
+    bindToCoreService();
 
     mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-    mPreferenceListener = new OnSharedPreferenceChangeListener() {
-
-      @Override
-      public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
-          String key) {
-        if (PreferenceUtils.SELECTED_KEGBOT_KEY.equals(key)) {
-          initializeUi();
-        }
-      }
-    };
 
     mTapStatus = (TapStatusFragment) getFragmentManager().findFragmentById(
         R.id.tap_status);
@@ -63,9 +64,6 @@ public class KegtapActivity extends Activity {
 
     mControls = (ControlsFragment) getFragmentManager().findFragmentById(
         R.id.controls);
-
-    Intent intent = new Intent(this, KegbotCoreService.class);
-    startService(intent);
   }
 
   @Override
@@ -73,6 +71,12 @@ public class KegtapActivity extends Activity {
     super.onStart();
     mPreferences.registerOnSharedPreferenceChangeListener(mPreferenceListener);
     initializeUi();
+  }
+
+  @Override
+  protected void onResume() {
+    super.onResume();
+    handleIntent();
   }
 
   @Override
@@ -101,6 +105,23 @@ public class KegtapActivity extends Activity {
     }
   }
 
+  @Override
+  protected void onNewIntent(Intent intent) {
+    super.onNewIntent(intent);
+    setIntent(intent);
+    handleIntent();
+  }
+
+  private void handleIntent() {
+    final Intent intent = getIntent();
+    final String action = intent.getAction();
+    Log.d(LOG_TAG, "Handling intent: " + intent);
+    if (UsbManager.ACTION_USB_DEVICE_ATTACHED.equals(action)) {
+      final Intent serviceIntent = new Intent(this, KegboardService.class);
+      serviceIntent.setAction(UsbManager.ACTION_USB_DEVICE_ATTACHED);
+      startService(serviceIntent);
+    }
+  }
   private void setupActionBar() {
     ActionBar actionBar = getActionBar();
     actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.header_bg_square));

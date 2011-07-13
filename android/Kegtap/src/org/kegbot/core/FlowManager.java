@@ -11,6 +11,7 @@ import org.kegbot.core.Flow.State;
 
 import android.util.Log;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
@@ -20,17 +21,28 @@ public class FlowManager {
 
   private static final String TAG = FlowManager.class.getSimpleName();
 
-  private final Map<String, Tap> mTaps = Maps.newLinkedHashMap();
+  private static FlowManager sSingleton = null;
 
+  private final TapManager mTapManager;
+
+  /**
+   * Records the last reading for each tap.
+   */
   private final Map<Tap, Integer> mLastTapReading = Maps.newLinkedHashMap();
 
+  /**
+   * All flow listeners.
+   */
   private Collection<Listener> mListeners = Sets.newLinkedHashSet();
 
+  /**
+   * Listener interfaces for updates to managed flows.
+   */
   public interface Listener {
 
     /**
      * Called when a new flow has been started by the core.
-     * 
+     *
      * @param flow
      *          the new flow
      */
@@ -39,14 +51,14 @@ public class FlowManager {
     /**
      * Called when a flow has been finished by the core, that is, when the
      * flow's state has changed to {@link Flow.State#COMPLETED}.
-     * 
+     *
      * @param flow
      */
     public void onFlowEnd(Flow flow);
 
     /**
      * Called when a flow has been updated.
-     * 
+     *
      * @param flow
      */
     public void onFlowUpdate(Flow flow);
@@ -58,12 +70,30 @@ public class FlowManager {
    */
   private final Map<Tap, Flow> mActiveFlows = Maps.newLinkedHashMap();
 
+  /**
+   * Executor that checks for idle flows.
+   */
   private final ScheduledExecutorService mExecutor = Executors.newSingleThreadScheduledExecutor();
 
-  private final Runnable mIdleChecker = new FlowIdleTask();
+  private final Runnable mIdleChecker = new Runnable() {
+    @Override
+    public void run() {
+      synchronized (mActiveFlows) {
+        for (final Flow flow : mActiveFlows.values()) {
+          if (flow.isIdle()) {
+            Log.d("FlowIdleTask", "Flow is idle, ending: " + flow);
+            endFlow(flow);
+          }
+        }
+      }
+    }
+  };
+
   private final ScheduledFuture<?> mFuture;
 
-  public FlowManager() {
+  @VisibleForTesting
+  protected FlowManager(final TapManager tapManager) {
+    mTapManager = tapManager;
     mFuture = mExecutor.scheduleWithFixedDelay(mIdleChecker, 0, 1000, TimeUnit.MILLISECONDS);
   }
 
@@ -76,7 +106,7 @@ public class FlowManager {
 
   /**
    * Returns all active flows.
-   * 
+   *
    * @return
    */
   public Collection<Flow> getAllActiveFlows() {
@@ -87,7 +117,7 @@ public class FlowManager {
 
   /**
    * Returns all flows that are marked as idle.
-   * 
+   *
    * @return
    */
   public Collection<Flow> getIdleFlows() {
@@ -98,7 +128,7 @@ public class FlowManager {
 
   /**
    * Returns all flows that are marked as completed.
-   * 
+   *
    * @return
    */
   public Collection<Flow> getCompletedFlows() {
@@ -108,12 +138,8 @@ public class FlowManager {
     }
   }
 
-  public Tap getTapForName(String tapName) {
-    return mTaps.get(tapName);
-  }
-
-  public Flow getFlowForTapName(String tapName) {
-    final Tap tap = mTaps.get(tapName);
+  public Flow getFlowForTapName(final String tapName) {
+    final Tap tap = mTapManager.getTapForMeterName(tapName);
     if (tap == null) {
       return null;
     }
@@ -121,33 +147,20 @@ public class FlowManager {
     return flow;
   }
 
-  public boolean addTap(Tap tap) {
-    final String tapName = tap.getMeterName();
-    Log.d(TAG, "Installing new tap: name=" + tapName);
-
-    if (mTaps.get(tapName) != null) {
-      return false;
-    }
-    mTaps.put(tapName, tap);
-    mLastTapReading.put(tap, Integer.valueOf(-1));
-    return true;
-  }
-
-  public Tap removeTap(String tapName) {
-    final Tap tap = mTaps.remove(tapName);
-    if (tap != null) {
-      mLastTapReading.remove(tap);
-    }
-    return tap;
-  }
-
-  public Flow handleMeterActivity(String tapName, int ticks) {
-    final Tap tap = mTaps.get(tapName);
-    if (tapName == null) {
+  public Flow handleMeterActivity(final String tapName, final int ticks) {
+    Log.d(TAG, "handleMeterActivity: " + tapName + "=" + ticks);
+    final Tap tap = mTapManager.getTapForMeterName(tapName);
+    Log.d(TAG, "handleMeterActivity: tap=" + tap);
+    if (tap == null || tapName == null) {
       Log.d(TAG, "Dropping activity for unknown tap: " + tapName);
       return null;
     }
-    final int lastTicks = mLastTapReading.get(tap).intValue();
+    Integer lastReading = mLastTapReading.get(tap);
+    if (lastReading == null) {
+      lastReading = Integer.valueOf(0);
+    }
+    final int lastTicks = lastReading.intValue();
+    Log.d(TAG, "handleMeterActivity: lastTicks=" + lastTicks);
 
     final int delta;
     if (lastTicks >= 0) {
@@ -180,11 +193,11 @@ public class FlowManager {
 
   /**
    * Ends the given flow.
-   * 
+   *
    * @param flow
    * @return
    */
-  public Flow endFlow(Flow flow) {
+  public Flow endFlow(final Flow flow) {
     final Flow removedFlow = mActiveFlows.remove(flow.getTap());
     if (removedFlow == null) {
       return removedFlow;
@@ -194,7 +207,7 @@ public class FlowManager {
     return removedFlow;
   }
 
-  public Flow startFlow(Tap tap, int maxIdleTimeMs) {
+  public Flow startFlow(final Tap tap, final int maxIdleTimeMs) {
     Log.d(TAG, "Starting flow on tap " + tap);
     final Flow flow = Flow.build(tap, maxIdleTimeMs);
     synchronized (mActiveFlows) {
@@ -208,60 +221,58 @@ public class FlowManager {
 
   /**
    * Attaches a {@link Listener} to the core.
-   * 
+   *
    * @param listener
    *          the listener
    * @return <code>true</code> if the listener was not already attached
    */
-  public boolean addFlowListener(Listener listener) {
+  public boolean addFlowListener(final Listener listener) {
     return mListeners.add(listener);
   }
 
   /**
    * Removes a {@link Listener} from the core.
-   * 
+   *
    * @param listener
    *          the listener
    * @return <code>true</code> if the listener was found and removed, false if
    *         the listener was not attached
    */
-  public boolean removeFlowListener(Listener listener) {
-    return mListeners.remove(listener);
-  }
-
-  private void publishFlowUpdate(Flow flow) {
-    for (final Listener listener : mListeners) {
-      listener.onFlowUpdate(flow);
+  public boolean removeFlowListener(final Listener listener) {
+    synchronized (mListeners) {
+      return mListeners.remove(listener);
     }
   }
 
-  private void publishFlowStart(Flow flow) {
-    for (final Listener listener : mListeners) {
-      listener.onFlowStart(flow);
-    }
-  }
-
-  private void publishFlowEnd(Flow flow) {
-    for (final Listener listener : mListeners) {
-      listener.onFlowEnd(flow);
-    }
-  }
-
-  private class FlowIdleTask implements Runnable {
-
-    @Override
-    public void run() {
-      synchronized (mActiveFlows) {
-        for (Flow flow : mActiveFlows.values()) {
-          if (flow.isIdle()) {
-            Log.d("FlowIdleTask", "Marking flow as idle: " + flow);
-            flow.setState(State.IDLE);
-            publishFlowUpdate(flow);
-          }
-        }
+  private void publishFlowUpdate(final Flow flow) {
+    synchronized (mListeners) {
+      for (final Listener listener : mListeners) {
+        listener.onFlowUpdate(flow);
       }
     }
+  }
 
+  private void publishFlowStart(final Flow flow) {
+    synchronized (mListeners) {
+      for (final Listener listener : mListeners) {
+        listener.onFlowStart(flow);
+      }
+    }
+  }
+
+  private void publishFlowEnd(final Flow flow) {
+    synchronized (mListeners) {
+      for (final Listener listener : mListeners) {
+        listener.onFlowEnd(flow);
+      }
+    }
+  }
+
+  public static synchronized FlowManager getSingletonInstance() {
+    if (sSingleton == null) {
+      sSingleton = new FlowManager(TapManager.getSingletonInstance());
+    }
+    return sSingleton;
   }
 
 }

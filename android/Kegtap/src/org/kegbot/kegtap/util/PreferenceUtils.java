@@ -25,9 +25,7 @@ public class PreferenceUtils {
   }
 
   public static void setKegbotName(SharedPreferences preferences, String name) {
-    preferences.edit()
-    .putString(SELECTED_KEGBOT_NAME_KEY, name)
-    .apply();
+    preferences.edit().putString(SELECTED_KEGBOT_NAME_KEY, name).apply();
   }
 
   public static CharSequence getKegbotName(SharedPreferences preferences) {

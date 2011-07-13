@@ -1,16 +1,8 @@
 package org.kegbot.kegtap;
 
-import static org.kegbot.kegtap.util.PreferenceUtils.SELECTED_KEGBOT_KEY;
-
-import java.util.ArrayList;
 import java.util.List;
 
-import org.kegbot.kegtap.util.KegbotDescriptor;
-import org.kegbot.kegtap.util.PreferenceUtils;
-
 import android.content.SharedPreferences;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
@@ -36,51 +28,10 @@ public class SettingsActivity extends PreferenceActivity {
     public void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
       addPreferencesFromResource(R.xml.settings_general);
-      mPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-      // setupKegbotSelectPreference();
+      mPreferences = PreferenceManager
+      .getDefaultSharedPreferences(getActivity());
     }
 
-    private void setupKegbotSelectPreference() {
-      ListPreference preference = (ListPreference) findPreference(SELECTED_KEGBOT_KEY);
-      preference.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-
-        @Override
-        public boolean onPreferenceChange(Preference preference, Object newValue) {
-          ListPreference listPref = (ListPreference) preference;
-          PreferenceUtils.setKegbotName(mPreferences,
-              listPref.getEntries()[listPref.findIndexOfValue((String) newValue)].toString());
-          return true;
-        }
-      });
-      new GetSelectionsTask().execute();
-    }
-
-    private class GetSelectionsTask extends AsyncTask<Void, Void, List<KegbotDescriptor>> {
-
-      @Override
-      protected void onPreExecute() {
-        ListPreference preference = (ListPreference) findPreference(SELECTED_KEGBOT_KEY);
-        preference.setEnabled(false);
-      }
-
-      @Override
-      protected List<KegbotDescriptor> doInBackground(Void... params) {
-        // TODO: in the future, allow selection from API, or custom. For now, just return prod or
-        // dev.
-        List<KegbotDescriptor> returnList = new ArrayList<KegbotDescriptor>();
-        returnList.add(new KegbotDescriptor("Gertie", Uri.parse("http://oldgertie.kegbot.net")));
-        returnList.add(new KegbotDescriptor("Kegbot SFO", Uri.parse("http://kegbot.net/sfo")));
-        return returnList;
-      }
-
-      @Override
-      protected void onPostExecute(List<KegbotDescriptor> result) {
-        ListPreference preference = (ListPreference) findPreference(SELECTED_KEGBOT_KEY);
-        preference.setEntries(KegbotDescriptor.getNames(result));
-        preference.setEntryValues(KegbotDescriptor.getEntryValues(result));
-        preference.setEnabled(true);
-      }
-    }
   }
 
   public static class KegeratorFragment extends PreferenceFragment {
@@ -92,15 +43,16 @@ public class SettingsActivity extends PreferenceActivity {
       super.onCreate(savedInstanceState);
       addPreferencesFromResource(R.xml.settings_kegerator);
 
-      setEnabledStates();
+      handleCoreEnabledChanged();
 
-      mPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+      mPreferences = PreferenceManager
+      .getDefaultSharedPreferences(getActivity());
 
       CheckBoxPreference enablePref = (CheckBoxPreference) findPreference("run_core");
       enablePref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
         @Override
         public boolean onPreferenceClick(Preference preference) {
-          setEnabledStates();
+          handleCoreEnabledChanged();
           return true;
         }
       });
@@ -115,15 +67,16 @@ public class SettingsActivity extends PreferenceActivity {
           return true;
         }
       });
-
-      // setupKegbotSelectPreference();
     }
 
-    private void setEnabledStates() {
-      CheckBoxPreference enablePref = (CheckBoxPreference) findPreference("run_core");
-
+    private void handleCoreEnabledChanged() {
+      final CheckBoxPreference enablePref = (CheckBoxPreference) findPreference("run_core");
       boolean enabled = enablePref.isChecked();
       findPreference("controller_type").setEnabled(enabled);
+
+      if (!enabled) {
+        // getActivity().sendBroadcast(intent)
+      }
     }
 
     private void handleControllerTypeChanged() {
@@ -131,6 +84,5 @@ public class SettingsActivity extends PreferenceActivity {
     }
 
   }
-
 
 }

@@ -20,11 +20,13 @@ import org.kegbot.proto.Api.ThermoLogSet;
 import org.kegbot.proto.Api.ThermoSensorSet;
 import org.kegbot.proto.Models.AuthenticationToken;
 import org.kegbot.proto.Models.Drink;
+import org.kegbot.proto.Models.ThermoLog;
 import org.kegbot.proto.Models.User;
 
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
+import android.util.Log;
 
 /**
  * This service manages a connection to a Kegbot backend, using the Kegbot API.
@@ -62,14 +64,14 @@ public class KegbotApiService extends BackgroundService implements KegbotApi {
 
   /**
    * Receives notifications for API events.
-   * 
+   *
    * @author mike
    */
   public interface Listener {
 
     /**
      * Notifies listener that the connection state has changed.
-     * 
+     *
      * @param newState
      */
     public void onConnectionStateChange(ConnectionState newState);
@@ -90,6 +92,13 @@ public class KegbotApiService extends BackgroundService implements KegbotApi {
 
   private final IBinder mBinder = new LocalBinder();
 
+  private final KegbotApiImpl.Listener mApiListener = new KegbotApiImpl.Listener() {
+    @Override
+    public void debug(String message) {
+      Log.d("KegbotApiImpl", message);
+    }
+  };
+
   private KegbotApiImpl mApi;
 
   public KegbotApiService() {
@@ -100,7 +109,8 @@ public class KegbotApiService extends BackgroundService implements KegbotApi {
   public void onCreate() {
     super.onCreate();
     mApi = new KegbotApiImpl(new DefaultHttpClient(), "http://oldgertie.kegbot.net/api");
-    mApi.setApiKey("ddbb9c0b65d0a9c7");
+    mApi.setListener(mApiListener);
+    mApi.setApiKey("");
   }
 
   @Override
@@ -129,6 +139,11 @@ public class KegbotApiService extends BackgroundService implements KegbotApi {
   @Override
   public boolean setAccountCredentials(String username, String password) {
     return mApi.setAccountCredentials(username, password);
+  }
+
+  @Override
+  public void setApiUrl(String apiUrl) {
+    mApi.setApiUrl(apiUrl);
   }
 
   @Override
@@ -245,6 +260,12 @@ public class KegbotApiService extends BackgroundService implements KegbotApi {
   @Override
   public Drink recordDrink(String tapName, int ticks) throws KegbotApiException {
     return mApi.recordDrink(tapName, ticks);
+  }
+
+  @Override
+  public ThermoLog recordTemperature(String sensorName, double sensorValue)
+      throws KegbotApiException {
+    return mApi.recordTemperature(sensorName, sensorValue);
   }
 
 }

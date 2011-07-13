@@ -34,6 +34,7 @@ import org.kegbot.proto.Api.ThermoLogSet;
 import org.kegbot.proto.Api.ThermoSensorSet;
 import org.kegbot.proto.Models.AuthenticationToken;
 import org.kegbot.proto.Models.Drink;
+import org.kegbot.proto.Models.ThermoLog;
 import org.kegbot.proto.Models.User;
 
 import com.google.common.collect.Lists;
@@ -43,16 +44,26 @@ import com.google.protobuf.Message.Builder;
 
 public class KegbotApiImpl implements KegbotApi {
 
-  private final HttpClient httpClient;
-  private final String baseUrl;
-  private String username = "";
-  private String password = "";
+  private final HttpClient mHttpClient;
+  private String mBaseUrl;
+  private String mUsername = "";
+  private String mPassword = "";
 
   private String apiKey = null;
 
+  public static interface Listener {
+    public void debug(String message);
+  }
+
+  private Listener mListener = null;
+
   public KegbotApiImpl(HttpClient httpClient, String baseUrl) {
-    this.httpClient = httpClient;
-    this.baseUrl = baseUrl;
+    mHttpClient = httpClient;
+    mBaseUrl = baseUrl;
+  }
+
+  public synchronized void setListener(Listener listener) {
+    mListener = listener;
   }
 
   private JsonNode toJson(HttpResponse response) throws KegbotApiException {
@@ -66,8 +77,7 @@ public class KegbotApiImpl implements KegbotApi {
     }
     try {
       final ObjectMapper mapper = new ObjectMapper();
-      final JsonNode rootNode = mapper.readValue(response.getEntity()
-          .getContent(), JsonNode.class);
+      final JsonNode rootNode = mapper.readValue(response.getEntity().getContent(), JsonNode.class);
       return rootNode;
     } catch (IOException e) {
       throw new KegbotApiException(e);
@@ -75,22 +85,28 @@ public class KegbotApiImpl implements KegbotApi {
   }
 
   private String getRequestUrl(String path) {
-    return baseUrl + path;
+    return mBaseUrl + path;
   }
 
   private JsonNode doGet(String path) throws KegbotApiException {
     HttpGet request = new HttpGet(getRequestUrl(path));
+    debug("GET: uri=" + request.getURI());
+    debug("GET: request=" + request.getRequestLine());
     return toJson(execute(request));
   }
 
   private JsonNode doPost(String path, Map<String, String> params) throws KegbotApiException {
-    login();
+    if (apiKey != null) {
+      params.put("api_key", apiKey);
+    }
     return toJson(doRawPost(path, params));
   }
 
   private HttpResponse doRawPost(String path, Map<String, String> params)
   throws KegbotApiException {
     HttpPost request = new HttpPost(getRequestUrl(path));
+    debug("POST: uri=" + request.getURI());
+    debug("POST: request=" + request.getRequestLine());
     List<NameValuePair> pairs = Lists.newArrayList();
     for (Map.Entry<String, String> entry : params.entrySet()) {
       pairs.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
@@ -106,12 +122,18 @@ public class KegbotApiImpl implements KegbotApi {
   private HttpResponse execute(HttpUriRequest request)
   throws KegbotApiException {
     try {
-      final HttpResponse response = httpClient.execute(request);
+      final HttpResponse response;
+      synchronized (mHttpClient) {
+        debug("Requesting: " + request.getURI());
+        response = mHttpClient.execute(request);
+        debug("DONE: " + request.getURI());
+        debug(response.getStatusLine().toString());
+      }
       final int statusCode = response.getStatusLine().getStatusCode();
       if (statusCode != HttpStatus.SC_OK) {
         final String reason = response.getStatusLine().getReasonPhrase();
-        final String message = "Error fetching " + request.getURI()
-        + ": statusCode=" + statusCode + ", reason=" + reason;
+        final String message = "Error fetching " + request.getURI() + ": statusCode=" + statusCode
+            + ", reason=" + reason;
 
         switch (statusCode) {
         case HttpStatus.SC_NOT_FOUND:
@@ -125,6 +147,7 @@ public class KegbotApiImpl implements KegbotApi {
       throw new KegbotApiException(e);
     } catch (IOException e) {
       throw new KegbotApiException(e);
+    } finally {
     }
   }
 
@@ -156,28 +179,37 @@ public class KegbotApiImpl implements KegbotApi {
 
   @Override
   public boolean setAccountCredentials(String username, String password) {
-    this.username = username;
-    this.password = password;
+    this.mUsername = username;
+    this.mPassword = password;
     return true;
+  }
+
+  @Override
+  public void setApiUrl(String apiUrl) {
+    mBaseUrl = apiUrl;
   }
 
   @Override
   public void setApiKey(String apiKey) {
     this.apiKey = apiKey;
+    debug("Set apiKey=" + apiKey);
   }
 
   private void login() throws KegbotApiException {
     if (apiKey == null || apiKey.isEmpty()) {
       Map<String, String> params = Maps.newLinkedHashMap();
-      params.put("username", username);
-      params.put("password", password);
-      HttpResponse response = doRawPost("/login/", params);
+      params.put("username", mUsername);
+      params.put("password", mPassword);
+      // TODO: removeme!
+      debug("Logging in as username=" + mUsername + " password=" + mPassword);
+      doPost("/login/", params);
 
       // Made it this far -- login succeeded.
-      JsonNode result = getJson("/api/get-api-key");
-      final String apiKey = result.get("result").get("api_key")
-          .getValueAsText();
-      setApiKey(apiKey);
+      JsonNode result = getJson("/get-api-key/");
+      final JsonNode keyNode = result.get("api_key");
+      if (keyNode != null) {
+        setApiKey(keyNode.getValueAsText());
+      }
     }
     /*
      * final int statusCode = response.getStatusLine().getStatusCode(); throw
@@ -308,12 +340,25 @@ public class KegbotApiImpl implements KegbotApi {
 
   @Override
   public Drink recordDrink(String tapName, int ticks) throws KegbotApiException {
+    login();
     Map<String, String> params = Maps.newLinkedHashMap();
     params.put("ticks", String.valueOf(ticks));
-    if (apiKey != null) {
-      params.put("api_auth_token", apiKey);
-    }
     return (Drink) postProto("/taps/" + tapName, Drink.newBuilder(), params);
+  }
+
+  @Override
+  public ThermoLog recordTemperature(String sensorName, double sensorValue)
+      throws KegbotApiException {
+    login();
+    final Map<String, String> params = Maps.newLinkedHashMap();
+    params.put("temp_c", String.valueOf(sensorValue));
+    return (ThermoLog) postProto("/thermo-sensors/" + sensorName, ThermoLog.newBuilder(), params);
+  }
+
+  private synchronized void debug(String message) {
+    if (mListener != null) {
+      mListener.debug(message);
+    }
   }
 
 }

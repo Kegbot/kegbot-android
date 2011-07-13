@@ -12,7 +12,7 @@ public class Utils {
   /**
    * Returns a timestamp, for a the local timezone, given an ISO8601-formatted
    * UTC timestamp.
-   * 
+   *
    * @param isoString
    * @return
    * @throws ParseException

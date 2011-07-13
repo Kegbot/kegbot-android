@@ -16,11 +16,14 @@ import org.kegbot.proto.Api.ThermoLogSet;
 import org.kegbot.proto.Api.ThermoSensorSet;
 import org.kegbot.proto.Models.AuthenticationToken;
 import org.kegbot.proto.Models.Drink;
+import org.kegbot.proto.Models.ThermoLog;
 import org.kegbot.proto.Models.User;
 
 public interface KegbotApi {
 
   public boolean setAccountCredentials(String username, String password);
+
+  public void setApiUrl(String apiUrl);
 
   public void setApiKey(String apiKey);
 
@@ -51,7 +54,7 @@ public interface KegbotApi {
    * @throws KegbotApiException
    */
   public AuthenticationToken getAuthToken(String authDevice, String tokenValue)
-  throws KegbotApiException;
+      throws KegbotApiException;
 
   /**
    * Returns details for a specific drink.
@@ -109,8 +112,7 @@ public interface KegbotApi {
    * @return
    * @throws KegbotApiException
    */
-  public DrinkDetailHtmlSet getRecentDrinksHtml()
-  throws KegbotApiException;
+  public DrinkDetailHtmlSet getRecentDrinksHtml() throws KegbotApiException;
 
   /**
    * Returns recent system events.
@@ -149,8 +151,7 @@ public interface KegbotApi {
    * @return
    * @throws KegbotApiException
    */
-  public ThermoLogSet getThermoSensorLogs(String sensorId)
-  throws KegbotApiException;
+  public ThermoLogSet getThermoSensorLogs(String sensorId) throws KegbotApiException;
 
   /**
    * @return
@@ -169,9 +170,10 @@ public interface KegbotApi {
 
   public DrinkSet getUserDrinks(String username) throws KegbotApiException;
 
-  public SystemEventDetailSet getUserEvents(String username)
-  throws KegbotApiException;
+  public SystemEventDetailSet getUserEvents(String username) throws KegbotApiException;
 
   public Drink recordDrink(String tapName, int ticks) throws KegbotApiException;
+
+  public ThermoLog recordTemperature(String sensorName, double sensorValue) throws KegbotApiException;
 
 }
