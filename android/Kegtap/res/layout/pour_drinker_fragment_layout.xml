@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  android:orientation="vertical"
+  android:gravity="center">
+
+  <TextView
+    android:id="@+id/pourVolumeNumbers"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:textSize="18dip"
+    android:textColor="#888"
+    android:text="Now Serving"
+    android:gravity="center" />
+
+  <TextView
+    android:id="@+id/pourVolumeNumbers"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:textStyle="bold"
+    android:textSize="36dip"
+    android:text="unknown"
+    android:gravity="center"
+    android:layout_marginBottom="10dip"/>
+
+  <ImageView
+    android:id="@+id/pourImage"
+    android:src="@drawable/unknown_drinker"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Now Serving"
+    android:gravity="center" />
+
+
+</LinearLayout>

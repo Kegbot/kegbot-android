@@ -62,7 +62,6 @@ public class KegtapActivity extends CoreActivity {
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.main);
-    setupActionBar();
 
     mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
     mPrefsHelper = new PreferenceHelper(mPreferences);

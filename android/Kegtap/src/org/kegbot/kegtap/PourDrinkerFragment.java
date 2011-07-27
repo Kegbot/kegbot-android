@@ -13,9 +13,8 @@ public class PourDrinkerFragment extends Fragment {
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
       Bundle savedInstanceState) {
-    mView = inflater.inflate(R.layout.controls_view, container);
+    mView = inflater.inflate(R.layout.pour_drinker_fragment_layout, container);
     return mView;
   }
-
 
 }

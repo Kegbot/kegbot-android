@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  android:orientation="vertical"
+  android:gravity="center">
+
+  <!-- First row: left=image, right=ounces -->
+  <LinearLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center">
+    <ImageView
+      android:id="@+id/pourImage"
+      android:src="@drawable/kegbot_unknown_square_2"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:maxWidth="512dip"
+      android:maxHeight="512dip"/>
+
+    <LinearLayout
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:orientation="vertical"
+      android:gravity="center">
+      <TextView
+        android:id="@+id/pourVolumeNumbers"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:textSize="96dip"
+        android:text="12.3" />
+      <TextView
+        android:id="@+id/pourVolumeWords"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="18dip"
+        android:gravity="center"
+        android:text="ounces"/>
+    </LinearLayout>
+  </LinearLayout>
+
+  <View
+    android:layout_width="match_parent"
+    android:layout_height="2dip"
+    android:layout_marginLeft="5dip"
+    android:layout_marginRight="5dip"
+    android:layout_marginTop="10dip"
+    android:layout_marginBottom="10dip"
+    android:background="#1FFFFFFF" />
+
+  <!-- Rest of content -->
+  <LinearLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center">
+
+    <TextView
+      android:id="@+id/pourBeerName"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:textColor="#888"
+      android:textSize="48dip"
+      android:text="Default Beer Name"/>
+  </LinearLayout>
+
+</LinearLayout>

@@ -209,13 +209,8 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
         public void run() {
           Log.d(TAG, "Flow updated: " + flow);
           final Intent intent =
-            PourInProgressActivity.getStartIntent(KegbotCoreService.this, flow.getFlowId());
-          startActivity(intent);
-          /*
-          final Intent intent = new Intent(ACTION_FLOW_UPDATED);
-          intent.putExtra("flow_id", flow.getFlowId());
-          KegbotCoreService.this.sendOrderedBroadcast(intent, null);
-          */
+            PourInProgressActivity.getBroadcastIntent(KegbotCoreService.this, flow.getFlowId());
+          sendOrderedBroadcast(intent, null);
         }
       };
       mHandler.post(r);

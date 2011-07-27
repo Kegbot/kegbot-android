@@ -31,7 +31,7 @@ public class TapStatusFragment extends Fragment {
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
       Bundle savedInstanceState) {
-    mView = inflater.inflate(R.layout.tap_status_view, container);
+    mView = inflater.inflate(R.layout.tap_status_fragment_layout, container);
     return mView;
   }
 

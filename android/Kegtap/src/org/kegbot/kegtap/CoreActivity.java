@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.view.MenuItem;
 
 /**
  * An activity which is bound to the core service.
@@ -45,6 +46,7 @@ public class CoreActivity extends Activity {
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     bindToCoreService();
+    setupActionBar();
   }
 
   @Override
@@ -71,8 +73,9 @@ public class CoreActivity extends Activity {
 
   protected void setupActionBar() {
     ActionBar actionBar = getActionBar();
-    //actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.header_bg_square));
-    //actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_USE_LOGO);
+    // actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.header_bg_square));
+    // actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME |
+    // ActionBar.DISPLAY_USE_LOGO);
     actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME);
     actionBar.setTitle("");
   }
@@ -87,6 +90,19 @@ public class CoreActivity extends Activity {
 
   protected void onCoreServiceUnbound() {
 
+  }
+
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    switch (item.getItemId()) {
+      case android.R.id.home:
+        Intent intent = new Intent(this, KegtapActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+        return true;
+      default:
+        return super.onOptionsItemSelected(item);
+    }
   }
 
 }

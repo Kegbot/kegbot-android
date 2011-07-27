@@ -11,10 +11,11 @@
     class="org.kegbot.kegtap.PourStatusFragment"
     android:layout_weight="0.6"
     android:layout_width="0dip"
-    android:layout_height="wrap_content"
-    android:layout_marginRight="10dip"/>
+    android:layout_height="fill_parent"
+    android:layout_marginRight="10dip" />
 
   <LinearLayout
+    android:id="@+id/pourInProgressRightCol"
     android:orientation="vertical"
     android:layout_weight="0.4"
     android:layout_width="0dip"
@@ -23,16 +24,15 @@
 
     <fragment
       android:id="@+id/controls"
-      class="org.kegbot.kegtap.PourControlsFragment"
-      android:layout_weight="0.0"
+      class="org.kegbot.kegtap.camera.CameraFragment"
+      android:layout_weight="0.5"
       android:layout_width="match_parent"
-      android:layout_height="0dip"
-      android:visibility="gone"/>
+      android:layout_height="0dip" />
 
     <fragment
       android:id="@+id/event_list"
       class="org.kegbot.kegtap.PourDrinkerFragment"
-      android:layout_weight="1.0"
+      android:layout_weight="0.5"
       android:layout_width="match_parent"
       android:layout_height="0dip" />
 
