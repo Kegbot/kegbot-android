@@ -2,5 +2,6 @@
 <resources>
     <color name="headerBg">#1A5568</color>
     <color name="transparent">#00000000</color>
+    <color name="black20pct">#20000000</color>
 	
 </resources>

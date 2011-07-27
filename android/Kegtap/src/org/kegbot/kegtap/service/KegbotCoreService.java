@@ -8,6 +8,7 @@ import java.util.concurrent.Executors;
 
 import org.kegbot.api.KegbotApiException;
 import org.kegbot.core.AuthenticationToken;
+import org.kegbot.core.ConfigurationManager;
 import org.kegbot.core.Flow;
 import org.kegbot.core.FlowManager;
 import org.kegbot.core.FlowMeter;
@@ -15,8 +16,8 @@ import org.kegbot.core.Tap;
 import org.kegbot.core.TapManager;
 import org.kegbot.core.ThermoSensor;
 import org.kegbot.kegtap.KegtapActivity;
-import org.kegbot.kegtap.PourInProgressActivity;
 import org.kegbot.kegtap.R;
+import org.kegbot.kegtap.core.KegtapBroadcast;
 import org.kegbot.kegtap.service.KegbotApiService.ConnectionState;
 import org.kegbot.kegtap.util.KegbotDescriptor;
 import org.kegbot.kegtap.util.PreferenceHelper;
@@ -64,6 +65,8 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
   private final FlowManager mFlowManager = FlowManager.getSingletonInstance();
 
   private final TapManager mTapManager = TapManager.getSingletonInstance();
+
+  private final ConfigurationManager mConfigManager = ConfigurationManager.getSingletonInstance();
 
   private ExecutorService mExecutorService;
   private SharedPreferences mPreferences;
@@ -209,7 +212,7 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
         public void run() {
           Log.d(TAG, "Flow updated: " + flow);
           final Intent intent =
-            PourInProgressActivity.getBroadcastIntent(KegbotCoreService.this, flow.getFlowId());
+            KegtapBroadcast.getPourUpdateBroadcastIntent(flow.getFlowId());
           sendOrderedBroadcast(intent, null);
         }
       };
@@ -368,6 +371,7 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
       final Tap tap = new Tap(tapInfo.getDescription(), tapInfo.getMlPerTick(), tapInfo
           .getMeterName(), tapInfo.getRelayName());
       mTapManager.addTap(tap);
+      mConfigManager.setTapDetail(tap.getMeterName(), tapDetail);
     }
   }
 

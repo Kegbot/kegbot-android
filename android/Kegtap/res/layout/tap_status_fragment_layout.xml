@@ -36,35 +36,153 @@
 
   <!-- Rest of content -->
   <LinearLayout
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:gravity="top">
+    android:gravity="center">
 
     <!-- Left side: Tap Image -->
-    <FrameLayout
+    <ImageView
+      android:id="@+id/tapImage"
       android:layout_margin="5dip"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content">
-      <ImageView
-        android:id="@+id/tapImage"
-        android:layout_width="384dip"
-        android:layout_height="384dip" />
-    </FrameLayout>
+      android:layout_width="384dip"
+      android:layout_height="384dip" />
 
     <!-- Right Side: Tap Details -->
     <LinearLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:layout_margin="5dip"
+      android:layout_margin="10dip"
       android:orientation="vertical"
-      android:gravity="top">
-
-      <TextView
-        android:id="@+id/tapDateTapped"
+      android:gravity="center">
+      
+      <!-- Date Tapped -->
+      <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="22dip" />
+        android:layout_marginBottom="15dip"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:background="@color/black20pct">
+        <TextView
+          android:id="@+id/tapDateTappedHeader"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:textSize="18dip"
+          android:text="Date Tapped"
+          android:textColor="#888"
+          android:gravity="center"/>
+        <View
+          android:layout_width="match_parent"
+          android:layout_height="1dip"
+          android:layout_marginLeft="5dip"
+          android:layout_marginRight="5dip"
+          android:background="#1FFFFFFF" />
+        <TextView
+          android:id="@+id/tapDateTapped"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:textSize="22dip"
+          android:textStyle="bold"
+          android:gravity="center" />
+      </LinearLayout>
+        
+      <!-- Status -->
+      <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dip"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:background="@color/black20pct">
+        <TextView
+          android:id="@+id/tapStatusHeader"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:textSize="18dip"
+          android:text="Status"
+          android:textColor="#888"
+          android:gravity="center"/>
+        <View
+          android:layout_width="match_parent"
+          android:layout_height="1dip"
+          android:layout_marginLeft="5dip"
+          android:layout_marginRight="5dip"
+          android:background="#1FFFFFFF" />
+        <TextView
+          android:id="@+id/tapStatus"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:textSize="22dip"
+          android:textStyle="bold"
+          android:text="Online"
+          android:gravity="center" />
+      </LinearLayout>
+        
+      <!-- Keg -->
+      <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dip"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:background="@color/black20pct">
+        <TextView
+          android:id="@+id/tapKegHeader"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:textSize="18dip"
+          android:text="Keg Contents"
+          android:textColor="#888"
+          android:gravity="center"/>
+        <View
+          android:layout_width="match_parent"
+          android:layout_height="1dip"
+          android:layout_marginLeft="5dip"
+          android:layout_marginRight="5dip"
+          android:background="#1FFFFFFF" />
+        <TextView
+          android:id="@+id/tapKeg"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:textSize="22dip"
+          android:textStyle="bold"
+          android:text="Volume Unknown"
+          android:gravity="center" />
+      </LinearLayout>
+        
+      <!-- Temperature -->
+      <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dip"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:background="@color/black20pct">
+        <TextView
+          android:id="@+id/tapTemperatureHeader"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:textSize="18dip"
+          android:text="Temperature"
+          android:textColor="#888"
+          android:gravity="center"/>
+        <View
+          android:layout_width="match_parent"
+          android:layout_height="1dip"
+          android:layout_marginLeft="5dip"
+          android:layout_marginRight="5dip"
+          android:background="#1FFFFFFF" />
+        <TextView
+          android:id="@+id/tapTemperature"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:textSize="22dip"
+          android:textStyle="bold"
+          android:text="Temperature Unknown"
+          android:gravity="center" />
+      </LinearLayout>
+        
     </LinearLayout>
   </LinearLayout>
 

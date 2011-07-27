@@ -2,6 +2,7 @@ package org.kegbot.kegtap;
 
 import org.kegbot.core.Flow;
 import org.kegbot.core.FlowManager;
+import org.kegbot.kegtap.core.KegtapBroadcast;
 import org.kegbot.kegtap.service.KegbotCoreServiceInterface;
 
 import android.content.BroadcastReceiver;
@@ -15,13 +16,9 @@ public class PourInProgressActivity extends CoreActivity {
 
   public final String LOG_TAG = PourInProgressActivity.class.getSimpleName();
 
-  static final String ACTION_POUR_UPDATE = "org.kegbot.action.POUR_UPDATE";
-
-  static final String EXTRA_FLOW_ID = "flow";
-
   private PourStatusFragment mPourStatus;
 
-  private static final IntentFilter POUR_INTENT_FILTER = new IntentFilter(ACTION_POUR_UPDATE);
+  private static final IntentFilter POUR_INTENT_FILTER = new IntentFilter(KegtapBroadcast.ACTION_POUR_UPDATE);
   static {
     POUR_INTENT_FILTER.setPriority(100);
   }
@@ -30,7 +27,7 @@ public class PourInProgressActivity extends CoreActivity {
     @Override
     public void onReceive(Context context, Intent intent) {
       final String action = intent.getAction();
-      if (ACTION_POUR_UPDATE.equals(action)) {
+      if (KegtapBroadcast.ACTION_POUR_UPDATE.equals(action)) {
         handleIntent(intent);
         abortBroadcast();
       }
@@ -82,8 +79,8 @@ public class PourInProgressActivity extends CoreActivity {
   private void handleIntent(final Intent intent) {
     final String action = intent.getAction();
     Log.d(LOG_TAG, "Handling intent: " + intent);
-    if (ACTION_POUR_UPDATE.equals(action)) {
-      final long flowId = intent.getLongExtra(EXTRA_FLOW_ID, -1);
+    if (KegtapBroadcast.ACTION_POUR_UPDATE.equals(action)) {
+      final long flowId = intent.getLongExtra(KegtapBroadcast.POUR_UPDATE_EXTRA_FLOW_ID, -1);
       if (flowId > 0) {
         Log.d(LOG_TAG, "Flow id: " + flowId);
         updateForFlow(flowId);
@@ -101,16 +98,10 @@ public class PourInProgressActivity extends CoreActivity {
 
   public static Intent getStartIntent(Context context, long flowId) {
     final Intent intent = new Intent(context, PourInProgressActivity.class);
-    intent.setAction(ACTION_POUR_UPDATE);
+    intent.setAction(KegtapBroadcast.ACTION_POUR_UPDATE);
     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-    intent.putExtra(EXTRA_FLOW_ID, flowId);
-    return intent;
-  }
-
-  public static Intent getBroadcastIntent(Context context, long flowId) {
-    final Intent intent = new Intent(ACTION_POUR_UPDATE);
-    intent.putExtra(EXTRA_FLOW_ID, flowId);
+    intent.putExtra(KegtapBroadcast.POUR_UPDATE_EXTRA_FLOW_ID, flowId);
     return intent;
   }
 
