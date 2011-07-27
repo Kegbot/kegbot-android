@@ -2,13 +2,13 @@
 <LinearLayout
   xmlns:android="http://schemas.android.com/apk/res/android"
   android:orientation="horizontal"
-  android:layout_width="fill_parent"
-  android:layout_height="fill_parent"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
   android:weightSum="1.0">
 
   <fragment
     android:id="@+id/tap_status"
-    class="org.kegbot.kegtap.TapStatusFragment"
+    class="org.kegbot.kegtap.PourStatusFragment"
     android:layout_weight="0.6"
     android:layout_width="0dip"
     android:layout_height="wrap_content"
@@ -23,7 +23,7 @@
 
     <fragment
       android:id="@+id/controls"
-      class="org.kegbot.kegtap.ControlsFragment"
+      class="org.kegbot.kegtap.PourControlsFragment"
       android:layout_weight="0.0"
       android:layout_width="match_parent"
       android:layout_height="0dip"
@@ -31,7 +31,7 @@
 
     <fragment
       android:id="@+id/event_list"
-      class="org.kegbot.kegtap.EventListFragment"
+      class="org.kegbot.kegtap.PourDrinkerFragment"
       android:layout_weight="1.0"
       android:layout_width="match_parent"
       android:layout_height="0dip" />

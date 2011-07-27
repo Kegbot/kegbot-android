@@ -458,6 +458,1502 @@ public final class Api {
     // @@protoc_insertion_point(class_scope:Paging)
   }
   
+  public interface RecordDrinkRequestOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+    
+    // required string tap_name = 1;
+    boolean hasTapName();
+    String getTapName();
+    
+    // required uint32 ticks = 2;
+    boolean hasTicks();
+    int getTicks();
+    
+    // optional float volume_ml = 3;
+    boolean hasVolumeMl();
+    float getVolumeMl();
+    
+    // optional string username = 4;
+    boolean hasUsername();
+    String getUsername();
+    
+    // optional uint32 seconds_ago = 5 [default = 0];
+    boolean hasSecondsAgo();
+    int getSecondsAgo();
+    
+    // optional string record_date = 6;
+    boolean hasRecordDate();
+    String getRecordDate();
+    
+    // optional uint32 duration_seconds = 7;
+    boolean hasDurationSeconds();
+    int getDurationSeconds();
+    
+    // optional string auth_token = 8;
+    boolean hasAuthToken();
+    String getAuthToken();
+    
+    // optional bool spilled = 9;
+    boolean hasSpilled();
+    boolean getSpilled();
+  }
+  public static final class RecordDrinkRequest extends
+      com.google.protobuf.GeneratedMessage
+      implements RecordDrinkRequestOrBuilder {
+    // Use RecordDrinkRequest.newBuilder() to construct.
+    private RecordDrinkRequest(Builder builder) {
+      super(builder);
+    }
+    private RecordDrinkRequest(boolean noInit) {}
+    
+    private static final RecordDrinkRequest defaultInstance;
+    public static RecordDrinkRequest getDefaultInstance() {
+      return defaultInstance;
+    }
+    
+    public RecordDrinkRequest getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+    
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return org.kegbot.proto.Api.internal_static_RecordDrinkRequest_descriptor;
+    }
+    
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return org.kegbot.proto.Api.internal_static_RecordDrinkRequest_fieldAccessorTable;
+    }
+    
+    private int bitField0_;
+    // required string tap_name = 1;
+    public static final int TAP_NAME_FIELD_NUMBER = 1;
+    private Object tapName_;
+    public boolean hasTapName() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    public String getTapName() {
+      Object ref = tapName_;
+      if (ref instanceof String) {
+        return (String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        String s = bs.toStringUtf8();
+        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+          tapName_ = s;
+        }
+        return s;
+      }
+    }
+    private com.google.protobuf.ByteString getTapNameBytes() {
+      Object ref = tapName_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+        tapName_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    
+    // required uint32 ticks = 2;
+    public static final int TICKS_FIELD_NUMBER = 2;
+    private int ticks_;
+    public boolean hasTicks() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    public int getTicks() {
+      return ticks_;
+    }
+    
+    // optional float volume_ml = 3;
+    public static final int VOLUME_ML_FIELD_NUMBER = 3;
+    private float volumeMl_;
+    public boolean hasVolumeMl() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    public float getVolumeMl() {
+      return volumeMl_;
+    }
+    
+    // optional string username = 4;
+    public static final int USERNAME_FIELD_NUMBER = 4;
+    private Object username_;
+    public boolean hasUsername() {
+      return ((bitField0_ & 0x00000008) == 0x00000008);
+    }
+    public String getUsername() {
+      Object ref = username_;
+      if (ref instanceof String) {
+        return (String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        String s = bs.toStringUtf8();
+        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+          username_ = s;
+        }
+        return s;
+      }
+    }
+    private com.google.protobuf.ByteString getUsernameBytes() {
+      Object ref = username_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+        username_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    
+    // optional uint32 seconds_ago = 5 [default = 0];
+    public static final int SECONDS_AGO_FIELD_NUMBER = 5;
+    private int secondsAgo_;
+    public boolean hasSecondsAgo() {
+      return ((bitField0_ & 0x00000010) == 0x00000010);
+    }
+    public int getSecondsAgo() {
+      return secondsAgo_;
+    }
+    
+    // optional string record_date = 6;
+    public static final int RECORD_DATE_FIELD_NUMBER = 6;
+    private Object recordDate_;
+    public boolean hasRecordDate() {
+      return ((bitField0_ & 0x00000020) == 0x00000020);
+    }
+    public String getRecordDate() {
+      Object ref = recordDate_;
+      if (ref instanceof String) {
+        return (String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        String s = bs.toStringUtf8();
+        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+          recordDate_ = s;
+        }
+        return s;
+      }
+    }
+    private com.google.protobuf.ByteString getRecordDateBytes() {
+      Object ref = recordDate_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+        recordDate_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    
+    // optional uint32 duration_seconds = 7;
+    public static final int DURATION_SECONDS_FIELD_NUMBER = 7;
+    private int durationSeconds_;
+    public boolean hasDurationSeconds() {
+      return ((bitField0_ & 0x00000040) == 0x00000040);
+    }
+    public int getDurationSeconds() {
+      return durationSeconds_;
+    }
+    
+    // optional string auth_token = 8;
+    public static final int AUTH_TOKEN_FIELD_NUMBER = 8;
+    private Object authToken_;
+    public boolean hasAuthToken() {
+      return ((bitField0_ & 0x00000080) == 0x00000080);
+    }
+    public String getAuthToken() {
+      Object ref = authToken_;
+      if (ref instanceof String) {
+        return (String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        String s = bs.toStringUtf8();
+        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+          authToken_ = s;
+        }
+        return s;
+      }
+    }
+    private com.google.protobuf.ByteString getAuthTokenBytes() {
+      Object ref = authToken_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+        authToken_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    
+    // optional bool spilled = 9;
+    public static final int SPILLED_FIELD_NUMBER = 9;
+    private boolean spilled_;
+    public boolean hasSpilled() {
+      return ((bitField0_ & 0x00000100) == 0x00000100);
+    }
+    public boolean getSpilled() {
+      return spilled_;
+    }
+    
+    private void initFields() {
+      tapName_ = "";
+      ticks_ = 0;
+      volumeMl_ = 0F;
+      username_ = "";
+      secondsAgo_ = 0;
+      recordDate_ = "";
+      durationSeconds_ = 0;
+      authToken_ = "";
+      spilled_ = false;
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+      
+      if (!hasTapName()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasTicks()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+    
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeBytes(1, getTapNameBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeUInt32(2, ticks_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeFloat(3, volumeMl_);
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        output.writeBytes(4, getUsernameBytes());
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        output.writeUInt32(5, secondsAgo_);
+      }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        output.writeBytes(6, getRecordDateBytes());
+      }
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+        output.writeUInt32(7, durationSeconds_);
+      }
+      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+        output.writeBytes(8, getAuthTokenBytes());
+      }
+      if (((bitField0_ & 0x00000100) == 0x00000100)) {
+        output.writeBool(9, spilled_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+    
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+    
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(1, getTapNameBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(2, ticks_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeFloatSize(3, volumeMl_);
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(4, getUsernameBytes());
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(5, secondsAgo_);
+      }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(6, getRecordDateBytes());
+      }
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(7, durationSeconds_);
+      }
+      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(8, getAuthTokenBytes());
+      }
+      if (((bitField0_ & 0x00000100) == 0x00000100)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(9, spilled_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+    
+    @java.lang.Override
+    protected Object writeReplace() throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+    
+    public static org.kegbot.proto.Api.RecordDrinkRequest parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static org.kegbot.proto.Api.RecordDrinkRequest parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static org.kegbot.proto.Api.RecordDrinkRequest parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static org.kegbot.proto.Api.RecordDrinkRequest parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static org.kegbot.proto.Api.RecordDrinkRequest parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static org.kegbot.proto.Api.RecordDrinkRequest parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    public static org.kegbot.proto.Api.RecordDrinkRequest parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static org.kegbot.proto.Api.RecordDrinkRequest parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static org.kegbot.proto.Api.RecordDrinkRequest parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static org.kegbot.proto.Api.RecordDrinkRequest parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(org.kegbot.proto.Api.RecordDrinkRequest prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+    
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements org.kegbot.proto.Api.RecordDrinkRequestOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return org.kegbot.proto.Api.internal_static_RecordDrinkRequest_descriptor;
+      }
+      
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return org.kegbot.proto.Api.internal_static_RecordDrinkRequest_fieldAccessorTable;
+      }
+      
+      // Construct using org.kegbot.proto.Api.RecordDrinkRequest.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+      
+      private Builder(BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+      
+      public Builder clear() {
+        super.clear();
+        tapName_ = "";
+        bitField0_ = (bitField0_ & ~0x00000001);
+        ticks_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        volumeMl_ = 0F;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        username_ = "";
+        bitField0_ = (bitField0_ & ~0x00000008);
+        secondsAgo_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000010);
+        recordDate_ = "";
+        bitField0_ = (bitField0_ & ~0x00000020);
+        durationSeconds_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000040);
+        authToken_ = "";
+        bitField0_ = (bitField0_ & ~0x00000080);
+        spilled_ = false;
+        bitField0_ = (bitField0_ & ~0x00000100);
+        return this;
+      }
+      
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+      
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return org.kegbot.proto.Api.RecordDrinkRequest.getDescriptor();
+      }
+      
+      public org.kegbot.proto.Api.RecordDrinkRequest getDefaultInstanceForType() {
+        return org.kegbot.proto.Api.RecordDrinkRequest.getDefaultInstance();
+      }
+      
+      public org.kegbot.proto.Api.RecordDrinkRequest build() {
+        org.kegbot.proto.Api.RecordDrinkRequest result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+      
+      private org.kegbot.proto.Api.RecordDrinkRequest buildParsed()
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        org.kegbot.proto.Api.RecordDrinkRequest result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(
+            result).asInvalidProtocolBufferException();
+        }
+        return result;
+      }
+      
+      public org.kegbot.proto.Api.RecordDrinkRequest buildPartial() {
+        org.kegbot.proto.Api.RecordDrinkRequest result = new org.kegbot.proto.Api.RecordDrinkRequest(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.tapName_ = tapName_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.ticks_ = ticks_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.volumeMl_ = volumeMl_;
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000008;
+        }
+        result.username_ = username_;
+        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+          to_bitField0_ |= 0x00000010;
+        }
+        result.secondsAgo_ = secondsAgo_;
+        if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
+          to_bitField0_ |= 0x00000020;
+        }
+        result.recordDate_ = recordDate_;
+        if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
+          to_bitField0_ |= 0x00000040;
+        }
+        result.durationSeconds_ = durationSeconds_;
+        if (((from_bitField0_ & 0x00000080) == 0x00000080)) {
+          to_bitField0_ |= 0x00000080;
+        }
+        result.authToken_ = authToken_;
+        if (((from_bitField0_ & 0x00000100) == 0x00000100)) {
+          to_bitField0_ |= 0x00000100;
+        }
+        result.spilled_ = spilled_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+      
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof org.kegbot.proto.Api.RecordDrinkRequest) {
+          return mergeFrom((org.kegbot.proto.Api.RecordDrinkRequest)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+      
+      public Builder mergeFrom(org.kegbot.proto.Api.RecordDrinkRequest other) {
+        if (other == org.kegbot.proto.Api.RecordDrinkRequest.getDefaultInstance()) return this;
+        if (other.hasTapName()) {
+          setTapName(other.getTapName());
+        }
+        if (other.hasTicks()) {
+          setTicks(other.getTicks());
+        }
+        if (other.hasVolumeMl()) {
+          setVolumeMl(other.getVolumeMl());
+        }
+        if (other.hasUsername()) {
+          setUsername(other.getUsername());
+        }
+        if (other.hasSecondsAgo()) {
+          setSecondsAgo(other.getSecondsAgo());
+        }
+        if (other.hasRecordDate()) {
+          setRecordDate(other.getRecordDate());
+        }
+        if (other.hasDurationSeconds()) {
+          setDurationSeconds(other.getDurationSeconds());
+        }
+        if (other.hasAuthToken()) {
+          setAuthToken(other.getAuthToken());
+        }
+        if (other.hasSpilled()) {
+          setSpilled(other.getSpilled());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+      
+      public final boolean isInitialized() {
+        if (!hasTapName()) {
+          
+          return false;
+        }
+        if (!hasTicks()) {
+          
+          return false;
+        }
+        return true;
+      }
+      
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder(
+            this.getUnknownFields());
+        while (true) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              this.setUnknownFields(unknownFields.build());
+              onChanged();
+              return this;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                this.setUnknownFields(unknownFields.build());
+                onChanged();
+                return this;
+              }
+              break;
+            }
+            case 10: {
+              bitField0_ |= 0x00000001;
+              tapName_ = input.readBytes();
+              break;
+            }
+            case 16: {
+              bitField0_ |= 0x00000002;
+              ticks_ = input.readUInt32();
+              break;
+            }
+            case 29: {
+              bitField0_ |= 0x00000004;
+              volumeMl_ = input.readFloat();
+              break;
+            }
+            case 34: {
+              bitField0_ |= 0x00000008;
+              username_ = input.readBytes();
+              break;
+            }
+            case 40: {
+              bitField0_ |= 0x00000010;
+              secondsAgo_ = input.readUInt32();
+              break;
+            }
+            case 50: {
+              bitField0_ |= 0x00000020;
+              recordDate_ = input.readBytes();
+              break;
+            }
+            case 56: {
+              bitField0_ |= 0x00000040;
+              durationSeconds_ = input.readUInt32();
+              break;
+            }
+            case 66: {
+              bitField0_ |= 0x00000080;
+              authToken_ = input.readBytes();
+              break;
+            }
+            case 72: {
+              bitField0_ |= 0x00000100;
+              spilled_ = input.readBool();
+              break;
+            }
+          }
+        }
+      }
+      
+      private int bitField0_;
+      
+      // required string tap_name = 1;
+      private Object tapName_ = "";
+      public boolean hasTapName() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      public String getTapName() {
+        Object ref = tapName_;
+        if (!(ref instanceof String)) {
+          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+          tapName_ = s;
+          return s;
+        } else {
+          return (String) ref;
+        }
+      }
+      public Builder setTapName(String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        tapName_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearTapName() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        tapName_ = getDefaultInstance().getTapName();
+        onChanged();
+        return this;
+      }
+      void setTapName(com.google.protobuf.ByteString value) {
+        bitField0_ |= 0x00000001;
+        tapName_ = value;
+        onChanged();
+      }
+      
+      // required uint32 ticks = 2;
+      private int ticks_ ;
+      public boolean hasTicks() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      public int getTicks() {
+        return ticks_;
+      }
+      public Builder setTicks(int value) {
+        bitField0_ |= 0x00000002;
+        ticks_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearTicks() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        ticks_ = 0;
+        onChanged();
+        return this;
+      }
+      
+      // optional float volume_ml = 3;
+      private float volumeMl_ ;
+      public boolean hasVolumeMl() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      public float getVolumeMl() {
+        return volumeMl_;
+      }
+      public Builder setVolumeMl(float value) {
+        bitField0_ |= 0x00000004;
+        volumeMl_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearVolumeMl() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        volumeMl_ = 0F;
+        onChanged();
+        return this;
+      }
+      
+      // optional string username = 4;
+      private Object username_ = "";
+      public boolean hasUsername() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      public String getUsername() {
+        Object ref = username_;
+        if (!(ref instanceof String)) {
+          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+          username_ = s;
+          return s;
+        } else {
+          return (String) ref;
+        }
+      }
+      public Builder setUsername(String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000008;
+        username_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearUsername() {
+        bitField0_ = (bitField0_ & ~0x00000008);
+        username_ = getDefaultInstance().getUsername();
+        onChanged();
+        return this;
+      }
+      void setUsername(com.google.protobuf.ByteString value) {
+        bitField0_ |= 0x00000008;
+        username_ = value;
+        onChanged();
+      }
+      
+      // optional uint32 seconds_ago = 5 [default = 0];
+      private int secondsAgo_ ;
+      public boolean hasSecondsAgo() {
+        return ((bitField0_ & 0x00000010) == 0x00000010);
+      }
+      public int getSecondsAgo() {
+        return secondsAgo_;
+      }
+      public Builder setSecondsAgo(int value) {
+        bitField0_ |= 0x00000010;
+        secondsAgo_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearSecondsAgo() {
+        bitField0_ = (bitField0_ & ~0x00000010);
+        secondsAgo_ = 0;
+        onChanged();
+        return this;
+      }
+      
+      // optional string record_date = 6;
+      private Object recordDate_ = "";
+      public boolean hasRecordDate() {
+        return ((bitField0_ & 0x00000020) == 0x00000020);
+      }
+      public String getRecordDate() {
+        Object ref = recordDate_;
+        if (!(ref instanceof String)) {
+          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+          recordDate_ = s;
+          return s;
+        } else {
+          return (String) ref;
+        }
+      }
+      public Builder setRecordDate(String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000020;
+        recordDate_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearRecordDate() {
+        bitField0_ = (bitField0_ & ~0x00000020);
+        recordDate_ = getDefaultInstance().getRecordDate();
+        onChanged();
+        return this;
+      }
+      void setRecordDate(com.google.protobuf.ByteString value) {
+        bitField0_ |= 0x00000020;
+        recordDate_ = value;
+        onChanged();
+      }
+      
+      // optional uint32 duration_seconds = 7;
+      private int durationSeconds_ ;
+      public boolean hasDurationSeconds() {
+        return ((bitField0_ & 0x00000040) == 0x00000040);
+      }
+      public int getDurationSeconds() {
+        return durationSeconds_;
+      }
+      public Builder setDurationSeconds(int value) {
+        bitField0_ |= 0x00000040;
+        durationSeconds_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearDurationSeconds() {
+        bitField0_ = (bitField0_ & ~0x00000040);
+        durationSeconds_ = 0;
+        onChanged();
+        return this;
+      }
+      
+      // optional string auth_token = 8;
+      private Object authToken_ = "";
+      public boolean hasAuthToken() {
+        return ((bitField0_ & 0x00000080) == 0x00000080);
+      }
+      public String getAuthToken() {
+        Object ref = authToken_;
+        if (!(ref instanceof String)) {
+          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+          authToken_ = s;
+          return s;
+        } else {
+          return (String) ref;
+        }
+      }
+      public Builder setAuthToken(String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000080;
+        authToken_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearAuthToken() {
+        bitField0_ = (bitField0_ & ~0x00000080);
+        authToken_ = getDefaultInstance().getAuthToken();
+        onChanged();
+        return this;
+      }
+      void setAuthToken(com.google.protobuf.ByteString value) {
+        bitField0_ |= 0x00000080;
+        authToken_ = value;
+        onChanged();
+      }
+      
+      // optional bool spilled = 9;
+      private boolean spilled_ ;
+      public boolean hasSpilled() {
+        return ((bitField0_ & 0x00000100) == 0x00000100);
+      }
+      public boolean getSpilled() {
+        return spilled_;
+      }
+      public Builder setSpilled(boolean value) {
+        bitField0_ |= 0x00000100;
+        spilled_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearSpilled() {
+        bitField0_ = (bitField0_ & ~0x00000100);
+        spilled_ = false;
+        onChanged();
+        return this;
+      }
+      
+      // @@protoc_insertion_point(builder_scope:RecordDrinkRequest)
+    }
+    
+    static {
+      defaultInstance = new RecordDrinkRequest(true);
+      defaultInstance.initFields();
+    }
+    
+    // @@protoc_insertion_point(class_scope:RecordDrinkRequest)
+  }
+  
+  public interface RecordTemperatureRequestOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+    
+    // required string sensor_name = 1;
+    boolean hasSensorName();
+    String getSensorName();
+    
+    // required float temp_c = 2;
+    boolean hasTempC();
+    float getTempC();
+    
+    // optional string record_date = 3;
+    boolean hasRecordDate();
+    String getRecordDate();
+  }
+  public static final class RecordTemperatureRequest extends
+      com.google.protobuf.GeneratedMessage
+      implements RecordTemperatureRequestOrBuilder {
+    // Use RecordTemperatureRequest.newBuilder() to construct.
+    private RecordTemperatureRequest(Builder builder) {
+      super(builder);
+    }
+    private RecordTemperatureRequest(boolean noInit) {}
+    
+    private static final RecordTemperatureRequest defaultInstance;
+    public static RecordTemperatureRequest getDefaultInstance() {
+      return defaultInstance;
+    }
+    
+    public RecordTemperatureRequest getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+    
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return org.kegbot.proto.Api.internal_static_RecordTemperatureRequest_descriptor;
+    }
+    
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return org.kegbot.proto.Api.internal_static_RecordTemperatureRequest_fieldAccessorTable;
+    }
+    
+    private int bitField0_;
+    // required string sensor_name = 1;
+    public static final int SENSOR_NAME_FIELD_NUMBER = 1;
+    private Object sensorName_;
+    public boolean hasSensorName() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    public String getSensorName() {
+      Object ref = sensorName_;
+      if (ref instanceof String) {
+        return (String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        String s = bs.toStringUtf8();
+        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+          sensorName_ = s;
+        }
+        return s;
+      }
+    }
+    private com.google.protobuf.ByteString getSensorNameBytes() {
+      Object ref = sensorName_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+        sensorName_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    
+    // required float temp_c = 2;
+    public static final int TEMP_C_FIELD_NUMBER = 2;
+    private float tempC_;
+    public boolean hasTempC() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    public float getTempC() {
+      return tempC_;
+    }
+    
+    // optional string record_date = 3;
+    public static final int RECORD_DATE_FIELD_NUMBER = 3;
+    private Object recordDate_;
+    public boolean hasRecordDate() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    public String getRecordDate() {
+      Object ref = recordDate_;
+      if (ref instanceof String) {
+        return (String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        String s = bs.toStringUtf8();
+        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+          recordDate_ = s;
+        }
+        return s;
+      }
+    }
+    private com.google.protobuf.ByteString getRecordDateBytes() {
+      Object ref = recordDate_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+        recordDate_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    
+    private void initFields() {
+      sensorName_ = "";
+      tempC_ = 0F;
+      recordDate_ = "";
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+      
+      if (!hasSensorName()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasTempC()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+    
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeBytes(1, getSensorNameBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeFloat(2, tempC_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeBytes(3, getRecordDateBytes());
+      }
+      getUnknownFields().writeTo(output);
+    }
+    
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+    
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(1, getSensorNameBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeFloatSize(2, tempC_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(3, getRecordDateBytes());
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+    
+    @java.lang.Override
+    protected Object writeReplace() throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+    
+    public static org.kegbot.proto.Api.RecordTemperatureRequest parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static org.kegbot.proto.Api.RecordTemperatureRequest parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static org.kegbot.proto.Api.RecordTemperatureRequest parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static org.kegbot.proto.Api.RecordTemperatureRequest parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static org.kegbot.proto.Api.RecordTemperatureRequest parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static org.kegbot.proto.Api.RecordTemperatureRequest parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    public static org.kegbot.proto.Api.RecordTemperatureRequest parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static org.kegbot.proto.Api.RecordTemperatureRequest parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static org.kegbot.proto.Api.RecordTemperatureRequest parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static org.kegbot.proto.Api.RecordTemperatureRequest parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(org.kegbot.proto.Api.RecordTemperatureRequest prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+    
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements org.kegbot.proto.Api.RecordTemperatureRequestOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return org.kegbot.proto.Api.internal_static_RecordTemperatureRequest_descriptor;
+      }
+      
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return org.kegbot.proto.Api.internal_static_RecordTemperatureRequest_fieldAccessorTable;
+      }
+      
+      // Construct using org.kegbot.proto.Api.RecordTemperatureRequest.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+      
+      private Builder(BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+      
+      public Builder clear() {
+        super.clear();
+        sensorName_ = "";
+        bitField0_ = (bitField0_ & ~0x00000001);
+        tempC_ = 0F;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        recordDate_ = "";
+        bitField0_ = (bitField0_ & ~0x00000004);
+        return this;
+      }
+      
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+      
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return org.kegbot.proto.Api.RecordTemperatureRequest.getDescriptor();
+      }
+      
+      public org.kegbot.proto.Api.RecordTemperatureRequest getDefaultInstanceForType() {
+        return org.kegbot.proto.Api.RecordTemperatureRequest.getDefaultInstance();
+      }
+      
+      public org.kegbot.proto.Api.RecordTemperatureRequest build() {
+        org.kegbot.proto.Api.RecordTemperatureRequest result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+      
+      private org.kegbot.proto.Api.RecordTemperatureRequest buildParsed()
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        org.kegbot.proto.Api.RecordTemperatureRequest result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(
+            result).asInvalidProtocolBufferException();
+        }
+        return result;
+      }
+      
+      public org.kegbot.proto.Api.RecordTemperatureRequest buildPartial() {
+        org.kegbot.proto.Api.RecordTemperatureRequest result = new org.kegbot.proto.Api.RecordTemperatureRequest(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.sensorName_ = sensorName_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.tempC_ = tempC_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.recordDate_ = recordDate_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+      
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof org.kegbot.proto.Api.RecordTemperatureRequest) {
+          return mergeFrom((org.kegbot.proto.Api.RecordTemperatureRequest)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+      
+      public Builder mergeFrom(org.kegbot.proto.Api.RecordTemperatureRequest other) {
+        if (other == org.kegbot.proto.Api.RecordTemperatureRequest.getDefaultInstance()) return this;
+        if (other.hasSensorName()) {
+          setSensorName(other.getSensorName());
+        }
+        if (other.hasTempC()) {
+          setTempC(other.getTempC());
+        }
+        if (other.hasRecordDate()) {
+          setRecordDate(other.getRecordDate());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+      
+      public final boolean isInitialized() {
+        if (!hasSensorName()) {
+          
+          return false;
+        }
+        if (!hasTempC()) {
+          
+          return false;
+        }
+        return true;
+      }
+      
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder(
+            this.getUnknownFields());
+        while (true) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              this.setUnknownFields(unknownFields.build());
+              onChanged();
+              return this;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                this.setUnknownFields(unknownFields.build());
+                onChanged();
+                return this;
+              }
+              break;
+            }
+            case 10: {
+              bitField0_ |= 0x00000001;
+              sensorName_ = input.readBytes();
+              break;
+            }
+            case 21: {
+              bitField0_ |= 0x00000002;
+              tempC_ = input.readFloat();
+              break;
+            }
+            case 26: {
+              bitField0_ |= 0x00000004;
+              recordDate_ = input.readBytes();
+              break;
+            }
+          }
+        }
+      }
+      
+      private int bitField0_;
+      
+      // required string sensor_name = 1;
+      private Object sensorName_ = "";
+      public boolean hasSensorName() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      public String getSensorName() {
+        Object ref = sensorName_;
+        if (!(ref instanceof String)) {
+          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+          sensorName_ = s;
+          return s;
+        } else {
+          return (String) ref;
+        }
+      }
+      public Builder setSensorName(String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        sensorName_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearSensorName() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        sensorName_ = getDefaultInstance().getSensorName();
+        onChanged();
+        return this;
+      }
+      void setSensorName(com.google.protobuf.ByteString value) {
+        bitField0_ |= 0x00000001;
+        sensorName_ = value;
+        onChanged();
+      }
+      
+      // required float temp_c = 2;
+      private float tempC_ ;
+      public boolean hasTempC() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      public float getTempC() {
+        return tempC_;
+      }
+      public Builder setTempC(float value) {
+        bitField0_ |= 0x00000002;
+        tempC_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearTempC() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        tempC_ = 0F;
+        onChanged();
+        return this;
+      }
+      
+      // optional string record_date = 3;
+      private Object recordDate_ = "";
+      public boolean hasRecordDate() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      public String getRecordDate() {
+        Object ref = recordDate_;
+        if (!(ref instanceof String)) {
+          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+          recordDate_ = s;
+          return s;
+        } else {
+          return (String) ref;
+        }
+      }
+      public Builder setRecordDate(String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000004;
+        recordDate_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearRecordDate() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        recordDate_ = getDefaultInstance().getRecordDate();
+        onChanged();
+        return this;
+      }
+      void setRecordDate(com.google.protobuf.ByteString value) {
+        bitField0_ |= 0x00000004;
+        recordDate_ = value;
+        onChanged();
+      }
+      
+      // @@protoc_insertion_point(builder_scope:RecordTemperatureRequest)
+    }
+    
+    static {
+      defaultInstance = new RecordTemperatureRequest(true);
+      defaultInstance.initFields();
+    }
+    
+    // @@protoc_insertion_point(class_scope:RecordTemperatureRequest)
+  }
+  
   public interface DrinkSetOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
     
@@ -14760,6 +16256,16 @@ public final class Api {
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_Paging_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_RecordDrinkRequest_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_RecordDrinkRequest_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_RecordTemperatureRequest_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_RecordTemperatureRequest_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
     internal_static_DrinkSet_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
@@ -14869,46 +16375,53 @@ public final class Api {
   static {
     java.lang.String[] descriptorData = {
       "\n\tapi.proto\032\014models.proto\"3\n\006Paging\022\r\n\005t" +
-      "otal\030\001 \001(\r\022\r\n\005limit\030\002 \001(\r\022\013\n\003pos\030\003 \001(\r\";" +
-      "\n\010DrinkSet\022\026\n\006drinks\030\001 \003(\0132\006.Drink\022\027\n\006pa" +
-      "ging\030\002 \001(\0132\007.Paging\"5\n\006KegSet\022\022\n\004kegs\030\001 " +
-      "\003(\0132\004.Keg\022\027\n\006paging\030\002 \001(\0132\007.Paging\"A\n\nSe" +
-      "ssionSet\022\032\n\010sessions\030\001 \003(\0132\010.Session\022\027\n\006" +
-      "paging\030\002 \001(\0132\007.Paging\"G\n\016SystemEventSet\022" +
-      "\034\n\006events\030\001 \003(\0132\014.SystemEvent\022\027\n\006paging\030" +
-      "\002 \001(\0132\007.Paging\"S\n\024SystemEventDetailSet\022\"" +
-      "\n\006events\030\001 \003(\0132\022.SystemEventDetail\022\027\n\006pa",
-      "ging\030\002 \001(\0132\007.Paging\"O\n\022SystemEventHtmlSe" +
-      "t\022 \n\006events\030\001 \003(\0132\020.SystemEventHtml\022\027\n\006p" +
-      "aging\030\002 \001(\0132\007.Paging\"E\n\rSoundEventSet\022\033\n" +
-      "\006events\030\001 \003(\0132\013.SoundEvent\022\027\n\006paging\030\002 \001" +
-      "(\0132\007.Paging\"A\n\014TapDetailSet\022\030\n\004taps\030\001 \003(" +
-      "\0132\n.TapDetail\022\027\n\006paging\030\002 \001(\0132\007.Paging\"O" +
-      "\n\022DrinkDetailHtmlSet\022 \n\006drinks\030\001 \003(\0132\020.D" +
-      "rinkDetailHtml\022\027\n\006paging\030\002 \001(\0132\007.Paging\"" +
-      "J\n\017ThermoSensorSet\022\036\n\007sensors\030\001 \003(\0132\r.Th" +
-      "ermoSensor\022\027\n\006paging\030\002 \001(\0132\007.Paging\"A\n\014T",
-      "hermoLogSet\022\030\n\004logs\030\001 \003(\0132\n.ThermoLog\022\027\n" +
-      "\006paging\030\002 \001(\0132\007.Paging\"k\n\tTapDetail\022\024\n\003t" +
-      "ap\030\001 \002(\0132\007.KegTap\022\021\n\003keg\030\002 \001(\0132\004.Keg\022\034\n\t" +
-      "beer_type\030\003 \001(\0132\t.BeerType\022\027\n\006brewer\030\004 \001" +
-      "(\0132\007.Brewer\"g\n\013DrinkDetail\022\025\n\005drink\030\001 \002(" +
-      "\0132\006.Drink\022\023\n\004user\030\002 \001(\0132\005.User\022\021\n\003keg\030\003 " +
-      "\001(\0132\004.Keg\022\031\n\007session\030\004 \001(\0132\010.Session\"M\n\r" +
-      "SessionDetail\022\031\n\007session\030\001 \002(\0132\010.Session" +
-      "\022\r\n\005stats\030\002 \001(\t\022\022\n\004kegs\030\003 \003(\0132\004.Keg\"\203\001\n\t" +
-      "KegDetail\022\021\n\003keg\030\001 \002(\0132\004.Keg\022\027\n\004type\030\002 \001",
-      "(\0132\t.BeerType\022\026\n\004size\030\003 \001(\0132\010.KegSize\022\026\n" +
-      "\006drinks\030\004 \003(\0132\006.Drink\022\032\n\010sessions\030\005 \003(\0132" +
-      "\010.Session\"!\n\nUserDetail\022\023\n\004user\030\001 \002(\0132\005." +
-      "User\"G\n\021SystemEventDetail\022\033\n\005event\030\001 \002(\013" +
-      "2\014.SystemEvent\022\025\n\005image\030\002 \001(\0132\006.Image\"+\n" +
-      "\017SystemEventHtml\022\n\n\002id\030\001 \002(\t\022\014\n\004html\030\002 \001" +
-      "(\t\"Y\n\022ThermoSensorDetail\022\035\n\006sensor\030\001 \002(\013" +
-      "2\r.ThermoSensor\022\021\n\tlast_temp\030\002 \001(\002\022\021\n\tla" +
-      "st_time\030\003 \001(\t\"/\n\017DrinkDetailHtml\022\n\n\002id\030\001" +
-      " \002(\t\022\020\n\010box_html\030\002 \002(\t2\013\n\tKegwebApiB\022\n\020o",
-      "rg.kegbot.proto"
+      "otal\030\001 \001(\r\022\r\n\005limit\030\002 \001(\r\022\013\n\003pos\030\003 \001(\r\"\306" +
+      "\001\n\022RecordDrinkRequest\022\020\n\010tap_name\030\001 \002(\t\022" +
+      "\r\n\005ticks\030\002 \002(\r\022\021\n\tvolume_ml\030\003 \001(\002\022\020\n\010use" +
+      "rname\030\004 \001(\t\022\026\n\013seconds_ago\030\005 \001(\r:\0010\022\023\n\013r" +
+      "ecord_date\030\006 \001(\t\022\030\n\020duration_seconds\030\007 \001" +
+      "(\r\022\022\n\nauth_token\030\010 \001(\t\022\017\n\007spilled\030\t \001(\010\"" +
+      "T\n\030RecordTemperatureRequest\022\023\n\013sensor_na" +
+      "me\030\001 \002(\t\022\016\n\006temp_c\030\002 \002(\002\022\023\n\013record_date\030" +
+      "\003 \001(\t\";\n\010DrinkSet\022\026\n\006drinks\030\001 \003(\0132\006.Drin",
+      "k\022\027\n\006paging\030\002 \001(\0132\007.Paging\"5\n\006KegSet\022\022\n\004" +
+      "kegs\030\001 \003(\0132\004.Keg\022\027\n\006paging\030\002 \001(\0132\007.Pagin" +
+      "g\"A\n\nSessionSet\022\032\n\010sessions\030\001 \003(\0132\010.Sess" +
+      "ion\022\027\n\006paging\030\002 \001(\0132\007.Paging\"G\n\016SystemEv" +
+      "entSet\022\034\n\006events\030\001 \003(\0132\014.SystemEvent\022\027\n\006" +
+      "paging\030\002 \001(\0132\007.Paging\"S\n\024SystemEventDeta" +
+      "ilSet\022\"\n\006events\030\001 \003(\0132\022.SystemEventDetai" +
+      "l\022\027\n\006paging\030\002 \001(\0132\007.Paging\"O\n\022SystemEven" +
+      "tHtmlSet\022 \n\006events\030\001 \003(\0132\020.SystemEventHt" +
+      "ml\022\027\n\006paging\030\002 \001(\0132\007.Paging\"E\n\rSoundEven",
+      "tSet\022\033\n\006events\030\001 \003(\0132\013.SoundEvent\022\027\n\006pag" +
+      "ing\030\002 \001(\0132\007.Paging\"A\n\014TapDetailSet\022\030\n\004ta" +
+      "ps\030\001 \003(\0132\n.TapDetail\022\027\n\006paging\030\002 \001(\0132\007.P" +
+      "aging\"O\n\022DrinkDetailHtmlSet\022 \n\006drinks\030\001 " +
+      "\003(\0132\020.DrinkDetailHtml\022\027\n\006paging\030\002 \001(\0132\007." +
+      "Paging\"J\n\017ThermoSensorSet\022\036\n\007sensors\030\001 \003" +
+      "(\0132\r.ThermoSensor\022\027\n\006paging\030\002 \001(\0132\007.Pagi" +
+      "ng\"A\n\014ThermoLogSet\022\030\n\004logs\030\001 \003(\0132\n.Therm" +
+      "oLog\022\027\n\006paging\030\002 \001(\0132\007.Paging\"k\n\tTapDeta" +
+      "il\022\024\n\003tap\030\001 \002(\0132\007.KegTap\022\021\n\003keg\030\002 \001(\0132\004.",
+      "Keg\022\034\n\tbeer_type\030\003 \001(\0132\t.BeerType\022\027\n\006bre" +
+      "wer\030\004 \001(\0132\007.Brewer\"g\n\013DrinkDetail\022\025\n\005dri" +
+      "nk\030\001 \002(\0132\006.Drink\022\023\n\004user\030\002 \001(\0132\005.User\022\021\n" +
+      "\003keg\030\003 \001(\0132\004.Keg\022\031\n\007session\030\004 \001(\0132\010.Sess" +
+      "ion\"M\n\rSessionDetail\022\031\n\007session\030\001 \002(\0132\010." +
+      "Session\022\r\n\005stats\030\002 \001(\t\022\022\n\004kegs\030\003 \003(\0132\004.K" +
+      "eg\"\203\001\n\tKegDetail\022\021\n\003keg\030\001 \002(\0132\004.Keg\022\027\n\004t" +
+      "ype\030\002 \001(\0132\t.BeerType\022\026\n\004size\030\003 \001(\0132\010.Keg" +
+      "Size\022\026\n\006drinks\030\004 \003(\0132\006.Drink\022\032\n\010sessions" +
+      "\030\005 \003(\0132\010.Session\"!\n\nUserDetail\022\023\n\004user\030\001",
+      " \002(\0132\005.User\"G\n\021SystemEventDetail\022\033\n\005even" +
+      "t\030\001 \002(\0132\014.SystemEvent\022\025\n\005image\030\002 \001(\0132\006.I" +
+      "mage\"+\n\017SystemEventHtml\022\n\n\002id\030\001 \002(\t\022\014\n\004h" +
+      "tml\030\002 \001(\t\"Y\n\022ThermoSensorDetail\022\035\n\006senso" +
+      "r\030\001 \002(\0132\r.ThermoSensor\022\021\n\tlast_temp\030\002 \001(" +
+      "\002\022\021\n\tlast_time\030\003 \001(\t\"/\n\017DrinkDetailHtml\022" +
+      "\n\n\002id\030\001 \002(\t\022\020\n\010box_html\030\002 \002(\t2\013\n\tKegwebA" +
+      "piB\022\n\020org.kegbot.proto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -14923,8 +16436,24 @@ public final class Api {
               new java.lang.String[] { "Total", "Limit", "Pos", },
               org.kegbot.proto.Api.Paging.class,
               org.kegbot.proto.Api.Paging.Builder.class);
-          internal_static_DrinkSet_descriptor =
+          internal_static_RecordDrinkRequest_descriptor =
             getDescriptor().getMessageTypes().get(1);
+          internal_static_RecordDrinkRequest_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_RecordDrinkRequest_descriptor,
+              new java.lang.String[] { "TapName", "Ticks", "VolumeMl", "Username", "SecondsAgo", "RecordDate", "DurationSeconds", "AuthToken", "Spilled", },
+              org.kegbot.proto.Api.RecordDrinkRequest.class,
+              org.kegbot.proto.Api.RecordDrinkRequest.Builder.class);
+          internal_static_RecordTemperatureRequest_descriptor =
+            getDescriptor().getMessageTypes().get(2);
+          internal_static_RecordTemperatureRequest_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_RecordTemperatureRequest_descriptor,
+              new java.lang.String[] { "SensorName", "TempC", "RecordDate", },
+              org.kegbot.proto.Api.RecordTemperatureRequest.class,
+              org.kegbot.proto.Api.RecordTemperatureRequest.Builder.class);
+          internal_static_DrinkSet_descriptor =
+            getDescriptor().getMessageTypes().get(3);
           internal_static_DrinkSet_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_DrinkSet_descriptor,
@@ -14932,7 +16461,7 @@ public final class Api {
               org.kegbot.proto.Api.DrinkSet.class,
               org.kegbot.proto.Api.DrinkSet.Builder.class);
           internal_static_KegSet_descriptor =
-            getDescriptor().getMessageTypes().get(2);
+            getDescriptor().getMessageTypes().get(4);
           internal_static_KegSet_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_KegSet_descriptor,
@@ -14940,7 +16469,7 @@ public final class Api {
               org.kegbot.proto.Api.KegSet.class,
               org.kegbot.proto.Api.KegSet.Builder.class);
           internal_static_SessionSet_descriptor =
-            getDescriptor().getMessageTypes().get(3);
+            getDescriptor().getMessageTypes().get(5);
           internal_static_SessionSet_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_SessionSet_descriptor,
@@ -14948,7 +16477,7 @@ public final class Api {
               org.kegbot.proto.Api.SessionSet.class,
               org.kegbot.proto.Api.SessionSet.Builder.class);
           internal_static_SystemEventSet_descriptor =
-            getDescriptor().getMessageTypes().get(4);
+            getDescriptor().getMessageTypes().get(6);
           internal_static_SystemEventSet_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_SystemEventSet_descriptor,
@@ -14956,7 +16485,7 @@ public final class Api {
               org.kegbot.proto.Api.SystemEventSet.class,
               org.kegbot.proto.Api.SystemEventSet.Builder.class);
           internal_static_SystemEventDetailSet_descriptor =
-            getDescriptor().getMessageTypes().get(5);
+            getDescriptor().getMessageTypes().get(7);
           internal_static_SystemEventDetailSet_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_SystemEventDetailSet_descriptor,
@@ -14964,7 +16493,7 @@ public final class Api {
               org.kegbot.proto.Api.SystemEventDetailSet.class,
               org.kegbot.proto.Api.SystemEventDetailSet.Builder.class);
           internal_static_SystemEventHtmlSet_descriptor =
-            getDescriptor().getMessageTypes().get(6);
+            getDescriptor().getMessageTypes().get(8);
           internal_static_SystemEventHtmlSet_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_SystemEventHtmlSet_descriptor,
@@ -14972,7 +16501,7 @@ public final class Api {
               org.kegbot.proto.Api.SystemEventHtmlSet.class,
               org.kegbot.proto.Api.SystemEventHtmlSet.Builder.class);
           internal_static_SoundEventSet_descriptor =
-            getDescriptor().getMessageTypes().get(7);
+            getDescriptor().getMessageTypes().get(9);
           internal_static_SoundEventSet_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_SoundEventSet_descriptor,
@@ -14980,7 +16509,7 @@ public final class Api {
               org.kegbot.proto.Api.SoundEventSet.class,
               org.kegbot.proto.Api.SoundEventSet.Builder.class);
           internal_static_TapDetailSet_descriptor =
-            getDescriptor().getMessageTypes().get(8);
+            getDescriptor().getMessageTypes().get(10);
           internal_static_TapDetailSet_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_TapDetailSet_descriptor,
@@ -14988,7 +16517,7 @@ public final class Api {
               org.kegbot.proto.Api.TapDetailSet.class,
               org.kegbot.proto.Api.TapDetailSet.Builder.class);
           internal_static_DrinkDetailHtmlSet_descriptor =
-            getDescriptor().getMessageTypes().get(9);
+            getDescriptor().getMessageTypes().get(11);
           internal_static_DrinkDetailHtmlSet_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_DrinkDetailHtmlSet_descriptor,
@@ -14996,7 +16525,7 @@ public final class Api {
               org.kegbot.proto.Api.DrinkDetailHtmlSet.class,
               org.kegbot.proto.Api.DrinkDetailHtmlSet.Builder.class);
           internal_static_ThermoSensorSet_descriptor =
-            getDescriptor().getMessageTypes().get(10);
+            getDescriptor().getMessageTypes().get(12);
           internal_static_ThermoSensorSet_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ThermoSensorSet_descriptor,
@@ -15004,7 +16533,7 @@ public final class Api {
               org.kegbot.proto.Api.ThermoSensorSet.class,
               org.kegbot.proto.Api.ThermoSensorSet.Builder.class);
           internal_static_ThermoLogSet_descriptor =
-            getDescriptor().getMessageTypes().get(11);
+            getDescriptor().getMessageTypes().get(13);
           internal_static_ThermoLogSet_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ThermoLogSet_descriptor,
@@ -15012,7 +16541,7 @@ public final class Api {
               org.kegbot.proto.Api.ThermoLogSet.class,
               org.kegbot.proto.Api.ThermoLogSet.Builder.class);
           internal_static_TapDetail_descriptor =
-            getDescriptor().getMessageTypes().get(12);
+            getDescriptor().getMessageTypes().get(14);
           internal_static_TapDetail_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_TapDetail_descriptor,
@@ -15020,7 +16549,7 @@ public final class Api {
               org.kegbot.proto.Api.TapDetail.class,
               org.kegbot.proto.Api.TapDetail.Builder.class);
           internal_static_DrinkDetail_descriptor =
-            getDescriptor().getMessageTypes().get(13);
+            getDescriptor().getMessageTypes().get(15);
           internal_static_DrinkDetail_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_DrinkDetail_descriptor,
@@ -15028,7 +16557,7 @@ public final class Api {
               org.kegbot.proto.Api.DrinkDetail.class,
               org.kegbot.proto.Api.DrinkDetail.Builder.class);
           internal_static_SessionDetail_descriptor =
-            getDescriptor().getMessageTypes().get(14);
+            getDescriptor().getMessageTypes().get(16);
           internal_static_SessionDetail_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_SessionDetail_descriptor,
@@ -15036,7 +16565,7 @@ public final class Api {
               org.kegbot.proto.Api.SessionDetail.class,
               org.kegbot.proto.Api.SessionDetail.Builder.class);
           internal_static_KegDetail_descriptor =
-            getDescriptor().getMessageTypes().get(15);
+            getDescriptor().getMessageTypes().get(17);
           internal_static_KegDetail_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_KegDetail_descriptor,
@@ -15044,7 +16573,7 @@ public final class Api {
               org.kegbot.proto.Api.KegDetail.class,
               org.kegbot.proto.Api.KegDetail.Builder.class);
           internal_static_UserDetail_descriptor =
-            getDescriptor().getMessageTypes().get(16);
+            getDescriptor().getMessageTypes().get(18);
           internal_static_UserDetail_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_UserDetail_descriptor,
@@ -15052,7 +16581,7 @@ public final class Api {
               org.kegbot.proto.Api.UserDetail.class,
               org.kegbot.proto.Api.UserDetail.Builder.class);
           internal_static_SystemEventDetail_descriptor =
-            getDescriptor().getMessageTypes().get(17);
+            getDescriptor().getMessageTypes().get(19);
           internal_static_SystemEventDetail_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_SystemEventDetail_descriptor,
@@ -15060,7 +16589,7 @@ public final class Api {
               org.kegbot.proto.Api.SystemEventDetail.class,
               org.kegbot.proto.Api.SystemEventDetail.Builder.class);
           internal_static_SystemEventHtml_descriptor =
-            getDescriptor().getMessageTypes().get(18);
+            getDescriptor().getMessageTypes().get(20);
           internal_static_SystemEventHtml_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_SystemEventHtml_descriptor,
@@ -15068,7 +16597,7 @@ public final class Api {
               org.kegbot.proto.Api.SystemEventHtml.class,
               org.kegbot.proto.Api.SystemEventHtml.Builder.class);
           internal_static_ThermoSensorDetail_descriptor =
-            getDescriptor().getMessageTypes().get(19);
+            getDescriptor().getMessageTypes().get(21);
           internal_static_ThermoSensorDetail_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ThermoSensorDetail_descriptor,
@@ -15076,7 +16605,7 @@ public final class Api {
               org.kegbot.proto.Api.ThermoSensorDetail.class,
               org.kegbot.proto.Api.ThermoSensorDetail.Builder.class);
           internal_static_DrinkDetailHtml_descriptor =
-            getDescriptor().getMessageTypes().get(20);
+            getDescriptor().getMessageTypes().get(22);
           internal_static_DrinkDetailHtml_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_DrinkDetailHtml_descriptor,

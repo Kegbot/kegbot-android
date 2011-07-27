@@ -4,7 +4,9 @@
 package org.kegbot.kegtap;
 
 import org.kegbot.kegtap.service.KegbotCoreService;
+import org.kegbot.kegtap.service.KegbotCoreServiceInterface;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -29,11 +31,13 @@ public class CoreActivity extends Activity {
     @Override
     public void onServiceConnected(ComponentName className, IBinder service) {
       mCoreService = ((KegbotCoreService.LocalBinder) service).getService();
+      onCoreServiceBound();
     }
 
     @Override
     public void onServiceDisconnected(ComponentName className) {
       mCoreService = null;
+      onCoreServiceUnbound();
     }
   };
 
@@ -63,6 +67,26 @@ public class CoreActivity extends Activity {
       unbindService(mCoreServiceConnection);
       mCoreServiceBound = false;
     }
+  }
+
+  protected void setupActionBar() {
+    ActionBar actionBar = getActionBar();
+    //actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.header_bg_square));
+    //actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_USE_LOGO);
+    actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME);
+    actionBar.setTitle("");
+  }
+
+  protected KegbotCoreServiceInterface getCoreService() {
+    return mCoreService;
+  }
+
+  protected void onCoreServiceBound() {
+
+  }
+
+  protected void onCoreServiceUnbound() {
+
   }
 
 }

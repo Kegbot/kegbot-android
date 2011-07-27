@@ -5,21 +5,22 @@ import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiImpl;
 import org.kegbot.kegtap.service.KegboardService;
 import org.kegbot.kegtap.util.KegbotDescriptor;
-import org.kegbot.kegtap.util.PreferenceUtils;
+import org.kegbot.kegtap.util.PreferenceHelper;
 import org.kegbot.kegtap.util.image.ImageDownloader;
 
-import android.app.ActionBar;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.hardware.usb.UsbManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 public class KegtapActivity extends CoreActivity {
 
@@ -34,14 +35,26 @@ public class KegtapActivity extends CoreActivity {
   private ControlsFragment mControls;
 
   private SharedPreferences mPreferences;
+  private PreferenceHelper mPrefsHelper;
+
+  private final Handler mHandler = new Handler();
 
   private final OnSharedPreferenceChangeListener mPreferenceListener =
       new OnSharedPreferenceChangeListener() {
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-      if (PreferenceUtils.SELECTED_KEGBOT_KEY.equals(key)) {
+      if (PreferenceHelper.KEY_SELECTED_KEGBOT.equals(key)) {
         initializeUi();
       }
+    }
+  };
+
+  private final Runnable mRefreshRunnable = new Runnable() {
+    @Override
+    public void run() {
+      Log.d(LOG_TAG, "Reloading events.");
+      mEvents.loadEvents();
+      mHandler.postDelayed(this, 10000);
     }
   };
 
@@ -50,9 +63,9 @@ public class KegtapActivity extends CoreActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.main);
     setupActionBar();
-    bindToCoreService();
 
     mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+    mPrefsHelper = new PreferenceHelper(mPreferences);
 
     mTapStatus = (TapStatusFragment) getFragmentManager().findFragmentById(
         R.id.tap_status);
@@ -64,6 +77,11 @@ public class KegtapActivity extends CoreActivity {
 
     mControls = (ControlsFragment) getFragmentManager().findFragmentById(
         R.id.controls);
+
+    View v = findViewById(R.id.tap_status);
+    v.setSystemUiVisibility(View.STATUS_BAR_HIDDEN);
+
+    mHandler.postDelayed(mRefreshRunnable, 10000);
   }
 
   @Override
@@ -95,7 +113,7 @@ public class KegtapActivity extends CoreActivity {
   public boolean onOptionsItemSelected(MenuItem item) {
     switch (item.getItemId()) {
     case R.id.settings:
-      launchSettings();
+      SettingsActivity.startSettingsActivity(this);
       return true;
     case android.R.id.home:
       // TODO: navigate up
@@ -122,17 +140,6 @@ public class KegtapActivity extends CoreActivity {
       startService(serviceIntent);
     }
   }
-  private void setupActionBar() {
-    ActionBar actionBar = getActionBar();
-    actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.header_bg_square));
-    actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_USE_LOGO);
-    actionBar.setTitle("");
-  }
-
-  private void launchSettings() {
-    Intent intent = new Intent(this, SettingsActivity.class);
-    startActivity(intent);
-  }
 
   /**
    * Starts the UI.
@@ -142,19 +149,19 @@ public class KegtapActivity extends CoreActivity {
    * If so, loads from last known kegbot.
    */
   private void initializeUi() {
-    String kegbotUrl = PreferenceUtils.getKegbotUrl(mPreferences);
+    String kegbotUrl = mPrefsHelper.getKegbotUrl();
     if (TextUtils.isEmpty(kegbotUrl)) {
-      launchSettings();
+      SettingsActivity.startSettingsActivity(this);
     } else {
-      getActionBar().setTitle(PreferenceUtils.getKegbotName(mPreferences));
+      getActionBar().setTitle(mPrefsHelper.getKegbotName());
       updateApiUrl(KegbotDescriptor.getApiUrl(kegbotUrl));
     }
   }
 
   private void updateApiUrl(Uri apiUrl) {
     KegbotApi api = new KegbotApiImpl(new DefaultHttpClient(), apiUrl.toString());
-    String username = PreferenceUtils.getUsername(mPreferences);
-    String password = PreferenceUtils.getPassword(mPreferences);
+    String username = mPrefsHelper.getUsername();
+    String password = mPrefsHelper.getPassword();
     api.setAccountCredentials(username, password);
     mTapStatus.setKegbotApi(api);
     api = new KegbotApiImpl(new DefaultHttpClient(), apiUrl.toString());

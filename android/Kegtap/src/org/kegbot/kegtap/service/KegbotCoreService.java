@@ -1,3 +1,6 @@
+/**
+ * CONFIDENTIAL -- NOT OPEN SOURCE
+ */
 package org.kegbot.kegtap.service;
 
 import java.util.concurrent.ExecutorService;
@@ -12,14 +15,16 @@ import org.kegbot.core.Tap;
 import org.kegbot.core.TapManager;
 import org.kegbot.core.ThermoSensor;
 import org.kegbot.kegtap.KegtapActivity;
+import org.kegbot.kegtap.PourInProgressActivity;
 import org.kegbot.kegtap.R;
 import org.kegbot.kegtap.service.KegbotApiService.ConnectionState;
 import org.kegbot.kegtap.util.KegbotDescriptor;
-import org.kegbot.kegtap.util.PreferenceUtils;
+import org.kegbot.kegtap.util.PreferenceHelper;
 import org.kegbot.proto.Api;
+import org.kegbot.proto.Api.RecordDrinkRequest;
+import org.kegbot.proto.Api.RecordTemperatureRequest;
 import org.kegbot.proto.Api.TapDetailSet;
 import org.kegbot.proto.Models;
-import org.kegbot.proto.Models.Drink;
 
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -29,8 +34,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.net.Uri;
 import android.os.Binder;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
@@ -42,18 +49,21 @@ import android.widget.Toast;
  *
  * @author mike wakerly (mike@wakerly.com)
  */
-public class KegbotCoreService extends Service {
+public class KegbotCoreService extends Service implements KegbotCoreServiceInterface {
 
   private static String TAG = KegbotCoreService.class.getSimpleName();
 
   private static final int NOTIFICATION_FOREGROUND = 1;
 
+  private static final String ACTION_FLOW_STARTED = "org.kegbot.action.ACTION_FLOW_STARTED";
+  private static final String ACTION_FLOW_UPDATED = "org.kegbot.action.ACTION_FLOW_UPDATED";
+
   /**
    * The flow manager for the core.
    */
-  private FlowManager mFlowManager;
+  private final FlowManager mFlowManager = FlowManager.getSingletonInstance();
 
-  private TapManager mTapManager;
+  private final TapManager mTapManager = TapManager.getSingletonInstance();
 
   private ExecutorService mExecutorService;
   private SharedPreferences mPreferences;
@@ -62,6 +72,8 @@ public class KegbotCoreService extends Service {
   private boolean mApiServiceBound;
   private KegbotHardwareService mHardwareService;
   private boolean mHardwareServiceBound;
+
+  private final Handler mHandler = new Handler();
 
   /**
    * Connection to the API service.
@@ -101,7 +113,7 @@ public class KegbotCoreService extends Service {
   };
 
   /**
-   * Binder interface to this service.  Local binds only.
+   * Binder interface to this service. Local binds only.
    */
   public class LocalBinder extends Binder {
     public KegbotCoreService getService() {
@@ -110,6 +122,17 @@ public class KegbotCoreService extends Service {
   }
 
   private final IBinder mBinder = new LocalBinder();
+
+  private final OnSharedPreferenceChangeListener mPreferenceListener =
+    new OnSharedPreferenceChangeListener() {
+  @Override
+  public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+    if (PreferenceHelper.KEY_SELECTED_KEGBOT.equals(key)) {
+
+    }
+  }
+};
+
 
   private final Runnable mFlowManagerWorker = new Runnable() {
     @Override
@@ -150,37 +173,77 @@ public class KegbotCoreService extends Service {
     }
 
     @Override
-    public void onThermoSensorUpdate(ThermoSensor sensor) {
-      Log.d(TAG, "Sensor update for sensor: " + sensor);
-      try {
-        mApiService.recordTemperature(sensor.getName(), sensor.getTemperatureC());
-      } catch (KegbotApiException e) {
-        Log.e(TAG, "Error recording temperature", e);
-      }
+    public void onThermoSensorUpdate(final ThermoSensor sensor) {
+      final Runnable r = new Runnable() {
+        @Override
+        public void run() {
+          Log.d(TAG, "Sensor update for sensor: " + sensor);
+          final RecordTemperatureRequest request = RecordTemperatureRequest.newBuilder()
+              .setSensorName(sensor.getName())
+              .setTempC((float) sensor.getTemperatureC())
+              .buildPartial();
+          mApiService.recordTemperatureAsync(request);
+        }
+      };
+      mHandler.post(r);
     }
 
     @Override
-    public void onMeterUpdate(FlowMeter meter) {
-      Log.d(TAG, "Meter update for meter: " + meter);
-      mFlowManager.handleMeterActivity(meter.getName(), (int) meter.getTicks());
+    public void onMeterUpdate(final FlowMeter meter) {
+      final Runnable r = new Runnable() {
+        @Override
+        public void run() {
+          Log.d(TAG, "Meter update for meter: " + meter);
+          mFlowManager.handleMeterActivity(meter.getName(), (int) meter.getTicks());
+        }
+      };
+      mHandler.post(r);
     }
   };
 
   private final FlowManager.Listener mFlowListener = new FlowManager.Listener() {
     @Override
-    public void onFlowUpdate(Flow flow) {
-      Log.d(TAG, "Flow updated: " + flow);
+    public void onFlowUpdate(final Flow flow) {
+      final Runnable r = new Runnable() {
+        @Override
+        public void run() {
+          Log.d(TAG, "Flow updated: " + flow);
+          final Intent intent =
+            PourInProgressActivity.getStartIntent(KegbotCoreService.this, flow.getFlowId());
+          startActivity(intent);
+          /*
+          final Intent intent = new Intent(ACTION_FLOW_UPDATED);
+          intent.putExtra("flow_id", flow.getFlowId());
+          KegbotCoreService.this.sendOrderedBroadcast(intent, null);
+          */
+        }
+      };
+      mHandler.post(r);
     }
 
     @Override
-    public void onFlowStart(Flow flow) {
-      Log.d(TAG, "Flow started: " + flow);
+    public void onFlowStart(final Flow flow) {
+      final Runnable r = new Runnable() {
+        @Override
+        public void run() {
+          Log.d(TAG, "Flow started: " + flow);
+          final Intent intent = new Intent(ACTION_FLOW_STARTED);
+          KegbotCoreService.this.sendOrderedBroadcast(intent, null);
+        }
+      };
+      mHandler.post(r);
     }
 
     @Override
-    public void onFlowEnd(Flow flow) {
-      Log.d(TAG, "Flow ended: " + flow);
-      recordDrinkForFlow(flow);
+    public void onFlowEnd(final Flow flow) {
+      final Runnable r = new Runnable() {
+        @Override
+        public void run() {
+          Log.d(TAG, "Flow ended: " + flow);
+          recordDrinkForFlow(flow);
+        }
+      };
+      mHandler.post(r);
     }
   };
 
@@ -192,8 +255,6 @@ public class KegbotCoreService extends Service {
     Log.d(TAG, "onCreate()");
     enableForeground();
 
-    mTapManager = TapManager.getSingletonInstance();
-    mFlowManager = FlowManager.getSingletonInstance();
     mFlowManager.addFlowListener(mFlowListener);
 
     bindToApiService();
@@ -249,6 +310,8 @@ public class KegbotCoreService extends Service {
     return mBinder;
   }
 
+
+
   public void stop() {
     mFlowManager.stop();
     mExecutorService.shutdown();
@@ -260,14 +323,13 @@ public class KegbotCoreService extends Service {
 
   private Notification buildForegroundNotification() {
     final Intent intent = new Intent(this, KegtapActivity.class);
-    final PendingIntent pendingIntent =
-      PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+    intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+    final PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent,
+        PendingIntent.FLAG_CANCEL_CURRENT);
     final Notification.Builder builder = new Notification.Builder(this);
-    builder.setOngoing(true)
-      .setSmallIcon(R.drawable.icon)
-      .setWhen(SystemClock.uptimeMillis())
-      .setContentTitle("Kegbot Core is running")
-      .setContentIntent(pendingIntent);
+    builder.setOngoing(true).setSmallIcon(R.drawable.icon).setWhen(SystemClock.uptimeMillis())
+        .setContentTitle("Kegbot Core is running").setContentIntent(pendingIntent);
     return builder.getNotification();
   }
 
@@ -276,12 +338,16 @@ public class KegbotCoreService extends Service {
    */
   private void recordDrinkForFlow(Flow ended) {
     Log.d(TAG, "Recording dring for flow: " + ended);
-    try {
-      Drink d = mApiService.recordDrink(ended.getTap().getMeterName(), ended.getTicks());
-      Log.i(TAG, "Recorded drink! " + d);
-    } catch (KegbotApiException e) {
-      Log.e(TAG, "Error recording drink", e);
-    }
+    final RecordDrinkRequest request = RecordDrinkRequest.newBuilder()
+        .setTapName(ended.getTap().getMeterName())
+        .setTicks(ended.getTicks())
+        .setVolumeMl((float) ended.getVolumeMl())
+        .setUsername((ended.getUser() != null) ? ended.getUser().getUsername() : "")
+        .setSecondsAgo(0)
+        .setDurationSeconds((int) (ended.getUpdateTime() - ended.getStartTime()))
+        .setSpilled(false)
+        .buildPartial();
+    mApiService.recordDrinkAsync(request);
   }
 
   /**
@@ -290,12 +356,13 @@ public class KegbotCoreService extends Service {
    */
   private void configure() throws KegbotApiException {
     Log.d(TAG, "Configuring!");
-    final String kegbotUrl = PreferenceUtils.getKegbotUrl(mPreferences);
+    final PreferenceHelper prefs = new PreferenceHelper(mPreferences);
+    final String kegbotUrl = prefs.getKegbotUrl();
     final Uri apiUrl = KegbotDescriptor.getApiUrl(kegbotUrl);
     mApiService.setApiUrl(apiUrl.toString());
 
-    final String username = PreferenceUtils.getUsername(mPreferences);
-    final String password = PreferenceUtils.getPassword(mPreferences);
+    final String username = prefs.getUsername();
+    final String password = prefs.getPassword();
     mApiService.setAccountCredentials(username, password);
 
     final TapDetailSet taps = mApiService.getAllTaps();
@@ -303,8 +370,8 @@ public class KegbotCoreService extends Service {
     for (final Api.TapDetail tapDetail : taps.getTapsList()) {
       Models.KegTap tapInfo = tapDetail.getTap();
       Log.d(TAG, "Adding tap: " + tapInfo.getDescription());
-      final Tap tap = new Tap(tapInfo.getDescription(), tapInfo.getMlPerTick(),
-          tapInfo.getMeterName(), tapInfo.getRelayName());
+      final Tap tap = new Tap(tapInfo.getDescription(), tapInfo.getMlPerTick(), tapInfo
+          .getMeterName(), tapInfo.getRelayName());
       mTapManager.addTap(tap);
     }
   }
@@ -312,6 +379,16 @@ public class KegbotCoreService extends Service {
   private void debugNotice(String message) {
     Log.d(TAG, message);
     Toast.makeText(KegbotCoreService.this, message, Toast.LENGTH_SHORT).show();
+  }
+
+  @Override
+  public FlowManager getFlowManager() {
+    return mFlowManager;
+  }
+
+  @Override
+  public TapManager getTapManager() {
+    return mTapManager;
   }
 
 }

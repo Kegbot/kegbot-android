@@ -210,7 +210,6 @@ public class KegboardService extends Service {
     unregisterReceiver(mUsbReceiver);
     if (mThread != null) {
       //mExecutorService.shutdown();
-
       mThread.stop();
     }
     super.onDestroy();

@@ -25,6 +25,8 @@ public class FlowManager {
 
   private final TapManager mTapManager;
 
+  private static final long DEFAULT_IDLE_TIME_MILLIS = 10000;
+
   /**
    * Records the last reading for each tap.
    */
@@ -134,7 +136,7 @@ public class FlowManager {
   public Collection<Flow> getCompletedFlows() {
     synchronized (mActiveFlows) {
       return ImmutableList
-      .copyOf(Iterables.filter(mActiveFlows.values(), Flow.PREDICATE_COMPLETED));
+          .copyOf(Iterables.filter(mActiveFlows.values(), Flow.PREDICATE_COMPLETED));
     }
   }
 
@@ -147,37 +149,44 @@ public class FlowManager {
     return flow;
   }
 
+  public Flow getFlowForFlowId(final long flowId) {
+    for (final Flow flow : mActiveFlows.values()) {
+      if (flow.getFlowId() == (int) flowId) {
+        return flow;
+      }
+    }
+    return null;
+  }
+
   public Flow handleMeterActivity(final String tapName, final int ticks) {
     Log.d(TAG, "handleMeterActivity: " + tapName + "=" + ticks);
     final Tap tap = mTapManager.getTapForMeterName(tapName);
-    Log.d(TAG, "handleMeterActivity: tap=" + tap);
     if (tap == null || tapName == null) {
       Log.d(TAG, "Dropping activity for unknown tap: " + tapName);
       return null;
     }
-    Integer lastReading = mLastTapReading.get(tap);
-    if (lastReading == null) {
-      lastReading = Integer.valueOf(0);
-    }
-    final int lastTicks = lastReading.intValue();
-    Log.d(TAG, "handleMeterActivity: lastTicks=" + lastTicks);
-
-    final int delta;
-    if (lastTicks >= 0) {
-      delta = ticks - lastTicks;
-    } else {
+    final Integer lastReading = mLastTapReading.get(tap);
+    int delta;
+    final boolean isActivity;
+    if (lastReading == null || lastReading.intValue() > ticks) {
+      // First report for this meter.
       delta = 0;
+      isActivity = true;
+    } else {
+      delta = ticks - lastReading.intValue();
+      isActivity = (delta > 0);
     }
+    mLastTapReading.put(tap, Integer.valueOf(ticks));
 
-    Log.d(TAG, "handleMeterActivity: lastTicks=" + lastTicks + ", ticks=" + ticks + ", delta="
+    Log.d(TAG, "handleMeterActivity: lastReading=" + lastReading + ", ticks=" + ticks + ", delta="
         + delta);
 
     Flow flow = null;
     synchronized (mActiveFlows) {
-      if (delta > 0 || lastTicks < 0) {
+      if (isActivity) {
         flow = getFlowForTapName(tapName);
         if (flow == null) {
-          flow = startFlow(tap, 5000);
+          flow = startFlow(tap, DEFAULT_IDLE_TIME_MILLIS);
           Log.d(TAG, "  started new flow: " + flow);
         } else {
           Log.d(TAG, "  found existing flow: " + flow);
@@ -187,7 +196,6 @@ public class FlowManager {
       }
     }
 
-    mLastTapReading.put(tap, Integer.valueOf(ticks));
     return flow;
   }
 
@@ -207,7 +215,7 @@ public class FlowManager {
     return removedFlow;
   }
 
-  public Flow startFlow(final Tap tap, final int maxIdleTimeMs) {
+  public Flow startFlow(final Tap tap, final long maxIdleTimeMs) {
     Log.d(TAG, "Starting flow on tap " + tap);
     final Flow flow = Flow.build(tap, maxIdleTimeMs);
     synchronized (mActiveFlows) {

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<color name="headerBg">#1A5568</color>
+    <color name="headerBg">#1A5568</color>
+    <color name="transparent">#00000000</color>
 	
 </resources>

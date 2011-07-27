@@ -1,14 +1,20 @@
 package org.kegbot.kegtap.service;
 
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiException;
 import org.kegbot.api.KegbotApiImpl;
+import org.kegbot.kegtap.core.backend.LocalDbHelper;
 import org.kegbot.proto.Api.DrinkDetail;
 import org.kegbot.proto.Api.DrinkDetailHtmlSet;
 import org.kegbot.proto.Api.DrinkSet;
 import org.kegbot.proto.Api.KegDetail;
 import org.kegbot.proto.Api.KegSet;
+import org.kegbot.proto.Api.RecordDrinkRequest;
+import org.kegbot.proto.Api.RecordTemperatureRequest;
 import org.kegbot.proto.Api.SessionDetail;
 import org.kegbot.proto.Api.SessionSet;
 import org.kegbot.proto.Api.SoundEventSet;
@@ -23,10 +29,18 @@ import org.kegbot.proto.Models.Drink;
 import org.kegbot.proto.Models.ThermoLog;
 import org.kegbot.proto.Models.User;
 
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Binder;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.util.Log;
+
+import com.google.protobuf.AbstractMessage;
+import com.google.protobuf.InvalidProtocolBufferException;
 
 /**
  * This service manages a connection to a Kegbot backend, using the Kegbot API.
@@ -35,6 +49,19 @@ import android.util.Log;
 public class KegbotApiService extends BackgroundService implements KegbotApi {
 
   private static String TAG = KegbotApiService.class.getSimpleName();
+
+  /**
+   * All pending asynchronous requests. They will be serviced in order in the
+   * background thread.
+   *
+   * TODO(mikey): fix capacity appropriately.
+   */
+  private final BlockingQueue<AbstractMessage> mPendingRequests =
+    new LinkedBlockingQueue<AbstractMessage>(10);
+
+  private KegbotApiImpl mApi;
+
+  private SQLiteOpenHelper mLocalDbHelper;
 
   /**
    * Current state of this service with respect to its backend.
@@ -99,35 +126,145 @@ public class KegbotApiService extends BackgroundService implements KegbotApi {
     }
   };
 
-  private KegbotApiImpl mApi;
-
-  public KegbotApiService() {
-    super(TAG);
-  }
-
   @Override
   public void onCreate() {
+    Log.d(TAG, "Opening local database");
+    mLocalDbHelper = new LocalDbHelper(this);
+
     super.onCreate();
+
     mApi = new KegbotApiImpl(new DefaultHttpClient(), "http://oldgertie.kegbot.net/api");
     mApi.setListener(mApiListener);
     mApi.setApiKey("");
   }
 
   @Override
-  public IBinder onBind(Intent intent) {
+  public IBinder onBind(final Intent intent) {
     return mBinder;
   }
 
   @Override
   protected void runInBackground() {
-    monitorConnectionStatus();
+    Log.i(TAG, "Running in background.");
+
+    int numPending = numPendingEntries();
+    try {
+      while (true) {
+        writeNewRequestsToDb();
+        postPendingRequestsToServer();
+        numPending = numPendingEntries();
+        SystemClock.sleep(1000);
+      }
+    } catch (Throwable e) {
+      Log.wtf(TAG, "Uncaught exception in background.", e);
+    }
   }
 
-  private void monitorConnectionStatus() {
-    // TODO
+  private void postPendingRequestsToServer() {
+    final int numPending = numPendingEntries();
+    //Log.i(TAG, "Posting pending requests: " + numPending);
+    processRequestFromDb();
   }
 
-  public void attachListener(Listener listener) {
+  private void processRequestFromDb() {
+    final SQLiteDatabase db = mLocalDbHelper.getWritableDatabase();
+
+    // Fetch most recent entry.
+    final Cursor cursor =
+      db.query(LocalDbHelper.TABLE_NAME,
+          null, null, null, null, null, LocalDbHelper.COLUMN_NAME_ADDED_DATE + " ASC", "1");
+    try {
+      if (cursor.getCount() == 0) {
+        //Log.i(TAG, "processRequestFromDb: empty result set, exiting");
+        return;
+      }
+      cursor.moveToFirst();
+
+      boolean processed = false;
+      try {
+        final AbstractMessage record = LocalDbHelper.getCurrentRow(db, cursor);
+        if (record instanceof RecordDrinkRequest) {
+          Log.d(TAG, "Posting drink");
+          final Drink drink = recordDrink((RecordDrinkRequest) record);
+          processed = true;
+          Log.d(TAG, "Drink posted: " + drink);
+        } else if (record instanceof RecordTemperatureRequest) {
+          Log.d(TAG, "Posting thermo");
+          final ThermoLog log = recordTemperature((RecordTemperatureRequest) record);
+          processed = true;
+          Log.d(TAG, "ThermoLog posted: " + log);
+        }
+
+        if (processed) {
+          final int deleteResult = LocalDbHelper.deleteCurrentRow(db, cursor);
+          Log.d(TAG, "Deleted row, result = " + deleteResult);
+        }
+      } catch (InvalidProtocolBufferException e) {
+        Log.w(TAG, "Error processing column.");
+        return;
+      } catch (KegbotApiException e) {
+        Log.w(TAG, "Error processing column.");
+        return;
+      }
+    } finally {
+      cursor.close();
+      db.close();
+    }
+  }
+
+  private int writeNewRequestsToDb() {
+    AbstractMessage message;
+    int result = 0;
+    while ((message = mPendingRequests.poll()) != null) {
+      if (addSingleRequestToDb(message)) {
+        result++;
+      }
+    }
+    return result;
+  }
+
+  private boolean addSingleRequestToDb(AbstractMessage message) {
+    Log.d(TAG, "Adding request to db!");
+    final String type;
+    if (message instanceof RecordDrinkRequest) {
+      type = "drink";
+    } else if (message instanceof RecordTemperatureRequest) {
+      type = "thermo";
+    } else {
+      Log.w(TAG, "Unknown record type; dropping.");
+      return false;
+    }
+    Log.d(TAG, "Request is a " + type);
+
+    final ContentValues values = new ContentValues();
+    values.put(LocalDbHelper.COLUMN_NAME_TYPE, type);
+    values.put(LocalDbHelper.COLUMN_NAME_RECORD, message.toByteArray());
+
+    boolean inserted = false;
+    final SQLiteDatabase db = mLocalDbHelper.getWritableDatabase();
+    try {
+      db.insert(LocalDbHelper.TABLE_NAME, null, values);
+      inserted = true;
+    } finally {
+      db.close();
+    }
+    return inserted;
+  }
+
+  private int numPendingEntries() {
+    final String[] columns = {LocalDbHelper.COLUMN_NAME_ID};
+    final SQLiteDatabase db = mLocalDbHelper.getReadableDatabase();
+    final Cursor cursor =
+      db.query(LocalDbHelper.TABLE_NAME, columns, null, null, null, null, null);
+    try {
+      return cursor.getCount();
+    } finally {
+      cursor.close();
+      db.close();
+    }
+  }
+
+  public void attachListener(final Listener listener) {
     // TODO
   }
 
@@ -135,19 +272,18 @@ public class KegbotApiService extends BackgroundService implements KegbotApi {
   // KegbotApi methods
   //
 
-
   @Override
-  public boolean setAccountCredentials(String username, String password) {
+  public boolean setAccountCredentials(final String username, final String password) {
     return mApi.setAccountCredentials(username, password);
   }
 
   @Override
-  public void setApiUrl(String apiUrl) {
+  public void setApiUrl(final String apiUrl) {
     mApi.setApiUrl(apiUrl);
   }
 
   @Override
-  public void setApiKey(String apiKey) {
+  public void setApiKey(final String apiKey) {
     mApi.setApiKey(apiKey);
   }
 
@@ -167,33 +303,33 @@ public class KegbotApiService extends BackgroundService implements KegbotApi {
   }
 
   @Override
-  public AuthenticationToken getAuthToken(String authDevice, String tokenValue)
-  throws KegbotApiException {
+  public AuthenticationToken getAuthToken(final String authDevice, final String tokenValue)
+      throws KegbotApiException {
     return mApi.getAuthToken(authDevice, tokenValue);
   }
 
   @Override
-  public DrinkDetail getDrinkDetail(String id) throws KegbotApiException {
+  public DrinkDetail getDrinkDetail(final String id) throws KegbotApiException {
     return mApi.getDrinkDetail(id);
   }
 
   @Override
-  public KegDetail getKegDetail(String id) throws KegbotApiException {
+  public KegDetail getKegDetail(final String id) throws KegbotApiException {
     return mApi.getKegDetail(id);
   }
 
   @Override
-  public DrinkSet getKegDrinks(String kegId) throws KegbotApiException {
+  public DrinkSet getKegDrinks(final String kegId) throws KegbotApiException {
     return mApi.getKegDrinks(kegId);
   }
 
   @Override
-  public SystemEventDetailSet getKegEvents(String kegId) throws KegbotApiException {
+  public SystemEventDetailSet getKegEvents(final String kegId) throws KegbotApiException {
     return mApi.getKegEvents(kegId);
   }
 
   @Override
-  public SessionSet getKegSessions(String kegId) throws KegbotApiException {
+  public SessionSet getKegSessions(final String kegId) throws KegbotApiException {
     return mApi.getKegSessions(kegId);
   }
 
@@ -218,22 +354,27 @@ public class KegbotApiService extends BackgroundService implements KegbotApi {
   }
 
   @Override
+  public SystemEventDetailSet getRecentEvents(final long sinceEventId) throws KegbotApiException {
+    return mApi.getRecentEvents(sinceEventId);
+  }
+
+  @Override
   public SystemEventHtmlSet getRecentEventsHtml() throws KegbotApiException {
     return mApi.getRecentEventsHtml();
   }
 
   @Override
-  public SessionDetail getSessionDetail(String id) throws KegbotApiException {
+  public SessionDetail getSessionDetail(final String id) throws KegbotApiException {
     return mApi.getSessionDetail(id);
   }
 
   @Override
-  public TapDetail getTapDetail(String tapName) throws KegbotApiException {
+  public TapDetail getTapDetail(final String tapName) throws KegbotApiException {
     return mApi.getTapDetail(tapName);
   }
 
   @Override
-  public ThermoLogSet getThermoSensorLogs(String sensorId) throws KegbotApiException {
+  public ThermoLogSet getThermoSensorLogs(final String sensorId) throws KegbotApiException {
     return mApi.getThermoSensorLogs(sensorId);
   }
 
@@ -243,29 +384,58 @@ public class KegbotApiService extends BackgroundService implements KegbotApi {
   }
 
   @Override
-  public User getUser(String username) throws KegbotApiException {
+  public User getUser(final String username) throws KegbotApiException {
     return mApi.getUser(username);
   }
 
   @Override
-  public DrinkSet getUserDrinks(String username) throws KegbotApiException {
+  public DrinkSet getUserDrinks(final String username) throws KegbotApiException {
     return mApi.getUserDrinks(username);
   }
 
   @Override
-  public SystemEventDetailSet getUserEvents(String username) throws KegbotApiException {
+  public SystemEventDetailSet getUserEvents(final String username) throws KegbotApiException {
     return mApi.getUserEvents(username);
   }
 
   @Override
-  public Drink recordDrink(String tapName, int ticks) throws KegbotApiException {
-    return mApi.recordDrink(tapName, ticks);
+  public Drink recordDrink(final RecordDrinkRequest request) throws KegbotApiException {
+    return mApi.recordDrink(request);
   }
 
   @Override
-  public ThermoLog recordTemperature(String sensorName, double sensorValue)
+  public ThermoLog recordTemperature(final RecordTemperatureRequest request)
       throws KegbotApiException {
-    return mApi.recordTemperature(sensorName, sensorValue);
+    return mApi.recordTemperature(request);
+  }
+
+  /**
+   * Schedules a drink to be recorded asynchronously.
+   *
+   * @param request
+   */
+  public void recordDrinkAsync(final RecordDrinkRequest request) {
+    Log.d(TAG, ">>> Enqueuing drink: " + request);
+    if (mPendingRequests.remainingCapacity() == 0) {
+      // Drop head when full.
+      mPendingRequests.poll();
+    }
+    mPendingRequests.add(request);
+    Log.d(TAG, "<<< Drink enqueued.");
+  }
+
+  /**
+   * Schedules a temperature reading to be recorded asynchronously.
+   *
+   * @param request
+   */
+  public void recordTemperatureAsync(final RecordTemperatureRequest request) {
+    Log.d(TAG, "Recording temperature: " + request);
+    if (mPendingRequests.remainingCapacity() == 0) {
+      // Drop head when full.
+      mPendingRequests.poll();
+    }
+    mPendingRequests.add(request);
   }
 
 }

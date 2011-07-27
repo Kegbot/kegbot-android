@@ -2,6 +2,7 @@ package org.kegbot.api;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 
@@ -18,11 +19,14 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.message.BasicNameValuePair;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.kegbot.kegtap.Utils;
 import org.kegbot.proto.Api.DrinkDetail;
 import org.kegbot.proto.Api.DrinkDetailHtmlSet;
 import org.kegbot.proto.Api.DrinkSet;
 import org.kegbot.proto.Api.KegDetail;
 import org.kegbot.proto.Api.KegSet;
+import org.kegbot.proto.Api.RecordDrinkRequest;
+import org.kegbot.proto.Api.RecordTemperatureRequest;
 import org.kegbot.proto.Api.SessionDetail;
 import org.kegbot.proto.Api.SessionSet;
 import org.kegbot.proto.Api.SoundEventSet;
@@ -37,6 +41,9 @@ import org.kegbot.proto.Models.Drink;
 import org.kegbot.proto.Models.ThermoLog;
 import org.kegbot.proto.Models.User;
 
+import android.os.SystemClock;
+
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.protobuf.Message;
@@ -51,6 +58,10 @@ public class KegbotApiImpl implements KegbotApi {
 
   private String apiKey = null;
 
+  private long mLastApiAttemptUptimeMillis = -1;
+  private long mLastApiSuccessUptimeMillis = -1;
+  private long mLastApiFailureUptimeMillis = -1;
+
   public static interface Listener {
     public void debug(String message);
   }
@@ -64,6 +75,18 @@ public class KegbotApiImpl implements KegbotApi {
 
   public synchronized void setListener(Listener listener) {
     mListener = listener;
+  }
+
+  private void noteApiAttempt() {
+    mLastApiAttemptUptimeMillis = SystemClock.uptimeMillis();
+  }
+
+  private void noteApiSuccess() {
+    mLastApiSuccessUptimeMillis = SystemClock.uptimeMillis();
+  }
+
+  private void noteApiFailure() {
+    mLastApiFailureUptimeMillis = SystemClock.uptimeMillis();
   }
 
   private JsonNode toJson(HttpResponse response) throws KegbotApiException {
@@ -119,8 +142,9 @@ public class KegbotApiImpl implements KegbotApi {
     return execute(request);
   }
 
-  private HttpResponse execute(HttpUriRequest request)
-  throws KegbotApiException {
+  private HttpResponse execute(HttpUriRequest request) throws KegbotApiException {
+    noteApiAttempt();
+    boolean success = false;
     try {
       final HttpResponse response;
       synchronized (mHttpClient) {
@@ -142,12 +166,18 @@ public class KegbotApiImpl implements KegbotApi {
           throw new KegbotApiServerError(message);
         }
       }
+      success = true;
       return response;
     } catch (ClientProtocolException e) {
       throw new KegbotApiException(e);
     } catch (IOException e) {
       throw new KegbotApiException(e);
     } finally {
+      if (success) {
+        noteApiSuccess();
+      } else {
+        noteApiFailure();
+      }
     }
   }
 
@@ -291,6 +321,12 @@ public class KegbotApiImpl implements KegbotApi {
   }
 
   @Override
+  public SystemEventDetailSet getRecentEvents(final long sinceEventId) throws KegbotApiException {
+    return (SystemEventDetailSet) getProto("/events/?since=" + sinceEventId, SystemEventDetailSet
+        .newBuilder());
+  }
+
+  @Override
   public SystemEventHtmlSet getRecentEventsHtml() throws KegbotApiException {
     return (SystemEventHtmlSet) getProto("/events/html/",
         SystemEventHtmlSet.newBuilder());
@@ -339,19 +375,72 @@ public class KegbotApiImpl implements KegbotApi {
   }
 
   @Override
-  public Drink recordDrink(String tapName, int ticks) throws KegbotApiException {
-    login();
-    Map<String, String> params = Maps.newLinkedHashMap();
+  public Drink recordDrink(final RecordDrinkRequest request) throws KegbotApiException {
+    if (!request.isInitialized()) {
+      throw new KegbotApiException("Request is missing required field(s)");
+    }
+
+    final Map<String, String> params = Maps.newLinkedHashMap();
+
+    final String tapName = request.getTapName();
+    final int ticks = request.getTicks();
+
     params.put("ticks", String.valueOf(ticks));
+
+    final float volumeMl = request.getVolumeMl();
+    if (volumeMl > 0) {
+      params.put("volume_ml", String.valueOf(volumeMl));
+    }
+
+    final String username = request.getUsername();
+    if (!Strings.isNullOrEmpty(username)) {
+      params.put("username", username);
+    }
+
+    final String recordDate = request.getRecordDate();
+    boolean haveDate = false;
+    if (!Strings.isNullOrEmpty(recordDate)) {
+      try {
+        params.put("record_date", recordDate); // new API
+        haveDate = true;
+        final long pourTime = Utils.dateFromIso8601String(recordDate);
+        params.put("pour_time", String.valueOf(pourTime));  // old API
+      } catch (ParseException e) {
+        // Ignore.
+      }
+    }
+
+    final int secondsAgo = request.getSecondsAgo();
+    if (!haveDate & secondsAgo > 0) {
+      params.put("seconds_ago", String.valueOf(secondsAgo));
+    }
+
+    final int durationSeconds = request.getDurationSeconds();
+    if (durationSeconds > 0) {
+      params.put("duration_seconds", String.valueOf(durationSeconds));
+    }
+
+    final boolean spilled = request.getSpilled();
+    if (spilled) {
+      params.put("spilled", String.valueOf(spilled));
+    }
+    login();
     return (Drink) postProto("/taps/" + tapName, Drink.newBuilder(), params);
   }
 
   @Override
-  public ThermoLog recordTemperature(String sensorName, double sensorValue)
+  public ThermoLog recordTemperature(final RecordTemperatureRequest request)
       throws KegbotApiException {
-    login();
+    if (!request.isInitialized()) {
+      throw new KegbotApiException("Request is missing required field(s)");
+    }
+
+    final String sensorName = "kegboard." + request.getSensorName();
+    final String sensorValue = String.valueOf(request.getTempC());
+
     final Map<String, String> params = Maps.newLinkedHashMap();
-    params.put("temp_c", String.valueOf(sensorValue));
+    params.put("temp_c", sensorValue);
+    login();
     return (ThermoLog) postProto("/thermo-sensors/" + sensorName, ThermoLog.newBuilder(), params);
   }
 

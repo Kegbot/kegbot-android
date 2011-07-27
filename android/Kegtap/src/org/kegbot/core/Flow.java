@@ -75,7 +75,7 @@ public class Flow {
    */
   private long mMaxIdleTimeMs;
 
-  private Flow(int flowId, Tap tap, int maxIdleTimeMs) {
+  private Flow(int flowId, Tap tap, long maxIdleTimeMs) {
     mState = State.INITIAL;
     mFlowId = flowId;
     mTap = tap;
@@ -88,20 +88,23 @@ public class Flow {
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder("Flow").append(" id=").append(mFlowId)
-    .append(" state=").append(mState).append(" tap=").append(mTap).append(" user=")
-    .append(mUser).append(" ticks=").append(mTicks);
+    StringBuilder builder = new StringBuilder("Flow")
+        .append(" id=").append(mFlowId)
+        .append(" state=").append(mState)
+        .append(" tap=").append(mTap)
+        .append(" user=").append(mUser)
+        .append(" ticks=").append(mTicks);
     return builder.toString();
   }
 
   /**
    * Factory method. Generates a new Flow object with a unique flow id.
-   * 
+   *
    * @param tap
    * @param maxIdleTimeMs
    * @return
    */
-  public static Flow build(Tap tap, int maxIdleTimeMs) {
+  public static Flow build(Tap tap, long maxIdleTimeMs) {
     return new Flow(++sFlowId, tap, maxIdleTimeMs);
   }
 
@@ -116,7 +119,7 @@ public class Flow {
    * Increments the flow by the specified number of ticks. The recorded volume
    * is incremented by the correspond volume, as returned by
    * {@link Tap#getVolumeMlForTicks(int)}.
-   * 
+   *
    * @param ticks
    */
   public void addTicks(int ticks) {
@@ -128,7 +131,7 @@ public class Flow {
   /**
    * Increments the flow by the specified volume. The number of recorded ticks
    * is not changed.
-   * 
+   *
    * @param volumeMl
    */
   public void addVolumeMl(double volumeMl) {
@@ -139,7 +142,7 @@ public class Flow {
   /**
    * Sets the flow volume to the value given. The number of recorded ticks is
    * not changed.
-   * 
+   *
    * @param volumeMl
    */
   public void setVolumeMl(double volumeMl) {
@@ -201,7 +204,7 @@ public class Flow {
 
   /**
    * Returns true if the flow has exceeded the maximum allowable idle time.
-   * 
+   *
    * @return
    */
   public boolean isIdle() {

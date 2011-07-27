@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.kegbot.core.AuthenticationToken;
 import org.kegbot.core.FlowMeter;
@@ -19,15 +21,20 @@ import org.kegbot.kegboard.KegboardOutputStatusMessage;
 import org.kegbot.kegboard.KegboardTemperatureReadingMessage;
 
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Binder;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.util.Log;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 /**
@@ -37,6 +44,13 @@ import com.google.common.collect.Sets;
 public class KegbotHardwareService extends Service {
 
   private static String TAG = KegbotHardwareService.class.getSimpleName();
+
+  private static final long THERMO_REPORT_PERIOD_MILLIS = TimeUnit.SECONDS.toMillis(30);
+
+  private static final String ACTION_METER_UPDATE = "org.kegbot.action.METER_UPDATE";
+
+  private static final String EXTRA_TICKS = "ticks";
+  private static final String EXTRA_TAP_NAME = "tap";
 
   /**
    * All monitored flow meters.
@@ -55,6 +69,34 @@ public class KegbotHardwareService extends Service {
 
   private KegboardService mKegboardService;
   private boolean mKegboardServiceBound;
+
+  private final Map<String, Long> mLastThermoReadingUptimeMillis =
+    Maps.newLinkedHashMap();
+
+  private static final IntentFilter DEBUG_INTENT_FILTER = new IntentFilter(ACTION_METER_UPDATE);
+  private final BroadcastReceiver mDebugReceiver = new BroadcastReceiver() {
+    @Override
+    public void onReceive(Context context, Intent intent) {
+      final String action = intent.getAction();
+      if (ACTION_METER_UPDATE.equals(action)) {
+        String tapName = intent.getStringExtra(EXTRA_TAP_NAME);
+        if (Strings.isNullOrEmpty(tapName)) {
+          tapName = "kegboard.flow0";
+        }
+
+        long ticks = intent.getLongExtra(EXTRA_TICKS, -1);
+        if (ticks > 0) {
+          Log.d(TAG, "Got debug meter update: tap=" + tapName + " ticks=" + ticks);
+          handleMeterUpdate(tapName, ticks);
+        }
+      }
+    }
+  };
+
+  /**
+   *
+   */
+  private String mBoardName = "kegboard";
 
   /**
    * Connection to the API service.
@@ -86,7 +128,17 @@ public class KegbotHardwareService extends Service {
   private final KegboardService.Listener mKegboardListener = new KegboardService.Listener() {
     @Override
     public void onTemperatureReadingMessage(KegboardTemperatureReadingMessage message) {
-      handleThermoUpdate(message.getName(), message.getValue());
+      final String sensorName = mBoardName + "." + message.getName();
+      final Long lastReport = mLastThermoReadingUptimeMillis.get(sensorName);
+      final long now = SystemClock.uptimeMillis();
+      if (lastReport != null) {
+        final long delta = now - lastReport.longValue();
+        if (delta < THERMO_REPORT_PERIOD_MILLIS) {
+          return;
+        }
+      }
+      mLastThermoReadingUptimeMillis.put(sensorName, Long.valueOf(now));
+      handleThermoUpdate(sensorName, message.getValue());
     }
 
     @Override
@@ -99,7 +151,7 @@ public class KegbotHardwareService extends Service {
 
     @Override
     public void onMeterStatusMessage(KegboardMeterStatusMessage message) {
-      handleMeterUpdate("kegboard." + message.getMeterName(), message.getMeterReading());
+      handleMeterUpdate(mBoardName + "." + message.getMeterName(), message.getMeterReading());
     }
 
     @Override
@@ -171,11 +223,13 @@ public class KegbotHardwareService extends Service {
     super.onCreate();
     startService(new Intent(this, KegboardService.class));
     bindToKegboardService();
+    registerReceiver(mDebugReceiver, DEBUG_INTENT_FILTER);
   }
 
   @Override
   public void onDestroy() {
     unbindFromKegboardService();
+    unregisterReceiver(mDebugReceiver);
     super.onDestroy();
   }
 
@@ -241,15 +295,11 @@ public class KegbotHardwareService extends Service {
   private void handleMeterUpdate(String tapName, long ticks) {
     Log.d(TAG, "Got Meter Event: " + tapName + "=" + ticks);
     final FlowMeter meter = getOrCreateMeter(tapName);
-    Log.d(TAG, "Got Meter: " + meter);
     meter.setTicks(ticks);
 
-    Log.d(TAG, "Updating listeners...");
     for (Listener listener : mListeners) {
-      Log.d(TAG, "++listener");
       listener.onMeterUpdate(meter);
     }
-    Log.d(TAG, "Done!");
   }
 
   private void handleTokenAuthEvent(String tapName, String authDevice, String value, boolean added) {
@@ -314,7 +364,7 @@ public class KegbotHardwareService extends Service {
 
     /**
      * Notifies the listener that a flow meter's state has changed.
-     * 
+     *
      * @param meter
      *          the meter that was updated
      */
@@ -322,7 +372,7 @@ public class KegbotHardwareService extends Service {
 
     /**
      * Notifies the listener that a thermo sensor's state has changed.
-     * 
+     *
      * @param sensor
      *          the sensor that was updated
      */
@@ -330,7 +380,7 @@ public class KegbotHardwareService extends Service {
 
     /**
      * An authentication token was momentarily swiped.
-     * 
+     *
      * @param token
      * @param tapName
      */
@@ -338,7 +388,7 @@ public class KegbotHardwareService extends Service {
 
     /**
      * A token was attached.
-     * 
+     *
      * @param token
      * @param tapName
      */
@@ -346,7 +396,7 @@ public class KegbotHardwareService extends Service {
 
     /**
      * A token was removed.
-     * 
+     *
      * @param token
      * @param tapName
      */

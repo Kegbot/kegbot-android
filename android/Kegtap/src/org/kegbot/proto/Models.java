@@ -16148,6 +16148,2163 @@ public final class Models {
     // @@protoc_insertion_point(class_scope:SoundEvent)
   }
   
+  public interface StatsOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+    
+    // optional string last_drink_id = 1;
+    boolean hasLastDrinkId();
+    String getLastDrinkId();
+    
+    // optional float total_volume_ml = 2;
+    boolean hasTotalVolumeMl();
+    float getTotalVolumeMl();
+    
+    // optional uint32 total_pours = 3;
+    boolean hasTotalPours();
+    int getTotalPours();
+    
+    // optional float average_volume_ml = 4;
+    boolean hasAverageVolumeMl();
+    float getAverageVolumeMl();
+    
+    // optional float greatest_volume_ml = 5;
+    boolean hasGreatestVolumeMl();
+    float getGreatestVolumeMl();
+    
+    // optional string greatest_volume_id = 6;
+    boolean hasGreatestVolumeId();
+    String getGreatestVolumeId();
+    
+    // repeated .Stats.WeekdayVolume volume_by_day_of_week = 7;
+    java.util.List<org.kegbot.proto.Models.Stats.WeekdayVolume> 
+        getVolumeByDayOfWeekList();
+    org.kegbot.proto.Models.Stats.WeekdayVolume getVolumeByDayOfWeek(int index);
+    int getVolumeByDayOfWeekCount();
+    java.util.List<? extends org.kegbot.proto.Models.Stats.WeekdayVolumeOrBuilder> 
+        getVolumeByDayOfWeekOrBuilderList();
+    org.kegbot.proto.Models.Stats.WeekdayVolumeOrBuilder getVolumeByDayOfWeekOrBuilder(
+        int index);
+    
+    // repeated .Stats.DrinkerVolume volume_by_drinker = 8;
+    java.util.List<org.kegbot.proto.Models.Stats.DrinkerVolume> 
+        getVolumeByDrinkerList();
+    org.kegbot.proto.Models.Stats.DrinkerVolume getVolumeByDrinker(int index);
+    int getVolumeByDrinkerCount();
+    java.util.List<? extends org.kegbot.proto.Models.Stats.DrinkerVolumeOrBuilder> 
+        getVolumeByDrinkerOrBuilderList();
+    org.kegbot.proto.Models.Stats.DrinkerVolumeOrBuilder getVolumeByDrinkerOrBuilder(
+        int index);
+  }
+  public static final class Stats extends
+      com.google.protobuf.GeneratedMessage
+      implements StatsOrBuilder {
+    // Use Stats.newBuilder() to construct.
+    private Stats(Builder builder) {
+      super(builder);
+    }
+    private Stats(boolean noInit) {}
+    
+    private static final Stats defaultInstance;
+    public static Stats getDefaultInstance() {
+      return defaultInstance;
+    }
+    
+    public Stats getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+    
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return org.kegbot.proto.Models.internal_static_Stats_descriptor;
+    }
+    
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return org.kegbot.proto.Models.internal_static_Stats_fieldAccessorTable;
+    }
+    
+    public interface WeekdayVolumeOrBuilder
+        extends com.google.protobuf.MessageOrBuilder {
+      
+      // required string weekday = 1;
+      boolean hasWeekday();
+      String getWeekday();
+      
+      // required float volume_ml = 2;
+      boolean hasVolumeMl();
+      float getVolumeMl();
+    }
+    public static final class WeekdayVolume extends
+        com.google.protobuf.GeneratedMessage
+        implements WeekdayVolumeOrBuilder {
+      // Use WeekdayVolume.newBuilder() to construct.
+      private WeekdayVolume(Builder builder) {
+        super(builder);
+      }
+      private WeekdayVolume(boolean noInit) {}
+      
+      private static final WeekdayVolume defaultInstance;
+      public static WeekdayVolume getDefaultInstance() {
+        return defaultInstance;
+      }
+      
+      public WeekdayVolume getDefaultInstanceForType() {
+        return defaultInstance;
+      }
+      
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return org.kegbot.proto.Models.internal_static_Stats_WeekdayVolume_descriptor;
+      }
+      
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return org.kegbot.proto.Models.internal_static_Stats_WeekdayVolume_fieldAccessorTable;
+      }
+      
+      private int bitField0_;
+      // required string weekday = 1;
+      public static final int WEEKDAY_FIELD_NUMBER = 1;
+      private Object weekday_;
+      public boolean hasWeekday() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      public String getWeekday() {
+        Object ref = weekday_;
+        if (ref instanceof String) {
+          return (String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          String s = bs.toStringUtf8();
+          if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+            weekday_ = s;
+          }
+          return s;
+        }
+      }
+      private com.google.protobuf.ByteString getWeekdayBytes() {
+        Object ref = weekday_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+          weekday_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      
+      // required float volume_ml = 2;
+      public static final int VOLUME_ML_FIELD_NUMBER = 2;
+      private float volumeMl_;
+      public boolean hasVolumeMl() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      public float getVolumeMl() {
+        return volumeMl_;
+      }
+      
+      private void initFields() {
+        weekday_ = "";
+        volumeMl_ = 0F;
+      }
+      private byte memoizedIsInitialized = -1;
+      public final boolean isInitialized() {
+        byte isInitialized = memoizedIsInitialized;
+        if (isInitialized != -1) return isInitialized == 1;
+        
+        if (!hasWeekday()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        if (!hasVolumeMl()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        memoizedIsInitialized = 1;
+        return true;
+      }
+      
+      public void writeTo(com.google.protobuf.CodedOutputStream output)
+                          throws java.io.IOException {
+        getSerializedSize();
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          output.writeBytes(1, getWeekdayBytes());
+        }
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
+          output.writeFloat(2, volumeMl_);
+        }
+        getUnknownFields().writeTo(output);
+      }
+      
+      private int memoizedSerializedSize = -1;
+      public int getSerializedSize() {
+        int size = memoizedSerializedSize;
+        if (size != -1) return size;
+      
+        size = 0;
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeBytesSize(1, getWeekdayBytes());
+        }
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeFloatSize(2, volumeMl_);
+        }
+        size += getUnknownFields().getSerializedSize();
+        memoizedSerializedSize = size;
+        return size;
+      }
+      
+      @java.lang.Override
+      protected Object writeReplace() throws java.io.ObjectStreamException {
+        return super.writeReplace();
+      }
+      
+      public static org.kegbot.proto.Models.Stats.WeekdayVolume parseFrom(
+          com.google.protobuf.ByteString data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return newBuilder().mergeFrom(data).buildParsed();
+      }
+      public static org.kegbot.proto.Models.Stats.WeekdayVolume parseFrom(
+          com.google.protobuf.ByteString data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return newBuilder().mergeFrom(data, extensionRegistry)
+                 .buildParsed();
+      }
+      public static org.kegbot.proto.Models.Stats.WeekdayVolume parseFrom(byte[] data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return newBuilder().mergeFrom(data).buildParsed();
+      }
+      public static org.kegbot.proto.Models.Stats.WeekdayVolume parseFrom(
+          byte[] data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return newBuilder().mergeFrom(data, extensionRegistry)
+                 .buildParsed();
+      }
+      public static org.kegbot.proto.Models.Stats.WeekdayVolume parseFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        return newBuilder().mergeFrom(input).buildParsed();
+      }
+      public static org.kegbot.proto.Models.Stats.WeekdayVolume parseFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return newBuilder().mergeFrom(input, extensionRegistry)
+                 .buildParsed();
+      }
+      public static org.kegbot.proto.Models.Stats.WeekdayVolume parseDelimitedFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        Builder builder = newBuilder();
+        if (builder.mergeDelimitedFrom(input)) {
+          return builder.buildParsed();
+        } else {
+          return null;
+        }
+      }
+      public static org.kegbot.proto.Models.Stats.WeekdayVolume parseDelimitedFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        Builder builder = newBuilder();
+        if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
+          return builder.buildParsed();
+        } else {
+          return null;
+        }
+      }
+      public static org.kegbot.proto.Models.Stats.WeekdayVolume parseFrom(
+          com.google.protobuf.CodedInputStream input)
+          throws java.io.IOException {
+        return newBuilder().mergeFrom(input).buildParsed();
+      }
+      public static org.kegbot.proto.Models.Stats.WeekdayVolume parseFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return newBuilder().mergeFrom(input, extensionRegistry)
+                 .buildParsed();
+      }
+      
+      public static Builder newBuilder() { return Builder.create(); }
+      public Builder newBuilderForType() { return newBuilder(); }
+      public static Builder newBuilder(org.kegbot.proto.Models.Stats.WeekdayVolume prototype) {
+        return newBuilder().mergeFrom(prototype);
+      }
+      public Builder toBuilder() { return newBuilder(this); }
+      
+      @java.lang.Override
+      protected Builder newBuilderForType(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        Builder builder = new Builder(parent);
+        return builder;
+      }
+      public static final class Builder extends
+          com.google.protobuf.GeneratedMessage.Builder<Builder>
+         implements org.kegbot.proto.Models.Stats.WeekdayVolumeOrBuilder {
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return org.kegbot.proto.Models.internal_static_Stats_WeekdayVolume_descriptor;
+        }
+        
+        protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return org.kegbot.proto.Models.internal_static_Stats_WeekdayVolume_fieldAccessorTable;
+        }
+        
+        // Construct using org.kegbot.proto.Models.Stats.WeekdayVolume.newBuilder()
+        private Builder() {
+          maybeForceBuilderInitialization();
+        }
+        
+        private Builder(BuilderParent parent) {
+          super(parent);
+          maybeForceBuilderInitialization();
+        }
+        private void maybeForceBuilderInitialization() {
+          if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          }
+        }
+        private static Builder create() {
+          return new Builder();
+        }
+        
+        public Builder clear() {
+          super.clear();
+          weekday_ = "";
+          bitField0_ = (bitField0_ & ~0x00000001);
+          volumeMl_ = 0F;
+          bitField0_ = (bitField0_ & ~0x00000002);
+          return this;
+        }
+        
+        public Builder clone() {
+          return create().mergeFrom(buildPartial());
+        }
+        
+        public com.google.protobuf.Descriptors.Descriptor
+            getDescriptorForType() {
+          return org.kegbot.proto.Models.Stats.WeekdayVolume.getDescriptor();
+        }
+        
+        public org.kegbot.proto.Models.Stats.WeekdayVolume getDefaultInstanceForType() {
+          return org.kegbot.proto.Models.Stats.WeekdayVolume.getDefaultInstance();
+        }
+        
+        public org.kegbot.proto.Models.Stats.WeekdayVolume build() {
+          org.kegbot.proto.Models.Stats.WeekdayVolume result = buildPartial();
+          if (!result.isInitialized()) {
+            throw newUninitializedMessageException(result);
+          }
+          return result;
+        }
+        
+        private org.kegbot.proto.Models.Stats.WeekdayVolume buildParsed()
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          org.kegbot.proto.Models.Stats.WeekdayVolume result = buildPartial();
+          if (!result.isInitialized()) {
+            throw newUninitializedMessageException(
+              result).asInvalidProtocolBufferException();
+          }
+          return result;
+        }
+        
+        public org.kegbot.proto.Models.Stats.WeekdayVolume buildPartial() {
+          org.kegbot.proto.Models.Stats.WeekdayVolume result = new org.kegbot.proto.Models.Stats.WeekdayVolume(this);
+          int from_bitField0_ = bitField0_;
+          int to_bitField0_ = 0;
+          if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+            to_bitField0_ |= 0x00000001;
+          }
+          result.weekday_ = weekday_;
+          if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+            to_bitField0_ |= 0x00000002;
+          }
+          result.volumeMl_ = volumeMl_;
+          result.bitField0_ = to_bitField0_;
+          onBuilt();
+          return result;
+        }
+        
+        public Builder mergeFrom(com.google.protobuf.Message other) {
+          if (other instanceof org.kegbot.proto.Models.Stats.WeekdayVolume) {
+            return mergeFrom((org.kegbot.proto.Models.Stats.WeekdayVolume)other);
+          } else {
+            super.mergeFrom(other);
+            return this;
+          }
+        }
+        
+        public Builder mergeFrom(org.kegbot.proto.Models.Stats.WeekdayVolume other) {
+          if (other == org.kegbot.proto.Models.Stats.WeekdayVolume.getDefaultInstance()) return this;
+          if (other.hasWeekday()) {
+            setWeekday(other.getWeekday());
+          }
+          if (other.hasVolumeMl()) {
+            setVolumeMl(other.getVolumeMl());
+          }
+          this.mergeUnknownFields(other.getUnknownFields());
+          return this;
+        }
+        
+        public final boolean isInitialized() {
+          if (!hasWeekday()) {
+            
+            return false;
+          }
+          if (!hasVolumeMl()) {
+            
+            return false;
+          }
+          return true;
+        }
+        
+        public Builder mergeFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+            com.google.protobuf.UnknownFieldSet.newBuilder(
+              this.getUnknownFields());
+          while (true) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                this.setUnknownFields(unknownFields.build());
+                onChanged();
+                return this;
+              default: {
+                if (!parseUnknownField(input, unknownFields,
+                                       extensionRegistry, tag)) {
+                  this.setUnknownFields(unknownFields.build());
+                  onChanged();
+                  return this;
+                }
+                break;
+              }
+              case 10: {
+                bitField0_ |= 0x00000001;
+                weekday_ = input.readBytes();
+                break;
+              }
+              case 21: {
+                bitField0_ |= 0x00000002;
+                volumeMl_ = input.readFloat();
+                break;
+              }
+            }
+          }
+        }
+        
+        private int bitField0_;
+        
+        // required string weekday = 1;
+        private Object weekday_ = "";
+        public boolean hasWeekday() {
+          return ((bitField0_ & 0x00000001) == 0x00000001);
+        }
+        public String getWeekday() {
+          Object ref = weekday_;
+          if (!(ref instanceof String)) {
+            String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+            weekday_ = s;
+            return s;
+          } else {
+            return (String) ref;
+          }
+        }
+        public Builder setWeekday(String value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+          weekday_ = value;
+          onChanged();
+          return this;
+        }
+        public Builder clearWeekday() {
+          bitField0_ = (bitField0_ & ~0x00000001);
+          weekday_ = getDefaultInstance().getWeekday();
+          onChanged();
+          return this;
+        }
+        void setWeekday(com.google.protobuf.ByteString value) {
+          bitField0_ |= 0x00000001;
+          weekday_ = value;
+          onChanged();
+        }
+        
+        // required float volume_ml = 2;
+        private float volumeMl_ ;
+        public boolean hasVolumeMl() {
+          return ((bitField0_ & 0x00000002) == 0x00000002);
+        }
+        public float getVolumeMl() {
+          return volumeMl_;
+        }
+        public Builder setVolumeMl(float value) {
+          bitField0_ |= 0x00000002;
+          volumeMl_ = value;
+          onChanged();
+          return this;
+        }
+        public Builder clearVolumeMl() {
+          bitField0_ = (bitField0_ & ~0x00000002);
+          volumeMl_ = 0F;
+          onChanged();
+          return this;
+        }
+        
+        // @@protoc_insertion_point(builder_scope:Stats.WeekdayVolume)
+      }
+      
+      static {
+        defaultInstance = new WeekdayVolume(true);
+        defaultInstance.initFields();
+      }
+      
+      // @@protoc_insertion_point(class_scope:Stats.WeekdayVolume)
+    }
+    
+    public interface DrinkerVolumeOrBuilder
+        extends com.google.protobuf.MessageOrBuilder {
+      
+      // required string username = 1;
+      boolean hasUsername();
+      String getUsername();
+      
+      // required float volume_ml = 2;
+      boolean hasVolumeMl();
+      float getVolumeMl();
+    }
+    public static final class DrinkerVolume extends
+        com.google.protobuf.GeneratedMessage
+        implements DrinkerVolumeOrBuilder {
+      // Use DrinkerVolume.newBuilder() to construct.
+      private DrinkerVolume(Builder builder) {
+        super(builder);
+      }
+      private DrinkerVolume(boolean noInit) {}
+      
+      private static final DrinkerVolume defaultInstance;
+      public static DrinkerVolume getDefaultInstance() {
+        return defaultInstance;
+      }
+      
+      public DrinkerVolume getDefaultInstanceForType() {
+        return defaultInstance;
+      }
+      
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return org.kegbot.proto.Models.internal_static_Stats_DrinkerVolume_descriptor;
+      }
+      
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return org.kegbot.proto.Models.internal_static_Stats_DrinkerVolume_fieldAccessorTable;
+      }
+      
+      private int bitField0_;
+      // required string username = 1;
+      public static final int USERNAME_FIELD_NUMBER = 1;
+      private Object username_;
+      public boolean hasUsername() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      public String getUsername() {
+        Object ref = username_;
+        if (ref instanceof String) {
+          return (String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          String s = bs.toStringUtf8();
+          if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+            username_ = s;
+          }
+          return s;
+        }
+      }
+      private com.google.protobuf.ByteString getUsernameBytes() {
+        Object ref = username_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+          username_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      
+      // required float volume_ml = 2;
+      public static final int VOLUME_ML_FIELD_NUMBER = 2;
+      private float volumeMl_;
+      public boolean hasVolumeMl() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      public float getVolumeMl() {
+        return volumeMl_;
+      }
+      
+      private void initFields() {
+        username_ = "";
+        volumeMl_ = 0F;
+      }
+      private byte memoizedIsInitialized = -1;
+      public final boolean isInitialized() {
+        byte isInitialized = memoizedIsInitialized;
+        if (isInitialized != -1) return isInitialized == 1;
+        
+        if (!hasUsername()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        if (!hasVolumeMl()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        memoizedIsInitialized = 1;
+        return true;
+      }
+      
+      public void writeTo(com.google.protobuf.CodedOutputStream output)
+                          throws java.io.IOException {
+        getSerializedSize();
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          output.writeBytes(1, getUsernameBytes());
+        }
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
+          output.writeFloat(2, volumeMl_);
+        }
+        getUnknownFields().writeTo(output);
+      }
+      
+      private int memoizedSerializedSize = -1;
+      public int getSerializedSize() {
+        int size = memoizedSerializedSize;
+        if (size != -1) return size;
+      
+        size = 0;
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeBytesSize(1, getUsernameBytes());
+        }
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeFloatSize(2, volumeMl_);
+        }
+        size += getUnknownFields().getSerializedSize();
+        memoizedSerializedSize = size;
+        return size;
+      }
+      
+      @java.lang.Override
+      protected Object writeReplace() throws java.io.ObjectStreamException {
+        return super.writeReplace();
+      }
+      
+      public static org.kegbot.proto.Models.Stats.DrinkerVolume parseFrom(
+          com.google.protobuf.ByteString data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return newBuilder().mergeFrom(data).buildParsed();
+      }
+      public static org.kegbot.proto.Models.Stats.DrinkerVolume parseFrom(
+          com.google.protobuf.ByteString data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return newBuilder().mergeFrom(data, extensionRegistry)
+                 .buildParsed();
+      }
+      public static org.kegbot.proto.Models.Stats.DrinkerVolume parseFrom(byte[] data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return newBuilder().mergeFrom(data).buildParsed();
+      }
+      public static org.kegbot.proto.Models.Stats.DrinkerVolume parseFrom(
+          byte[] data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return newBuilder().mergeFrom(data, extensionRegistry)
+                 .buildParsed();
+      }
+      public static org.kegbot.proto.Models.Stats.DrinkerVolume parseFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        return newBuilder().mergeFrom(input).buildParsed();
+      }
+      public static org.kegbot.proto.Models.Stats.DrinkerVolume parseFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return newBuilder().mergeFrom(input, extensionRegistry)
+                 .buildParsed();
+      }
+      public static org.kegbot.proto.Models.Stats.DrinkerVolume parseDelimitedFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        Builder builder = newBuilder();
+        if (builder.mergeDelimitedFrom(input)) {
+          return builder.buildParsed();
+        } else {
+          return null;
+        }
+      }
+      public static org.kegbot.proto.Models.Stats.DrinkerVolume parseDelimitedFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        Builder builder = newBuilder();
+        if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
+          return builder.buildParsed();
+        } else {
+          return null;
+        }
+      }
+      public static org.kegbot.proto.Models.Stats.DrinkerVolume parseFrom(
+          com.google.protobuf.CodedInputStream input)
+          throws java.io.IOException {
+        return newBuilder().mergeFrom(input).buildParsed();
+      }
+      public static org.kegbot.proto.Models.Stats.DrinkerVolume parseFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return newBuilder().mergeFrom(input, extensionRegistry)
+                 .buildParsed();
+      }
+      
+      public static Builder newBuilder() { return Builder.create(); }
+      public Builder newBuilderForType() { return newBuilder(); }
+      public static Builder newBuilder(org.kegbot.proto.Models.Stats.DrinkerVolume prototype) {
+        return newBuilder().mergeFrom(prototype);
+      }
+      public Builder toBuilder() { return newBuilder(this); }
+      
+      @java.lang.Override
+      protected Builder newBuilderForType(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        Builder builder = new Builder(parent);
+        return builder;
+      }
+      public static final class Builder extends
+          com.google.protobuf.GeneratedMessage.Builder<Builder>
+         implements org.kegbot.proto.Models.Stats.DrinkerVolumeOrBuilder {
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return org.kegbot.proto.Models.internal_static_Stats_DrinkerVolume_descriptor;
+        }
+        
+        protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return org.kegbot.proto.Models.internal_static_Stats_DrinkerVolume_fieldAccessorTable;
+        }
+        
+        // Construct using org.kegbot.proto.Models.Stats.DrinkerVolume.newBuilder()
+        private Builder() {
+          maybeForceBuilderInitialization();
+        }
+        
+        private Builder(BuilderParent parent) {
+          super(parent);
+          maybeForceBuilderInitialization();
+        }
+        private void maybeForceBuilderInitialization() {
+          if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          }
+        }
+        private static Builder create() {
+          return new Builder();
+        }
+        
+        public Builder clear() {
+          super.clear();
+          username_ = "";
+          bitField0_ = (bitField0_ & ~0x00000001);
+          volumeMl_ = 0F;
+          bitField0_ = (bitField0_ & ~0x00000002);
+          return this;
+        }
+        
+        public Builder clone() {
+          return create().mergeFrom(buildPartial());
+        }
+        
+        public com.google.protobuf.Descriptors.Descriptor
+            getDescriptorForType() {
+          return org.kegbot.proto.Models.Stats.DrinkerVolume.getDescriptor();
+        }
+        
+        public org.kegbot.proto.Models.Stats.DrinkerVolume getDefaultInstanceForType() {
+          return org.kegbot.proto.Models.Stats.DrinkerVolume.getDefaultInstance();
+        }
+        
+        public org.kegbot.proto.Models.Stats.DrinkerVolume build() {
+          org.kegbot.proto.Models.Stats.DrinkerVolume result = buildPartial();
+          if (!result.isInitialized()) {
+            throw newUninitializedMessageException(result);
+          }
+          return result;
+        }
+        
+        private org.kegbot.proto.Models.Stats.DrinkerVolume buildParsed()
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          org.kegbot.proto.Models.Stats.DrinkerVolume result = buildPartial();
+          if (!result.isInitialized()) {
+            throw newUninitializedMessageException(
+              result).asInvalidProtocolBufferException();
+          }
+          return result;
+        }
+        
+        public org.kegbot.proto.Models.Stats.DrinkerVolume buildPartial() {
+          org.kegbot.proto.Models.Stats.DrinkerVolume result = new org.kegbot.proto.Models.Stats.DrinkerVolume(this);
+          int from_bitField0_ = bitField0_;
+          int to_bitField0_ = 0;
+          if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+            to_bitField0_ |= 0x00000001;
+          }
+          result.username_ = username_;
+          if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+            to_bitField0_ |= 0x00000002;
+          }
+          result.volumeMl_ = volumeMl_;
+          result.bitField0_ = to_bitField0_;
+          onBuilt();
+          return result;
+        }
+        
+        public Builder mergeFrom(com.google.protobuf.Message other) {
+          if (other instanceof org.kegbot.proto.Models.Stats.DrinkerVolume) {
+            return mergeFrom((org.kegbot.proto.Models.Stats.DrinkerVolume)other);
+          } else {
+            super.mergeFrom(other);
+            return this;
+          }
+        }
+        
+        public Builder mergeFrom(org.kegbot.proto.Models.Stats.DrinkerVolume other) {
+          if (other == org.kegbot.proto.Models.Stats.DrinkerVolume.getDefaultInstance()) return this;
+          if (other.hasUsername()) {
+            setUsername(other.getUsername());
+          }
+          if (other.hasVolumeMl()) {
+            setVolumeMl(other.getVolumeMl());
+          }
+          this.mergeUnknownFields(other.getUnknownFields());
+          return this;
+        }
+        
+        public final boolean isInitialized() {
+          if (!hasUsername()) {
+            
+            return false;
+          }
+          if (!hasVolumeMl()) {
+            
+            return false;
+          }
+          return true;
+        }
+        
+        public Builder mergeFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+            com.google.protobuf.UnknownFieldSet.newBuilder(
+              this.getUnknownFields());
+          while (true) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                this.setUnknownFields(unknownFields.build());
+                onChanged();
+                return this;
+              default: {
+                if (!parseUnknownField(input, unknownFields,
+                                       extensionRegistry, tag)) {
+                  this.setUnknownFields(unknownFields.build());
+                  onChanged();
+                  return this;
+                }
+                break;
+              }
+              case 10: {
+                bitField0_ |= 0x00000001;
+                username_ = input.readBytes();
+                break;
+              }
+              case 21: {
+                bitField0_ |= 0x00000002;
+                volumeMl_ = input.readFloat();
+                break;
+              }
+            }
+          }
+        }
+        
+        private int bitField0_;
+        
+        // required string username = 1;
+        private Object username_ = "";
+        public boolean hasUsername() {
+          return ((bitField0_ & 0x00000001) == 0x00000001);
+        }
+        public String getUsername() {
+          Object ref = username_;
+          if (!(ref instanceof String)) {
+            String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+            username_ = s;
+            return s;
+          } else {
+            return (String) ref;
+          }
+        }
+        public Builder setUsername(String value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+          username_ = value;
+          onChanged();
+          return this;
+        }
+        public Builder clearUsername() {
+          bitField0_ = (bitField0_ & ~0x00000001);
+          username_ = getDefaultInstance().getUsername();
+          onChanged();
+          return this;
+        }
+        void setUsername(com.google.protobuf.ByteString value) {
+          bitField0_ |= 0x00000001;
+          username_ = value;
+          onChanged();
+        }
+        
+        // required float volume_ml = 2;
+        private float volumeMl_ ;
+        public boolean hasVolumeMl() {
+          return ((bitField0_ & 0x00000002) == 0x00000002);
+        }
+        public float getVolumeMl() {
+          return volumeMl_;
+        }
+        public Builder setVolumeMl(float value) {
+          bitField0_ |= 0x00000002;
+          volumeMl_ = value;
+          onChanged();
+          return this;
+        }
+        public Builder clearVolumeMl() {
+          bitField0_ = (bitField0_ & ~0x00000002);
+          volumeMl_ = 0F;
+          onChanged();
+          return this;
+        }
+        
+        // @@protoc_insertion_point(builder_scope:Stats.DrinkerVolume)
+      }
+      
+      static {
+        defaultInstance = new DrinkerVolume(true);
+        defaultInstance.initFields();
+      }
+      
+      // @@protoc_insertion_point(class_scope:Stats.DrinkerVolume)
+    }
+    
+    private int bitField0_;
+    // optional string last_drink_id = 1;
+    public static final int LAST_DRINK_ID_FIELD_NUMBER = 1;
+    private Object lastDrinkId_;
+    public boolean hasLastDrinkId() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    public String getLastDrinkId() {
+      Object ref = lastDrinkId_;
+      if (ref instanceof String) {
+        return (String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        String s = bs.toStringUtf8();
+        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+          lastDrinkId_ = s;
+        }
+        return s;
+      }
+    }
+    private com.google.protobuf.ByteString getLastDrinkIdBytes() {
+      Object ref = lastDrinkId_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+        lastDrinkId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    
+    // optional float total_volume_ml = 2;
+    public static final int TOTAL_VOLUME_ML_FIELD_NUMBER = 2;
+    private float totalVolumeMl_;
+    public boolean hasTotalVolumeMl() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    public float getTotalVolumeMl() {
+      return totalVolumeMl_;
+    }
+    
+    // optional uint32 total_pours = 3;
+    public static final int TOTAL_POURS_FIELD_NUMBER = 3;
+    private int totalPours_;
+    public boolean hasTotalPours() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    public int getTotalPours() {
+      return totalPours_;
+    }
+    
+    // optional float average_volume_ml = 4;
+    public static final int AVERAGE_VOLUME_ML_FIELD_NUMBER = 4;
+    private float averageVolumeMl_;
+    public boolean hasAverageVolumeMl() {
+      return ((bitField0_ & 0x00000008) == 0x00000008);
+    }
+    public float getAverageVolumeMl() {
+      return averageVolumeMl_;
+    }
+    
+    // optional float greatest_volume_ml = 5;
+    public static final int GREATEST_VOLUME_ML_FIELD_NUMBER = 5;
+    private float greatestVolumeMl_;
+    public boolean hasGreatestVolumeMl() {
+      return ((bitField0_ & 0x00000010) == 0x00000010);
+    }
+    public float getGreatestVolumeMl() {
+      return greatestVolumeMl_;
+    }
+    
+    // optional string greatest_volume_id = 6;
+    public static final int GREATEST_VOLUME_ID_FIELD_NUMBER = 6;
+    private Object greatestVolumeId_;
+    public boolean hasGreatestVolumeId() {
+      return ((bitField0_ & 0x00000020) == 0x00000020);
+    }
+    public String getGreatestVolumeId() {
+      Object ref = greatestVolumeId_;
+      if (ref instanceof String) {
+        return (String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        String s = bs.toStringUtf8();
+        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+          greatestVolumeId_ = s;
+        }
+        return s;
+      }
+    }
+    private com.google.protobuf.ByteString getGreatestVolumeIdBytes() {
+      Object ref = greatestVolumeId_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+        greatestVolumeId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    
+    // repeated .Stats.WeekdayVolume volume_by_day_of_week = 7;
+    public static final int VOLUME_BY_DAY_OF_WEEK_FIELD_NUMBER = 7;
+    private java.util.List<org.kegbot.proto.Models.Stats.WeekdayVolume> volumeByDayOfWeek_;
+    public java.util.List<org.kegbot.proto.Models.Stats.WeekdayVolume> getVolumeByDayOfWeekList() {
+      return volumeByDayOfWeek_;
+    }
+    public java.util.List<? extends org.kegbot.proto.Models.Stats.WeekdayVolumeOrBuilder> 
+        getVolumeByDayOfWeekOrBuilderList() {
+      return volumeByDayOfWeek_;
+    }
+    public int getVolumeByDayOfWeekCount() {
+      return volumeByDayOfWeek_.size();
+    }
+    public org.kegbot.proto.Models.Stats.WeekdayVolume getVolumeByDayOfWeek(int index) {
+      return volumeByDayOfWeek_.get(index);
+    }
+    public org.kegbot.proto.Models.Stats.WeekdayVolumeOrBuilder getVolumeByDayOfWeekOrBuilder(
+        int index) {
+      return volumeByDayOfWeek_.get(index);
+    }
+    
+    // repeated .Stats.DrinkerVolume volume_by_drinker = 8;
+    public static final int VOLUME_BY_DRINKER_FIELD_NUMBER = 8;
+    private java.util.List<org.kegbot.proto.Models.Stats.DrinkerVolume> volumeByDrinker_;
+    public java.util.List<org.kegbot.proto.Models.Stats.DrinkerVolume> getVolumeByDrinkerList() {
+      return volumeByDrinker_;
+    }
+    public java.util.List<? extends org.kegbot.proto.Models.Stats.DrinkerVolumeOrBuilder> 
+        getVolumeByDrinkerOrBuilderList() {
+      return volumeByDrinker_;
+    }
+    public int getVolumeByDrinkerCount() {
+      return volumeByDrinker_.size();
+    }
+    public org.kegbot.proto.Models.Stats.DrinkerVolume getVolumeByDrinker(int index) {
+      return volumeByDrinker_.get(index);
+    }
+    public org.kegbot.proto.Models.Stats.DrinkerVolumeOrBuilder getVolumeByDrinkerOrBuilder(
+        int index) {
+      return volumeByDrinker_.get(index);
+    }
+    
+    private void initFields() {
+      lastDrinkId_ = "";
+      totalVolumeMl_ = 0F;
+      totalPours_ = 0;
+      averageVolumeMl_ = 0F;
+      greatestVolumeMl_ = 0F;
+      greatestVolumeId_ = "";
+      volumeByDayOfWeek_ = java.util.Collections.emptyList();
+      volumeByDrinker_ = java.util.Collections.emptyList();
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+      
+      for (int i = 0; i < getVolumeByDayOfWeekCount(); i++) {
+        if (!getVolumeByDayOfWeek(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      for (int i = 0; i < getVolumeByDrinkerCount(); i++) {
+        if (!getVolumeByDrinker(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+    
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeBytes(1, getLastDrinkIdBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeFloat(2, totalVolumeMl_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeUInt32(3, totalPours_);
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        output.writeFloat(4, averageVolumeMl_);
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        output.writeFloat(5, greatestVolumeMl_);
+      }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        output.writeBytes(6, getGreatestVolumeIdBytes());
+      }
+      for (int i = 0; i < volumeByDayOfWeek_.size(); i++) {
+        output.writeMessage(7, volumeByDayOfWeek_.get(i));
+      }
+      for (int i = 0; i < volumeByDrinker_.size(); i++) {
+        output.writeMessage(8, volumeByDrinker_.get(i));
+      }
+      getUnknownFields().writeTo(output);
+    }
+    
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+    
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(1, getLastDrinkIdBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeFloatSize(2, totalVolumeMl_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(3, totalPours_);
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeFloatSize(4, averageVolumeMl_);
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeFloatSize(5, greatestVolumeMl_);
+      }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(6, getGreatestVolumeIdBytes());
+      }
+      for (int i = 0; i < volumeByDayOfWeek_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(7, volumeByDayOfWeek_.get(i));
+      }
+      for (int i = 0; i < volumeByDrinker_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(8, volumeByDrinker_.get(i));
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+    
+    @java.lang.Override
+    protected Object writeReplace() throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+    
+    public static org.kegbot.proto.Models.Stats parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static org.kegbot.proto.Models.Stats parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static org.kegbot.proto.Models.Stats parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static org.kegbot.proto.Models.Stats parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static org.kegbot.proto.Models.Stats parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static org.kegbot.proto.Models.Stats parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    public static org.kegbot.proto.Models.Stats parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static org.kegbot.proto.Models.Stats parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static org.kegbot.proto.Models.Stats parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static org.kegbot.proto.Models.Stats parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(org.kegbot.proto.Models.Stats prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+    
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements org.kegbot.proto.Models.StatsOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return org.kegbot.proto.Models.internal_static_Stats_descriptor;
+      }
+      
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return org.kegbot.proto.Models.internal_static_Stats_fieldAccessorTable;
+      }
+      
+      // Construct using org.kegbot.proto.Models.Stats.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+      
+      private Builder(BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          getVolumeByDayOfWeekFieldBuilder();
+          getVolumeByDrinkerFieldBuilder();
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+      
+      public Builder clear() {
+        super.clear();
+        lastDrinkId_ = "";
+        bitField0_ = (bitField0_ & ~0x00000001);
+        totalVolumeMl_ = 0F;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        totalPours_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        averageVolumeMl_ = 0F;
+        bitField0_ = (bitField0_ & ~0x00000008);
+        greatestVolumeMl_ = 0F;
+        bitField0_ = (bitField0_ & ~0x00000010);
+        greatestVolumeId_ = "";
+        bitField0_ = (bitField0_ & ~0x00000020);
+        if (volumeByDayOfWeekBuilder_ == null) {
+          volumeByDayOfWeek_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000040);
+        } else {
+          volumeByDayOfWeekBuilder_.clear();
+        }
+        if (volumeByDrinkerBuilder_ == null) {
+          volumeByDrinker_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000080);
+        } else {
+          volumeByDrinkerBuilder_.clear();
+        }
+        return this;
+      }
+      
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+      
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return org.kegbot.proto.Models.Stats.getDescriptor();
+      }
+      
+      public org.kegbot.proto.Models.Stats getDefaultInstanceForType() {
+        return org.kegbot.proto.Models.Stats.getDefaultInstance();
+      }
+      
+      public org.kegbot.proto.Models.Stats build() {
+        org.kegbot.proto.Models.Stats result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+      
+      private org.kegbot.proto.Models.Stats buildParsed()
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        org.kegbot.proto.Models.Stats result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(
+            result).asInvalidProtocolBufferException();
+        }
+        return result;
+      }
+      
+      public org.kegbot.proto.Models.Stats buildPartial() {
+        org.kegbot.proto.Models.Stats result = new org.kegbot.proto.Models.Stats(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.lastDrinkId_ = lastDrinkId_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.totalVolumeMl_ = totalVolumeMl_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.totalPours_ = totalPours_;
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000008;
+        }
+        result.averageVolumeMl_ = averageVolumeMl_;
+        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+          to_bitField0_ |= 0x00000010;
+        }
+        result.greatestVolumeMl_ = greatestVolumeMl_;
+        if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
+          to_bitField0_ |= 0x00000020;
+        }
+        result.greatestVolumeId_ = greatestVolumeId_;
+        if (volumeByDayOfWeekBuilder_ == null) {
+          if (((bitField0_ & 0x00000040) == 0x00000040)) {
+            volumeByDayOfWeek_ = java.util.Collections.unmodifiableList(volumeByDayOfWeek_);
+            bitField0_ = (bitField0_ & ~0x00000040);
+          }
+          result.volumeByDayOfWeek_ = volumeByDayOfWeek_;
+        } else {
+          result.volumeByDayOfWeek_ = volumeByDayOfWeekBuilder_.build();
+        }
+        if (volumeByDrinkerBuilder_ == null) {
+          if (((bitField0_ & 0x00000080) == 0x00000080)) {
+            volumeByDrinker_ = java.util.Collections.unmodifiableList(volumeByDrinker_);
+            bitField0_ = (bitField0_ & ~0x00000080);
+          }
+          result.volumeByDrinker_ = volumeByDrinker_;
+        } else {
+          result.volumeByDrinker_ = volumeByDrinkerBuilder_.build();
+        }
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+      
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof org.kegbot.proto.Models.Stats) {
+          return mergeFrom((org.kegbot.proto.Models.Stats)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+      
+      public Builder mergeFrom(org.kegbot.proto.Models.Stats other) {
+        if (other == org.kegbot.proto.Models.Stats.getDefaultInstance()) return this;
+        if (other.hasLastDrinkId()) {
+          setLastDrinkId(other.getLastDrinkId());
+        }
+        if (other.hasTotalVolumeMl()) {
+          setTotalVolumeMl(other.getTotalVolumeMl());
+        }
+        if (other.hasTotalPours()) {
+          setTotalPours(other.getTotalPours());
+        }
+        if (other.hasAverageVolumeMl()) {
+          setAverageVolumeMl(other.getAverageVolumeMl());
+        }
+        if (other.hasGreatestVolumeMl()) {
+          setGreatestVolumeMl(other.getGreatestVolumeMl());
+        }
+        if (other.hasGreatestVolumeId()) {
+          setGreatestVolumeId(other.getGreatestVolumeId());
+        }
+        if (volumeByDayOfWeekBuilder_ == null) {
+          if (!other.volumeByDayOfWeek_.isEmpty()) {
+            if (volumeByDayOfWeek_.isEmpty()) {
+              volumeByDayOfWeek_ = other.volumeByDayOfWeek_;
+              bitField0_ = (bitField0_ & ~0x00000040);
+            } else {
+              ensureVolumeByDayOfWeekIsMutable();
+              volumeByDayOfWeek_.addAll(other.volumeByDayOfWeek_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.volumeByDayOfWeek_.isEmpty()) {
+            if (volumeByDayOfWeekBuilder_.isEmpty()) {
+              volumeByDayOfWeekBuilder_.dispose();
+              volumeByDayOfWeekBuilder_ = null;
+              volumeByDayOfWeek_ = other.volumeByDayOfWeek_;
+              bitField0_ = (bitField0_ & ~0x00000040);
+              volumeByDayOfWeekBuilder_ = 
+                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                   getVolumeByDayOfWeekFieldBuilder() : null;
+            } else {
+              volumeByDayOfWeekBuilder_.addAllMessages(other.volumeByDayOfWeek_);
+            }
+          }
+        }
+        if (volumeByDrinkerBuilder_ == null) {
+          if (!other.volumeByDrinker_.isEmpty()) {
+            if (volumeByDrinker_.isEmpty()) {
+              volumeByDrinker_ = other.volumeByDrinker_;
+              bitField0_ = (bitField0_ & ~0x00000080);
+            } else {
+              ensureVolumeByDrinkerIsMutable();
+              volumeByDrinker_.addAll(other.volumeByDrinker_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.volumeByDrinker_.isEmpty()) {
+            if (volumeByDrinkerBuilder_.isEmpty()) {
+              volumeByDrinkerBuilder_.dispose();
+              volumeByDrinkerBuilder_ = null;
+              volumeByDrinker_ = other.volumeByDrinker_;
+              bitField0_ = (bitField0_ & ~0x00000080);
+              volumeByDrinkerBuilder_ = 
+                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                   getVolumeByDrinkerFieldBuilder() : null;
+            } else {
+              volumeByDrinkerBuilder_.addAllMessages(other.volumeByDrinker_);
+            }
+          }
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+      
+      public final boolean isInitialized() {
+        for (int i = 0; i < getVolumeByDayOfWeekCount(); i++) {
+          if (!getVolumeByDayOfWeek(i).isInitialized()) {
+            
+            return false;
+          }
+        }
+        for (int i = 0; i < getVolumeByDrinkerCount(); i++) {
+          if (!getVolumeByDrinker(i).isInitialized()) {
+            
+            return false;
+          }
+        }
+        return true;
+      }
+      
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder(
+            this.getUnknownFields());
+        while (true) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              this.setUnknownFields(unknownFields.build());
+              onChanged();
+              return this;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                this.setUnknownFields(unknownFields.build());
+                onChanged();
+                return this;
+              }
+              break;
+            }
+            case 10: {
+              bitField0_ |= 0x00000001;
+              lastDrinkId_ = input.readBytes();
+              break;
+            }
+            case 21: {
+              bitField0_ |= 0x00000002;
+              totalVolumeMl_ = input.readFloat();
+              break;
+            }
+            case 24: {
+              bitField0_ |= 0x00000004;
+              totalPours_ = input.readUInt32();
+              break;
+            }
+            case 37: {
+              bitField0_ |= 0x00000008;
+              averageVolumeMl_ = input.readFloat();
+              break;
+            }
+            case 45: {
+              bitField0_ |= 0x00000010;
+              greatestVolumeMl_ = input.readFloat();
+              break;
+            }
+            case 50: {
+              bitField0_ |= 0x00000020;
+              greatestVolumeId_ = input.readBytes();
+              break;
+            }
+            case 58: {
+              org.kegbot.proto.Models.Stats.WeekdayVolume.Builder subBuilder = org.kegbot.proto.Models.Stats.WeekdayVolume.newBuilder();
+              input.readMessage(subBuilder, extensionRegistry);
+              addVolumeByDayOfWeek(subBuilder.buildPartial());
+              break;
+            }
+            case 66: {
+              org.kegbot.proto.Models.Stats.DrinkerVolume.Builder subBuilder = org.kegbot.proto.Models.Stats.DrinkerVolume.newBuilder();
+              input.readMessage(subBuilder, extensionRegistry);
+              addVolumeByDrinker(subBuilder.buildPartial());
+              break;
+            }
+          }
+        }
+      }
+      
+      private int bitField0_;
+      
+      // optional string last_drink_id = 1;
+      private Object lastDrinkId_ = "";
+      public boolean hasLastDrinkId() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      public String getLastDrinkId() {
+        Object ref = lastDrinkId_;
+        if (!(ref instanceof String)) {
+          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+          lastDrinkId_ = s;
+          return s;
+        } else {
+          return (String) ref;
+        }
+      }
+      public Builder setLastDrinkId(String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        lastDrinkId_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearLastDrinkId() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        lastDrinkId_ = getDefaultInstance().getLastDrinkId();
+        onChanged();
+        return this;
+      }
+      void setLastDrinkId(com.google.protobuf.ByteString value) {
+        bitField0_ |= 0x00000001;
+        lastDrinkId_ = value;
+        onChanged();
+      }
+      
+      // optional float total_volume_ml = 2;
+      private float totalVolumeMl_ ;
+      public boolean hasTotalVolumeMl() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      public float getTotalVolumeMl() {
+        return totalVolumeMl_;
+      }
+      public Builder setTotalVolumeMl(float value) {
+        bitField0_ |= 0x00000002;
+        totalVolumeMl_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearTotalVolumeMl() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        totalVolumeMl_ = 0F;
+        onChanged();
+        return this;
+      }
+      
+      // optional uint32 total_pours = 3;
+      private int totalPours_ ;
+      public boolean hasTotalPours() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      public int getTotalPours() {
+        return totalPours_;
+      }
+      public Builder setTotalPours(int value) {
+        bitField0_ |= 0x00000004;
+        totalPours_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearTotalPours() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        totalPours_ = 0;
+        onChanged();
+        return this;
+      }
+      
+      // optional float average_volume_ml = 4;
+      private float averageVolumeMl_ ;
+      public boolean hasAverageVolumeMl() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      public float getAverageVolumeMl() {
+        return averageVolumeMl_;
+      }
+      public Builder setAverageVolumeMl(float value) {
+        bitField0_ |= 0x00000008;
+        averageVolumeMl_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearAverageVolumeMl() {
+        bitField0_ = (bitField0_ & ~0x00000008);
+        averageVolumeMl_ = 0F;
+        onChanged();
+        return this;
+      }
+      
+      // optional float greatest_volume_ml = 5;
+      private float greatestVolumeMl_ ;
+      public boolean hasGreatestVolumeMl() {
+        return ((bitField0_ & 0x00000010) == 0x00000010);
+      }
+      public float getGreatestVolumeMl() {
+        return greatestVolumeMl_;
+      }
+      public Builder setGreatestVolumeMl(float value) {
+        bitField0_ |= 0x00000010;
+        greatestVolumeMl_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearGreatestVolumeMl() {
+        bitField0_ = (bitField0_ & ~0x00000010);
+        greatestVolumeMl_ = 0F;
+        onChanged();
+        return this;
+      }
+      
+      // optional string greatest_volume_id = 6;
+      private Object greatestVolumeId_ = "";
+      public boolean hasGreatestVolumeId() {
+        return ((bitField0_ & 0x00000020) == 0x00000020);
+      }
+      public String getGreatestVolumeId() {
+        Object ref = greatestVolumeId_;
+        if (!(ref instanceof String)) {
+          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+          greatestVolumeId_ = s;
+          return s;
+        } else {
+          return (String) ref;
+        }
+      }
+      public Builder setGreatestVolumeId(String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000020;
+        greatestVolumeId_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearGreatestVolumeId() {
+        bitField0_ = (bitField0_ & ~0x00000020);
+        greatestVolumeId_ = getDefaultInstance().getGreatestVolumeId();
+        onChanged();
+        return this;
+      }
+      void setGreatestVolumeId(com.google.protobuf.ByteString value) {
+        bitField0_ |= 0x00000020;
+        greatestVolumeId_ = value;
+        onChanged();
+      }
+      
+      // repeated .Stats.WeekdayVolume volume_by_day_of_week = 7;
+      private java.util.List<org.kegbot.proto.Models.Stats.WeekdayVolume> volumeByDayOfWeek_ =
+        java.util.Collections.emptyList();
+      private void ensureVolumeByDayOfWeekIsMutable() {
+        if (!((bitField0_ & 0x00000040) == 0x00000040)) {
+          volumeByDayOfWeek_ = new java.util.ArrayList<org.kegbot.proto.Models.Stats.WeekdayVolume>(volumeByDayOfWeek_);
+          bitField0_ |= 0x00000040;
+         }
+      }
+      
+      private com.google.protobuf.RepeatedFieldBuilder<
+          org.kegbot.proto.Models.Stats.WeekdayVolume, org.kegbot.proto.Models.Stats.WeekdayVolume.Builder, org.kegbot.proto.Models.Stats.WeekdayVolumeOrBuilder> volumeByDayOfWeekBuilder_;
+      
+      public java.util.List<org.kegbot.proto.Models.Stats.WeekdayVolume> getVolumeByDayOfWeekList() {
+        if (volumeByDayOfWeekBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(volumeByDayOfWeek_);
+        } else {
+          return volumeByDayOfWeekBuilder_.getMessageList();
+        }
+      }
+      public int getVolumeByDayOfWeekCount() {
+        if (volumeByDayOfWeekBuilder_ == null) {
+          return volumeByDayOfWeek_.size();
+        } else {
+          return volumeByDayOfWeekBuilder_.getCount();
+        }
+      }
+      public org.kegbot.proto.Models.Stats.WeekdayVolume getVolumeByDayOfWeek(int index) {
+        if (volumeByDayOfWeekBuilder_ == null) {
+          return volumeByDayOfWeek_.get(index);
+        } else {
+          return volumeByDayOfWeekBuilder_.getMessage(index);
+        }
+      }
+      public Builder setVolumeByDayOfWeek(
+          int index, org.kegbot.proto.Models.Stats.WeekdayVolume value) {
+        if (volumeByDayOfWeekBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureVolumeByDayOfWeekIsMutable();
+          volumeByDayOfWeek_.set(index, value);
+          onChanged();
+        } else {
+          volumeByDayOfWeekBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      public Builder setVolumeByDayOfWeek(
+          int index, org.kegbot.proto.Models.Stats.WeekdayVolume.Builder builderForValue) {
+        if (volumeByDayOfWeekBuilder_ == null) {
+          ensureVolumeByDayOfWeekIsMutable();
+          volumeByDayOfWeek_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          volumeByDayOfWeekBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addVolumeByDayOfWeek(org.kegbot.proto.Models.Stats.WeekdayVolume value) {
+        if (volumeByDayOfWeekBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureVolumeByDayOfWeekIsMutable();
+          volumeByDayOfWeek_.add(value);
+          onChanged();
+        } else {
+          volumeByDayOfWeekBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      public Builder addVolumeByDayOfWeek(
+          int index, org.kegbot.proto.Models.Stats.WeekdayVolume value) {
+        if (volumeByDayOfWeekBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureVolumeByDayOfWeekIsMutable();
+          volumeByDayOfWeek_.add(index, value);
+          onChanged();
+        } else {
+          volumeByDayOfWeekBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      public Builder addVolumeByDayOfWeek(
+          org.kegbot.proto.Models.Stats.WeekdayVolume.Builder builderForValue) {
+        if (volumeByDayOfWeekBuilder_ == null) {
+          ensureVolumeByDayOfWeekIsMutable();
+          volumeByDayOfWeek_.add(builderForValue.build());
+          onChanged();
+        } else {
+          volumeByDayOfWeekBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addVolumeByDayOfWeek(
+          int index, org.kegbot.proto.Models.Stats.WeekdayVolume.Builder builderForValue) {
+        if (volumeByDayOfWeekBuilder_ == null) {
+          ensureVolumeByDayOfWeekIsMutable();
+          volumeByDayOfWeek_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          volumeByDayOfWeekBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addAllVolumeByDayOfWeek(
+          java.lang.Iterable<? extends org.kegbot.proto.Models.Stats.WeekdayVolume> values) {
+        if (volumeByDayOfWeekBuilder_ == null) {
+          ensureVolumeByDayOfWeekIsMutable();
+          super.addAll(values, volumeByDayOfWeek_);
+          onChanged();
+        } else {
+          volumeByDayOfWeekBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      public Builder clearVolumeByDayOfWeek() {
+        if (volumeByDayOfWeekBuilder_ == null) {
+          volumeByDayOfWeek_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000040);
+          onChanged();
+        } else {
+          volumeByDayOfWeekBuilder_.clear();
+        }
+        return this;
+      }
+      public Builder removeVolumeByDayOfWeek(int index) {
+        if (volumeByDayOfWeekBuilder_ == null) {
+          ensureVolumeByDayOfWeekIsMutable();
+          volumeByDayOfWeek_.remove(index);
+          onChanged();
+        } else {
+          volumeByDayOfWeekBuilder_.remove(index);
+        }
+        return this;
+      }
+      public org.kegbot.proto.Models.Stats.WeekdayVolume.Builder getVolumeByDayOfWeekBuilder(
+          int index) {
+        return getVolumeByDayOfWeekFieldBuilder().getBuilder(index);
+      }
+      public org.kegbot.proto.Models.Stats.WeekdayVolumeOrBuilder getVolumeByDayOfWeekOrBuilder(
+          int index) {
+        if (volumeByDayOfWeekBuilder_ == null) {
+          return volumeByDayOfWeek_.get(index);  } else {
+          return volumeByDayOfWeekBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      public java.util.List<? extends org.kegbot.proto.Models.Stats.WeekdayVolumeOrBuilder> 
+           getVolumeByDayOfWeekOrBuilderList() {
+        if (volumeByDayOfWeekBuilder_ != null) {
+          return volumeByDayOfWeekBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(volumeByDayOfWeek_);
+        }
+      }
+      public org.kegbot.proto.Models.Stats.WeekdayVolume.Builder addVolumeByDayOfWeekBuilder() {
+        return getVolumeByDayOfWeekFieldBuilder().addBuilder(
+            org.kegbot.proto.Models.Stats.WeekdayVolume.getDefaultInstance());
+      }
+      public org.kegbot.proto.Models.Stats.WeekdayVolume.Builder addVolumeByDayOfWeekBuilder(
+          int index) {
+        return getVolumeByDayOfWeekFieldBuilder().addBuilder(
+            index, org.kegbot.proto.Models.Stats.WeekdayVolume.getDefaultInstance());
+      }
+      public java.util.List<org.kegbot.proto.Models.Stats.WeekdayVolume.Builder> 
+           getVolumeByDayOfWeekBuilderList() {
+        return getVolumeByDayOfWeekFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilder<
+          org.kegbot.proto.Models.Stats.WeekdayVolume, org.kegbot.proto.Models.Stats.WeekdayVolume.Builder, org.kegbot.proto.Models.Stats.WeekdayVolumeOrBuilder> 
+          getVolumeByDayOfWeekFieldBuilder() {
+        if (volumeByDayOfWeekBuilder_ == null) {
+          volumeByDayOfWeekBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+              org.kegbot.proto.Models.Stats.WeekdayVolume, org.kegbot.proto.Models.Stats.WeekdayVolume.Builder, org.kegbot.proto.Models.Stats.WeekdayVolumeOrBuilder>(
+                  volumeByDayOfWeek_,
+                  ((bitField0_ & 0x00000040) == 0x00000040),
+                  getParentForChildren(),
+                  isClean());
+          volumeByDayOfWeek_ = null;
+        }
+        return volumeByDayOfWeekBuilder_;
+      }
+      
+      // repeated .Stats.DrinkerVolume volume_by_drinker = 8;
+      private java.util.List<org.kegbot.proto.Models.Stats.DrinkerVolume> volumeByDrinker_ =
+        java.util.Collections.emptyList();
+      private void ensureVolumeByDrinkerIsMutable() {
+        if (!((bitField0_ & 0x00000080) == 0x00000080)) {
+          volumeByDrinker_ = new java.util.ArrayList<org.kegbot.proto.Models.Stats.DrinkerVolume>(volumeByDrinker_);
+          bitField0_ |= 0x00000080;
+         }
+      }
+      
+      private com.google.protobuf.RepeatedFieldBuilder<
+          org.kegbot.proto.Models.Stats.DrinkerVolume, org.kegbot.proto.Models.Stats.DrinkerVolume.Builder, org.kegbot.proto.Models.Stats.DrinkerVolumeOrBuilder> volumeByDrinkerBuilder_;
+      
+      public java.util.List<org.kegbot.proto.Models.Stats.DrinkerVolume> getVolumeByDrinkerList() {
+        if (volumeByDrinkerBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(volumeByDrinker_);
+        } else {
+          return volumeByDrinkerBuilder_.getMessageList();
+        }
+      }
+      public int getVolumeByDrinkerCount() {
+        if (volumeByDrinkerBuilder_ == null) {
+          return volumeByDrinker_.size();
+        } else {
+          return volumeByDrinkerBuilder_.getCount();
+        }
+      }
+      public org.kegbot.proto.Models.Stats.DrinkerVolume getVolumeByDrinker(int index) {
+        if (volumeByDrinkerBuilder_ == null) {
+          return volumeByDrinker_.get(index);
+        } else {
+          return volumeByDrinkerBuilder_.getMessage(index);
+        }
+      }
+      public Builder setVolumeByDrinker(
+          int index, org.kegbot.proto.Models.Stats.DrinkerVolume value) {
+        if (volumeByDrinkerBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureVolumeByDrinkerIsMutable();
+          volumeByDrinker_.set(index, value);
+          onChanged();
+        } else {
+          volumeByDrinkerBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      public Builder setVolumeByDrinker(
+          int index, org.kegbot.proto.Models.Stats.DrinkerVolume.Builder builderForValue) {
+        if (volumeByDrinkerBuilder_ == null) {
+          ensureVolumeByDrinkerIsMutable();
+          volumeByDrinker_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          volumeByDrinkerBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addVolumeByDrinker(org.kegbot.proto.Models.Stats.DrinkerVolume value) {
+        if (volumeByDrinkerBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureVolumeByDrinkerIsMutable();
+          volumeByDrinker_.add(value);
+          onChanged();
+        } else {
+          volumeByDrinkerBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      public Builder addVolumeByDrinker(
+          int index, org.kegbot.proto.Models.Stats.DrinkerVolume value) {
+        if (volumeByDrinkerBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureVolumeByDrinkerIsMutable();
+          volumeByDrinker_.add(index, value);
+          onChanged();
+        } else {
+          volumeByDrinkerBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      public Builder addVolumeByDrinker(
+          org.kegbot.proto.Models.Stats.DrinkerVolume.Builder builderForValue) {
+        if (volumeByDrinkerBuilder_ == null) {
+          ensureVolumeByDrinkerIsMutable();
+          volumeByDrinker_.add(builderForValue.build());
+          onChanged();
+        } else {
+          volumeByDrinkerBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addVolumeByDrinker(
+          int index, org.kegbot.proto.Models.Stats.DrinkerVolume.Builder builderForValue) {
+        if (volumeByDrinkerBuilder_ == null) {
+          ensureVolumeByDrinkerIsMutable();
+          volumeByDrinker_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          volumeByDrinkerBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addAllVolumeByDrinker(
+          java.lang.Iterable<? extends org.kegbot.proto.Models.Stats.DrinkerVolume> values) {
+        if (volumeByDrinkerBuilder_ == null) {
+          ensureVolumeByDrinkerIsMutable();
+          super.addAll(values, volumeByDrinker_);
+          onChanged();
+        } else {
+          volumeByDrinkerBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      public Builder clearVolumeByDrinker() {
+        if (volumeByDrinkerBuilder_ == null) {
+          volumeByDrinker_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000080);
+          onChanged();
+        } else {
+          volumeByDrinkerBuilder_.clear();
+        }
+        return this;
+      }
+      public Builder removeVolumeByDrinker(int index) {
+        if (volumeByDrinkerBuilder_ == null) {
+          ensureVolumeByDrinkerIsMutable();
+          volumeByDrinker_.remove(index);
+          onChanged();
+        } else {
+          volumeByDrinkerBuilder_.remove(index);
+        }
+        return this;
+      }
+      public org.kegbot.proto.Models.Stats.DrinkerVolume.Builder getVolumeByDrinkerBuilder(
+          int index) {
+        return getVolumeByDrinkerFieldBuilder().getBuilder(index);
+      }
+      public org.kegbot.proto.Models.Stats.DrinkerVolumeOrBuilder getVolumeByDrinkerOrBuilder(
+          int index) {
+        if (volumeByDrinkerBuilder_ == null) {
+          return volumeByDrinker_.get(index);  } else {
+          return volumeByDrinkerBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      public java.util.List<? extends org.kegbot.proto.Models.Stats.DrinkerVolumeOrBuilder> 
+           getVolumeByDrinkerOrBuilderList() {
+        if (volumeByDrinkerBuilder_ != null) {
+          return volumeByDrinkerBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(volumeByDrinker_);
+        }
+      }
+      public org.kegbot.proto.Models.Stats.DrinkerVolume.Builder addVolumeByDrinkerBuilder() {
+        return getVolumeByDrinkerFieldBuilder().addBuilder(
+            org.kegbot.proto.Models.Stats.DrinkerVolume.getDefaultInstance());
+      }
+      public org.kegbot.proto.Models.Stats.DrinkerVolume.Builder addVolumeByDrinkerBuilder(
+          int index) {
+        return getVolumeByDrinkerFieldBuilder().addBuilder(
+            index, org.kegbot.proto.Models.Stats.DrinkerVolume.getDefaultInstance());
+      }
+      public java.util.List<org.kegbot.proto.Models.Stats.DrinkerVolume.Builder> 
+           getVolumeByDrinkerBuilderList() {
+        return getVolumeByDrinkerFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilder<
+          org.kegbot.proto.Models.Stats.DrinkerVolume, org.kegbot.proto.Models.Stats.DrinkerVolume.Builder, org.kegbot.proto.Models.Stats.DrinkerVolumeOrBuilder> 
+          getVolumeByDrinkerFieldBuilder() {
+        if (volumeByDrinkerBuilder_ == null) {
+          volumeByDrinkerBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+              org.kegbot.proto.Models.Stats.DrinkerVolume, org.kegbot.proto.Models.Stats.DrinkerVolume.Builder, org.kegbot.proto.Models.Stats.DrinkerVolumeOrBuilder>(
+                  volumeByDrinker_,
+                  ((bitField0_ & 0x00000080) == 0x00000080),
+                  getParentForChildren(),
+                  isClean());
+          volumeByDrinker_ = null;
+        }
+        return volumeByDrinkerBuilder_;
+      }
+      
+      // @@protoc_insertion_point(builder_scope:Stats)
+    }
+    
+    static {
+      defaultInstance = new Stats(true);
+      defaultInstance.initFields();
+    }
+    
+    // @@protoc_insertion_point(class_scope:Stats)
+  }
+  
   private static com.google.protobuf.Descriptors.Descriptor
     internal_static_AuthenticationToken_descriptor;
   private static
@@ -16238,6 +18395,21 @@ public final class Models {
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_SoundEvent_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_Stats_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_Stats_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_Stats_WeekdayVolume_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_Stats_WeekdayVolume_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_Stats_DrinkerVolume_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_Stats_DrinkerVolume_fieldAccessorTable;
   
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -16308,8 +18480,17 @@ public final class Models {
       " \001(\t\022\016\n\006keg_id\030\005 \001(\t\022\022\n\nsession_id\030\006 \001(\t" +
       "\022\017\n\007user_id\030\007 \001(\t\"Z\n\nSoundEvent\022\022\n\nevent",
       "_name\030\001 \002(\t\022\027\n\017event_predicate\030\002 \001(\t\022\021\n\t" +
-      "sound_url\030\003 \002(\t\022\014\n\004user\030\004 \001(\tB\022\n\020org.keg" +
-      "bot.proto"
+      "sound_url\030\003 \002(\t\022\014\n\004user\030\004 \001(\t\"\360\002\n\005Stats\022" +
+      "\025\n\rlast_drink_id\030\001 \001(\t\022\027\n\017total_volume_m" +
+      "l\030\002 \001(\002\022\023\n\013total_pours\030\003 \001(\r\022\031\n\021average_" +
+      "volume_ml\030\004 \001(\002\022\032\n\022greatest_volume_ml\030\005 " +
+      "\001(\002\022\032\n\022greatest_volume_id\030\006 \001(\t\0223\n\025volum" +
+      "e_by_day_of_week\030\007 \003(\0132\024.Stats.WeekdayVo" +
+      "lume\022/\n\021volume_by_drinker\030\010 \003(\0132\024.Stats." +
+      "DrinkerVolume\0323\n\rWeekdayVolume\022\017\n\007weekda" +
+      "y\030\001 \002(\t\022\021\n\tvolume_ml\030\002 \002(\002\0324\n\rDrinkerVol",
+      "ume\022\020\n\010username\030\001 \002(\t\022\021\n\tvolume_ml\030\002 \002(\002" +
+      "B\022\n\020org.kegbot.proto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -16460,6 +18641,30 @@ public final class Models {
               new java.lang.String[] { "EventName", "EventPredicate", "SoundUrl", "User", },
               org.kegbot.proto.Models.SoundEvent.class,
               org.kegbot.proto.Models.SoundEvent.Builder.class);
+          internal_static_Stats_descriptor =
+            getDescriptor().getMessageTypes().get(18);
+          internal_static_Stats_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_Stats_descriptor,
+              new java.lang.String[] { "LastDrinkId", "TotalVolumeMl", "TotalPours", "AverageVolumeMl", "GreatestVolumeMl", "GreatestVolumeId", "VolumeByDayOfWeek", "VolumeByDrinker", },
+              org.kegbot.proto.Models.Stats.class,
+              org.kegbot.proto.Models.Stats.Builder.class);
+          internal_static_Stats_WeekdayVolume_descriptor =
+            internal_static_Stats_descriptor.getNestedTypes().get(0);
+          internal_static_Stats_WeekdayVolume_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_Stats_WeekdayVolume_descriptor,
+              new java.lang.String[] { "Weekday", "VolumeMl", },
+              org.kegbot.proto.Models.Stats.WeekdayVolume.class,
+              org.kegbot.proto.Models.Stats.WeekdayVolume.Builder.class);
+          internal_static_Stats_DrinkerVolume_descriptor =
+            internal_static_Stats_descriptor.getNestedTypes().get(1);
+          internal_static_Stats_DrinkerVolume_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_Stats_DrinkerVolume_descriptor,
+              new java.lang.String[] { "Username", "VolumeMl", },
+              org.kegbot.proto.Models.Stats.DrinkerVolume.class,
+              org.kegbot.proto.Models.Stats.DrinkerVolume.Builder.class);
           return null;
         }
       };

@@ -2,7 +2,8 @@ package org.kegbot.kegtap;
 
 import java.util.List;
 
-import android.content.SharedPreferences;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
@@ -11,7 +12,6 @@ import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
-import android.preference.PreferenceManager;
 
 public class SettingsActivity extends PreferenceActivity {
 
@@ -22,21 +22,15 @@ public class SettingsActivity extends PreferenceActivity {
 
   public static class GeneralFragment extends PreferenceFragment {
 
-    private SharedPreferences mPreferences;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
       addPreferencesFromResource(R.xml.settings_general);
-      mPreferences = PreferenceManager
-      .getDefaultSharedPreferences(getActivity());
     }
 
   }
 
   public static class KegeratorFragment extends PreferenceFragment {
-
-    private SharedPreferences mPreferences;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -44,9 +38,6 @@ public class SettingsActivity extends PreferenceActivity {
       addPreferencesFromResource(R.xml.settings_kegerator);
 
       handleCoreEnabledChanged();
-
-      mPreferences = PreferenceManager
-      .getDefaultSharedPreferences(getActivity());
 
       CheckBoxPreference enablePref = (CheckBoxPreference) findPreference("run_core");
       enablePref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
@@ -58,11 +49,9 @@ public class SettingsActivity extends PreferenceActivity {
       });
 
       ListPreference controllerTypePref = (ListPreference) findPreference("controller_type");
-      controllerTypePref
-      .setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+      controllerTypePref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
         @Override
-        public boolean onPreferenceChange(Preference preference,
-            Object newValue) {
+        public boolean onPreferenceChange(Preference preference, Object newValue) {
           handleControllerTypeChanged();
           return true;
         }
@@ -83,6 +72,11 @@ public class SettingsActivity extends PreferenceActivity {
       ListPreference controllerTypePref = (ListPreference) findPreference("controller_type");
     }
 
+  }
+
+  public static void startSettingsActivity(Context context) {
+    Intent intent = new Intent(context, SettingsActivity.class);
+    context.startActivity(intent);
   }
 
 }

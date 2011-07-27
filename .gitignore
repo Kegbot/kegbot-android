@@ -1,5 +1,4 @@
-android/Kegtap/bin
-android/Kegtap/gen
+android/*/bin
+android/*/gen
 
-android/KegtapTest/bin
-android/KegtapTest/gen
+.DS_Store

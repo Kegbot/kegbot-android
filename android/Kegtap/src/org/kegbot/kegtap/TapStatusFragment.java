@@ -12,11 +12,14 @@ import android.app.Fragment;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.google.common.base.Strings;
 
 public class TapStatusFragment extends Fragment {
 
@@ -28,7 +31,7 @@ public class TapStatusFragment extends Fragment {
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
       Bundle savedInstanceState) {
-    mView = inflater.inflate(R.layout.tap_list_item, container);
+    mView = inflater.inflate(R.layout.tap_status_view, container);
     return mView;
   }
 
@@ -37,10 +40,14 @@ public class TapStatusFragment extends Fragment {
   }
 
   private View buildTapView(View view, TapDetail tap) {
-    TextView title = (TextView) view.findViewById(R.id.tapTitle);
+    final TextView title = (TextView) view.findViewById(R.id.tapTitle);
     title.setText(tap.getBeerType().getName());
-    TextView subtitle = (TextView) view.findViewById(R.id.tapSubtitle);
-    subtitle.setText(tap.getTap().getName());
+
+    final String tapName = tap.getTap().getName();
+    if (!Strings.isNullOrEmpty(tapName)) {
+      TextView subtitle = (TextView) view.findViewById(R.id.tapSubtitle);
+      subtitle.setText(tapName + ": ");
+    }
 
     CharSequence relTime;
     try {
@@ -61,6 +68,7 @@ public class TapStatusFragment extends Fragment {
     if (tapImage != null && tap.getBeerType().hasImage()) {
       final Image image = tap.getBeerType().getImage();
       final String imageUrl = image.getUrl();
+      tapImage.setBackgroundResource(0);
       mImageDownloader.download(imageUrl, tapImage);
     }
 
@@ -91,7 +99,11 @@ public class TapStatusFragment extends Fragment {
 
     @Override
     protected void onPostExecute(TapDetail result) {
-      buildTapView(mView, result);
+      try {
+        buildTapView(mView, result);
+      } catch (Throwable e) {
+        Log.wtf("TapStatusFragment", "UNCAUGHT EXCEPTION", e);
+      }
     }
 
   }
