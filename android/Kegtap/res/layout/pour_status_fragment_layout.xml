@@ -55,7 +55,7 @@
   <LinearLayout
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
+    android:orientation="vertical"
     android:gravity="center">
 
     <TextView
@@ -65,6 +65,14 @@
       android:textColor="#888"
       android:textSize="48dip"
       android:text="Default Beer Name"/>
+    <TextView
+      android:id="@+id/pourStatusLine"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:textColor="#888"
+      android:textSize="18dip"
+      android:text=""/>
+      
   </LinearLayout>
 
 </LinearLayout>

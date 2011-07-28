@@ -202,6 +202,10 @@ public class Flow {
     return mUpdateTime;
   }
 
+  public long getMsUntilIdle() {
+    return Math.max(mMaxIdleTimeMs - (System.currentTimeMillis() - mUpdateTime), 0);
+  }
+
   /**
    * Returns true if the flow has exceeded the maximum allowable idle time.
    *

@@ -25,7 +25,7 @@ public class FlowManager {
 
   private final TapManager mTapManager;
 
-  private static final long DEFAULT_IDLE_TIME_MILLIS = 10000;
+  private static final long DEFAULT_IDLE_TIME_MILLIS = TimeUnit.SECONDS.toMillis(30);
 
   /**
    * Records the last reading for each tap.

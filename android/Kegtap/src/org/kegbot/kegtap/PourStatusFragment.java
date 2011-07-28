@@ -7,11 +7,13 @@ import javax.measure.units.SI;
 import org.jscience.physics.measures.Measure;
 import org.kegbot.core.ConfigurationManager;
 import org.kegbot.core.Flow;
+import org.kegbot.core.Flow.State;
 import org.kegbot.proto.Api.TapDetail;
 import org.kegbot.proto.Models.BeerType;
 
 import android.app.Fragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +23,7 @@ import com.google.common.base.Strings;
 
 public class PourStatusFragment extends Fragment {
 
+  private static final String TAG = PourStatusFragment.class.getSimpleName();
   private View mView;
 
   @Override
@@ -32,6 +35,11 @@ public class PourStatusFragment extends Fragment {
 
 
   public void updateForFlow(final Flow flow) {
+    if (flow == null) {
+      Log.w(TAG, "Null flow, wtf?");
+      return;
+    }
+
     // Set volume portion.
     final double volumeMl = flow.getVolumeMl();
     Measure<Volume> vol = Measure.valueOf(volumeMl, SI.MILLI(NonSI.LITER));
@@ -58,6 +66,27 @@ public class PourStatusFragment extends Fragment {
           ((TextView) mView.findViewById(R.id.pourBeerName)).setText(beerName);
         }
       }
+    }
+
+    final TextView statusLine = (TextView) mView.findViewById(R.id.pourStatusLine);
+
+    final Flow.State flowState = flow.getState();
+
+    if (flowState == State.ACTIVE || flowState == State.IDLE) {
+      final long msUntilIdle = flow.getMsUntilIdle();
+      if (msUntilIdle <= 10000) {
+        final long seconds = msUntilIdle / 1000;
+        statusLine.setText("Pour automatically ends in " + seconds + " second"
+            + ((seconds != 1) ? "s" : "") + ".");
+        statusLine.setVisibility(View.VISIBLE);
+      } else {
+        statusLine.setVisibility(View.INVISIBLE);
+      }
+    } else if (flowState == State.COMPLETED) {
+      statusLine.setText("Pour completed!");
+      statusLine.setVisibility(View.VISIBLE);
+    } else {
+      statusLine.setVisibility(View.INVISIBLE);
     }
   }
 
