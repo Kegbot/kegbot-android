@@ -76,7 +76,7 @@ public class ImageAdapter extends BaseAdapter {
     "http://lh4.ggpht.com/_7V85eCJY_fg/TBpXudG4_PI/AAAAAAAAPEE/8cHJ7G84TkM/s144-c/20100530_120257_0273-Edit-2.jpg"
   };
 
-  private final ImageDownloader imageDownloader = new ImageDownloader();
+  private final ImageDownloader imageDownloader = ImageDownloader.getSingletonInstance();
 
   @Override
   public int getCount() {

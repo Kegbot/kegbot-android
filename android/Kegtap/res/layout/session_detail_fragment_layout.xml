@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:orientation="vertical"
+  android:minHeight="64dip"
+  android:gravity="top">
+
+  <!-- Header -->
+  <LinearLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="top">
+    <TextView
+      android:id="@+id/sessionSubtitle"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:textColor="#888"
+      android:textSize="24dip"
+      android:text="Current Session: " />
+    <TextView
+      android:id="@+id/sessionTitle"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:textStyle="bold"
+      android:textSize="24dip"
+      android:text="Party!" />
+  </LinearLayout>
+
+  <View
+    android:layout_width="match_parent"
+    android:layout_height="2dip"
+    android:layout_marginLeft="5dip"
+    android:layout_marginRight="5dip"
+    android:background="#1FFFFFFF" />
+
+  <!-- Rest of content -->
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:gravity="center|left">
+
+    <!-- Num Drinkers -->
+    <LinearLayout
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginRight="15dip"
+      android:orientation="vertical"
+      android:gravity="center"
+      android:background="@color/black20pct"
+      android:padding="5dip"
+      android:minHeight="96dip"
+      android:minWidth="96dip">
+      <TextView
+        android:id="@+id/sessionDetailNumDrinkers"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="22dip"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:text="4" />
+      <View
+        android:layout_width="match_parent"
+        android:layout_height="1dip"
+        android:layout_marginLeft="5dip"
+        android:layout_marginRight="5dip"
+        android:background="#1FFFFFFF" />
+      <TextView
+        android:id="@+id/tapDateTappedHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="18dip"
+        android:text="drinkers"
+        android:textColor="#888"
+        android:gravity="center" />
+    </LinearLayout>
+
+    <!-- Num Pints -->
+    <LinearLayout
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginRight="15dip"
+      android:orientation="vertical"
+      android:gravity="center"
+      android:background="@color/black20pct"
+      android:padding="5dip"
+      android:minHeight="96dip"
+      android:minWidth="96dip">
+      <TextView
+        android:id="@+id/sessionDetailVolServed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="22dip"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:text="12.2" />
+      <View
+        android:layout_width="match_parent"
+        android:layout_height="1dip"
+        android:layout_marginLeft="5dip"
+        android:layout_marginRight="5dip"
+        android:background="#1FFFFFFF" />
+      <TextView
+        android:id="@+id/sessionDetailVolServedHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="18dip"
+        android:text="pints"
+        android:textColor="#888"
+        android:gravity="center" />
+    </LinearLayout>
+
+    <!-- Top Drinker -->
+    <LinearLayout
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginRight="15dip"
+      android:orientation="vertical"
+      android:gravity="center"
+      android:background="@color/black20pct"
+      android:padding="5dip"
+      android:minHeight="96dip"
+      android:minWidth="96dip">
+      <TextView
+        android:id="@+id/sessionDetailTopDrinker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="22dip"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:text="mikey" />
+      <View
+        android:layout_width="match_parent"
+        android:layout_height="1dip"
+        android:layout_marginLeft="5dip"
+        android:layout_marginRight="5dip"
+        android:background="#1FFFFFFF" />
+      <TextView
+        android:id="@+id/sessionDetailVolServedHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="18dip"
+        android:text="top drinker"
+        android:textColor="#888"
+        android:gravity="center" />
+    </LinearLayout>
+
+    <!-- 2nd -->
+    <LinearLayout
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginRight="15dip"
+      android:orientation="vertical"
+      android:gravity="center"
+      android:background="@color/black20pct"
+      android:padding="5dip"
+      android:minHeight="96dip"
+      android:minWidth="96dip">
+      <TextView
+        android:id="@+id/sessionDetailVolServed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="22dip"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:text="MrMilkshake" />
+      <View
+        android:layout_width="match_parent"
+        android:layout_height="1dip"
+        android:layout_marginLeft="5dip"
+        android:layout_marginRight="5dip"
+        android:background="#1FFFFFFF" />
+      <TextView
+        android:id="@+id/sessionDetailVolServedHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="18dip"
+        android:text="2nd drinker"
+        android:textColor="#888"
+        android:gravity="center" />
+    </LinearLayout>
+
+
+    <!-- 3rd -->
+    <LinearLayout
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginRight="15dip"
+      android:orientation="vertical"
+      android:gravity="center"
+      android:background="@color/black20pct"
+      android:padding="5dip"
+      android:minHeight="96dip"
+      android:minWidth="96dip">
+      <TextView
+        android:id="@+id/sessionDetailVolServed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="22dip"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:text="bob" />
+      <View
+        android:layout_width="match_parent"
+        android:layout_height="1dip"
+        android:layout_marginLeft="5dip"
+        android:layout_marginRight="5dip"
+        android:background="#1FFFFFFF" />
+      <TextView
+        android:id="@+id/sessionDetailVolServedHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="18dip"
+        android:text="3rd drinker"
+        android:textColor="#888"
+        android:gravity="center" />
+    </LinearLayout>
+
+  </LinearLayout>
+
+</LinearLayout>

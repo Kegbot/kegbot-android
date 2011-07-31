@@ -3,7 +3,6 @@ package org.kegbot.kegtap.service;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiException;
 import org.kegbot.api.KegbotApiImpl;
@@ -24,6 +23,7 @@ import org.kegbot.proto.Api.TapDetail;
 import org.kegbot.proto.Api.TapDetailSet;
 import org.kegbot.proto.Api.ThermoLogSet;
 import org.kegbot.proto.Api.ThermoSensorSet;
+import org.kegbot.proto.Api.UserDetailSet;
 import org.kegbot.proto.Models.AuthenticationToken;
 import org.kegbot.proto.Models.Drink;
 import org.kegbot.proto.Models.ThermoLog;
@@ -133,9 +133,9 @@ public class KegbotApiService extends BackgroundService implements KegbotApi {
 
     super.onCreate();
 
-    mApi = new KegbotApiImpl(new DefaultHttpClient(), "http://oldgertie.kegbot.net/api");
+    mApi = KegbotApiImpl.getSingletonInstance();
     mApi.setListener(mApiListener);
-    mApi.setApiKey("");
+    //mApi.setApiKey("");
   }
 
   @Override
@@ -396,6 +396,16 @@ public class KegbotApiService extends BackgroundService implements KegbotApi {
   @Override
   public SystemEventDetailSet getUserEvents(final String username) throws KegbotApiException {
     return mApi.getUserEvents(username);
+  }
+
+  @Override
+  public UserDetailSet getUsers() throws KegbotApiException {
+    return mApi.getUsers();
+  }
+
+  @Override
+  public SessionSet getCurrentSessions() throws KegbotApiException {
+    return mApi.getCurrentSessions();
   }
 
   @Override

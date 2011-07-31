@@ -45,8 +45,8 @@ public class KegboardService extends Service {
 
   private final String TAG = KegboardService.class.getSimpleName();
 
-  private static final String ACTION_USB_PERMISSION =
-    KegboardService.class.getCanonicalName() + ".ACTION_USB_PERMISSION";
+  private static final String ACTION_USB_PERMISSION = KegboardService.class.getCanonicalName()
+      + ".ACTION_USB_PERMISSION";
 
   /**
    * The system's USB service.
@@ -66,12 +66,19 @@ public class KegboardService extends Service {
 
   public interface Listener {
     public void onDeviceAttached();
+
     public void onDeviceDetached();
+
     public void onAuthTokenMessage(KegboardAuthTokenMessage message);
+
     public void onHelloMessage(KegboardHelloMessage message);
+
     public void onMeterStatusMessage(KegboardMeterStatusMessage message);
+
     public void onOnewirePresenceMessage(KegboardOnewirePresenceMessage message);
+
     public void onOutputStatusMessage(KegboardOutputStatusMessage message);
+
     public void onTemperatureReadingMessage(KegboardTemperatureReadingMessage message);
   }
 
@@ -177,7 +184,8 @@ public class KegboardService extends Service {
         setUpUsbDevice(usbDevice);
       } else {
         Log.d(TAG, "Requesting permission.");
-        PendingIntent permissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), 0);
+        PendingIntent permissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(
+            ACTION_USB_PERMISSION), 0);
         mUsbManager.requestPermission(usbDevice, permissionIntent);
       }
     }
@@ -194,22 +202,22 @@ public class KegboardService extends Service {
       Log.e(TAG, "Error opening.", e);
     }
     /*
-    mExecutorService = Executors.newSingleThreadExecutor();
-    mExecutorService.submit(mKegboardRunner);
-    */
+     * mExecutorService = Executors.newSingleThreadExecutor();
+     * mExecutorService.submit(mKegboardRunner);
+     */
     mThread = new Thread(mKegboardRunner);
     mThread.start();
   }
 
   private void removeUsbDevice() {
-    //mExecutorService.shutdown();
+    // mExecutorService.shutdown();
   }
 
   @Override
   public void onDestroy() {
     unregisterReceiver(mUsbReceiver);
     if (mThread != null) {
-      //mExecutorService.shutdown();
+      // mExecutorService.shutdown();
       mThread.stop();
     }
     super.onDestroy();
@@ -217,10 +225,12 @@ public class KegboardService extends Service {
 
   @Override
   public int onStartCommand(Intent intent, int flags, int startId) {
-    final String action = intent.getAction();
-    Log.d(TAG, "Handling intent: " + action);
-    if (UsbManager.ACTION_USB_DEVICE_ATTACHED.equals(action)) {
-      probeForSerialDevice();
+    if (intent != null) {
+      final String action = intent.getAction();
+      Log.d(TAG, "Handling intent: " + action);
+      if (UsbManager.ACTION_USB_DEVICE_ATTACHED.equals(action)) {
+        probeForSerialDevice();
+      }
     }
     return START_STICKY;
   }

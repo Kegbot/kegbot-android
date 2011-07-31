@@ -16,6 +16,7 @@ import org.kegbot.proto.Api.TapDetail;
 import org.kegbot.proto.Api.TapDetailSet;
 import org.kegbot.proto.Api.ThermoLogSet;
 import org.kegbot.proto.Api.ThermoSensorSet;
+import org.kegbot.proto.Api.UserDetailSet;
 import org.kegbot.proto.Models.AuthenticationToken;
 import org.kegbot.proto.Models.Drink;
 import org.kegbot.proto.Models.ThermoLog;
@@ -179,5 +180,9 @@ public interface KegbotApi {
 
   public ThermoLog recordTemperature(final RecordTemperatureRequest request)
       throws KegbotApiException;
+
+  public UserDetailSet getUsers() throws KegbotApiException;
+
+  public SessionSet getCurrentSessions() throws KegbotApiException;
 
 }

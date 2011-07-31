@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- An event in the event list. -->
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  android:orientation="horizontal"
+  android:minHeight="64dip"
+  android:gravity="center"
+  android:weightSum="1.0">
+
+  <!-- Left col: drinkers -->
+  <LinearLayout
+    android:layout_weight="0.7"
+    android:layout_width="0dip"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="top">
+
+    <TextView
+      android:id="@+id/drinkerGridTitle"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:textColor="#888"
+      android:textSize="48dip"
+      android:text="Select Thyself..." />
+    <View
+      android:layout_width="match_parent"
+      android:layout_height="2dip"
+      android:layout_marginLeft="5dip"
+      android:layout_marginRight="5dip"
+      android:background="#1FFFFFFF" />
+
+    <fragment
+      android:id="@+id/drinkers"
+      class="org.kegbot.kegtap.DrinkerSelectFragment"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_marginRight="10dip" />
+
+  </LinearLayout>
+
+  <LinearLayout
+    android:layout_weight="0.3"
+    android:layout_width="0dip"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="top">
+
+    <TextView
+      android:id="@+id/drinkerGridTitle"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:textColor="#888"
+      android:textSize="48dip"
+      android:text="New Drinker" />
+    <View
+      android:layout_width="match_parent"
+      android:layout_height="2dip"
+      android:layout_marginLeft="5dip"
+      android:layout_marginRight="5dip"
+      android:background="#1FFFFFFF" />
+
+  </LinearLayout>
+
+</LinearLayout>

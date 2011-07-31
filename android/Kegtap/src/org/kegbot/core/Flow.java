@@ -1,8 +1,7 @@
 package org.kegbot.core;
 
-import org.kegbot.proto.Models.User;
-
 import com.google.common.base.Predicate;
+import com.google.common.base.Strings;
 
 public class Flow {
 
@@ -42,7 +41,7 @@ public class Flow {
   /**
    * Authenticated user for this flow. If unset, the flow is anonymous.
    */
-  private User mUser;
+  private String mUsername;
 
   /**
    * Current volume record, in milliliters
@@ -80,7 +79,7 @@ public class Flow {
     mFlowId = flowId;
     mTap = tap;
     mMaxIdleTimeMs = maxIdleTimeMs;
-    mUser = null;
+    mUsername = "";
     mTicks = 0;
     mVolumeMl = 0;
     mStartTime = mUpdateTime = System.currentTimeMillis();
@@ -92,7 +91,7 @@ public class Flow {
         .append(" id=").append(mFlowId)
         .append(" state=").append(mState)
         .append(" tap=").append(mTap)
-        .append(" user=").append(mUser)
+        .append(" user=").append(mUsername)
         .append(" ticks=").append(mTicks);
     return builder.toString();
   }
@@ -150,12 +149,12 @@ public class Flow {
     pokeActivity();
   }
 
-  public User getUser() {
-    return mUser;
+  public String getUsername() {
+    return mUsername;
   }
 
-  public void setUser(User user) {
-    mUser = user;
+  public void setUsername(String username) {
+    mUsername = username;
   }
 
   public int getFlowId() {
@@ -222,7 +221,11 @@ public class Flow {
   }
 
   public boolean isAuthenticated() {
-    return mUser != null;
+    return !Strings.isNullOrEmpty(mUsername);
+  }
+
+  public boolean isAnonymous() {
+    return !isAuthenticated();
   }
 
 }

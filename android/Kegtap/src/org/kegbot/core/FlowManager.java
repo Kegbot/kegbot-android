@@ -140,13 +140,8 @@ public class FlowManager {
     }
   }
 
-  public Flow getFlowForTapName(final String tapName) {
-    final Tap tap = mTapManager.getTapForMeterName(tapName);
-    if (tap == null) {
-      return null;
-    }
-    final Flow flow = mActiveFlows.get(tap);
-    return flow;
+  public Flow getFlowForTap(final Tap tap) {
+    return mActiveFlows.get(tap);
   }
 
   public Flow getFlowForFlowId(final long flowId) {
@@ -184,7 +179,7 @@ public class FlowManager {
     Flow flow = null;
     synchronized (mActiveFlows) {
       if (isActivity) {
-        flow = getFlowForTapName(tapName);
+        flow = getFlowForTap(tap);
         if (flow == null) {
           flow = startFlow(tap, DEFAULT_IDLE_TIME_MILLIS);
           Log.d(TAG, "  started new flow: " + flow);
@@ -196,6 +191,42 @@ public class FlowManager {
       }
     }
 
+    return flow;
+  }
+
+  /**
+   * Handles a user arriving at a tap. If there is no flow in progress, a new
+   * flow will be started and this user will be added to it. If there is already
+   * a Flow, this user will take it over if anonymous, or end it (and create a
+   * new one) otherwise.
+   *
+   * @param tap
+   * @param username
+   * @return
+   */
+  public synchronized Flow activateUserAtTap(final Tap tap, final String username) {
+    Flow flow = getFlowForTap(tap);
+
+    if (flow != null && flow.getUsername().equals(username)) {
+      Log.d(TAG, "activateUserAtTap: got same username, nothing to do.");
+      return flow;
+    }
+
+    if (flow != null && flow.isAnonymous()) {
+      Log.d(TAG, "activateUserAtTap: existing flow is anonymous, taking it over.");
+      flow.setUsername(username);
+      publishFlowUpdate(flow);
+      return flow;
+    } else if (flow != null && flow.isAuthenticated()) {
+      Log.d(TAG, "activateUserAtTap: existing flow is authenticated, ending it.");
+      endFlow(flow);
+    }
+
+    // New flow to replace previous or empty.
+    Log.d(TAG, "activateUserAtTap: creating new flow.");
+    flow = startFlow(tap, DEFAULT_IDLE_TIME_MILLIS);
+    flow.setUsername(username);
+    publishFlowUpdate(flow);
     return flow;
   }
 
@@ -234,7 +265,7 @@ public class FlowManager {
    *          the listener
    * @return <code>true</code> if the listener was not already attached
    */
-  public boolean addFlowListener(final Listener listener) {
+  public synchronized boolean addFlowListener(final Listener listener) {
     return mListeners.add(listener);
   }
 

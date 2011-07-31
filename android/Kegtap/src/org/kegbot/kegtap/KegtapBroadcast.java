@@ -1,7 +1,7 @@
 /**
  *
  */
-package org.kegbot.kegtap.core;
+package org.kegbot.kegtap;
 
 import android.content.Intent;
 
@@ -17,6 +17,11 @@ public class KegtapBroadcast {
   public static final String ACTION_POUR_UPDATE = "org.kegbot.action.POUR_UPDATE";
 
   /**
+   * Action set when a pour is being updated.
+   */
+  public static final String ACTION_POUR_START = "org.kegbot.action.POUR_START";
+
+  /**
    * Extra to be sent with {@link #ACTION_POUR_UPDATE}, giving the flow id as a
    * long.
    */
@@ -30,11 +35,21 @@ public class KegtapBroadcast {
   public static final String THERMO_UPDATE_EXTRA_SENSOR_NAME = "sensor_name";
   public static final String THERMO_UPDATE_EXTRA_TEMP_C = "temp_c";
 
+  public static final String ACTION_USER_AUTHED = "org.kegbot.action.USER_AUTHED";
+
+  public static final String USER_AUTHED_EXTRA_USERNAME = "username";
+
   /**
    * Non-instantiable.
    */
   private KegtapBroadcast() {
     assert (false);
+  }
+
+  public static Intent getPourStartBroadcastIntent(final long flowId) {
+    final Intent intent = new Intent(ACTION_POUR_START);
+    intent.putExtra(POUR_UPDATE_EXTRA_FLOW_ID, flowId);
+    return intent;
   }
 
   public static Intent getPourUpdateBroadcastIntent(final long flowId) {
@@ -44,9 +59,15 @@ public class KegtapBroadcast {
   }
 
   public static Intent getThermoUpdateBroadcastIntent(final String sensorName, final double tempC) {
-    final Intent intent = new Intent(ACTION_POUR_UPDATE);
+    final Intent intent = new Intent(ACTION_THERMO_UPDATE);
     intent.putExtra(THERMO_UPDATE_EXTRA_SENSOR_NAME, sensorName);
     intent.putExtra(THERMO_UPDATE_EXTRA_TEMP_C, tempC);
+    return intent;
+  }
+
+  public static Intent getUserAuthedBroadcastIntent(final String username) {
+    final Intent intent = new Intent(ACTION_USER_AUTHED);
+    intent.putExtra(USER_AUTHED_EXTRA_USERNAME, username);
     return intent;
   }
 

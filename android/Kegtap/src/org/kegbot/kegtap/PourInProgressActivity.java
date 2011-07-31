@@ -2,16 +2,23 @@ package org.kegbot.kegtap;
 
 import org.kegbot.core.Flow;
 import org.kegbot.core.FlowManager;
-import org.kegbot.kegtap.core.KegtapBroadcast;
+import org.kegbot.kegtap.camera.CameraFragment;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.hardware.Camera;
+import android.hardware.Camera.PictureCallback;
+import android.hardware.Camera.ShutterCallback;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.TextView;
 
 public class PourInProgressActivity extends CoreActivity {
 
@@ -21,14 +28,28 @@ public class PourInProgressActivity extends CoreActivity {
 
   private static final int MESSAGE_FLOW_FINISH = 2;
 
-  private static final long FLOW_UPDATE_MILLIS = 1000;
+  private static final int MESSAGE_PICTURE_COUNTDOWN = 3;
+
+  private static final int MESSAGE_TAKE_PICTURE = 4;
+
+  private static final long FLOW_UPDATE_MILLIS = 500;
 
   private static final long FLOW_FINISH_DELAY_MILLIS = 5000;
 
+  private Flow mCurrentFlow = null;
+
+  private CameraFragment mCameraFragment;
   private PourStatusFragment mPourStatus;
 
-  private static final IntentFilter POUR_INTENT_FILTER = new IntentFilter(KegtapBroadcast.ACTION_POUR_UPDATE);
+  private Button mPictureButton;
+
+  private Button mLogInButton;
+  private Button mEndPourButton;
+
+  private static final IntentFilter POUR_INTENT_FILTER = new IntentFilter(
+      KegtapBroadcast.ACTION_POUR_START);
   static {
+    POUR_INTENT_FILTER.addAction(KegtapBroadcast.ACTION_POUR_UPDATE);
     POUR_INTENT_FILTER.setPriority(100);
   }
 
@@ -36,7 +57,8 @@ public class PourInProgressActivity extends CoreActivity {
     @Override
     public void onReceive(Context context, Intent intent) {
       final String action = intent.getAction();
-      if (KegtapBroadcast.ACTION_POUR_UPDATE.equals(action)) {
+      if (KegtapBroadcast.ACTION_POUR_UPDATE.equals(action)
+          || KegtapBroadcast.ACTION_POUR_START.equals(action)) {
         handleIntent(intent);
         abortBroadcast();
       }
@@ -49,18 +71,35 @@ public class PourInProgressActivity extends CoreActivity {
     public void handleMessage(Message msg) {
       switch (msg.what) {
         case MESSAGE_FLOW_UPDATE:
-          Flow flow = (Flow) msg.obj;
-          doFlowUpdate(flow);
+          if (mCurrentFlow == null) {
+            return;
+          }
+          Log.d(LOG_TAG, "!!!!!!! Flow update!" + mCurrentFlow);
+          doFlowUpdate();
 
-          if (flow.getState() != Flow.State.COMPLETED) {
-            final Message message = mHandler.obtainMessage(MESSAGE_FLOW_UPDATE, flow);
+          if (mCurrentFlow.getState() != Flow.State.COMPLETED) {
+            final Message message = mHandler.obtainMessage(MESSAGE_FLOW_UPDATE);
             mHandler.sendMessageDelayed(message, FLOW_UPDATE_MILLIS);
           } else {
             mHandler.sendEmptyMessageDelayed(MESSAGE_FLOW_FINISH, FLOW_FINISH_DELAY_MILLIS);
           }
           return;
         case MESSAGE_FLOW_FINISH:
+          Log.d(LOG_TAG, "!!!!!!!!!!! Flow finished!");
+          doFlowUpdate();
           finish();
+          return;
+        case MESSAGE_PICTURE_COUNTDOWN:
+          mPictureButton.setClickable(false);
+          mPictureButton.setEnabled(false);
+          final Integer time = (Integer) msg.obj;
+          mPictureButton.setText(time.toString() + " ...");
+          return;
+        case MESSAGE_TAKE_PICTURE:
+          mPictureButton.setClickable(true);
+          mPictureButton.setEnabled(true);
+          mPictureButton.setText("Take Picture");
+          takePicture();
           return;
       }
       super.handleMessage(msg);
@@ -75,10 +114,36 @@ public class PourInProgressActivity extends CoreActivity {
     setContentView(R.layout.pour_in_progress_activity);
     bindToCoreService();
 
-    findViewById(R.id.pourInProgressRightCol)
-        .setBackgroundDrawable(getResources().getDrawable(R.drawable.shape_rounded_rect));
+    findViewById(R.id.pourInProgressRightCol).setBackgroundDrawable(
+        getResources().getDrawable(R.drawable.shape_rounded_rect));
 
     mPourStatus = (PourStatusFragment) getFragmentManager().findFragmentById(R.id.tap_status);
+    mCameraFragment = (CameraFragment) getFragmentManager().findFragmentById(R.id.camera);
+
+    mPictureButton = (Button) findViewById(R.id.takePictureButton);
+    mPictureButton.setOnClickListener(new OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        onTakePictureButton();
+      }
+    });
+
+    mLogInButton = (Button) findViewById(R.id.authenticateButton);
+    mLogInButton.setOnClickListener(new OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        onLogInButton();
+      }
+    });
+
+    mEndPourButton = (Button) findViewById(R.id.endPourButton);
+    mEndPourButton.setOnClickListener(new OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        onEndPourButton();
+      }
+    });
+
   }
 
   @Override
@@ -114,32 +179,99 @@ public class PourInProgressActivity extends CoreActivity {
   private void handleIntent(final Intent intent) {
     final String action = intent.getAction();
     Log.d(LOG_TAG, "Handling intent: " + intent);
-    if (KegtapBroadcast.ACTION_POUR_UPDATE.equals(action)) {
+
+    if (KegtapBroadcast.ACTION_POUR_UPDATE.equals(action)
+        || KegtapBroadcast.ACTION_POUR_START.equals(action)) {
       final long flowId = intent.getLongExtra(KegtapBroadcast.POUR_UPDATE_EXTRA_FLOW_ID, -1);
       if (flowId > 0) {
         Log.d(LOG_TAG, "Flow id: " + flowId);
         updateForFlow(flowId);
       }
     }
+
+    if (KegtapBroadcast.ACTION_POUR_START.equals(action)) {
+      schedulePicture();
+    }
   }
 
   private void updateForFlow(long flowId) {
     final FlowManager flowManager = FlowManager.getSingletonInstance();
     final Flow flow = flowManager.getFlowForFlowId(flowId);
-    doFlowUpdate(flow);
+    mCurrentFlow = flow;
+    doFlowUpdate();
     final Message updateMessage = mHandler.obtainMessage(MESSAGE_FLOW_UPDATE, flow);
     mHandler.removeMessages(MESSAGE_FLOW_UPDATE);
     mHandler.sendMessageDelayed(updateMessage, FLOW_UPDATE_MILLIS);
   }
 
-  private void doFlowUpdate(Flow flow) {
-    Log.d(LOG_TAG, "Updating from flow: " + flow);
-    mPourStatus.updateForFlow(flow);
+  private void doFlowUpdate() {
+    // Log.d(LOG_TAG, "Updating from flow: " + flow);
+    if (mCurrentFlow != null) {
+      mPourStatus.updateForFlow(mCurrentFlow);
+
+      if (mCurrentFlow.isAnonymous()) {
+        findViewById(R.id.authenticateButton).setVisibility(View.VISIBLE);
+        ((TextView) findViewById(R.id.pourDrinkerName)).setText("Anonymous Drinker");
+      } else {
+        findViewById(R.id.authenticateButton).setVisibility(View.INVISIBLE);
+        ((TextView) findViewById(R.id.pourDrinkerName)).setText(mCurrentFlow.getUsername());
+      }
+    }
+  }
+
+  private void schedulePicture() {
+    mHandler.sendMessage(mHandler.obtainMessage(MESSAGE_PICTURE_COUNTDOWN, Integer.valueOf(3)));
+    mHandler.sendMessageDelayed(mHandler.obtainMessage(MESSAGE_PICTURE_COUNTDOWN, Integer
+        .valueOf(2)), 1000);
+    mHandler.sendMessageDelayed(mHandler.obtainMessage(MESSAGE_PICTURE_COUNTDOWN, Integer
+        .valueOf(1)), 2000);
+    mHandler.sendEmptyMessageDelayed(MESSAGE_TAKE_PICTURE, 3000);
+  }
+
+  private void onTakePictureButton() {
+    schedulePicture();
+  }
+
+  private void onLogInButton() {
+    final Intent intent = new Intent(this, DrinkerSelectActivity.class);
+    startActivity(intent);
+  }
+
+  private void onEndPourButton() {
+    mEndPourButton.setClickable(false);
+    mEndPourButton.setEnabled(false);
+    final FlowManager flowManager = FlowManager.getSingletonInstance();
+    flowManager.endFlow(mCurrentFlow);
+  }
+
+  private void takePicture() {
+    final ShutterCallback shutter = new ShutterCallback() {
+      @Override
+      public void onShutter() {
+        Log.d(LOG_TAG, "camera: shutter");
+      }
+    };
+
+    final PictureCallback raw = new PictureCallback() {
+      @Override
+      public void onPictureTaken(byte[] data, Camera camera) {
+        Log.d(LOG_TAG, "camera: raw");
+      }
+    };
+
+    final PictureCallback jpeg = new PictureCallback() {
+      @Override
+      public void onPictureTaken(byte[] data, Camera camera) {
+        Log.d(LOG_TAG, "camera: jpeg");
+      }
+    };
+
+    mCameraFragment.takePicture(shutter, raw, jpeg);
   }
 
   public static Intent getStartIntent(Context context, long flowId) {
     final Intent intent = new Intent(context, PourInProgressActivity.class);
-    intent.setAction(KegtapBroadcast.ACTION_POUR_UPDATE);
+    intent.setAction(KegtapBroadcast.ACTION_POUR_START);
     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
     intent.putExtra(KegtapBroadcast.POUR_UPDATE_EXTRA_FLOW_ID, flowId);

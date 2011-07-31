@@ -26,6 +26,23 @@ public class SettingsActivity extends PreferenceActivity {
     public void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
       addPreferencesFromResource(R.xml.settings_general);
+      handleEnableManagerPinChanged();
+
+      final CheckBoxPreference enablePref = (CheckBoxPreference) findPreference("use_manager_pin");
+      enablePref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+        @Override
+        public boolean onPreferenceClick(Preference preference) {
+          handleEnableManagerPinChanged();
+          return true;
+        }
+      });
+
+    }
+
+    private void handleEnableManagerPinChanged() {
+      final CheckBoxPreference enablePref = (CheckBoxPreference) findPreference("use_manager_pin");
+      final boolean enabled = enablePref.isChecked();
+      findPreference("manager_pin").setEnabled(enabled);
     }
 
   }
@@ -72,6 +89,18 @@ public class SettingsActivity extends PreferenceActivity {
       ListPreference controllerTypePref = (ListPreference) findPreference("controller_type");
     }
 
+  }
+
+  @Override
+  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    // TODO Auto-generated method stub
+    super.onActivityResult(requestCode, resultCode, data);
+  }
+
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    // TODO Auto-generated method stub
+    super.onCreate(savedInstanceState);
   }
 
   public static void startSettingsActivity(Context context) {

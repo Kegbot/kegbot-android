@@ -7,4 +7,13 @@
   android:orientation="vertical"
   android:minHeight="64dip"
   android:gravity="top">
+
+  <Button
+    android:id="@+id/beerMeButton"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:text="Beer Me!"
+    android:textSize="48dip"
+    android:gravity="center" />
+
 </LinearLayout>

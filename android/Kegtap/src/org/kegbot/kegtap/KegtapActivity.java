@@ -1,6 +1,5 @@
 package org.kegbot.kegtap;
 
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiImpl;
 import org.kegbot.kegtap.service.KegboardService;
@@ -21,18 +20,22 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 
 public class KegtapActivity extends CoreActivity {
 
   public final String LOG_TAG = "KegtapActivity";
 
-  private final ImageDownloader mImageDownloader = new ImageDownloader();
+  private final ImageDownloader mImageDownloader = ImageDownloader.getSingletonInstance();
 
   private TapStatusFragment mTapStatus;
 
   private EventListFragment mEvents;
 
   private ControlsFragment mControls;
+
+  private SessionStatsFragment mSession;
 
   private SharedPreferences mPreferences;
   private PreferenceHelper mPrefsHelper;
@@ -48,6 +51,15 @@ public class KegtapActivity extends CoreActivity {
       }
     }
   };
+
+  private final OnClickListener mOnBeerMeClickedListener =
+    new OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        final Intent intent = new Intent(KegtapActivity.this, DrinkerSelectActivity.class);
+        startActivity(intent);
+      }
+    };
 
   private final Runnable mRefreshRunnable = new Runnable() {
     @Override
@@ -68,14 +80,17 @@ public class KegtapActivity extends CoreActivity {
 
     mTapStatus = (TapStatusFragment) getFragmentManager().findFragmentById(
         R.id.tap_status);
-    mTapStatus.setImageDownloader(mImageDownloader);
 
     mEvents = (EventListFragment) getFragmentManager().findFragmentById(
         R.id.event_list);
-    mEvents.setImageDownloader(mImageDownloader);
 
     mControls = (ControlsFragment) getFragmentManager().findFragmentById(
         R.id.controls);
+
+    mSession = (SessionStatsFragment) getFragmentManager().findFragmentById(
+        R.id.currentSessionFragment);
+
+    ((Button) findViewById(R.id.beerMeButton)).setOnClickListener(mOnBeerMeClickedListener);
 
     View v = findViewById(R.id.tap_status);
     v.setSystemUiVisibility(View.STATUS_BAR_HIDDEN);
@@ -158,18 +173,18 @@ public class KegtapActivity extends CoreActivity {
   }
 
   private void updateApiUrl(Uri apiUrl) {
-    KegbotApi api = new KegbotApiImpl(new DefaultHttpClient(), apiUrl.toString());
+    KegbotApi api = KegbotApiImpl.getSingletonInstance();
     String username = mPrefsHelper.getUsername();
     String password = mPrefsHelper.getPassword();
     api.setAccountCredentials(username, password);
     mTapStatus.setKegbotApi(api);
-    api = new KegbotApiImpl(new DefaultHttpClient(), apiUrl.toString());
-    mEvents.setKegbotApi(api);
+    api.setApiUrl(apiUrl.toString());
     loadUiFragments();
   }
 
   private void loadUiFragments() {
     mTapStatus.loadTap();
     mEvents.loadEvents();
+    mSession.loadCurrentSessionDetail();
   }
 }

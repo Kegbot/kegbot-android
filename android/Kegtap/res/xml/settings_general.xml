@@ -19,4 +19,17 @@
     android:inputType="textWebPassword"
     android:summary="Password for accessing Kegbot">
   </EditTextPreference>
+
+  <CheckBoxPreference
+    android:key="use_manager_pin"
+    android:title="Enable Manager Pin"
+    android:summary="Require the manager pin for certain operations">
+  </CheckBoxPreference>
+  <EditTextPreference
+    android:key="manager_pin"
+    android:title="Manager Pin"
+    android:inputType="numberPassword"
+    android:summary="The manager pin value">
+  </EditTextPreference>
+
 </PreferenceScreen>

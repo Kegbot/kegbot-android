@@ -30,16 +30,12 @@ public class TapStatusFragment extends Fragment {
   private KegbotApi mApi;
 
   private View mView;
-  private ImageDownloader mImageDownloader;
+  private final ImageDownloader mImageDownloader = ImageDownloader.getSingletonInstance();
 
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     mView = inflater.inflate(R.layout.tap_status_fragment_layout, container);
     return mView;
-  }
-
-  void setImageDownloader(ImageDownloader imageDownloader) {
-    mImageDownloader = imageDownloader;
   }
 
   private View buildTapView(View view, TapDetail tap) {

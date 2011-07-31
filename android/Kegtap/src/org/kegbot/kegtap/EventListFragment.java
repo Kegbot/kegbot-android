@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiException;
+import org.kegbot.api.KegbotApiImpl;
 import org.kegbot.kegtap.util.image.ImageDownloader;
 import org.kegbot.proto.Api.SystemEventDetail;
 import org.kegbot.proto.Api.SystemEventDetailSet;
@@ -39,8 +40,8 @@ public class EventListFragment extends ListFragment {
   private static final String LOG_TAG = "EventList";
 
   private ArrayAdapter<SystemEventDetail> mAdapter;
-  private KegbotApi mApi;
-  private ImageDownloader mImageDownloader;
+  private final KegbotApi mApi = KegbotApiImpl.getSingletonInstance();
+  private final ImageDownloader mImageDownloader = ImageDownloader.getSingletonInstance();
 
   private long mLastEventId = -1;
 
@@ -180,14 +181,6 @@ public class EventListFragment extends ListFragment {
     setListAdapter(mAdapter);
   }
 
-  void setKegbotApi(KegbotApi api) {
-    mApi = api;
-  }
-
-  void setImageDownloader(ImageDownloader imageDownloader) {
-    mImageDownloader = imageDownloader;
-  }
-
   void loadEvents() {
     new EventLoaderTask().execute();
   }
@@ -211,7 +204,7 @@ public class EventListFragment extends ListFragment {
 
     @Override
     protected void onPostExecute(SystemEventDetailSet result) {
-      Log.w(LOG_TAG, "Events reloaded: " + result);
+      Log.d(LOG_TAG, "Events reloaded.");
       if (result != null) {
         final List<SystemEventDetail> events = result.getEventsList();
         for (final SystemEventDetail event : events) {

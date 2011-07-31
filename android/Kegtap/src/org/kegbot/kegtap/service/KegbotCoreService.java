@@ -16,8 +16,8 @@ import org.kegbot.core.Tap;
 import org.kegbot.core.TapManager;
 import org.kegbot.core.ThermoSensor;
 import org.kegbot.kegtap.KegtapActivity;
+import org.kegbot.kegtap.KegtapBroadcast;
 import org.kegbot.kegtap.R;
-import org.kegbot.kegtap.core.KegtapBroadcast;
 import org.kegbot.kegtap.service.KegbotApiService.ConnectionState;
 import org.kegbot.kegtap.util.KegbotDescriptor;
 import org.kegbot.kegtap.util.PreferenceHelper;
@@ -126,16 +126,14 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
 
   private final IBinder mBinder = new LocalBinder();
 
-  private final OnSharedPreferenceChangeListener mPreferenceListener =
-    new OnSharedPreferenceChangeListener() {
-  @Override
-  public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-    if (PreferenceHelper.KEY_SELECTED_KEGBOT.equals(key)) {
+  private final OnSharedPreferenceChangeListener mPreferenceListener = new OnSharedPreferenceChangeListener() {
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+      if (PreferenceHelper.KEY_SELECTED_KEGBOT.equals(key)) {
 
+      }
     }
-  }
-};
-
+  };
 
   private final Runnable mFlowManagerWorker = new Runnable() {
     @Override
@@ -182,8 +180,7 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
         public void run() {
           Log.d(TAG, "Sensor update for sensor: " + sensor);
           final RecordTemperatureRequest request = RecordTemperatureRequest.newBuilder()
-              .setSensorName(sensor.getName())
-              .setTempC((float) sensor.getTemperatureC())
+              .setSensorName(sensor.getName()).setTempC((float) sensor.getTemperatureC())
               .buildPartial();
           mApiService.recordTemperatureAsync(request);
         }
@@ -211,8 +208,7 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
         @Override
         public void run() {
           Log.d(TAG, "Flow updated: " + flow);
-          final Intent intent =
-            KegtapBroadcast.getPourUpdateBroadcastIntent(flow.getFlowId());
+          final Intent intent = KegtapBroadcast.getPourUpdateBroadcastIntent(flow.getFlowId());
           sendOrderedBroadcast(intent, null);
         }
       };
@@ -225,8 +221,8 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
         @Override
         public void run() {
           Log.d(TAG, "Flow started: " + flow);
-          final Intent intent = new Intent(ACTION_FLOW_STARTED);
-          KegbotCoreService.this.sendOrderedBroadcast(intent, null);
+          final Intent intent = KegtapBroadcast.getPourStartBroadcastIntent(flow.getFlowId());
+          sendOrderedBroadcast(intent, null);
         }
       };
       mHandler.post(r);
@@ -308,8 +304,6 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
     return mBinder;
   }
 
-
-
   public void stop() {
     mFlowManager.stop();
     mExecutorService.shutdown();
@@ -336,14 +330,10 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
    */
   private void recordDrinkForFlow(Flow ended) {
     Log.d(TAG, "Recording dring for flow: " + ended);
-    final RecordDrinkRequest request = RecordDrinkRequest.newBuilder()
-        .setTapName(ended.getTap().getMeterName())
-        .setTicks(ended.getTicks())
-        .setVolumeMl((float) ended.getVolumeMl())
-        .setUsername((ended.getUser() != null) ? ended.getUser().getUsername() : "")
-        .setSecondsAgo(0)
-        .setDurationSeconds((int) (ended.getUpdateTime() - ended.getStartTime()))
-        .setSpilled(false)
+    final RecordDrinkRequest request = RecordDrinkRequest.newBuilder().setTapName(
+        ended.getTap().getMeterName()).setTicks(ended.getTicks()).setVolumeMl(
+        (float) ended.getVolumeMl()).setUsername(ended.getUsername()).setSecondsAgo(0)
+        .setDurationSeconds((int) (ended.getUpdateTime() - ended.getStartTime())).setSpilled(false)
         .buildPartial();
     mApiService.recordDrinkAsync(request);
   }
@@ -372,6 +362,10 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
           .getMeterName(), tapInfo.getRelayName());
       mTapManager.addTap(tap);
       mConfigManager.setTapDetail(tap.getMeterName(), tapDetail);
+      if (true) {
+        // XXX multitap
+        break;
+      }
     }
   }
 

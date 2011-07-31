@@ -64,7 +64,7 @@
       android:layout_height="wrap_content"
       android:textColor="#888"
       android:textSize="48dip"
-      android:text="Default Beer Name"/>
+      android:text="Unknown Beer"/>
     <TextView
       android:id="@+id/pourStatusLine"
       android:layout_width="match_parent"
