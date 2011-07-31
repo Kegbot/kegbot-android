@@ -36,4 +36,8 @@ public class PreferenceHelper {
   public CharSequence getKegbotName() {
     return mSharedPreferences.getString(KEY_SELECTED_KEGBOT_NAME, null);
   }
+
+  public long getMinimumVolumeMl() {
+    return mSharedPreferences.getLong("minimum_volume_ml", 10);
+  }
 }

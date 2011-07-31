@@ -190,7 +190,8 @@ public class PourInProgressActivity extends CoreActivity {
     }
 
     if (KegtapBroadcast.ACTION_POUR_START.equals(action)) {
-      schedulePicture();
+      // TODO(mikey): Do this safely.
+      //schedulePicture();
     }
   }
 

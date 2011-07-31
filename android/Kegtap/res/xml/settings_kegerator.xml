@@ -14,4 +14,11 @@
     android:entryValues="@array/controllerTypeValues"
     android:defaultValue="fake">
   </ListPreference>
+  <EditTextPreference
+    android:key="minimum_volume_ml"
+    android:title="Minimum Volume (mL)"
+    android:inputType="number"
+    android:summary="Pours less than this amount will be ignored">
+  </EditTextPreference>
+
 </PreferenceScreen>
