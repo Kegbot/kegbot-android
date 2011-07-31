@@ -57,7 +57,6 @@ public class CameraFragment extends Fragment {
         mDefaultCameraId = i;
       }
     }
-    // setHasOptionsMenu(mNumberOfCameras > 1);
   }
 
   public void takePicture(final ShutterCallback shutter, final PictureCallback raw,
@@ -117,28 +116,4 @@ public class CameraFragment extends Fragment {
     }
   }
 
-  /*
-   * @Override public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
-   * { if (mNumberOfCameras > 1) { // Inflate our menu which can gather user
-   * input for switching camera inflater.inflate(R.menu.camera_menu, menu); }
-   * else { super.onCreateOptionsMenu(menu, inflater); } }
-   *
-   * @Override public boolean onOptionsItemSelected(MenuItem item) { // Handle
-   * item selection switch (item.getItemId()) { case R.id.switch_cam: // Release
-   * this camera -> mCameraCurrentlyLocked if (mCamera != null) {
-   * mCamera.stopPreview(); mPreview.setCamera(null); mCamera.release(); mCamera
-   * = null; }
-   *
-   * // Acquire the next camera and request Preview to reconfigure //
-   * parameters. mCamera = Camera.open((mCameraCurrentlyLocked + 1) %
-   * mNumberOfCameras); mCameraCurrentlyLocked = (mCameraCurrentlyLocked + 1) %
-   * mNumberOfCameras; mPreview.switchCamera(mCamera);
-   *
-   * // Start the preview mCamera.startPreview(); return true; case
-   * android.R.id.home: Intent intent = new Intent(this.getActivity(),
-   * MainActivity.class); intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
-   * Intent.FLAG_ACTIVITY_SINGLE_TOP); startActivity(intent);
-   *
-   * default: return super.onOptionsItemSelected(item); } }
-   */
 }

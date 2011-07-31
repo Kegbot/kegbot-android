@@ -1,11 +1,17 @@
 package org.kegbot.kegtap;
 
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiException;
 import org.kegbot.api.KegbotApiImpl;
 import org.kegbot.proto.Api.SessionDetail;
 import org.kegbot.proto.Api.SessionSet;
 import org.kegbot.proto.Models.Session;
+import org.kegbot.proto.Models.Stats;
+import org.kegbot.proto.Models.Stats.DrinkerVolume;
 
 import android.app.Fragment;
 import android.os.AsyncTask;
@@ -14,6 +20,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+
+import com.google.common.collect.Lists;
 
 public class SessionStatsFragment extends Fragment {
 
@@ -21,14 +30,65 @@ public class SessionStatsFragment extends Fragment {
 
   private View mView;
 
+  private final static Comparator<DrinkerVolume> VOLUMES_DESCENDING = new Comparator<DrinkerVolume>() {
+    @Override
+    public int compare(DrinkerVolume object1, DrinkerVolume object2) {
+      return Float.valueOf(object2.getVolumeMl()).compareTo(Float.valueOf(object1.getVolumeMl()));
+    }
+  };
+
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     mView = inflater.inflate(R.layout.session_detail_fragment_layout, container);
     return mView;
   }
 
-  private View updateSessionView(View view, SessionDetail tap) {
+  private View updateSessionView(View view, SessionDetail sessionDetail) {
+    if (sessionDetail == null) {
+      view.setVisibility(View.INVISIBLE);
+      return view;
+    }
+
+    view.setVisibility(View.VISIBLE);
+    final Stats stats = sessionDetail.getStats();
+    final Session session = sessionDetail.getSession();
+    final List<DrinkerVolume> volumeByDrinker = Lists.newArrayList(stats.getVolumeByDrinkerList());
+    Collections.sort(volumeByDrinker, VOLUMES_DESCENDING);
+
+    // Session name.
+    final String sessionName = sessionDetail.getSession().getName();
+    ((TextView) view.findViewById(R.id.sessionTitle)).setText(sessionName);
+
+    // Number of drinkers.
+    ((TextView) view.findViewById(R.id.sessionDetailNumDrinkers)).setText(String
+        .valueOf(volumeByDrinker.size()));
+
+    // Total volume.
+    final Double volumePints = Double.valueOf(Units.volumeMlToPints(session.getVolumeMl()));
+    ((TextView) view.findViewById(R.id.sessionDetailVolServed)).setText(String
+        .format("%.1f", volumePints));
+
+    final int numDrinkers = volumeByDrinker.size();
+    final int[] boxes = {
+        R.id.sessionDetailDrinker1,
+        R.id.sessionDetailDrinker2,
+        R.id.sessionDetailDrinker3,
+    };
+    for (int i = 0; i < numDrinkers && i < boxes.length; i++) {
+      final View box = view.findViewById(boxes[i]);
+      final TextView drinkerName = (TextView) box.findViewById(R.id.drinkerName);
+      final TextView drinkerHeader = (TextView) box.findViewById(R.id.drinkerHeader);
+      String strname = volumeByDrinker.get(i).getUsername();
+      if (strname.isEmpty()) {
+        strname = "anonymous";
+      }
+      drinkerName.setText(strname);
+      final double pints = Units.volumeMlToPints(volumeByDrinker.get(i).getVolumeMl());
+      drinkerHeader.setText(String.format("%.1f pints", Double.valueOf(pints)));
+    }
+
     view.setBackgroundDrawable(getResources().getDrawable(R.drawable.shape_rounded_rect));
+
     return view;
   }
 

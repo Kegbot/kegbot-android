@@ -1,10 +1,5 @@
 package org.kegbot.kegtap;
 
-import javax.measure.quantities.Volume;
-import javax.measure.units.NonSI;
-import javax.measure.units.SI;
-
-import org.jscience.physics.measures.Measure;
 import org.kegbot.core.ConfigurationManager;
 import org.kegbot.core.Flow;
 import org.kegbot.core.Flow.State;
@@ -41,9 +36,7 @@ public class PourStatusFragment extends Fragment {
     }
 
     // Set volume portion.
-    final double volumeMl = flow.getVolumeMl();
-    Measure<Volume> vol = Measure.valueOf(volumeMl, SI.MILLI(NonSI.LITER));
-    double ounces = vol.doubleValue(NonSI.OUNCE_LIQUID_US);
+    final double ounces = Units.volumeMlToOunces(flow.getVolumeMl());
 
     final String volumeStr;
     if (ounces < 100) {
