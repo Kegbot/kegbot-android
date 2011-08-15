@@ -6,6 +6,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiException;
 import org.kegbot.api.KegbotApiImpl;
+import org.kegbot.core.Flow;
 import org.kegbot.kegtap.core.backend.LocalDbHelper;
 import org.kegbot.proto.Api.DrinkDetail;
 import org.kegbot.proto.Api.DrinkDetailHtmlSet;
@@ -24,8 +25,10 @@ import org.kegbot.proto.Api.TapDetailSet;
 import org.kegbot.proto.Api.ThermoLogSet;
 import org.kegbot.proto.Api.ThermoSensorSet;
 import org.kegbot.proto.Api.UserDetailSet;
+import org.kegbot.proto.Internal.PendingPour;
 import org.kegbot.proto.Models.AuthenticationToken;
 import org.kegbot.proto.Models.Drink;
+import org.kegbot.proto.Models.Image;
 import org.kegbot.proto.Models.ThermoLog;
 import org.kegbot.proto.Models.User;
 
@@ -112,7 +115,7 @@ public class KegbotApiService extends BackgroundService implements KegbotApi {
   }
 
   public class LocalBinder extends Binder {
-    KegbotApiService getService() {
+    public KegbotApiService getService() {
       return KegbotApiService.this;
     }
   }
@@ -183,28 +186,39 @@ public class KegbotApiService extends BackgroundService implements KegbotApi {
       boolean processed = false;
       try {
         final AbstractMessage record = LocalDbHelper.getCurrentRow(db, cursor);
-        if (record instanceof RecordDrinkRequest) {
-          Log.d(TAG, "Posting drink");
-          final Drink drink = recordDrink((RecordDrinkRequest) record);
-          processed = true;
+        if (record instanceof PendingPour) {
+          Log.d(TAG, "Posting pour");
+          final PendingPour pour = (PendingPour) record;
+          final Drink drink = recordDrink(pour.getDrinkRequest());
           Log.d(TAG, "Drink posted: " + drink);
+
+          if (pour.getImagesCount() > 0) {
+            Log.d(TAG, "Drink had images, trying to post them..");
+            for (final String imagePath : pour.getImagesList()) {
+              Log.d(TAG, "Uploading image: " + imagePath);
+              uploadDrinkImage(drink.getId(), imagePath);
+            }
+          }
+          processed = true;
+
         } else if (record instanceof RecordTemperatureRequest) {
+          processed = true; // XXX drop even if fail
           Log.d(TAG, "Posting thermo");
           final ThermoLog log = recordTemperature((RecordTemperatureRequest) record);
-          processed = true;
           Log.d(TAG, "ThermoLog posted: " + log);
+        } else {
+          Log.w(TAG, "Unknown row type.");
         }
 
-        if (processed) {
-          final int deleteResult = LocalDbHelper.deleteCurrentRow(db, cursor);
-          Log.d(TAG, "Deleted row, result = " + deleteResult);
-        }
       } catch (InvalidProtocolBufferException e) {
-        Log.w(TAG, "Error processing column.");
-        return;
+        Log.w(TAG, "Error processing column: " + e);
       } catch (KegbotApiException e) {
-        Log.w(TAG, "Error processing column.");
-        return;
+        Log.w(TAG, "Error processing column: " + e);
+      }
+
+      if (processed) {
+        final int deleteResult = LocalDbHelper.deleteCurrentRow(db, cursor);
+        Log.d(TAG, "Deleted row, result = " + deleteResult);
       }
     } finally {
       cursor.close();
@@ -226,8 +240,8 @@ public class KegbotApiService extends BackgroundService implements KegbotApi {
   private boolean addSingleRequestToDb(AbstractMessage message) {
     Log.d(TAG, "Adding request to db!");
     final String type;
-    if (message instanceof RecordDrinkRequest) {
-      type = "drink";
+    if (message instanceof PendingPour) {
+      type = "pour";
     } else if (message instanceof RecordTemperatureRequest) {
       type = "thermo";
     } else {
@@ -421,17 +435,31 @@ public class KegbotApiService extends BackgroundService implements KegbotApi {
 
   /**
    * Schedules a drink to be recorded asynchronously.
-   *
-   * @param request
+   * @param flow
    */
-  public void recordDrinkAsync(final RecordDrinkRequest request) {
-    Log.d(TAG, ">>> Enqueuing drink: " + request);
+  public void recordDrinkAsync(final Flow flow) {
+    final RecordDrinkRequest request = getRequestForFlow(flow);
+    final PendingPour pour = PendingPour.newBuilder()
+        .setDrinkRequest(request)
+        .addAllImages(flow.getImages())
+        .build();
+
+    Log.d(TAG, ">>> Enqueuing pour: " + pour);
     if (mPendingRequests.remainingCapacity() == 0) {
       // Drop head when full.
       mPendingRequests.poll();
     }
-    mPendingRequests.add(request);
-    Log.d(TAG, "<<< Drink enqueued.");
+    mPendingRequests.add(pour);
+    Log.d(TAG, "<<< Pour enqueued.");
+  }
+
+  private static RecordDrinkRequest getRequestForFlow(final Flow ended) {
+    return RecordDrinkRequest.newBuilder()
+        .setTapName(ended.getTap().getMeterName())
+        .setTicks(ended.getTicks())
+        .setVolumeMl((float) ended.getVolumeMl()).setUsername(ended.getUsername())
+        .setSecondsAgo(0).setDurationSeconds((int) (ended.getUpdateTime() - ended.getStartTime()))
+        .setSpilled(false).buildPartial();
   }
 
   /**
@@ -446,6 +474,11 @@ public class KegbotApiService extends BackgroundService implements KegbotApi {
       mPendingRequests.poll();
     }
     mPendingRequests.add(request);
+  }
+
+  @Override
+  public Image uploadDrinkImage(String drinkId, String imagePath) throws KegbotApiException {
+    return mApi.uploadDrinkImage(drinkId, imagePath);
   }
 
 }

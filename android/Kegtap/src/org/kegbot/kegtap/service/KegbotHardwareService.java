@@ -143,6 +143,7 @@ public class KegbotHardwareService extends Service {
 
     @Override
     public void onOutputStatusMessage(KegboardOutputStatusMessage message) {
+      //
     }
 
     @Override
@@ -242,6 +243,8 @@ public class KegbotHardwareService extends Service {
   private void unbindFromKegboardService() {
     if (mKegboardServiceBound) {
       unbindService(mKegboardServiceConnection);
+      final Intent serviceIntent = new Intent(this, KegboardService.class);
+      stopService(serviceIntent);
       mKegboardServiceBound = false;
     }
   }

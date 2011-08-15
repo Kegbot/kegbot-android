@@ -19,10 +19,8 @@ import org.kegbot.kegtap.KegtapActivity;
 import org.kegbot.kegtap.KegtapBroadcast;
 import org.kegbot.kegtap.R;
 import org.kegbot.kegtap.service.KegbotApiService.ConnectionState;
-import org.kegbot.kegtap.util.KegbotDescriptor;
 import org.kegbot.kegtap.util.PreferenceHelper;
 import org.kegbot.proto.Api;
-import org.kegbot.proto.Api.RecordDrinkRequest;
 import org.kegbot.proto.Api.RecordTemperatureRequest;
 import org.kegbot.proto.Api.TapDetailSet;
 import org.kegbot.proto.Models;
@@ -86,8 +84,10 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
     public void onServiceConnected(ComponentName className, IBinder service) {
       mApiService = ((KegbotApiService.LocalBinder) service).getService();
       debugNotice("Core->APIService connection established.");
-      mExecutorService.submit(mFlowManagerWorker);
       mApiService.attachListener(mApiListener);
+
+      mExecutorService = Executors.newSingleThreadExecutor();
+      mExecutorService.submit(mFlowManagerWorker);
     }
 
     @Override
@@ -129,9 +129,7 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
   private final OnSharedPreferenceChangeListener mPreferenceListener = new OnSharedPreferenceChangeListener() {
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-      if (PreferenceHelper.KEY_SELECTED_KEGBOT.equals(key)) {
-
-      }
+      updateFromPreferences();
     }
   };
 
@@ -163,14 +161,17 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
   private final KegbotHardwareService.Listener mHardwareListener = new KegbotHardwareService.Listener() {
     @Override
     public void onTokenSwiped(AuthenticationToken token, String tapName) {
+      Log.d(TAG, "Auth token swiped: " + token);
     }
 
     @Override
     public void onTokenRemoved(AuthenticationToken token, String tapName) {
+      Log.d(TAG, "Auth token removed: " + token);
     }
 
     @Override
     public void onTokenAttached(AuthenticationToken token, String tapName) {
+      Log.d(TAG, "Auth token added: " + token);
     }
 
     @Override
@@ -245,30 +246,15 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
   public void onCreate() {
     super.onCreate();
     mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+    mPreferences.registerOnSharedPreferenceChangeListener(mPreferenceListener);
 
     Log.d(TAG, "onCreate()");
-    enableForeground();
-
-    mFlowManager.addFlowListener(mFlowListener);
-
-    bindToApiService();
-    bindToHardwareService();
-
-    mExecutorService = Executors.newSingleThreadExecutor();
+    updateFromPreferences();
   }
 
   @Override
   public void onDestroy() {
     Log.d(TAG, "onDestroy()");
-    mFlowManager.removeFlowListener(mFlowListener);
-    if (mApiServiceBound) {
-      unbindService(mApiServiceConnection);
-      mApiServiceBound = false;
-    }
-    if (mHardwareServiceBound) {
-      unbindService(mHardwareServiceConnection);
-      mHardwareServiceBound = false;
-    }
     stop();
     super.onDestroy();
   }
@@ -291,7 +277,7 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
   /**
    * Attaches to the running {@link KegbotHardwareService}.
    */
-  private void bindToHardwareService() {
+  private synchronized void bindToHardwareService() {
     startService(new Intent(this, KegbotHardwareService.class));
     bindService(new Intent(KegbotCoreService.this, KegbotHardwareService.class),
         mHardwareServiceConnection, Context.BIND_AUTO_CREATE);
@@ -299,18 +285,48 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
     mHardwareServiceBound = true;
   }
 
+  private synchronized void unbindFromHardwareService() {
+    if (mHardwareServiceBound) {
+      unbindService(mHardwareServiceConnection);
+      stopService(new Intent(this, KegbotHardwareService.class));
+      Log.d(TAG, "Unbound from hardware service");
+      mHardwareServiceBound = false;
+    }
+  }
+
   @Override
   public IBinder onBind(Intent intent) {
     return mBinder;
   }
 
-  public void stop() {
+  private void stop() {
     mFlowManager.stop();
-    mExecutorService.shutdown();
+    mFlowManager.removeFlowListener(mFlowListener);
+    if (mApiServiceBound) {
+      unbindService(mApiServiceConnection);
+      mApiServiceBound = false;
+    }
+    unbindFromHardwareService();
+    if (mExecutorService != null) {
+      mExecutorService.shutdown();
+      mExecutorService = null;
+    }
   }
 
-  private void enableForeground() {
-    startForeground(NOTIFICATION_FOREGROUND, buildForegroundNotification());
+  private void updateFromPreferences() {
+    PreferenceHelper helper = new PreferenceHelper(mPreferences);
+    final boolean runCore = helper.getRunCore();
+    if (runCore) {
+      Log.d(TAG, "Running core!");
+      bindToApiService();
+      bindToHardwareService();
+      mFlowManager.addFlowListener(mFlowListener);
+      startForeground(NOTIFICATION_FOREGROUND, buildForegroundNotification());
+    } else {
+      Log.d(TAG, "No core.");
+      stop();
+      stopForeground(true);
+    }
   }
 
   private Notification buildForegroundNotification() {
@@ -328,7 +344,7 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
   /**
    * @param ended
    */
-  private void recordDrinkForFlow(Flow ended) {
+  private void recordDrinkForFlow(final Flow ended) {
     Log.d(TAG, "Recording dring for flow: " + ended);
     final PreferenceHelper helper = new PreferenceHelper(mPreferences);
     final long minVolume = helper.getMinimumVolumeMl();
@@ -338,12 +354,7 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
           + "(" + minVolume + " mL)");
       return;
     }
-    final RecordDrinkRequest request = RecordDrinkRequest.newBuilder().setTapName(
-        ended.getTap().getMeterName()).setTicks(ended.getTicks()).setVolumeMl(
-        (float) ended.getVolumeMl()).setUsername(ended.getUsername()).setSecondsAgo(0)
-        .setDurationSeconds((int) (ended.getUpdateTime() - ended.getStartTime())).setSpilled(false)
-        .buildPartial();
-    mApiService.recordDrinkAsync(request);
+    mApiService.recordDrinkAsync(ended);
   }
 
   /**
@@ -353,8 +364,7 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
   private void configure() throws KegbotApiException {
     Log.d(TAG, "Configuring!");
     final PreferenceHelper prefs = new PreferenceHelper(mPreferences);
-    final String kegbotUrl = prefs.getKegbotUrl();
-    final Uri apiUrl = KegbotDescriptor.getApiUrl(kegbotUrl);
+    final Uri apiUrl = prefs.getKegbotUrl();
     mApiService.setApiUrl(apiUrl.toString());
 
     final String username = prefs.getUsername();

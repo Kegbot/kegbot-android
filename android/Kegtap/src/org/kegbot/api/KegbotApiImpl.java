@@ -1,5 +1,6 @@
 package org.kegbot.api;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
@@ -9,19 +10,30 @@ import java.util.Map;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.HttpVersion;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
+import org.apache.http.client.CookieStore;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.conn.scheme.PlainSocketFactory;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.StringBody;
+import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
+import org.apache.http.params.HttpProtocolParams;
+import org.apache.http.protocol.HTTP;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.kegbot.kegtap.Utils;
@@ -44,6 +56,7 @@ import org.kegbot.proto.Api.ThermoSensorSet;
 import org.kegbot.proto.Api.UserDetailSet;
 import org.kegbot.proto.Models.AuthenticationToken;
 import org.kegbot.proto.Models.Drink;
+import org.kegbot.proto.Models.Image;
 import org.kegbot.proto.Models.ThermoLog;
 import org.kegbot.proto.Models.User;
 
@@ -59,7 +72,6 @@ public class KegbotApiImpl implements KegbotApi {
 
   private static KegbotApiImpl sSingleton = null;
 
-  private final HttpClient mHttpClient;
   private String mBaseUrl;
   private String mUsername = "";
   private String mPassword = "";
@@ -70,6 +82,12 @@ public class KegbotApiImpl implements KegbotApi {
   private long mLastApiSuccessUptimeMillis = -1;
   private long mLastApiFailureUptimeMillis = -1;
 
+  private final CookieStore mCookieStore = new BasicCookieStore();
+
+  private ClientConnectionManager mConnManager;
+  private HttpParams mHttpParams;
+  private DefaultHttpClient mHttpClient;
+
   public static interface Listener {
     public void debug(String message);
   }
@@ -77,8 +95,20 @@ public class KegbotApiImpl implements KegbotApi {
   private Listener mListener = null;
 
   private KegbotApiImpl() {
-    mHttpClient = getThreadSafeClient();
     mBaseUrl = "http://localhost/";
+
+    mHttpParams = new BasicHttpParams();
+    HttpProtocolParams.setVersion(mHttpParams, HttpVersion.HTTP_1_1);
+    HttpProtocolParams.setContentCharset(mHttpParams, HTTP.DEFAULT_CONTENT_CHARSET);
+    HttpProtocolParams.setUseExpectContinue(mHttpParams, true);
+
+    SchemeRegistry registry = new SchemeRegistry();
+    registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
+    //registry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
+
+    mConnManager = new ThreadSafeClientConnManager(mHttpParams, registry);
+    mHttpClient = new DefaultHttpClient(mConnManager, mHttpParams);
+
   }
 
   public synchronized void setListener(Listener listener) {
@@ -143,6 +173,7 @@ public class KegbotApiImpl implements KegbotApi {
 
   private JsonNode doPost(String path, Map<String, String> params) throws KegbotApiException {
     if (apiKey != null) {
+      debug("POST: api_key=" + apiKey);
       params.put("api_key", apiKey);
     }
     return toJson(doRawPost(path, params));
@@ -164,26 +195,19 @@ public class KegbotApiImpl implements KegbotApi {
     return execute(request);
   }
 
-  public static DefaultHttpClient getThreadSafeClient() {
-    DefaultHttpClient client = new DefaultHttpClient();
-    ClientConnectionManager mgr = client.getConnectionManager();
-    HttpParams params = client.getParams();
-    client = new DefaultHttpClient(
-        new ThreadSafeClientConnManager(params, mgr.getSchemeRegistry()), params);
-    return client;
-  }
-
   private HttpResponse execute(HttpUriRequest request) throws KegbotApiException {
     noteApiAttempt();
     boolean success = false;
     try {
       final HttpResponse response;
-      synchronized (mHttpClient) {
-        debug("Requesting: " + request.getURI());
-        response = mHttpClient.execute(request);
-        debug("DONE: " + request.getURI());
-        debug(response.getStatusLine().toString());
-      }
+      debug("Requesting: " + request.getURI());
+
+      //HttpContext localContext = new BasicHttpContext();
+      //localContext.setAttribute(ClientContext.COOKIE_STORE, mCookieStore);
+
+      response = mHttpClient.execute(request);
+      debug("DONE: " + request.getURI());
+      debug(response.getStatusLine().toString());
       final int statusCode = response.getStatusLine().getStatusCode();
       if (statusCode != HttpStatus.SC_OK) {
         final String reason = response.getStatusLine().getReasonPhrase();
@@ -207,8 +231,11 @@ public class KegbotApiImpl implements KegbotApi {
       if (success) {
         noteApiSuccess();
       } else {
+        debug("Method failed, aborting request.");
         noteApiFailure();
+        request.abort();
       }
+      //client.close();
     }
   }
 
@@ -487,6 +514,28 @@ public class KegbotApiImpl implements KegbotApi {
     params.put("temp_c", sensorValue);
     login();
     return (ThermoLog) postProto("/thermo-sensors/" + sensorName, ThermoLog.newBuilder(), params);
+  }
+
+  @Override
+  public Image uploadDrinkImage(String drinkId, String imagePath) throws KegbotApiException {
+    final File imageFile = new File(imagePath);
+    final HttpPost httpost = new HttpPost(getRequestUrl("/drinks/" + drinkId + "/add-photo/"));
+    MultipartEntity entity = new MultipartEntity();
+    entity.addPart("photo", new FileBody(imageFile));
+    login();
+    if (apiKey != null) {
+      try {
+        entity.addPart("api_key", new StringBody(apiKey));
+        debug("image upload set api key");
+      } catch (UnsupportedEncodingException e) {
+        debug("BAD API KEY");
+      }
+    }
+    httpost.setEntity(entity);
+    final HttpResponse response = execute(httpost);
+    final JsonNode responseJson = toJson(response);
+    debug("UPLOAD RESPONSE: " + responseJson);
+    return (Image) ProtoEncoder.toProto(Image.newBuilder(), responseJson.get("result")).build();
   }
 
   private synchronized void debug(String message) {

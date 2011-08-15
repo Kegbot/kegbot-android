@@ -3,8 +3,8 @@
  */
 package org.kegbot.kegtap.core.backend;
 
-import org.kegbot.proto.Api.RecordDrinkRequest;
 import org.kegbot.proto.Api.RecordTemperatureRequest;
+import org.kegbot.proto.Internal.PendingPour;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -76,8 +76,8 @@ public class LocalDbHelper extends SQLiteOpenHelper {
 
   public static boolean insertRecord(final SQLiteDatabase db, final AbstractMessage record) {
     final String type;
-    if (record instanceof RecordDrinkRequest) {
-      type = "drink";
+    if (record instanceof PendingPour) {
+      type = "pour";
     } else if (record instanceof RecordTemperatureRequest) {
       type = "thermo";
     } else {
@@ -97,8 +97,9 @@ public class LocalDbHelper extends SQLiteOpenHelper {
   public static AbstractMessage getCurrentRow(final SQLiteDatabase db, final Cursor cursor) throws InvalidProtocolBufferException {
     final String type = cursor.getString(cursor.getColumnIndex(LocalDbHelper.COLUMN_NAME_TYPE));
     final byte[] data = cursor.getBlob(cursor.getColumnIndex(LocalDbHelper.COLUMN_NAME_RECORD));
-    if ("drink".equals(type)) {
-      return RecordDrinkRequest.parseFrom(data);
+    Log.w(TAG, "getCurrentRow: " + type);
+    if ("pour".equals(type)) {
+      return PendingPour.parseFrom(data);
     } else if ("thermo".equals(type)) {
       return RecordTemperatureRequest.parseFrom(data);
     } else {

@@ -1,6 +1,12 @@
 package org.kegbot.kegtap;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 import org.kegbot.core.Flow;
+import org.kegbot.core.Flow.State;
 import org.kegbot.core.FlowManager;
 import org.kegbot.kegtap.camera.CameraFragment;
 
@@ -11,6 +17,7 @@ import android.content.IntentFilter;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
 import android.hardware.Camera.ShutterCallback;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -160,6 +167,7 @@ public class PourInProgressActivity extends CoreActivity {
 
   @Override
   protected void onPause() {
+    mHandler.removeMessages(MESSAGE_FLOW_UPDATE);
     unregisterReceiver(mUpdateReceiver);
     super.onPause();
   }
@@ -167,6 +175,15 @@ public class PourInProgressActivity extends CoreActivity {
   @Override
   public void onStop() {
     super.onStop();
+  }
+
+  @Override
+  public void onBackPressed() {
+    if (mCurrentFlow != null && mCurrentFlow.getState() != State.COMPLETED) {
+      onEndPourButton();
+    } else {
+      super.onBackPressed();
+    }
   }
 
   @Override
@@ -264,10 +281,56 @@ public class PourInProgressActivity extends CoreActivity {
       @Override
       public void onPictureTaken(byte[] data, Camera camera) {
         Log.d(LOG_TAG, "camera: jpeg");
+        doSaveJpeg(data);
       }
     };
 
     mCameraFragment.takePicture(shutter, raw, jpeg);
+  }
+
+  private void doSaveJpeg(final byte[] data) {
+    new ImageSaveTask().execute(data);
+
+  }
+
+  class ImageSaveTask extends AsyncTask<byte[], Void, String> {
+
+    @Override
+    protected String doInBackground(byte[]... params) {
+      final Flow flow = mCurrentFlow;
+      if (flow == null) {
+        Log.w(LOG_TAG, "ImageSaveTask for empty flow.");
+        return null;
+      }
+      final byte[] rawJpegData = params[0];
+      final File imageDir = getDir("pour-images", MODE_PRIVATE);
+      final String baseName = "pour-" + flow.getFlowId();
+
+      File imageFile = new File(imageDir, baseName + ".jpg");
+      int ext = 2;
+      while (imageFile.exists()) {
+        imageFile = new File(imageDir, baseName + "-" + (ext++) + ".jpg");
+      }
+
+      //Bitmap imageBitmap = BitmapFactory.decodeByteArray(rawJpegData, 0, rawJpegData.length);
+
+      try {
+        FileOutputStream fos = new FileOutputStream(imageFile);
+        BufferedOutputStream bos = new BufferedOutputStream(fos);
+        bos.write(rawJpegData);
+        bos.flush();
+        bos.close();
+      } catch (IOException e) {
+        Log.e(LOG_TAG, "Could not save image.", e);
+        return null;
+      }
+
+      final String savedImage = imageFile.getAbsolutePath();
+      Log.i(LOG_TAG, "Saved pour image: " + savedImage);
+      flow.addImage(savedImage);
+      return savedImage;
+    }
+
   }
 
   public static Intent getStartIntent(Context context, long flowId) {

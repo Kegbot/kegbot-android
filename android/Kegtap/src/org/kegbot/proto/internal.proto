@@ -1,0 +1,13 @@
+// Kegtap-internal messages.
+
+option java_package = "org.kegbot.proto";
+import "api.proto";
+import "models.proto";
+
+message PendingPour {
+
+  required RecordDrinkRequest drink_request = 1;
+
+  repeated string images = 2;
+
+}

@@ -37,7 +37,7 @@ import com.google.common.base.Strings;
  */
 public class EventListFragment extends ListFragment {
 
-  private static final String LOG_TAG = "EventList";
+  private static final String LOG_TAG = EventListFragment.class.getSimpleName();
 
   private ArrayAdapter<SystemEventDetail> mAdapter;
   private final KegbotApi mApi = KegbotApiImpl.getSingletonInstance();
@@ -126,6 +126,8 @@ public class EventListFragment extends ListFragment {
 
         if ("keg_ended".equals(kind)) {
           result = "ended";
+        } else if ("keg_tapped".equals(kind)) {
+          result = "tapped";
         } else if ("drink_poured".equals(kind)) {
           result = "poured a drink";
         } else if ("session_joined".equals(kind)) {
@@ -154,7 +156,7 @@ public class EventListFragment extends ListFragment {
           return userName;
         } else if ("keg_ended".equals(kind)) {
           return "Keg " + event.getKegId();
-        } else if ("keg_started".equals(kind)) {
+        } else if ("keg_tapped".equals(kind)) {
           return "Keg " + event.getKegId();
         }
 
@@ -214,7 +216,9 @@ public class EventListFragment extends ListFragment {
             mLastEventId = eventId;
           }
         }
-        mAdapter.sort(EVENTS_DESCENDING);
+        if (!events.isEmpty()) {
+          mAdapter.sort(EVENTS_DESCENDING);
+        }
       }
     }
   }

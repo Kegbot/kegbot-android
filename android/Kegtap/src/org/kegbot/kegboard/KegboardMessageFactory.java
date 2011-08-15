@@ -8,7 +8,7 @@ import com.google.common.primitives.Shorts;
 
 public class KegboardMessageFactory {
 
-  private static final boolean DEBUG = true;
+  private static final boolean DEBUG = false;
 
   private static final int KBSP_HEADER_LENGTH = 12;
 

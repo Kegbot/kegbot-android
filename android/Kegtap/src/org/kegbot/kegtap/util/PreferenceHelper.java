@@ -1,6 +1,7 @@
 package org.kegbot.kegtap.util;
 
 import android.content.SharedPreferences;
+import android.net.Uri;
 
 public class PreferenceHelper {
 
@@ -17,8 +18,10 @@ public class PreferenceHelper {
     mSharedPreferences = sharedPreferences;
   }
 
-  public String getKegbotUrl() {
-    return mSharedPreferences.getString("kegbot_url", "");
+  public Uri getKegbotUrl() {
+    String uriString = mSharedPreferences.getString("kegbot_url", "");
+    uriString = uriString.replaceAll("/+$", "");
+    return Uri.parse(uriString);
   }
 
   public String getUsername() {
@@ -38,6 +41,10 @@ public class PreferenceHelper {
   }
 
   public long getMinimumVolumeMl() {
-    return mSharedPreferences.getLong("minimum_volume_ml", 10);
+    return Long.valueOf(mSharedPreferences.getString("minimum_volume_ml", "10")).longValue();
+  }
+
+  public boolean getRunCore() {
+    return mSharedPreferences.getBoolean("run_core", false);
   }
 }

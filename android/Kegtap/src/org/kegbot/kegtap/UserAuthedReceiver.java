@@ -29,13 +29,15 @@ public class UserAuthedReceiver extends BroadcastReceiver {
   }
 
   private void handleUserAuthed(Context context, Intent intent) {
-    Log.d(TAG, "handldeUserAuthed: " + intent);
+    Log.d(TAG, "handleUserAuthed: " + intent);
     final String username = intent.getStringExtra(KegtapBroadcast.USER_AUTHED_EXTRA_USERNAME);
 
     FlowManager flowManager = FlowManager.getSingletonInstance();
     TapManager tapManager = TapManager.getSingletonInstance();
 
+    Log.d(TAG, "Tap manager taps: " + tapManager.getTaps().size());
     for (Tap tap : tapManager.getTaps()) {
+      Log.d(TAG, "activating at tap: " + tap);
       flowManager.activateUserAtTap(tap, username);
     }
   }

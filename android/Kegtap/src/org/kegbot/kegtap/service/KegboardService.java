@@ -64,6 +64,8 @@ public class KegboardService extends Service {
 
   private Thread mThread;
 
+  private boolean mRunning = true;
+
   public interface Listener {
     public void onDeviceAttached();
 
@@ -92,7 +94,7 @@ public class KegboardService extends Service {
       Log.i(TAG, "Serial runner running. Thread=" + Thread.currentThread().getName());
 
       final byte[] readBuffer = new byte[256];
-      while (true) {
+      while (mRunning) {
         try {
           final int amtRead = mSerialDevice.read(readBuffer, 5000);
           if (amtRead < 0) {
@@ -218,7 +220,7 @@ public class KegboardService extends Service {
     unregisterReceiver(mUsbReceiver);
     if (mThread != null) {
       // mExecutorService.shutdown();
-      mThread.stop();
+      mRunning = false;
     }
     super.onDestroy();
   }

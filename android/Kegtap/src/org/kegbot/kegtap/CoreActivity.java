@@ -72,12 +72,11 @@ public class CoreActivity extends Activity {
   }
 
   protected void setupActionBar() {
-    ActionBar actionBar = getActionBar();
-    // actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.header_bg_square));
-    // actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME |
-    // ActionBar.DISPLAY_USE_LOGO);
-    actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME);
-    actionBar.setTitle("");
+    final ActionBar actionBar = getActionBar();
+    if (actionBar != null) {
+      actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_USE_LOGO);
+      actionBar.setTitle("");
+    }
   }
 
   protected KegbotCoreServiceInterface getCoreService() {

@@ -19,6 +19,7 @@ import org.kegbot.proto.Api.ThermoSensorSet;
 import org.kegbot.proto.Api.UserDetailSet;
 import org.kegbot.proto.Models.AuthenticationToken;
 import org.kegbot.proto.Models.Drink;
+import org.kegbot.proto.Models.Image;
 import org.kegbot.proto.Models.ThermoLog;
 import org.kegbot.proto.Models.User;
 
@@ -184,5 +185,7 @@ public interface KegbotApi {
   public UserDetailSet getUsers() throws KegbotApiException;
 
   public SessionSet getCurrentSessions() throws KegbotApiException;
+
+  public Image uploadDrinkImage(final String drinkId, final String imagePath) throws KegbotApiException;
 
 }

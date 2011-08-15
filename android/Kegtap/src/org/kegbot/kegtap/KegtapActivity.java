@@ -3,7 +3,6 @@ package org.kegbot.kegtap;
 import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiImpl;
 import org.kegbot.kegtap.service.KegboardService;
-import org.kegbot.kegtap.util.KegbotDescriptor;
 import org.kegbot.kegtap.util.PreferenceHelper;
 import org.kegbot.kegtap.util.image.ImageDownloader;
 
@@ -15,13 +14,14 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+
+import com.google.common.base.Strings;
 
 public class KegtapActivity extends CoreActivity {
 
@@ -94,8 +94,6 @@ public class KegtapActivity extends CoreActivity {
 
     View v = findViewById(R.id.tap_status);
     v.setSystemUiVisibility(View.STATUS_BAR_HIDDEN);
-
-    mHandler.postDelayed(mRefreshRunnable, 10000);
   }
 
   @Override
@@ -109,6 +107,14 @@ public class KegtapActivity extends CoreActivity {
   protected void onResume() {
     super.onResume();
     handleIntent();
+    initializeUi();
+    mHandler.postDelayed(mRefreshRunnable, 10000);
+  }
+
+  @Override
+  protected void onPause() {
+    mHandler.removeCallbacks(mRefreshRunnable);
+    super.onPause();
   }
 
   @Override
@@ -163,12 +169,12 @@ public class KegtapActivity extends CoreActivity {
    * If so, loads from last known kegbot.
    */
   private void initializeUi() {
-    String kegbotUrl = mPrefsHelper.getKegbotUrl();
-    if (TextUtils.isEmpty(kegbotUrl)) {
+    String username = mPrefsHelper.getUsername();
+    if (Strings.isNullOrEmpty(username)) {
       SettingsActivity.startSettingsActivity(this);
     } else {
-      getActionBar().setTitle(mPrefsHelper.getKegbotName());
-      updateApiUrl(KegbotDescriptor.getApiUrl(kegbotUrl));
+      //getActionBar().setTitle(mPrefsHelper.getKegbotName());
+      updateApiUrl(mPrefsHelper.getKegbotUrl());
     }
   }
 
@@ -184,7 +190,7 @@ public class KegtapActivity extends CoreActivity {
 
   private void loadUiFragments() {
     mTapStatus.loadTap();
-    mEvents.loadEvents();
+    //mEvents.loadEvents();
     mSession.loadCurrentSessionDetail();
   }
 }

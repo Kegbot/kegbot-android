@@ -79,7 +79,7 @@ public class DrinkerSelectFragment extends Fragment {
   @Override
   public void onActivityCreated(Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
-    Log.d(LOG_TAG, "here");
+    Log.d(LOG_TAG, "onActivityCreated");
     mAdapter = new ArrayAdapter<UserDetail>(getActivity(), R.layout.selectable_drinker,
         R.id.drinkerName) {
 
@@ -102,12 +102,11 @@ public class DrinkerSelectFragment extends Fragment {
             + " to view " + view);
         final ImageView icon = (ImageView) view.findViewById(R.id.drinkerIcon);
         final String imageUrl = userDetail.getUser().getImage().getUrl();
+        icon.setImageBitmap(null);
         if (!Strings.isNullOrEmpty(imageUrl)) {
           icon.setBackgroundDrawable(null);
-          icon.setBackgroundResource(0);
           mImageDownloader.download(imageUrl, icon);
         } else {
-          icon.setBackgroundDrawable(null);
           icon.setBackgroundResource(R.drawable.unknown_drinker);
         }
 
@@ -163,7 +162,8 @@ public class DrinkerSelectFragment extends Fragment {
   */
 
   void loadEvents() {
-    new UserLoaderTask().execute();
+    Log.d(LOG_TAG, "+++ Loading events");
+    new UserLoaderTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
   private class UserLoaderTask extends AsyncTask<Void, Void, UserDetailSet> {
@@ -171,16 +171,14 @@ public class DrinkerSelectFragment extends Fragment {
     @Override
     protected UserDetailSet doInBackground(Void... params) {
       try {
-        return mApi.getUsers();
+        Log.d(LOG_TAG, "+++ Fetching users");
+        UserDetailSet result = mApi.getUsers();
+        Log.d(LOG_TAG, "+++ Done! Result = " + result);
+        return result;
       } catch (KegbotApiException e) {
         Log.w(LOG_TAG, "Could not load users.", e);
         return null;
       }
-    }
-
-    @Override
-    protected void onPreExecute() {
-      super.onPreExecute();
     }
 
     @Override

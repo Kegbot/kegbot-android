@@ -1,7 +1,11 @@
 package org.kegbot.core;
 
+import java.util.List;
+
 import com.google.common.base.Predicate;
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 
 public class Flow {
 
@@ -74,6 +78,8 @@ public class Flow {
    */
   private long mMaxIdleTimeMs;
 
+  private final List<String> mImages = Lists.newArrayList();
+
   private Flow(int flowId, Tap tap, long maxIdleTimeMs) {
     mState = State.INITIAL;
     mFlowId = flowId;
@@ -92,7 +98,8 @@ public class Flow {
         .append(" state=").append(mState)
         .append(" tap=").append(mTap)
         .append(" user=").append(mUsername)
-        .append(" ticks=").append(mTicks);
+        .append(" ticks=").append(mTicks)
+        .append(" numImages=").append(mImages.size());
     return builder.toString();
   }
 
@@ -203,6 +210,14 @@ public class Flow {
 
   public long getMsUntilIdle() {
     return Math.max(mMaxIdleTimeMs - (System.currentTimeMillis() - mUpdateTime), 0);
+  }
+
+  public void addImage(String image) {
+    mImages.add(image);
+  }
+
+  public List<String> getImages() {
+    return ImmutableList.copyOf(mImages);
   }
 
   /**

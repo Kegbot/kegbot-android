@@ -27,6 +27,8 @@ import com.google.common.base.Strings;
 
 public class TapStatusFragment extends Fragment {
 
+  private final String TAG = TapStatusFragment.class.getSimpleName();
+
   private KegbotApi mApi;
 
   private View mView;
@@ -40,6 +42,10 @@ public class TapStatusFragment extends Fragment {
 
   private View buildTapView(View view, TapDetail tap) {
     final TextView title = (TextView) view.findViewById(R.id.tapTitle);
+    if (tap == null) {
+      Log.w(TAG, "Called with empty tap detail.");
+      return view;
+    }
     title.setText(tap.getBeerType().getName());
 
     final String tapName = tap.getTap().getName();
