@@ -31,7 +31,6 @@
       android:name=".KegtapActivity"
       android:launchMode="singleTop"
       android:label="@string/app_name"
-      android:screenOrientation="landscape"
       android:windowSoftInputMode="stateAlwaysHidden|adjustPan">
       <intent-filter>
         <action
@@ -52,15 +51,13 @@
     <activity
       android:name=".PourInProgressActivity"
       android:launchMode="singleTop"
-      android:label="@string/app_name"
-      android:screenOrientation="landscape">
+      android:label="@string/app_name">
     </activity>
     <activity
       android:name=".DrinkerSelectActivity"
       android:launchMode="singleTop"
       android:noHistory="true"
-      android:label="@string/app_name"
-      android:screenOrientation="landscape">
+      android:label="@string/app_name">
     </activity>
 
     <receiver

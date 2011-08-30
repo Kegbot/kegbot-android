@@ -31,8 +31,7 @@
   <View
     android:layout_width="match_parent"
     android:layout_height="2dip"
-    android:layout_marginLeft="5dip"
-    android:layout_marginRight="5dip"
+    android:layout_margin="5dip"
     android:background="#1FFFFFFF" />
 
   <!-- Rest of content -->
@@ -131,8 +130,7 @@
       <View
         android:layout_width="match_parent"
         android:layout_height="1dip"
-        android:layout_marginLeft="5dip"
-        android:layout_marginRight="5dip"
+        android:layout_margin="5dip"
         android:background="#1FFFFFFF" />
       <TextView
         android:id="@+id/drinkerHeader"
@@ -165,8 +163,7 @@
       <View
         android:layout_width="match_parent"
         android:layout_height="1dip"
-        android:layout_marginLeft="5dip"
-        android:layout_marginRight="5dip"
+        android:layout_margin="5dip"
         android:background="#1FFFFFFF" />
       <TextView
         android:id="@+id/drinkerHeader"
@@ -200,8 +197,7 @@
       <View
         android:layout_width="match_parent"
         android:layout_height="1dip"
-        android:layout_marginLeft="5dip"
-        android:layout_marginRight="5dip"
+        android:layout_margin="5dip"
         android:background="#1FFFFFFF" />
       <TextView
         android:id="@+id/drinkerHeader"

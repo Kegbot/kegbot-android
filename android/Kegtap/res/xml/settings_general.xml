@@ -3,21 +3,21 @@
   xmlns:android="http://schemas.android.com/apk/res/android">
   <EditTextPreference
     android:key="kegbot_url"
-    android:title="Kegbot URL"
+    android:title="Kegbot API URL"
     android:inputType="textUri"
-    android:summary="Base URL of the Kegbot system">
+    android:summary="API URL of the Kegbot system (eg http://kegbot.example.com/api)">
   </EditTextPreference>
   <EditTextPreference
     android:key="username"
     android:title="Username"
     android:inputType="textWebEmailAddress"
-    android:summary="Username for accessing Kegbot">
+    android:summary="Admin Username for accessing Kegbot">
   </EditTextPreference>
   <EditTextPreference
     android:key="password"
     android:title="Password"
     android:inputType="textWebPassword"
-    android:summary="Password for accessing Kegbot">
+    android:summary="Admin password for accessing Kegbot">
   </EditTextPreference>
 
   <CheckBoxPreference

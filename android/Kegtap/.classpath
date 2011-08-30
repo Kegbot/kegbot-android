@@ -8,6 +8,10 @@
 	<classpathentry kind="lib" path="lib/jackson/jackson-mapper-asl-1.7.4.jar"/>
 	<classpathentry kind="lib" path="lib/guava-r08/guava-r08.jar"/>
 	<classpathentry kind="lib" path="lib/unit/jscience-vm14.jar"/>
+	<classpathentry kind="lib" path="lib/httpcomponents-client-4.0.3/lib/httpmime-4.0.3.jar"/>
+	<classpathentry kind="lib" path="lib/httpcomponents-client-4.0.3/lib/httpclient-4.0.3.jar"/>
+	<classpathentry kind="lib" path="lib/httpcomponents-client-4.0.3/lib/httpcore-4.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/httpcomponents-client-4.0.3/lib/apache-mime4j-0.6.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/UsbSerial"/>
 	<classpathentry kind="src" path="UsbSerial_src"/>
 	<classpathentry kind="output" path="bin"/>
