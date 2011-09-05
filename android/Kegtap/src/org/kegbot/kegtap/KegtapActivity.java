@@ -7,7 +7,6 @@ import org.kegbot.api.KegbotApiException;
 import org.kegbot.api.KegbotApiImpl;
 import org.kegbot.kegtap.service.KegboardService;
 import org.kegbot.kegtap.util.PreferenceHelper;
-import org.kegbot.kegtap.util.image.ImageDownloader;
 import org.kegbot.proto.Api.TapDetail;
 import org.kegbot.proto.Api.TapDetailSet;
 
@@ -29,7 +28,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -38,11 +36,7 @@ public class KegtapActivity extends CoreActivity {
 
   public final String LOG_TAG = "KegtapActivity";
 
-  private final ImageDownloader mImageDownloader = ImageDownloader.getSingletonInstance();
-
   private EventListFragment mEvents;
-
-  private ControlsFragment mControls;
 
   private KegbotApi mApi;
 
@@ -103,13 +97,8 @@ public class KegtapActivity extends CoreActivity {
     mEvents = (EventListFragment) getSupportFragmentManager().findFragmentById(
         R.id.event_list);
 
-    mControls = (ControlsFragment) getSupportFragmentManager().findFragmentById(
-        R.id.controls);
-
     mSession = (SessionStatsFragment) getSupportFragmentManager().findFragmentById(
         R.id.currentSessionFragment);
-
-    ((Button) findViewById(R.id.beerMeButton)).setOnClickListener(mOnBeerMeClickedListener);
 
     View v = findViewById(R.id.tap_status_pager);
     v.setSystemUiVisibility(View.STATUS_BAR_HIDDEN);

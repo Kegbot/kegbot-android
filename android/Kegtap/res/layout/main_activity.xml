@@ -18,26 +18,19 @@
     android:orientation="vertical"
     android:layout_weight="0.4"
     android:layout_width="0dip"
-    android:layout_height="fill_parent">
+    android:layout_height="match_parent">
+    
     <fragment
       android:id="@+id/currentSessionFragment"
       class="org.kegbot.kegtap.SessionStatsFragment"
       android:layout_width="match_parent"
-      android:layout_height="0dip"
-      android:layout_weight="0.25"
-      android:visibility="gone" />
-
-    <fragment
-      android:id="@+id/controls"
-      class="org.kegbot.kegtap.ControlsFragment"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content" />
+      android:layout_height="wrap_content"/>
 
     <fragment
       android:id="@+id/event_list"
       class="org.kegbot.kegtap.EventListFragment"
       android:layout_width="match_parent"
-      android:layout_height="match_parent" />
+      android:layout_height="wrap_content" />
 
   </LinearLayout>
 </LinearLayout>
