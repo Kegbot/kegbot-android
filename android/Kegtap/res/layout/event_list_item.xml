@@ -5,7 +5,8 @@
   android:layout_width="match_parent"
   android:layout_height="wrap_content"
   android:orientation="horizontal"
-  android:minHeight="64dip">
+  android:minHeight="64dip"
+  android:layout_margin="5dip">
 
   <ImageView
     android:id="@+id/eventIcon"

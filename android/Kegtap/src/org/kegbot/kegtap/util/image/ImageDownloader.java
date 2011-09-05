@@ -293,6 +293,7 @@ public class ImageDownloader {
         // Or if we don't use any bitmap to task association
         // (NO_DOWNLOADED_DRAWABLE mode)
         if ((this == bitmapDownloaderTask) || (mode != Mode.CORRECT)) {
+          imageView.setBackgroundResource(0);
           imageView.setImageBitmap(bitmap);
           // bitmap.recycle();
         }

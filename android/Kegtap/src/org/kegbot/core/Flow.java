@@ -9,10 +9,17 @@ import com.google.common.collect.Lists;
 
 public class Flow {
 
+  public static Predicate<Flow> PREDICATE_ACTIVE = new Predicate<Flow>() {
+    @Override
+    public boolean apply(Flow flow) {
+      return flow.getState() == State.ACTIVE;
+    }
+  };
+
   public static Predicate<Flow> PREDICATE_IDLE = new Predicate<Flow>() {
     @Override
     public boolean apply(Flow flow) {
-      return flow.getState() == State.IDLE;
+      return flow.isIdle();
     }
   };
 
@@ -206,6 +213,10 @@ public class Flow {
 
   public long getUpdateTime() {
     return mUpdateTime;
+  }
+
+  public long getIdleTimeMs() {
+    return System.currentTimeMillis() - mUpdateTime;
   }
 
   public long getMsUntilIdle() {

@@ -7,18 +7,24 @@
   android:minHeight="64dip"
   android:gravity="top">
 
+  <ListView
+    android:id="@android:id/list"
+    android:layout_width="0dip"
+    android:layout_height="0dip"
+    android:drawSelectorOnTop="false" />
+
   <!-- Header -->
   <LinearLayout
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
+    android:orientation="vertical"
     android:gravity="top">
     <TextView
       android:id="@+id/tapSubtitle"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:textColor="#888"
-      android:textSize="48dip" />
+      android:textSize="36dip" />
     <TextView
       android:id="@+id/tapTitle"
       android:layout_width="match_parent"
@@ -39,24 +45,27 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:gravity="center">
+    android:gravity="center"
+    android:weightSum="1.0">
 
     <!-- Left side: Tap Image -->
     <ImageView
       android:id="@+id/tapImage"
       android:layout_margin="5dip"
-      android:layout_width="320dip"
+      android:layout_width="0dip"
       android:layout_height="320dip"
-      android:adjustViewBounds="true"/>
+      android:adjustViewBounds="true"
+      android:layout_weight="0.5"/>
 
     <!-- Right Side: Tap Details -->
     <LinearLayout
-      android:layout_width="match_parent"
+      android:layout_width="0dip"
+      android:layout_weight="0.5"
       android:layout_height="wrap_content"
       android:layout_margin="10dip"
       android:orientation="vertical"
       android:gravity="center">
-      
+
       <!-- Date Tapped -->
       <LinearLayout
         android:layout_width="match_parent"
@@ -72,7 +81,7 @@
           android:textSize="18dip"
           android:text="Date Tapped"
           android:textColor="#888"
-          android:gravity="center"/>
+          android:gravity="center" />
         <View
           android:layout_width="match_parent"
           android:layout_height="1dip"
@@ -87,7 +96,7 @@
           android:textStyle="bold"
           android:gravity="center" />
       </LinearLayout>
-        
+
       <!-- Status -->
       <LinearLayout
         android:layout_width="match_parent"
@@ -103,7 +112,7 @@
           android:textSize="18dip"
           android:text="Status"
           android:textColor="#888"
-          android:gravity="center"/>
+          android:gravity="center" />
         <View
           android:layout_width="match_parent"
           android:layout_height="1dip"
@@ -119,7 +128,7 @@
           android:text="Online"
           android:gravity="center" />
       </LinearLayout>
-        
+
       <!-- Keg -->
       <LinearLayout
         android:layout_width="match_parent"
@@ -135,7 +144,7 @@
           android:textSize="18dip"
           android:text="Keg Contents"
           android:textColor="#888"
-          android:gravity="center"/>
+          android:gravity="center" />
         <View
           android:layout_width="match_parent"
           android:layout_height="1dip"
@@ -151,7 +160,7 @@
           android:text="Volume Unknown"
           android:gravity="center" />
       </LinearLayout>
-        
+
       <!-- Temperature -->
       <LinearLayout
         android:layout_width="match_parent"
@@ -167,7 +176,7 @@
           android:textSize="18dip"
           android:text="Temperature"
           android:textColor="#888"
-          android:gravity="center"/>
+          android:gravity="center" />
         <View
           android:layout_width="match_parent"
           android:layout_height="1dip"
@@ -183,8 +192,40 @@
           android:text="Temperature Unknown"
           android:gravity="center" />
       </LinearLayout>
-        
+
+      <!-- Beer me. -->
+      <Button
+        android:id="@+id/beerMeButton"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:text="Beer Me!"
+        android:textSize="36dip"
+        android:gravity="center" />
+
     </LinearLayout>
+
   </LinearLayout>
+
+  <!-- Footer. -->
+  <View
+    android:layout_width="match_parent"
+    android:layout_height="2dip"
+    android:layout_marginLeft="5dip"
+    android:layout_marginRight="5dip"
+    android:background="#1FFFFFFF" />
+
+  <TextView
+    android:id="@+id/tapDescription"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="20dip"
+    android:layout_margin="20dip"
+    android:textSize="32dip"
+    android:text="Keg Description"
+    android:textColor="#888"
+    android:textStyle="italic"
+    android:gravity="center"
+    android:background="#11ffffff" />
+
 
 </LinearLayout>

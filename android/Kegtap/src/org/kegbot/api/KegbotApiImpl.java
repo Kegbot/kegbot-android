@@ -210,7 +210,19 @@ public class KegbotApiImpl implements KegbotApi {
       debug(response.getStatusLine().toString());
       final int statusCode = response.getStatusLine().getStatusCode();
       if (statusCode != HttpStatus.SC_OK) {
-        final String reason = response.getStatusLine().getReasonPhrase();
+        String reason = response.getStatusLine().getReasonPhrase();
+        try {
+          final JsonNode responseJson = toJson(response);
+          final JsonNode errorNode = responseJson.get("error");
+          if (errorNode != null) {
+            final JsonNode messageNode = errorNode.get("message");
+            if (messageNode != null) {
+              reason = reason + " (" + messageNode.getTextValue() + ")";
+            }
+          }
+        } catch (KegbotApiException e) {
+          // Pass
+        }
         final String message = "Error fetching " + request.getURI() + ": statusCode=" + statusCode
             + ", reason=" + reason;
 
@@ -507,7 +519,7 @@ public class KegbotApiImpl implements KegbotApi {
       throw new KegbotApiException("Request is missing required field(s)");
     }
 
-    final String sensorName = "kegboard." + request.getSensorName();
+    final String sensorName = request.getSensorName();
     final String sensorValue = String.valueOf(request.getTempC());
 
     final Map<String, String> params = Maps.newLinkedHashMap();

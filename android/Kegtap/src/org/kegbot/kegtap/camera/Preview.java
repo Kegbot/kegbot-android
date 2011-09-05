@@ -22,7 +22,7 @@ import android.view.ViewGroup;
  * aspect ratio as the device's display.
  */
 class Preview extends ViewGroup implements SurfaceHolder.Callback {
-  private final String TAG = "Preview";
+  private final String TAG = Preview.class.getSimpleName();
 
   SurfaceView mSurfaceView;
   SurfaceHolder mHolder;
@@ -44,6 +44,7 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback {
   }
 
   public void setCamera(Camera camera) {
+    Log.d(TAG, "_____ setCamera camera=" + camera);
     mCamera = camera;
     if (mCamera != null) {
       mSupportedPreviewSizes = mCamera.getParameters().getSupportedPreviewSizes();
@@ -52,6 +53,8 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback {
   }
 
   public void switchCamera(Camera camera) {
+    Log.d(TAG, "_____ switchCamera camera=" + camera);
+
     setCamera(camera);
     try {
       camera.setPreviewDisplay(mHolder);
@@ -107,6 +110,7 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback {
 
   @Override
   public void surfaceCreated(SurfaceHolder holder) {
+    Log.d(TAG, "surfaceCreated mCamera=" + mCamera);
     // The Surface has been created, acquire the camera and tell it where
     // to draw.
     try {
@@ -165,6 +169,12 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback {
   public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
     // Now that the size is known, set up the camera parameters and begin
     // the preview.
+    Log.d(TAG, "surfaceChanged mCamera=" + mCamera);
+
+    if (mCamera == null) {
+      Log.e(TAG, "!!!!!!!!!!!!! surfaceChanged null");
+      return;
+    }
     Camera.Parameters parameters = mCamera.getParameters();
     parameters.setPreviewSize(mPreviewSize.width, mPreviewSize.height);
     requestLayout();

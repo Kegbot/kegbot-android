@@ -10,4 +10,5 @@
     <string name="settings_name">Settings</string>
     <string name="settings_general_header">General</string>
     <string name="settings_kegerator_header">Kegerator</string>
+    <string name="settings_about_header">About</string>
 </resources>

@@ -2,6 +2,9 @@ package org.kegbot.kegtap;
 
 import java.util.List;
 
+import org.kegbot.core.FlowManager;
+import org.kegbot.kegtap.util.PreferenceHelper;
+
 import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
@@ -13,6 +16,7 @@ import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
+import android.preference.PreferenceManager;
 import android.view.MenuItem;
 
 public class SettingsActivity extends PreferenceActivity {
@@ -62,23 +66,34 @@ public class SettingsActivity extends PreferenceActivity {
 
       handleCoreEnabledChanged();
 
-      CheckBoxPreference enablePref = (CheckBoxPreference) findPreference("run_core");
-      enablePref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+      findPreference("run_core").setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
         @Override
-        public boolean onPreferenceClick(Preference preference) {
+        public boolean onPreferenceChange(Preference preference, Object newValue) {
           handleCoreEnabledChanged();
           return true;
         }
       });
 
-      ListPreference controllerTypePref = (ListPreference) findPreference("controller_type");
-      controllerTypePref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-        @Override
-        public boolean onPreferenceChange(Preference preference, Object newValue) {
-          handleControllerTypeChanged();
-          return true;
-        }
-      });
+      findPreference("controller_type").setOnPreferenceChangeListener(
+          new OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+              handleControllerTypeChanged();
+              return true;
+            }
+          });
+
+      findPreference("idle_timeout_seconds").setOnPreferenceChangeListener(
+          new OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+              final PreferenceHelper helper = new PreferenceHelper(PreferenceManager
+                  .getDefaultSharedPreferences(getActivity()));
+              FlowManager.getSingletonInstance()
+                  .setDefaultIdleTimeMillis(helper.getIdleTimeoutMs());
+              return true;
+            }
+          });
     }
 
     private void handleCoreEnabledChanged() {
@@ -95,6 +110,19 @@ public class SettingsActivity extends PreferenceActivity {
       ListPreference controllerTypePref = (ListPreference) findPreference("controller_type");
     }
 
+  }
+
+  public static class AboutFragment extends PreferenceFragment {
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+      super.onCreate(savedInstanceState);
+      addPreferencesFromResource(R.xml.settings_about);
+      final ActionBar actionBar = getActivity().getActionBar();
+      if (actionBar != null) {
+        actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_USE_LOGO);
+      }
+
+    }
   }
 
   @Override

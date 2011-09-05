@@ -47,4 +47,13 @@ public class PreferenceHelper {
   public boolean getRunCore() {
     return mSharedPreferences.getBoolean("run_core", false);
   }
+
+  public long getIdleTimeoutMs() {
+    return Long.valueOf(mSharedPreferences.getString("idle_timeout_seconds", "20")).longValue() * 1000;
+  }
+
+  public long getIdleWarningMs() {
+    return Long.valueOf(mSharedPreferences.getString("idle_warning_seconds", "20")).longValue() * 1000;
+  }
+
 }

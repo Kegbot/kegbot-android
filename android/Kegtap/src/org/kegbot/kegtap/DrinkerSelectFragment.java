@@ -10,10 +10,10 @@ import org.kegbot.kegtap.util.image.ImageDownloader;
 import org.kegbot.proto.Api.UserDetail;
 import org.kegbot.proto.Api.UserDetailSet;
 
-import android.app.Fragment;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -145,10 +145,10 @@ public class DrinkerSelectFragment extends Fragment {
           // Defaults to "" in User if necessary.
           username = user.getUser().getUsername();
         }
-        final Intent intent = KegtapBroadcast.getUserAuthedBroadcastIntent(username);
+        final String tapName = getActivity().getIntent().getStringExtra(DrinkerSelectActivity.EXTRA_TAP_NAME);
+        final Intent intent = KegtapBroadcast.getUserAuthedBroadcastIntent(username, tapName);
         getActivity().sendBroadcast(intent);
         getActivity().finish();
-
       }
     });
   }

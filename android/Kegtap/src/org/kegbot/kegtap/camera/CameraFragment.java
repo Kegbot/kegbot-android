@@ -16,19 +16,22 @@
 
 package org.kegbot.kegtap.camera;
 
-import android.app.ActionBar;
 import android.app.Activity;
-import android.app.Fragment;
 import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
 import android.hardware.Camera.PictureCallback;
 import android.hardware.Camera.ShutterCallback;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
 
 public class CameraFragment extends Fragment {
+
+  private static final String TAG = CameraFragment.class.getSimpleName();
 
   private Preview mPreview;
   Camera mCamera;
@@ -48,6 +51,7 @@ public class CameraFragment extends Fragment {
 
     // Find the total number of cameras available
     mNumberOfCameras = Camera.getNumberOfCameras();
+    Log.d(TAG, "_______ mNumberOfCameras=" + mNumberOfCameras);
 
     // Find the ID of the default camera
     CameraInfo cameraInfo = new CameraInfo();
@@ -55,6 +59,8 @@ public class CameraFragment extends Fragment {
       Camera.getCameraInfo(i, cameraInfo);
       if (cameraInfo.facing == CameraInfo.CAMERA_FACING_FRONT) {
         mDefaultCameraId = i;
+        Log.d(TAG, "_______ mDefaultCameraId=" + mDefaultCameraId);
+
       }
     }
   }
@@ -70,25 +76,6 @@ public class CameraFragment extends Fragment {
   }
 
   @Override
-  public void onActivityCreated(Bundle savedInstanceState) {
-    super.onActivityCreated(savedInstanceState);
-    // Add an up arrow to the "home" button, indicating that the button will go
-    // "up"
-    // one activity in the app's Activity heirarchy.
-    // Calls to getActionBar() aren't guaranteed to return the ActionBar when
-    // called
-    // from within the Fragment's onCreate method, because the Window's decor
-    // hasn't been
-    // initialized yet. Either call for the ActionBar reference in
-    // Activity.onCreate()
-    // (after the setContentView(...) call), or in the Fragment's
-    // onActivityCreated method.
-    Activity activity = this.getActivity();
-    ActionBar actionBar = activity.getActionBar();
-    actionBar.setDisplayHomeAsUpEnabled(true);
-  }
-
-  @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     return mPreview;
   }
@@ -99,8 +86,10 @@ public class CameraFragment extends Fragment {
 
     // Open the default i.e. the first rear facing camera.
     mCamera = Camera.open(mDefaultCameraId);
+
     mCameraCurrentlyLocked = mDefaultCameraId;
     mPreview.setCamera(mCamera);
+    setCameraDisplayOrientation(getActivity(), mDefaultCameraId, mCamera);
   }
 
   @Override
@@ -114,6 +103,36 @@ public class CameraFragment extends Fragment {
       mCamera.release();
       mCamera = null;
     }
+  }
+
+  public static void setCameraDisplayOrientation(Activity activity, int cameraId, Camera camera) {
+    Camera.CameraInfo info = new android.hardware.Camera.CameraInfo();
+    Camera.getCameraInfo(cameraId, info);
+    int rotation = activity.getWindowManager().getDefaultDisplay().getRotation();
+    int degrees = 0;
+    switch (rotation) {
+      case Surface.ROTATION_0:
+        degrees = 0;
+        break;
+      case Surface.ROTATION_90:
+        degrees = 90;
+        break;
+      case Surface.ROTATION_180:
+        degrees = 180;
+        break;
+      case Surface.ROTATION_270:
+        degrees = 270;
+        break;
+    }
+
+    int result;
+    if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+      result = (info.orientation + degrees) % 360;
+      result = (360 - result) % 360; // compensate the mirror
+    } else { // back-facing
+      result = (info.orientation - degrees + 360) % 360;
+    }
+    camera.setDisplayOrientation(result);
   }
 
 }

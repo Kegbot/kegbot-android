@@ -18,7 +18,22 @@
     android:key="minimum_volume_ml"
     android:title="Minimum Volume (mL)"
     android:inputType="number"
+    android:defaultValue="10"
     android:summary="Pours less than this amount will be ignored">
+  </EditTextPreference>
+  <EditTextPreference
+    android:key="idle_warning_seconds"
+    android:title="Pour Idle Time Warning"
+    android:inputType="number"
+    android:defaultValue="20"
+    android:summary="After this many idle seconds, a warning will be issued">
+  </EditTextPreference>
+  <EditTextPreference
+    android:key="idle_timeout_seconds"
+    android:title="Pour Maximum Idle Time"
+    android:inputType="number"
+    android:defaultValue="30"
+    android:summary="After this many idle seconds, a pour will be ended">
   </EditTextPreference>
 
 </PreferenceScreen>

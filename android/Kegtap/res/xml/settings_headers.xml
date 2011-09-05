@@ -7,5 +7,8 @@
     <header android:fragment="org.kegbot.kegtap.SettingsActivity$KegeratorFragment"
             android:title="@string/settings_kegerator_header"
             />
+    <header android:fragment="org.kegbot.kegtap.SettingsActivity$AboutFragment"
+            android:title="@string/settings_about_header"
+            />
 
 </preference-headers>

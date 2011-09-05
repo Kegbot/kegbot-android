@@ -209,7 +209,7 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
         @Override
         public void run() {
           Log.d(TAG, "Flow updated: " + flow);
-          final Intent intent = KegtapBroadcast.getPourUpdateBroadcastIntent(flow.getFlowId());
+          final Intent intent = KegtapBroadcast.getPourUpdateBroadcastIntent(flow);
           sendOrderedBroadcast(intent, null);
         }
       };
@@ -222,7 +222,7 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
         @Override
         public void run() {
           Log.d(TAG, "Flow started: " + flow);
-          final Intent intent = KegtapBroadcast.getPourStartBroadcastIntent(flow.getFlowId());
+          final Intent intent = KegtapBroadcast.getPourStartBroadcastIntent(flow);
           sendOrderedBroadcast(intent, null);
         }
       };
@@ -247,6 +247,8 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
     super.onCreate();
     mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
     mPreferences.registerOnSharedPreferenceChangeListener(mPreferenceListener);
+    final PreferenceHelper helper = new PreferenceHelper(mPreferences);
+    mFlowManager.setDefaultIdleTimeMillis(helper.getIdleTimeoutMs());
 
     Log.d(TAG, "onCreate()");
     updateFromPreferences();
@@ -380,10 +382,6 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
           .getMeterName(), tapInfo.getRelayName());
       mTapManager.addTap(tap);
       mConfigManager.setTapDetail(tap.getMeterName(), tapDetail);
-      if (true) {
-        // XXX multitap
-        break;
-      }
     }
   }
 

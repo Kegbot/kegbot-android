@@ -14,5 +14,6 @@
 	<classpathentry kind="lib" path="libs/httpcomponents-client-4.0.3/lib/apache-mime4j-0.6.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/UsbSerial"/>
 	<classpathentry kind="src" path="UsbSerial_src"/>
+	<classpathentry kind="lib" path="libs/android-support-v4.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

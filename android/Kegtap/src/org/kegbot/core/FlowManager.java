@@ -25,7 +25,7 @@ public class FlowManager {
 
   private final TapManager mTapManager;
 
-  private static final long DEFAULT_IDLE_TIME_MILLIS = TimeUnit.SECONDS.toMillis(30);
+  private long mDefaultIdleTimeMillis = TimeUnit.SECONDS.toMillis(30);
 
   /**
    * Records the last reading for each tap.
@@ -68,9 +68,9 @@ public class FlowManager {
   }
 
   /**
-   * Map of all running flows, keyed by the tap owning the flow.
+   * Map of all flows, keyed by the tap owning the flow.
    */
-  private final Map<Tap, Flow> mActiveFlows = Maps.newLinkedHashMap();
+  private final Map<Tap, Flow> mFlowsByTap = Maps.newLinkedHashMap();
 
   /**
    * Executor that checks for idle flows.
@@ -80,28 +80,42 @@ public class FlowManager {
   private final Runnable mIdleChecker = new Runnable() {
     @Override
     public void run() {
-      synchronized (mActiveFlows) {
-        for (final Flow flow : mActiveFlows.values()) {
-          if (flow.isIdle()) {
-            Log.d("FlowIdleTask", "Flow is idle, ending: " + flow);
-            endFlow(flow);
-          }
+      for (final Flow flow : getIdleFlows()) {
+        Log.d("FlowIdleTask", "Flow is idle, ending: " + flow);
+        try {
+          endFlow(flow);
+        } catch (Exception e) {
+          Log.wtf("FlowIdleTask", "UNCAUGHT EXCEPTION", e);
         }
       }
     }
   };
 
-  private final ScheduledFuture<?> mFuture;
+  private ScheduledFuture<?> mFuture;
 
   @VisibleForTesting
   protected FlowManager(final TapManager tapManager) {
     mTapManager = tapManager;
-    mFuture = mExecutor.scheduleWithFixedDelay(mIdleChecker, 0, 1000, TimeUnit.MILLISECONDS);
+  }
+
+  private synchronized void startIdleChecker() {
+    if (mFuture == null) {
+      Log.d(TAG, "Starting idle checker.");
+      mFuture = mExecutor.scheduleWithFixedDelay(mIdleChecker, 0, 1000, TimeUnit.MILLISECONDS);
+    }
+  }
+
+  private synchronized void stopIdleChecker() {
+    if (mFuture != null) {
+      Log.d(TAG, "Stopping idle checker.");
+      mFuture.cancel(true);
+      mFuture = null;
+    }
   }
 
   public void stop() {
-    mFuture.cancel(true);
-    for (Flow flow : mActiveFlows.values()) {
+    stopIdleChecker();
+    for (Flow flow : getAllActiveFlows()) {
       endFlow(flow);
     }
   }
@@ -112,8 +126,8 @@ public class FlowManager {
    * @return
    */
   public Collection<Flow> getAllActiveFlows() {
-    synchronized (mActiveFlows) {
-      return ImmutableList.copyOf(mActiveFlows.values());
+    synchronized (mFlowsByTap) {
+      return ImmutableList.copyOf(Iterables.filter(mFlowsByTap.values(), Flow.PREDICATE_ACTIVE));
     }
   }
 
@@ -123,8 +137,8 @@ public class FlowManager {
    * @return
    */
   public Collection<Flow> getIdleFlows() {
-    synchronized (mActiveFlows) {
-      return ImmutableList.copyOf(Iterables.filter(mActiveFlows.values(), Flow.PREDICATE_IDLE));
+    synchronized (mFlowsByTap) {
+      return ImmutableList.copyOf(Iterables.filter(mFlowsByTap.values(), Flow.PREDICATE_IDLE));
     }
   }
 
@@ -134,23 +148,38 @@ public class FlowManager {
    * @return
    */
   public Collection<Flow> getCompletedFlows() {
-    synchronized (mActiveFlows) {
-      return ImmutableList
-          .copyOf(Iterables.filter(mActiveFlows.values(), Flow.PREDICATE_COMPLETED));
+    synchronized (mFlowsByTap) {
+      return ImmutableList.copyOf(Iterables.filter(mFlowsByTap.values(), Flow.PREDICATE_COMPLETED));
     }
   }
 
   public Flow getFlowForTap(final Tap tap) {
-    return mActiveFlows.get(tap);
+    return mFlowsByTap.get(tap);
+  }
+
+  public Flow getFlowForMeterName(final String meterName) {
+    final Tap tap = mTapManager.getTapForMeterName(meterName);
+    if (tap == null) {
+      return null;
+    }
+    return getFlowForTap(tap);
   }
 
   public Flow getFlowForFlowId(final long flowId) {
-    for (final Flow flow : mActiveFlows.values()) {
+    for (final Flow flow : mFlowsByTap.values()) {
       if (flow.getFlowId() == (int) flowId) {
         return flow;
       }
     }
     return null;
+  }
+
+  public void setDefaultIdleTimeMillis(long defaultIdleTimeMillis) {
+    mDefaultIdleTimeMillis = defaultIdleTimeMillis;
+  }
+
+  public long getDefaultIdleTimeMillis() {
+    return mDefaultIdleTimeMillis;
   }
 
   public Flow handleMeterActivity(final String tapName, final int ticks) {
@@ -177,11 +206,11 @@ public class FlowManager {
         + delta);
 
     Flow flow = null;
-    synchronized (mActiveFlows) {
+    synchronized (mFlowsByTap) {
       if (isActivity) {
         flow = getFlowForTap(tap);
-        if (flow == null) {
-          flow = startFlow(tap, DEFAULT_IDLE_TIME_MILLIS);
+        if (flow == null || flow.getState() != Flow.State.ACTIVE) {
+          flow = startFlow(tap, mDefaultIdleTimeMillis);
           Log.d(TAG, "  started new flow: " + flow);
         } else {
           Log.d(TAG, "  found existing flow: " + flow);
@@ -224,7 +253,7 @@ public class FlowManager {
 
     // New flow to replace previous or empty.
     Log.d(TAG, "activateUserAtTap: creating new flow.");
-    flow = startFlow(tap, DEFAULT_IDLE_TIME_MILLIS);
+    flow = startFlow(tap, mDefaultIdleTimeMillis);
     flow.setUsername(username);
     publishFlowUpdate(flow);
     return flow;
@@ -237,24 +266,29 @@ public class FlowManager {
    * @return
    */
   public Flow endFlow(final Flow flow) {
-    final Flow removedFlow = mActiveFlows.remove(flow.getTap());
-    if (removedFlow == null) {
-      return removedFlow;
+    final Flow endedFlow = mFlowsByTap.remove(flow.getTap());
+    if (endedFlow == null) {
+      Log.w(TAG, "No active flow for flow=" + flow + ", tap=" + flow.getTap());
+      return endedFlow;
     }
-    removedFlow.setState(State.COMPLETED);
-    publishFlowEnd(removedFlow);
-    return removedFlow;
+    endedFlow.setState(State.COMPLETED);
+    publishFlowEnd(endedFlow);
+    if (mFlowsByTap.isEmpty()) {
+      stopIdleChecker();
+    }
+    return endedFlow;
   }
 
   public Flow startFlow(final Tap tap, final long maxIdleTimeMs) {
     Log.d(TAG, "Starting flow on tap " + tap);
     final Flow flow = Flow.build(tap, maxIdleTimeMs);
-    synchronized (mActiveFlows) {
-      mActiveFlows.put(tap, flow);
+    synchronized (mFlowsByTap) {
+      mFlowsByTap.put(tap, flow);
       flow.setState(State.ACTIVE);
       flow.pokeActivity();
       publishFlowStart(flow);
     }
+    startIdleChecker();
     return flow;
   }
 
@@ -295,6 +329,7 @@ public class FlowManager {
     synchronized (mListeners) {
       for (final Listener listener : mListeners) {
         listener.onFlowStart(flow);
+        listener.onFlowUpdate(flow);
       }
     }
   }
@@ -302,6 +337,7 @@ public class FlowManager {
   private void publishFlowEnd(final Flow flow) {
     synchronized (mListeners) {
       for (final Listener listener : mListeners) {
+        listener.onFlowUpdate(flow);
         listener.onFlowEnd(flow);
       }
     }

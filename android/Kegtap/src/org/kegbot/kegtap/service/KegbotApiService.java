@@ -6,6 +6,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiException;
 import org.kegbot.api.KegbotApiImpl;
+import org.kegbot.api.KegbotApiNotFoundError;
 import org.kegbot.core.Flow;
 import org.kegbot.kegtap.core.backend.LocalDbHelper;
 import org.kegbot.proto.Api.DrinkDetail;
@@ -212,6 +213,9 @@ public class KegbotApiService extends BackgroundService implements KegbotApi {
 
       } catch (InvalidProtocolBufferException e) {
         Log.w(TAG, "Error processing column: " + e);
+      } catch (KegbotApiNotFoundError e) {
+        Log.w(TAG, "Tap not found, dropping record");
+        processed = true;
       } catch (KegbotApiException e) {
         Log.w(TAG, "Error processing column: " + e);
       }

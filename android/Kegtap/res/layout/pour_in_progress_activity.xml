@@ -4,8 +4,10 @@
   android:orientation="horizontal"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
-  android:weightSum="1.0">
+  android:weightSum="1.0"
+  android:gravity="center">
 
+  <!-- Left box: PourStatusFragment -->
   <fragment
     android:id="@+id/tap_status"
     class="org.kegbot.kegtap.PourStatusFragment"
@@ -14,89 +16,31 @@
     android:layout_height="fill_parent"
     android:layout_marginRight="10dip" />
 
+  <!-- Right box: Camera Preview -->
   <LinearLayout
     android:id="@+id/pourInProgressRightCol"
     android:orientation="vertical"
     android:layout_weight="0.4"
     android:layout_width="0dip"
-    android:layout_height="fill_parent"
-    android:gravity="top|center">
+    android:layout_height="wrap_content"
+    android:gravity="center">
 
-    <!-- Header -->
-    <LinearLayout
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:orientation="horizontal"
-      android:gravity="top|left">
-      <TextView
-        android:id="@+id/nowPouringTitle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="#888"
-        android:textSize="24dip"
-        android:text="Now Pouring..."
-        android:layout_marginLeft="5dip"/>
-    </LinearLayout>
-    
-    <View
+    <!-- Header. -->
+    <TextView
+      android:id="@+id/nowPouringTitle"
       android:layout_width="match_parent"
-      android:layout_height="2dip"
-      android:layout_marginLeft="5dip"
-      android:layout_marginRight="5dip"
-      android:background="#1FFFFFFF" />
-
-    <LinearLayout
-      android:orientation="vertical"
-      android:layout_width="fill_parent"
       android:layout_height="wrap_content"
-      android:gravity="top|center">
-
-      <TextView
-        android:id="@+id/pourDrinkerName"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:textStyle="bold"
-        android:textSize="36dip"
-        android:text="Anonymous Drinker"
-        android:gravity="center"
-        android:layout_marginBottom="10dip" />
-
-      <fragment
-        android:id="@+id/camera"
-        class="org.kegbot.kegtap.camera.CameraFragment"
-        android:layout_width="fill_parent"
-        android:layout_height="392dip" />
-
-      <Button
-        android:id="@+id/takePictureButton"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:text="Take Picture"
-        android:textSize="36dip"
-        android:gravity="center" />
-
-      <Button
-        android:id="@+id/authenticateButton"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:text="Log In"
-        android:textSize="36dip"
-        android:gravity="center" />
-    </LinearLayout>
-
-    <LinearLayout
-      android:orientation="vertical"
+      android:textColor="#888"
+      android:textSize="24dip"
+      android:text="Now Pouring..."
+      android:layout_marginLeft="5dip" />
+    
+    <!-- Camera. -->
+    <fragment
+      android:id="@+id/camera"
+      class="org.kegbot.kegtap.camera.CameraFragment"
       android:layout_width="fill_parent"
-      android:layout_height="fill_parent"
-      android:gravity="bottom|center">
-
-      <Button
-        android:id="@+id/endPourButton"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:text="End Pour"
-        android:textSize="36dip"
-        android:gravity="center" />
-    </LinearLayout>
+      android:layout_height="392dip" />
+      
   </LinearLayout>
 </LinearLayout>

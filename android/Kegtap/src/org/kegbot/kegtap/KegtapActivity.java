@@ -1,19 +1,29 @@
 package org.kegbot.kegtap;
 
+import java.util.List;
+
 import org.kegbot.api.KegbotApi;
+import org.kegbot.api.KegbotApiException;
 import org.kegbot.api.KegbotApiImpl;
 import org.kegbot.kegtap.service.KegboardService;
 import org.kegbot.kegtap.util.PreferenceHelper;
 import org.kegbot.kegtap.util.image.ImageDownloader;
+import org.kegbot.proto.Api.TapDetail;
+import org.kegbot.proto.Api.TapDetailSet;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.hardware.usb.UsbManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,6 +32,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 
 public class KegtapActivity extends CoreActivity {
 
@@ -29,11 +40,17 @@ public class KegtapActivity extends CoreActivity {
 
   private final ImageDownloader mImageDownloader = ImageDownloader.getSingletonInstance();
 
-  private TapStatusFragment mTapStatus;
-
   private EventListFragment mEvents;
 
   private ControlsFragment mControls;
+
+  private KegbotApi mApi;
+
+  private MyAdapter mTapStatusAdapter;
+
+  private ViewPager mTapStatusPager;
+
+  private List<TapDetail> mTapDetails = Lists.newArrayList();
 
   private SessionStatsFragment mSession;
 
@@ -78,21 +95,23 @@ public class KegtapActivity extends CoreActivity {
     mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
     mPrefsHelper = new PreferenceHelper(mPreferences);
 
-    mTapStatus = (TapStatusFragment) getFragmentManager().findFragmentById(
-        R.id.tap_status);
+    mTapStatusAdapter = new MyAdapter(getSupportFragmentManager());
 
-    mEvents = (EventListFragment) getFragmentManager().findFragmentById(
+    mTapStatusPager = (ViewPager) findViewById(R.id.tap_status_pager);
+    mTapStatusPager.setAdapter(mTapStatusAdapter);
+
+    mEvents = (EventListFragment) getSupportFragmentManager().findFragmentById(
         R.id.event_list);
 
-    mControls = (ControlsFragment) getFragmentManager().findFragmentById(
+    mControls = (ControlsFragment) getSupportFragmentManager().findFragmentById(
         R.id.controls);
 
-    mSession = (SessionStatsFragment) getFragmentManager().findFragmentById(
+    mSession = (SessionStatsFragment) getSupportFragmentManager().findFragmentById(
         R.id.currentSessionFragment);
 
     ((Button) findViewById(R.id.beerMeButton)).setOnClickListener(mOnBeerMeClickedListener);
 
-    View v = findViewById(R.id.tap_status);
+    View v = findViewById(R.id.tap_status_pager);
     v.setSystemUiVisibility(View.STATUS_BAR_HIDDEN);
   }
 
@@ -179,18 +198,65 @@ public class KegtapActivity extends CoreActivity {
   }
 
   private void updateApiUrl(Uri apiUrl) {
-    KegbotApi api = KegbotApiImpl.getSingletonInstance();
+    mApi = KegbotApiImpl.getSingletonInstance();
     String username = mPrefsHelper.getUsername();
     String password = mPrefsHelper.getPassword();
-    api.setAccountCredentials(username, password);
-    mTapStatus.setKegbotApi(api);
-    api.setApiUrl(apiUrl.toString());
+    mApi.setAccountCredentials(username, password);
+    mApi.setApiUrl(apiUrl.toString());
     loadUiFragments();
   }
 
   private void loadUiFragments() {
-    mTapStatus.loadTap();
+    new TapLoaderTask().execute();
     //mEvents.loadEvents();
     mSession.loadCurrentSessionDetail();
   }
+
+  public class MyAdapter extends FragmentPagerAdapter {
+    public MyAdapter(FragmentManager fm) {
+      super(fm);
+    }
+
+    @Override
+    public Fragment getItem(int arg0) {
+      TapStatusFragment frag = new TapStatusFragment();
+      frag.setTapDetail(mTapDetails.get(arg0));
+      return frag;
+    }
+
+    @Override
+    public int getCount() {
+      return mTapDetails.size();
+    }
+
+  }
+
+  private class TapLoaderTask extends AsyncTask<Void, Void, TapDetailSet> {
+
+    @Override
+    protected TapDetailSet doInBackground(Void... params) {
+      try {
+        return mApi.getAllTaps();
+      } catch (KegbotApiException e) {
+        Log.e(LOG_TAG, "Api error.", e);
+        return null;
+      }
+    }
+
+    @Override
+    protected void onPostExecute(TapDetailSet result) {
+      if (result == null) {
+        return;
+      }
+      try {
+        mTapDetails.clear();
+        mTapDetails.addAll(result.getTapsList());
+        Log.d(LOG_TAG, "Updating adapter, taps: " + mTapDetails.size());
+        mTapStatusPager.setAdapter(mTapStatusAdapter);
+      } catch (Throwable e) {
+        Log.wtf("TapStatusFragment", "UNCAUGHT EXCEPTION", e);
+      }
+    }
+  }
+
 }

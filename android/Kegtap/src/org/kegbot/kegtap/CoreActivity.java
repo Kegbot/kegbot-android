@@ -7,12 +7,12 @@ import org.kegbot.kegtap.service.KegbotCoreService;
 import org.kegbot.kegtap.service.KegbotCoreServiceInterface;
 
 import android.app.ActionBar;
-import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v4.app.FragmentActivity;
 import android.view.MenuItem;
 
 /**
@@ -20,7 +20,7 @@ import android.view.MenuItem;
  *
  * @author mike wakerly (mike@wakerly.com)
  */
-public class CoreActivity extends Activity {
+public class CoreActivity extends FragmentActivity {
 
   protected KegbotCoreService mCoreService;
   protected boolean mCoreServiceBound;
@@ -46,7 +46,12 @@ public class CoreActivity extends Activity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     bindToCoreService();
+  }
+
+  @Override
+  protected void onResume() {
     setupActionBar();
+    super.onResume();
   }
 
   @Override
