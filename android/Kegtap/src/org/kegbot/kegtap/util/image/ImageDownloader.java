@@ -16,10 +16,14 @@
 
 package org.kegbot.kegtap.util.image;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.SoftReference;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -49,6 +53,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
 import com.google.common.collect.Sets;
+import com.hoho.android.usbserial.util.HexDump;
 
 /**
  * This helper class download images from the Internet and binds those with the
@@ -88,6 +93,7 @@ public class ImageDownloader {
 
   private final Context mContext;
 
+  private File mCacheDir;
 
   private final Handler mHandler = new Handler() {
 
@@ -103,6 +109,7 @@ public class ImageDownloader {
 
   private ImageDownloader(final Context context) {
     mContext = context;
+    mCacheDir = context.getCacheDir();
   }
 
   /**
@@ -151,8 +158,16 @@ public class ImageDownloader {
       @Override
       public void run() {
         Log.d(LOG_TAG, "Download running for url=" + url);
-        final Bitmap bitmap = downloadBitmap(url);
-        Log.d(LOG_TAG, "Download complete for url=" + url + " bitmap=" + bitmap);
+
+        Bitmap bitmap = getBitmapFromFileCache(url);
+        if (bitmap != null) {
+          Log.d(LOG_TAG, "Found bitmap in file cache.");
+        } else {
+          Log.d(LOG_TAG, "Download running for url=" + url);
+          bitmap = downloadBitmap(url);
+          addBitmapToFileCache(url, bitmap);
+        }
+
         addBitmapToCache(url, bitmap);
         postDownloadCompletedToHandler(url, bitmap);
       }
@@ -327,6 +342,53 @@ public class ImageDownloader {
         sHardBitmapCache.put(url, bitmap);
       }
     }
+  }
+
+  private static String getFingerprint(String uri) {
+    MessageDigest md;
+    try {
+      md = MessageDigest.getInstance("SHA-256");
+    } catch (NoSuchAlgorithmException e) {
+      throw new IllegalStateException(e);
+    }
+    md.update(uri.getBytes());
+    byte[] digest = md.digest();
+    return HexDump.toHexString(digest);
+  }
+
+  private File getCacheFilename(String url) {
+    return new File(mCacheDir, "ImageDownloader-" + getFingerprint(url));
+  }
+
+  private void addBitmapToFileCache(String url, Bitmap bitmap) {
+    final File cacheFile = getCacheFilename(url);
+    if (cacheFile.exists()) {
+      Log.d(LOG_TAG, "Updating cached file url=" + url + " filename=" + cacheFile);
+    } else {
+      Log.d(LOG_TAG, "Creating cached file url=" + url + " filename=" + cacheFile);
+    }
+
+    try {
+      cacheFile.createNewFile();
+      FileOutputStream fos = new FileOutputStream(cacheFile);
+      bitmap.compress(Bitmap.CompressFormat.PNG, 85, fos);
+      fos.flush();
+      fos.close();
+    } catch (IOException e) {
+      Log.w(LOG_TAG, "Error adding cache file.", e);
+    }
+
+  }
+
+  private Bitmap getBitmapFromFileCache(String url) {
+    final File cacheFile = getCacheFilename(url);
+    if (cacheFile.exists()) {
+      Log.d(LOG_TAG, "getFromFileCache hit: url=" + url + " filename=" + cacheFile);
+    } else {
+      Log.d(LOG_TAG, "getFromFileCache MISS: url=" + url + " filename=" + cacheFile);
+      return null;
+    }
+    return BitmapFactory.decodeFile(cacheFile.getAbsolutePath());
   }
 
   /**
