@@ -15,6 +15,7 @@ import org.kegbot.proto.Api.TapDetail;
 import org.kegbot.proto.Models.BeerType;
 import org.kegbot.proto.Models.Image;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
@@ -42,7 +43,7 @@ public class PourStatusFragment extends ListFragment {
 
   private final FlowManager mFlowManager = FlowManager.getSingletonInstance();
 
-  private final ImageDownloader mImageDownloader = ImageDownloader.getSingletonInstance();
+  private ImageDownloader mImageDownloader;
 
   /**
    * After this much inactivity, the "pour automatically ends" dialog is shown.
@@ -52,6 +53,12 @@ public class PourStatusFragment extends ListFragment {
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     return inflater.inflate(R.layout.pour_status_fragment_layout, container);
+  }
+
+  @Override
+  public void onAttach(Activity activity) {
+    super.onAttach(activity);
+    mImageDownloader = ImageDownloader.getSingletonInstance(activity);
   }
 
   @Override

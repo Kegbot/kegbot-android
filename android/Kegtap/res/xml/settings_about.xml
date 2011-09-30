@@ -4,21 +4,11 @@
   <Preference
     android:key="build_date"
     android:title="Build Date"
-    android:summary="2011-09-03 14:47">
+    android:summary="2011-09-05 13:22">
   </Preference>
-  <EditTextPreference
-    android:key="idle_warning_seconds"
-    android:title="Pour Idle Time Warning"
-    android:inputType="number"
-    android:defaultValue="10"
-    android:summary="After this many idle seconds, a warning will be issued">
-  </EditTextPreference>
-  <EditTextPreference
-    android:key="idle_timeout_seconds"
-    android:title="Pour Maximum Idle Time"
-    android:inputType="number"
-    android:defaultValue="20"
-    android:summary="After this many idle seconds, a pour will be ended">
-  </EditTextPreference>
-
+    <Preference
+    android:key="copyright"
+    android:title="Legal"
+    android:summary="Copyright Mike Wakerly 2011 - Not For Redistribution.">
+  </Preference>
 </PreferenceScreen>

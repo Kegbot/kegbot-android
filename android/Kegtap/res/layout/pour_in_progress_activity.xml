@@ -33,8 +33,9 @@
       android:textColor="#888"
       android:textSize="24dip"
       android:text="Now Pouring..."
-      android:layout_marginLeft="5dip" />
-    
+      android:layout_marginLeft="5dip"
+      android:visibility="gone"/>
+
     <!-- Camera. -->
     <fragment
       android:id="@+id/camera"
@@ -42,5 +43,12 @@
       android:layout_width="fill_parent"
       android:layout_height="392dip" />
       
+    <Button
+      android:id="@+id/takePictureButton"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:textSize="32dip"
+      android:text="@string/pour_take_picture" />
+
   </LinearLayout>
 </LinearLayout>

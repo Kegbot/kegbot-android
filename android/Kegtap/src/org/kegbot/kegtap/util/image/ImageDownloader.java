@@ -20,10 +20,14 @@ import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.SoftReference;
-import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -31,17 +35,20 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.kegbot.kegtap.R;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.http.AndroidHttpClient;
-import android.os.AsyncTask;
 import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+
+import com.google.common.collect.Sets;
 
 /**
  * This helper class download images from the Internet and binds those with the
@@ -58,15 +65,44 @@ import android.widget.ImageView;
 public class ImageDownloader {
   private static final String LOG_TAG = "ImageDownloader";
 
+  private static final int HANDLER_KEY_DOWNLOAD_COMPLETE = 1;
+
   private static ImageDownloader sSingleton = null;
 
-  public enum Mode {
-    NO_ASYNC_TASK, NO_DOWNLOADED_DRAWABLE, CORRECT
+  /**
+   * All ImageViews and the URL they have requested.
+   */
+  private final WeakHashMap<ImageView, String> mDownloadRequests = new WeakHashMap<ImageView, String>();
+
+  private static class DownloadResult {
+    String url;
+    Bitmap bitmap;
+
+    DownloadResult(String url, Bitmap bitmap) {
+      this.url = url;
+      this.bitmap = bitmap;
+    }
   }
 
-  private Mode mode = Mode.CORRECT;
+  private final ExecutorService mExecutor = Executors.newFixedThreadPool(5);
 
-  private ImageDownloader() {
+  private final Context mContext;
+
+
+  private final Handler mHandler = new Handler() {
+
+    @Override
+    public void handleMessage(Message msg) {
+      if (msg.what == HANDLER_KEY_DOWNLOAD_COMPLETE) {
+        final DownloadResult result = (DownloadResult) msg.obj;
+        handleDownloadComplete(result);
+      }
+      super.handleMessage(msg);
+    }
+  };
+
+  private ImageDownloader(final Context context) {
+    mContext = context;
   }
 
   /**
@@ -80,107 +116,92 @@ public class ImageDownloader {
    * @param imageView
    *          The ImageView to bind the downloaded image to.
    */
-  public void download(String url, ImageView imageView) {
-    resetPurgeTimer();
-    Bitmap bitmap = getBitmapFromCache(url);
+  public void download(final String url, final ImageView imageView) {
+    Log.d(LOG_TAG, "download url=" + url + " imageView=" + imageView);
+    imageView.setTag(url);
+    // resetPurgeTimer();
+    final Bitmap bitmap = getBitmapFromCache(url);
 
-    if (bitmap == null) {
-      forceDownload(url, imageView);
+    if (bitmap != null) {
+      Log.d(LOG_TAG, "download: cache hit");
+      // Bitmap in cache: no download necessary.
+      applyBitmapToImageView(bitmap, imageView);
     } else {
-      cancelPotentialDownload(url, imageView);
-      imageView.setImageBitmap(bitmap);
-    }
-  }
+      Log.d(LOG_TAG, "download: cache miss");
 
-  /*
-   * Same as download but the image is always downloaded and the cache is not
-   * used. Kept private at the moment as its interest is not clear. private void
-   * forceDownload(String url, ImageView view) { forceDownload(url, view, null);
-   * }
-   */
+      // TODO(mikey): this should be done only in an adapter when convertView !=
+      // null
+      // imageView.setBackgroundDrawable(null);
+      // imageView.setImageBitmap(null);
 
-  /**
-   * Same as download but the image is always downloaded and the cache is not
-   * used. Kept private at the moment as its interest is not clear.
-   */
-  private void forceDownload(String url, ImageView imageView) {
-    // State sanity: url is guaranteed to never be null in DownloadedDrawable
-    // and cache keys.
-    if (url == null) {
-      imageView.setImageDrawable(null);
-      return;
-    }
-
-    if (cancelPotentialDownload(url, imageView)) {
-      switch (mode) {
-        case NO_ASYNC_TASK:
-          Bitmap bitmap = downloadBitmap(url);
-          addBitmapToCache(url, bitmap);
-          imageView.setImageBitmap(bitmap);
-          break;
-
-        case NO_DOWNLOADED_DRAWABLE:
-          imageView.setMinimumHeight(156);
-          BitmapDownloaderTask task = new BitmapDownloaderTask(imageView);
-          task.execute(url);
-          break;
-
-        case CORRECT:
-          task = new BitmapDownloaderTask(imageView);
-          DownloadedDrawable downloadedDrawable = new DownloadedDrawable(task);
-          imageView.setImageDrawable(downloadedDrawable);
-          imageView.setMinimumHeight(156);
-          task.execute(url);
-          break;
+      // No bitmap in cache: enqueue the download.
+      synchronized (mDownloadRequests) {
+        Log.d(LOG_TAG, "download: adding to request queue");
+        if (!mDownloadRequests.containsValue(url)) {
+          enqueueDownload(url);
+        }
+        mDownloadRequests.put(imageView, url);
       }
     }
   }
 
-  /**
-   * Returns true if the current download has been canceled or if there was no
-   * download in progress on this image view. Returns false if the download in
-   * progress deals with the same url. The download is not stopped in that case.
-   */
-  private static boolean cancelPotentialDownload(String url, ImageView imageView) {
-    BitmapDownloaderTask bitmapDownloaderTask = getBitmapDownloaderTask(imageView);
-
-    if (bitmapDownloaderTask != null) {
-      String bitmapUrl = bitmapDownloaderTask.url;
-      if ((bitmapUrl == null) || (!bitmapUrl.equals(url))) {
-        bitmapDownloaderTask.cancel(true);
-      } else {
-        // The same URL is already being downloaded.
-        return false;
+  private void enqueueDownload(final String url) {
+    Log.d(LOG_TAG, "Enqueuing download: url=" + url);
+    mExecutor.submit(new Runnable() {
+      @Override
+      public void run() {
+        Log.d(LOG_TAG, "Download running for url=" + url);
+        final Bitmap bitmap = downloadBitmap(url);
+        Log.d(LOG_TAG, "Download complete for url=" + url + " bitmap=" + bitmap);
+        addBitmapToCache(url, bitmap);
+        postDownloadCompletedToHandler(url, bitmap);
       }
-    }
-    return true;
+    });
   }
 
-  /**
-   * @param imageView
-   *          Any imageView
-   * @return Retrieve the currently active download task (if any) associated
-   *         with this imageView. null if there is no such task.
-   */
-  private static BitmapDownloaderTask getBitmapDownloaderTask(ImageView imageView) {
-    if (imageView != null) {
-      Drawable drawable = imageView.getDrawable();
-      if (drawable instanceof DownloadedDrawable) {
-        DownloadedDrawable downloadedDrawable = (DownloadedDrawable) drawable;
-        return downloadedDrawable.getBitmapDownloaderTask();
-      }
-    }
-    return null;
+  private void postDownloadCompletedToHandler(String url, Bitmap bitmap) {
+    final DownloadResult result = new DownloadResult(url, bitmap);
+    final Message msg = mHandler.obtainMessage(HANDLER_KEY_DOWNLOAD_COMPLETE, result);
+    mHandler.sendMessage(msg);
   }
 
-  Bitmap downloadBitmap(String url) {
+  private void applyBitmapToImageView(Bitmap bitmap, ImageView imageView) {
+    Log.d(LOG_TAG, "Assigning bitmap=" + bitmap + " imageView=" + imageView);
+    imageView.setBackgroundDrawable(null);
+    imageView.setImageBitmap(bitmap);
+  }
+
+  private void handleDownloadComplete(DownloadResult downloadResult) {
+    final String url = downloadResult.url;
+    final Bitmap bitmap = downloadResult.bitmap;
+    Log.d(LOG_TAG, "handleDownloadComplete: url=" + url + " bitmap=" + bitmap);
+
+    final Set<ImageView> toRemove = Sets.newLinkedHashSet();
+    synchronized (mDownloadRequests) {
+      for (final Map.Entry<ImageView, String> entry : mDownloadRequests.entrySet()) {
+        if (url.equals(entry.getValue())) {
+          final ImageView imageView = entry.getKey();
+          toRemove.add(imageView);
+
+          final String imageViewTag = (String) imageView.getTag();
+          if (url.equals(imageViewTag)) {
+            applyBitmapToImageView(bitmap, imageView);
+            Animation myFadeInAnimation = AnimationUtils.loadAnimation(mContext, R.anim.image_fade_in);
+            imageView.startAnimation(myFadeInAnimation); //Set animation to your ImageView
+
+          }
+        }
+      }
+
+      for (final ImageView view : toRemove) {
+        mDownloadRequests.remove(view);
+      }
+    }
+  }
+
+  private Bitmap downloadBitmap(String url) {
     // AndroidHttpClient is not allowed to be used from the main thread
-    /*
-     * final HttpClient client = (mode == Mode.NO_ASYNC_TASK) ? new
-     * DefaultHttpClient() : AndroidHttpClient.newInstance("Android");
-     */
     final HttpClient client = new DefaultHttpClient();
-
     final HttpGet getRequest = new HttpGet(url);
 
     try {
@@ -255,81 +276,6 @@ public class ImageDownloader {
     }
   }
 
-  /**
-   * The actual AsyncTask that will asynchronously download the image.
-   */
-  class BitmapDownloaderTask extends AsyncTask<String, Void, Bitmap> {
-    private String url;
-    private final WeakReference<ImageView> imageViewReference;
-
-    public BitmapDownloaderTask(ImageView imageView) {
-      imageViewReference = new WeakReference<ImageView>(imageView);
-    }
-
-    /**
-     * Actual download method.
-     */
-    @Override
-    protected Bitmap doInBackground(String... params) {
-      url = params[0];
-      return downloadBitmap(url);
-    }
-
-    /**
-     * Once the image is downloaded, associates it to the imageView
-     */
-    @Override
-    protected void onPostExecute(Bitmap bitmap) {
-      if (isCancelled()) {
-        bitmap = null;
-      }
-
-      addBitmapToCache(url, bitmap);
-
-      if (imageViewReference != null) {
-        ImageView imageView = imageViewReference.get();
-        BitmapDownloaderTask bitmapDownloaderTask = getBitmapDownloaderTask(imageView);
-        // Change bitmap only if this process is still associated with it
-        // Or if we don't use any bitmap to task association
-        // (NO_DOWNLOADED_DRAWABLE mode)
-        if ((this == bitmapDownloaderTask) || (mode != Mode.CORRECT)) {
-          imageView.setBackgroundResource(0);
-          imageView.setImageBitmap(bitmap);
-          // bitmap.recycle();
-        }
-      }
-    }
-  }
-
-  /**
-   * A fake Drawable that will be attached to the imageView while the download
-   * is in progress.
-   *
-   * <p>
-   * Contains a reference to the actual download task, so that a download task
-   * can be stopped if a new binding is required, and makes sure that only the
-   * last started download process can bind its result, independently of the
-   * download finish order.
-   * </p>
-   */
-  static class DownloadedDrawable extends ColorDrawable {
-    private final WeakReference<BitmapDownloaderTask> bitmapDownloaderTaskReference;
-
-    public DownloadedDrawable(BitmapDownloaderTask bitmapDownloaderTask) {
-      super(Color.BLACK);
-      bitmapDownloaderTaskReference = new WeakReference<BitmapDownloaderTask>(bitmapDownloaderTask);
-    }
-
-    public BitmapDownloaderTask getBitmapDownloaderTask() {
-      return bitmapDownloaderTaskReference.get();
-    }
-  }
-
-  public void setMode(Mode mode) {
-    this.mode = mode;
-    clearCache();
-  }
-
   /*
    * Cache-related fields and methods.
    *
@@ -350,8 +296,9 @@ public class ImageDownloader {
         // reference cache
         sSoftBitmapCache.put(eldest.getKey(), new SoftReference<Bitmap>(eldest.getValue()));
         return true;
-      } else
+      } else {
         return false;
+      }
     }
   };
 
@@ -407,10 +354,9 @@ public class ImageDownloader {
       if (bitmap != null) {
         // Bitmap found in soft cache
         return bitmap;
-      } else {
-        // Soft reference has been Garbage Collected
-        sSoftBitmapCache.remove(url);
       }
+      // Soft reference has been Garbage Collected
+      sSoftBitmapCache.remove(url);
     }
 
     return null;
@@ -434,9 +380,9 @@ public class ImageDownloader {
     purgeHandler.postDelayed(purger, DELAY_BEFORE_PURGE);
   }
 
-  public synchronized static ImageDownloader getSingletonInstance() {
+  public synchronized static ImageDownloader getSingletonInstance(final Context context) {
     if (sSingleton == null) {
-      sSingleton = new ImageDownloader();
+      sSingleton = new ImageDownloader(context.getApplicationContext());
     }
     return sSingleton;
   }

@@ -11,4 +11,10 @@
     <string name="settings_general_header">General</string>
     <string name="settings_kegerator_header">Kegerator</string>
     <string name="settings_about_header">About</string>
+    
+    <string name="pour_take_picture">Take Picture</string>
+    <string name="picture_countdown_3">3...</string>
+    <string name="picture_countdown_2">2...</string>
+    <string name="picture_countdown_1">1...</string>
+    
 </resources>

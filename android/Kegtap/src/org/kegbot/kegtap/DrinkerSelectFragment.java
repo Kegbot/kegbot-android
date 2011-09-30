@@ -10,6 +10,7 @@ import org.kegbot.kegtap.util.image.ImageDownloader;
 import org.kegbot.proto.Api.UserDetail;
 import org.kegbot.proto.Api.UserDetailSet;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -42,7 +43,7 @@ public class DrinkerSelectFragment extends Fragment {
   private GridView mGridView;
 
   private final KegbotApi mApi = KegbotApiImpl.getSingletonInstance();
-  private final ImageDownloader mImageDownloader = ImageDownloader.getSingletonInstance();
+  private ImageDownloader mImageDownloader;
 
   private static Comparator<UserDetail> USERS_ALPHABETIC = new Comparator<UserDetail>() {
     @Override
@@ -52,23 +53,12 @@ public class DrinkerSelectFragment extends Fragment {
     }
   };
 
-/*
   @Override
-  public void onListItemClick(ListView l, View v, int position, long id) {
-    UserDetail user = (UserDetail) l.getItemAtPosition(position);
-    Log.d(LOG_TAG, "Clicked on user: " + user);
-    final String username;
-    if (user == null) {
-      username = "";
-    } else {
-      // Defaults to "" in User if necessary.
-      username = user.getUser().getUsername();
-    }
-    final Intent intent = KegtapBroadcast.getUserAuthedBroadcastIntent(username);
-    getActivity().sendBroadcast(intent);
-    getActivity().finish();
+  public void onAttach(Activity activity) {
+    super.onAttach(activity);
+    mImageDownloader = ImageDownloader.getSingletonInstance(activity);
   }
-  */
+
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     mView = inflater.inflate(R.layout.select_drinker_fragment_inner, container);
@@ -103,8 +93,8 @@ public class DrinkerSelectFragment extends Fragment {
         final ImageView icon = (ImageView) view.findViewById(R.id.drinkerIcon);
         final String imageUrl = userDetail.getUser().getImage().getUrl();
         icon.setImageBitmap(null);
+        icon.setBackgroundDrawable(null);
         if (!Strings.isNullOrEmpty(imageUrl)) {
-          icon.setBackgroundDrawable(null);
           mImageDownloader.download(imageUrl, icon);
         } else {
           icon.setBackgroundResource(R.drawable.unknown_drinker);

@@ -10,6 +10,7 @@ import org.kegbot.kegtap.util.image.ImageDownloader;
 import org.kegbot.proto.Api.TapDetail;
 import org.kegbot.proto.Models.Image;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.text.format.DateUtils;
@@ -27,7 +28,13 @@ public class TapListFragment extends ListFragment {
   private final String TAG = TapListFragment.class.getSimpleName();
 
   private TapDetail mTapDetail;
-  private final ImageDownloader mImageDownloader = ImageDownloader.getSingletonInstance();
+  private ImageDownloader mImageDownloader;
+
+  @Override
+  public void onAttach(Activity activity) {
+    super.onAttach(activity);
+    mImageDownloader = ImageDownloader.getSingletonInstance(activity);
+  }
 
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

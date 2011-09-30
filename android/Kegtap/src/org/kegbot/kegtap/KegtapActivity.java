@@ -29,6 +29,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 
+import com.google.android.apps.analytics.GoogleAnalyticsTracker;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
@@ -53,8 +54,9 @@ public class KegtapActivity extends CoreActivity {
 
   private final Handler mHandler = new Handler();
 
-  private final OnSharedPreferenceChangeListener mPreferenceListener =
-      new OnSharedPreferenceChangeListener() {
+  private GoogleAnalyticsTracker mTracker;
+
+  private final OnSharedPreferenceChangeListener mPreferenceListener = new OnSharedPreferenceChangeListener() {
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
       if (PreferenceHelper.KEY_SELECTED_KEGBOT.equals(key)) {
@@ -63,14 +65,13 @@ public class KegtapActivity extends CoreActivity {
     }
   };
 
-  private final OnClickListener mOnBeerMeClickedListener =
-    new OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        final Intent intent = new Intent(KegtapActivity.this, DrinkerSelectActivity.class);
-        startActivity(intent);
-      }
-    };
+  private final OnClickListener mOnBeerMeClickedListener = new OnClickListener() {
+    @Override
+    public void onClick(View v) {
+      final Intent intent = new Intent(KegtapActivity.this, DrinkerSelectActivity.class);
+      startActivity(intent);
+    }
+  };
 
   private final Runnable mRefreshRunnable = new Runnable() {
     @Override
@@ -86,6 +87,11 @@ public class KegtapActivity extends CoreActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.main_activity);
 
+    mTracker = GoogleAnalyticsTracker.getInstance();
+    mTracker.startNewSession("UA-73794-6", 60, this);
+
+    mTracker.trackPageView("/KegtapActivityOnCreate");
+
     mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
     mPrefsHelper = new PreferenceHelper(mPreferences);
 
@@ -94,8 +100,7 @@ public class KegtapActivity extends CoreActivity {
     mTapStatusPager = (ViewPager) findViewById(R.id.tap_status_pager);
     mTapStatusPager.setAdapter(mTapStatusAdapter);
 
-    mEvents = (EventListFragment) getSupportFragmentManager().findFragmentById(
-        R.id.event_list);
+    mEvents = (EventListFragment) getSupportFragmentManager().findFragmentById(R.id.event_list);
 
     mSession = (SessionStatsFragment) getSupportFragmentManager().findFragmentById(
         R.id.currentSessionFragment);
@@ -116,6 +121,7 @@ public class KegtapActivity extends CoreActivity {
     super.onResume();
     handleIntent();
     initializeUi();
+    mTracker.trackPageView("/KegtapActivityOnResume");
     mHandler.postDelayed(mRefreshRunnable, 10000);
   }
 
@@ -140,14 +146,14 @@ public class KegtapActivity extends CoreActivity {
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
     switch (item.getItemId()) {
-    case R.id.settings:
-      SettingsActivity.startSettingsActivity(this);
-      return true;
-    case android.R.id.home:
-      // TODO: navigate up
-      return true;
-    default:
-      return super.onOptionsItemSelected(item);
+      case R.id.settings:
+        SettingsActivity.startSettingsActivity(this);
+        return true;
+      case android.R.id.home:
+        // TODO: navigate up
+        return true;
+      default:
+        return super.onOptionsItemSelected(item);
     }
   }
 
@@ -181,7 +187,7 @@ public class KegtapActivity extends CoreActivity {
     if (Strings.isNullOrEmpty(username)) {
       SettingsActivity.startSettingsActivity(this);
     } else {
-      //getActionBar().setTitle(mPrefsHelper.getKegbotName());
+      // getActionBar().setTitle(mPrefsHelper.getKegbotName());
       updateApiUrl(mPrefsHelper.getKegbotUrl());
     }
   }
@@ -197,7 +203,7 @@ public class KegtapActivity extends CoreActivity {
 
   private void loadUiFragments() {
     new TapLoaderTask().execute();
-    //mEvents.loadEvents();
+    // mEvents.loadEvents();
     mSession.loadCurrentSessionDetail();
   }
 

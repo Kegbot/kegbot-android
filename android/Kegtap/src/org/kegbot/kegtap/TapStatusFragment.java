@@ -10,6 +10,7 @@ import org.kegbot.kegtap.util.image.ImageDownloader;
 import org.kegbot.proto.Api.TapDetail;
 import org.kegbot.proto.Models.Image;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
@@ -31,7 +32,7 @@ public class TapStatusFragment extends ListFragment {
 
   private TapDetail mTapDetail;
 
-  private final ImageDownloader mImageDownloader = ImageDownloader.getSingletonInstance();
+  private ImageDownloader mImageDownloader;
 
   private final OnClickListener mOnBeerMeClickedListener = new OnClickListener() {
     @Override
@@ -53,8 +54,9 @@ public class TapStatusFragment extends ListFragment {
   }
 
   @Override
-  public void onActivityCreated(Bundle savedInstanceState) {
-    super.onActivityCreated(savedInstanceState);
+  public void onAttach(Activity activity) {
+    super.onAttach(activity);
+    mImageDownloader = ImageDownloader.getSingletonInstance(activity);
   }
 
   public View buildTapView(View view, TapDetail tap) {

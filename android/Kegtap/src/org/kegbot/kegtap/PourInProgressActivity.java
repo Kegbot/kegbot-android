@@ -27,6 +27,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 
 public class PourInProgressActivity extends CoreActivity {
@@ -146,6 +147,15 @@ public class PourInProgressActivity extends CoreActivity {
     });
 
     mIdleDetectedDialog = builder.create();
+
+    // Attach camera click button.
+    mPictureButton = ((Button) findViewById(R.id.takePictureButton));
+    mPictureButton.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        schedulePicture();
+      }
+    });
 
     mPrefs = new PreferenceHelper(PreferenceManager.getDefaultSharedPreferences(this));
   }

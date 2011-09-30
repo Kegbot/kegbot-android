@@ -12,6 +12,7 @@ import org.kegbot.proto.Api.SystemEventDetail;
 import org.kegbot.proto.Api.SystemEventDetailSet;
 import org.kegbot.proto.Models.SystemEvent;
 
+import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
@@ -41,7 +42,7 @@ public class EventListFragment extends ListFragment {
 
   private ArrayAdapter<SystemEventDetail> mAdapter;
   private final KegbotApi mApi = KegbotApiImpl.getSingletonInstance();
-  private final ImageDownloader mImageDownloader = ImageDownloader.getSingletonInstance();
+  private ImageDownloader mImageDownloader;
 
   private long mLastEventId = -1;
 
@@ -60,8 +61,15 @@ public class EventListFragment extends ListFragment {
   };
 
   @Override
+  public void onAttach(Activity activity) {
+    super.onAttach(activity);
+    mImageDownloader = ImageDownloader.getSingletonInstance(activity);
+  }
+
+  @Override
   public void onActivityCreated(Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
+
     mAdapter = new ArrayAdapter<SystemEventDetail>(getActivity(), R.layout.event_list_item,
         R.id.eventTitle) {
 
@@ -85,6 +93,10 @@ public class EventListFragment extends ListFragment {
         final String imageUrl = eventDetail.getImage().getUrl();
         if (!Strings.isNullOrEmpty(imageUrl)) {
           icon.setVisibility(View.VISIBLE);
+          icon.setImageBitmap(null);
+
+          // Default to unknown drinker, may be immediately replaced by downlaoder.
+          icon.setBackgroundResource(R.drawable.unknown_drinker);
           mImageDownloader.download(imageUrl, icon);
         } else {
           icon.setVisibility(View.GONE);
