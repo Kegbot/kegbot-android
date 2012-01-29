@@ -63,6 +63,7 @@ public class DrinkerSelectFragment extends Fragment {
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     mView = inflater.inflate(R.layout.select_drinker_fragment_inner, container);
     mGridView = (GridView) mView.findViewById(R.id.drinkerGridView);
+
     return mView;
   }
 
@@ -141,6 +142,7 @@ public class DrinkerSelectFragment extends Fragment {
         getActivity().finish();
       }
     });
+
   }
 
   /*

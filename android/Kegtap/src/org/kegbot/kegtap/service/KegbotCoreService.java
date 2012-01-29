@@ -54,9 +54,6 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
 
   private static final int NOTIFICATION_FOREGROUND = 1;
 
-  private static final String ACTION_FLOW_STARTED = "org.kegbot.action.ACTION_FLOW_STARTED";
-  private static final String ACTION_FLOW_UPDATED = "org.kegbot.action.ACTION_FLOW_UPDATED";
-
   /**
    * The flow manager for the core.
    */

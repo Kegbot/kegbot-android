@@ -74,6 +74,8 @@ public class ImageDownloader {
 
   private static ImageDownloader sSingleton = null;
 
+  private static final boolean DEBUG = false;
+
   /**
    * All ImageViews and the URL they have requested.
    */
@@ -124,17 +126,17 @@ public class ImageDownloader {
    *          The ImageView to bind the downloaded image to.
    */
   public void download(final String url, final ImageView imageView) {
-    Log.d(LOG_TAG, "download url=" + url + " imageView=" + imageView);
+    if (DEBUG) Log.d(LOG_TAG, "download url=" + url + " imageView=" + imageView);
     imageView.setTag(url);
     // resetPurgeTimer();
     final Bitmap bitmap = getBitmapFromCache(url);
 
     if (bitmap != null) {
-      Log.d(LOG_TAG, "download: cache hit");
+      if (DEBUG) Log.d(LOG_TAG, "download: cache hit");
       // Bitmap in cache: no download necessary.
       applyBitmapToImageView(bitmap, imageView);
     } else {
-      Log.d(LOG_TAG, "download: cache miss");
+      if (DEBUG) Log.d(LOG_TAG, "download: cache miss");
 
       // TODO(mikey): this should be done only in an adapter when convertView !=
       // null
@@ -157,13 +159,13 @@ public class ImageDownloader {
     mExecutor.submit(new Runnable() {
       @Override
       public void run() {
-        Log.d(LOG_TAG, "Download running for url=" + url);
+        if (DEBUG) Log.d(LOG_TAG, "Download running for url=" + url);
 
         Bitmap bitmap = getBitmapFromFileCache(url);
         if (bitmap != null) {
-          Log.d(LOG_TAG, "Found bitmap in file cache.");
+          if (DEBUG) Log.d(LOG_TAG, "Found bitmap in file cache.");
         } else {
-          Log.d(LOG_TAG, "Download running for url=" + url);
+          if (DEBUG) Log.d(LOG_TAG, "Download running for url=" + url);
           bitmap = downloadBitmap(url);
           addBitmapToFileCache(url, bitmap);
         }
@@ -181,7 +183,7 @@ public class ImageDownloader {
   }
 
   private void applyBitmapToImageView(Bitmap bitmap, ImageView imageView) {
-    Log.d(LOG_TAG, "Assigning bitmap=" + bitmap + " imageView=" + imageView);
+    if (DEBUG) Log.d(LOG_TAG, "Assigning bitmap=" + bitmap + " imageView=" + imageView);
     imageView.setBackgroundDrawable(null);
     imageView.setImageBitmap(bitmap);
   }
@@ -189,7 +191,7 @@ public class ImageDownloader {
   private void handleDownloadComplete(DownloadResult downloadResult) {
     final String url = downloadResult.url;
     final Bitmap bitmap = downloadResult.bitmap;
-    Log.d(LOG_TAG, "handleDownloadComplete: url=" + url + " bitmap=" + bitmap);
+    if (DEBUG) Log.d(LOG_TAG, "handleDownloadComplete: url=" + url + " bitmap=" + bitmap);
 
     final Set<ImageView> toRemove = Sets.newLinkedHashSet();
     synchronized (mDownloadRequests) {

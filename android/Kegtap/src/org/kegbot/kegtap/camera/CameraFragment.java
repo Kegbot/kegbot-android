@@ -19,6 +19,7 @@ package org.kegbot.kegtap.camera;
 import android.app.Activity;
 import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
+import android.hardware.Camera.Parameters;
 import android.hardware.Camera.PictureCallback;
 import android.hardware.Camera.ShutterCallback;
 import android.os.Bundle;
@@ -36,7 +37,6 @@ public class CameraFragment extends Fragment {
   private Preview mPreview;
   Camera mCamera;
   int mNumberOfCameras;
-  int mCameraCurrentlyLocked;
 
   // The first rear facing camera
   int mDefaultCameraId;
@@ -86,10 +86,8 @@ public class CameraFragment extends Fragment {
 
     // Open the default i.e. the first rear facing camera.
     mCamera = Camera.open(mDefaultCameraId);
-
-    mCameraCurrentlyLocked = mDefaultCameraId;
-    mPreview.setCamera(mCamera);
     setCameraDisplayOrientation(getActivity(), mDefaultCameraId, mCamera);
+    mPreview.setCamera(mCamera);
   }
 
   @Override
@@ -124,6 +122,7 @@ public class CameraFragment extends Fragment {
         degrees = 270;
         break;
     }
+    Log.d(TAG, "setCameraDisplayOrientation: degrees=" + degrees);
 
     int result;
     if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
@@ -132,7 +131,12 @@ public class CameraFragment extends Fragment {
     } else { // back-facing
       result = (info.orientation - degrees + 360) % 360;
     }
+    Parameters parameters = camera.getParameters();
+    parameters.set("orientation", "portrait");
+    parameters.set("rotation", 0);
+    camera.setParameters(parameters);
     camera.setDisplayOrientation(result);
+
   }
 
 }

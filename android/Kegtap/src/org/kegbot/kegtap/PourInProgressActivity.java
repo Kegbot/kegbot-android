@@ -57,6 +57,8 @@ public class PourInProgressActivity extends CoreActivity {
 
   private PreferenceHelper mPrefs;
 
+  private static final boolean DEBUG = false;
+
   private static final IntentFilter POUR_INTENT_FILTER = new IntentFilter(
       KegtapBroadcast.ACTION_POUR_START);
   static {
@@ -178,6 +180,7 @@ public class PourInProgressActivity extends CoreActivity {
     super.onResume();
     registerReceiver(mUpdateReceiver, POUR_INTENT_FILTER);
     handleIntent(getIntent());
+    schedulePicture();
   }
 
   @Override
@@ -241,7 +244,7 @@ public class PourInProgressActivity extends CoreActivity {
     long largestIdleTime = Long.MIN_VALUE;
 
     for (final Flow flow : allFlows) {
-      Log.d(TAG, "Refreshing with flow: " + flow);
+      if (DEBUG) Log.d(TAG, "Refreshing with flow: " + flow);
       if (flow.getState() == Flow.State.ACTIVE) {
         // Consider idle time (for warning) only for non-zero flows.
         if (flow.getTicks() > 0) {
@@ -330,13 +333,15 @@ public class PourInProgressActivity extends CoreActivity {
           return null;
         }
         final byte[] rawJpegData = params[0];
-        final File imageDir = getDir("pour-images", MODE_PRIVATE);
+        final File imageDir = getDir("pour-images", MODE_WORLD_READABLE);
         final String baseName = "pour-" + flow.getFlowId();
 
         File imageFile = new File(imageDir, baseName + ".jpg");
+        imageFile.setReadable(true, false);
         int ext = 2;
         while (imageFile.exists()) {
           imageFile = new File(imageDir, baseName + "-" + (ext++) + ".jpg");
+          imageFile.setReadable(true, false);
         }
 
         // Bitmap imageBitmap = BitmapFactory.decodeByteArray(rawJpegData, 0,

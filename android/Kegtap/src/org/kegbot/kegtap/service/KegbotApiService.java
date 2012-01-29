@@ -1,5 +1,6 @@
 package org.kegbot.kegtap.service;
 
+import java.io.File;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -197,7 +198,11 @@ public class KegbotApiService extends BackgroundService implements KegbotApi {
             Log.d(TAG, "Drink had images, trying to post them..");
             for (final String imagePath : pour.getImagesList()) {
               Log.d(TAG, "Uploading image: " + imagePath);
-              uploadDrinkImage(drink.getId(), imagePath);
+              try {
+                uploadDrinkImage(drink.getId(), imagePath);
+              } finally {
+                new File(imagePath).delete();
+              }
             }
           }
           processed = true;
@@ -213,11 +218,13 @@ public class KegbotApiService extends BackgroundService implements KegbotApi {
 
       } catch (InvalidProtocolBufferException e) {
         Log.w(TAG, "Error processing column: " + e);
+        processed = true;
       } catch (KegbotApiNotFoundError e) {
         Log.w(TAG, "Tap not found, dropping record");
         processed = true;
       } catch (KegbotApiException e) {
         Log.w(TAG, "Error processing column: " + e);
+        processed = true;
       }
 
       if (processed) {

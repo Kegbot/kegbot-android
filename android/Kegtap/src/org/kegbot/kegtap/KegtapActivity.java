@@ -145,15 +145,15 @@ public class KegtapActivity extends CoreActivity {
 
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
-    switch (item.getItemId()) {
-      case R.id.settings:
-        SettingsActivity.startSettingsActivity(this);
-        return true;
-      case android.R.id.home:
-        // TODO: navigate up
-        return true;
-      default:
-        return super.onOptionsItemSelected(item);
+    final int itemId = item.getItemId();
+    if (itemId == R.id.settings) {
+      SettingsActivity.startSettingsActivity(this);
+      return true;
+    } else if (itemId == android.R.id.home) {
+      // TODO: navigate up
+      return true;
+    } else {
+      return super.onOptionsItemSelected(item);
     }
   }
 

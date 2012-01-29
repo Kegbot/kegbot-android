@@ -32,8 +32,8 @@ import android.os.IBinder;
 import android.util.Log;
 
 import com.google.common.collect.Sets;
-import com.hoho.android.usbserial.UsbSerialProber;
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
+import com.hoho.android.usbserial.driver.UsbSerialProber;
 import com.hoho.android.usbserial.util.HexDump;
 
 /**
@@ -177,7 +177,7 @@ public class KegboardService extends Service {
 
   private void probeForSerialDevice() {
     Log.d(TAG, "Probing for a serial device");
-    mSerialDevice = UsbSerialProber.accquire(mUsbManager);
+    mSerialDevice = UsbSerialProber.acquire(mUsbManager);
     if (mSerialDevice != null) {
       Log.d(TAG, "Found a device: " + mSerialDevice);
       final UsbDevice usbDevice = mSerialDevice.getDevice();

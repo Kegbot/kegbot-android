@@ -45,7 +45,7 @@ public class SessionStatsFragment extends Fragment {
 
   private View updateSessionView(View view, SessionDetail sessionDetail) {
     if (sessionDetail == null) {
-      view.setVisibility(View.INVISIBLE);
+      view.setVisibility(View.GONE);
       return view;
     }
     view.setVisibility(View.VISIBLE);

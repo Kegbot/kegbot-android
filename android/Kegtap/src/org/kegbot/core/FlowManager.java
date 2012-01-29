@@ -182,6 +182,20 @@ public class FlowManager {
     return mDefaultIdleTimeMillis;
   }
 
+  public Flow handleNewTicks(final String tapName, final int newTicks) {
+    final Tap tap = mTapManager.getTapForMeterName(tapName);
+    if (tap == null || tapName == null) {
+      Log.d(TAG, "Dropping activity for unknown tap: " + tapName);
+      return null;
+    }
+    final Integer original = mLastTapReading.get(tap);
+    int ticks = newTicks;
+    if (original != null) {
+      ticks += original.intValue();
+    }
+    return handleMeterActivity(tapName, ticks);
+  }
+
   public Flow handleMeterActivity(final String tapName, final int ticks) {
     Log.d(TAG, "handleMeterActivity: " + tapName + "=" + ticks);
     final Tap tap = mTapManager.getTapForMeterName(tapName);
