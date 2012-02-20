@@ -1,4 +1,4 @@
-Google Analytics Android SDK version 1.3.
+Google Analytics Android SDK version 1.4.2.
 
 Copyright 2009 Google, Inc. All rights reserved.
 
@@ -19,7 +19,7 @@ in AndroidManifest.xml:
 
 An Analytics tracking 'visit' is defined as the events and page views generated
 between calls to startNewSession() and stopSession() on the
-GoogleAnalyticsTracker.  Everytime startNewSession() is called a new visit is
+GoogleAnalyticsTracker.  Every time startNewSession() is called a new visit is
 started. You should call stopSession() on GoogleAnalyticsTracker when your
 application is closing.
 
@@ -85,31 +85,38 @@ RUNTIME REQUIREMENTS:
 Android OS 1.5+
 
 ================================================================================
+DOCUMENTATION AND SAMPLES:
+
+You can find the latest, detailed information about the SDK as well as
+download examples using the SDK at:
+http://code.google.com/mobile/analytics/docs/android/
+
+================================================================================
 PACKAGING LIST:
 
-Library
-|-- libGoogleAnalytics.jar
-|-- ReadMe.text
-
-
-Sample:
-|-- AndroidManifest.xml
-|-- libs
-|   `-- copy-libGoogleAnalytics-jar-into-here.txt
-|-- res
-|   |-- drawable
-|   |   `-- icon.png
-|   |-- layout
-|   |   `-- main.xml
-|   `-- values
-|       `-- strings.xml
-`-- src
-    `-- com
-        `-- google
-             `-- android
-                  `-- apps
-                       `-- analytics
-                            `-- sample
-                                `-- TestActivity.java
+GoogleAnalytics
+    libGoogleAnalytics.jar
+    ReadMe.txt
+    sample
+        AndroidManifest.xml
+        build.xml
+        default.properties
+        libs
+            copy-libGoogleAnalytics-jar-into-here.txt
+        res
+            drawable
+                icon.png
+            layout
+                main.xml
+            values
+                strings.xml
+        src
+            com
+                google
+                    android
+                        apps
+                            analytics
+                                sample
+                                    TestActivity.java
 
 ================================================================================
