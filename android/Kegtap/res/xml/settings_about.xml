@@ -4,11 +4,11 @@
   <Preference
     android:key="build_date"
     android:title="Build Date"
-    android:summary="2011-09-05 13:22">
+    android:summary="@string/build_date">
   </Preference>
     <Preference
     android:key="copyright"
     android:title="Legal"
-    android:summary="Copyright Mike Wakerly 2011 - Not For Redistribution.">
+    android:summary="Copyright Mike Wakerly 2011-2012 - Not For Redistribution.">
   </Preference>
 </PreferenceScreen>
