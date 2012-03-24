@@ -216,11 +216,6 @@ public class EventListFragment extends ListFragment {
     }
 
     @Override
-    protected void onPreExecute() {
-      super.onPreExecute();
-    }
-
-    @Override
     protected void onPostExecute(SystemEventDetailSet result) {
       Log.d(LOG_TAG, "Events reloaded.");
       if (result != null) {
