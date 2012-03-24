@@ -204,7 +204,11 @@ public class EventListFragment extends ListFragment {
     @Override
     protected SystemEventDetailSet doInBackground(Void... params) {
       try {
-        return mApi.getRecentEvents(mLastEventId);
+        if (mLastEventId <= 0) {
+          return mApi.getRecentEvents();
+        } else {
+          return mApi.getRecentEvents(mLastEventId);
+        }
       } catch (KegbotApiException e) {
         Log.w(LOG_TAG, "Could not load events.", e);
         return null;

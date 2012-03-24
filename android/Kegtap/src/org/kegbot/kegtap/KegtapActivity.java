@@ -122,7 +122,7 @@ public class KegtapActivity extends CoreActivity {
     handleIntent();
     initializeUi();
     mTracker.trackPageView("/KegtapActivityOnResume");
-    mHandler.postDelayed(mRefreshRunnable, 10000);
+    mHandler.post(mRefreshRunnable);
   }
 
   @Override
