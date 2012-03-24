@@ -38,7 +38,7 @@ public class TapListFragment extends ListFragment {
 
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    final View view = inflater.inflate(R.layout.tap_status_fragment_layout, container, false);
+    final View view = inflater.inflate(R.layout.tap_detail, container, false);
     if (mTapDetail != null) {
       buildTapView(view, mTapDetail);
     }
