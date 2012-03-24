@@ -1,111 +1,99 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest
-  xmlns:android="http://schemas.android.com/apk/res/android"
-  package="org.kegbot.kegtap"
-  android:versionCode="1"
-  android:versionName="1.0">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.kegbot.kegtap"
+    android:versionCode="1"
+    android:versionName="1.0" >
 
-  <uses-sdk
-    android:targetSdkVersion="12"
-    android:minSdkVersion="12"/>
+    <uses-sdk
+        android:minSdkVersion="12"
+        android:targetSdkVersion="12" />
 
-  <uses-permission
-    android:name="android.permission.INTERNET" />
- 
-  <uses-permission
-    android:name="android.permission.CAMERA" />
-  <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"></uses-permission>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" >
+    </uses-permission>
 
-  <application
-    android:icon="@drawable/icon"
-    android:logo="@drawable/kegbot_logo"
-    android:label="@string/app_name"
-    android:theme="@android:style/Theme.Holo"
-    android:hardwareAccelerated="true">
-    
-    <!-- ########## -->
-    <!-- ACTIVITIES -->
-    <!-- ########## -->
+    <application
+        android:hardwareAccelerated="true"
+        android:icon="@drawable/icon"
+        android:label="@string/app_name"
+        android:logo="@drawable/kegbot_logo"
+        android:theme="@android:style/Theme.Holo" >
 
-    <!-- KegtapActivity -->
-    <activity
-      android:name=".KegtapActivity"
-      android:launchMode="singleTop"
-      android:label="@string/app_name"
-      android:windowSoftInputMode="stateAlwaysHidden|adjustPan">
-      <intent-filter>
-        <action
-          android:name="android.intent.action.MAIN" />
-        <category
-          android:name="android.intent.category.DEFAULT" />
-        <category
-          android:name="android.intent.category.LAUNCHER" />
-        <action
-          android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
-        <action
-          android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
-      </intent-filter>
-     <meta-data android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
-         android:resource="@xml/device_filter" />
-    </activity>
+        <!-- ########## -->
+        <!-- ACTIVITIES -->
+        <!-- ########## -->
 
-    <activity
-      android:name=".PourInProgressActivity"
-      android:launchMode="singleTop"
-      android:label="@string/app_name">
-    </activity>
-    <activity
-      android:name=".DrinkerSelectActivity"
-      android:launchMode="singleTop"
-      android:noHistory="true"
-      android:label="@string/app_name">
-    </activity>
 
-    <receiver
-      android:name=".PourInProgressReceiver">
-      <intent-filter android:priority="1">
-        <action
-          android:name="org.kegbot.action.POUR_START" />
-  
-      </intent-filter>
-    </receiver>
-    
-    <receiver
-      android:name=".UserAuthedReceiver">
-      <intent-filter android:priority="1">
-        <action
-          android:name="org.kegbot.action.USER_AUTHED" />
-  
-      </intent-filter>
-    </receiver>
-   
+        <!-- KegtapActivity -->
+        <activity
+            android:name=".KegtapActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTop"
+            android:screenOrientation="landscape"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustPan" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-    <!-- SettingsActivity -->
-    <activity
-      android:name=".SettingsActivity"
-      android:label="@string/settings_name" />
-      
-    <!-- ######## -->
-    <!-- SERVICES -->
-    <!-- ######## -->
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.LAUNCHER" />
 
-    <!-- KegbotCoreService -->
-    <service
-      android:name=".service.KegbotCoreService" />
+                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+                <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
+            </intent-filter>
 
-    <!-- KegbotApiService -->
-    <service
-      android:name=".service.KegbotApiService" />
+            <meta-data
+                android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
+                android:resource="@xml/device_filter" />
+        </activity>
+        <activity
+            android:name=".PourInProgressActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTop"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".DrinkerSelectActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTop"
+            android:noHistory="true"
+            android:screenOrientation="landscape" >
+        </activity>
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/settings_name" />
 
-    <!-- KegbotHardwareService -->
-    <service
-      android:name=".service.KegbotHardwareService" />
+        <!-- ################### -->
+        <!-- BROADCAST RECEIVERS -->
+        <!-- ################### -->
 
-    <!-- KegboardService -->
-    <service
-      android:name=".service.KegboardService">
-    </service>
+        <receiver android:name=".PourInProgressReceiver" >
+            <intent-filter android:priority="1" >
+                <action android:name="org.kegbot.action.POUR_START" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name=".UserAuthedReceiver" >
+            <intent-filter android:priority="1" >
+                <action android:name="org.kegbot.action.USER_AUTHED" />
+            </intent-filter>
+        </receiver>
 
-  </application>
+        <!-- ######## -->
+        <!-- SERVICES -->
+        <!-- ######## -->
 
-</manifest> 
+
+        <!-- KegbotCoreService -->
+        <service android:name=".service.KegbotCoreService" />
+
+        <!-- KegbotApiService -->
+        <service android:name=".service.KegbotApiService" />
+
+        <!-- KegbotHardwareService -->
+        <service android:name=".service.KegbotHardwareService" />
+
+        <!-- KegboardService -->
+        <service android:name=".service.KegboardService" >
+        </service>
+    </application>
+
+</manifest>
