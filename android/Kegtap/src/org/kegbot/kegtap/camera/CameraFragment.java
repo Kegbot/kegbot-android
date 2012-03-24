@@ -67,6 +67,7 @@ public class CameraFragment extends Fragment {
 
   public void takePicture(final ShutterCallback shutter, final PictureCallback raw,
       final PictureCallback jpeg) {
+    mCamera.cancelAutoFocus();
     mCamera.autoFocus(new Camera.AutoFocusCallback() {
       @Override
       public void onAutoFocus(boolean success, Camera camera) {

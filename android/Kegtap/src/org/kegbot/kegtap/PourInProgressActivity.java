@@ -98,14 +98,12 @@ public class PourInProgressActivity extends CoreActivity {
     public void run() {
       if (mPictureSeconds > 0) {
         mPictureButton.setClickable(false);
-        mPictureButton.setEnabled(false);
         mPictureButton.setText(mPictureSeconds + " ...");
         mPictureSeconds -= 1;
         mHandler.postDelayed(PICTURE_COUNTDOWN_RUNNABLE, 1000);
       } else {
         takePicture();
         mPictureButton.setClickable(true);
-        mPictureButton.setEnabled(true);
         mPictureButton.setText("Take Picture");
       }
     }
@@ -228,11 +226,8 @@ public class PourInProgressActivity extends CoreActivity {
 
   private void schedulePicture() {
     mPictureSeconds = 3;
+    mHandler.removeCallbacks(PICTURE_COUNTDOWN_RUNNABLE);
     mHandler.post(PICTURE_COUNTDOWN_RUNNABLE);
-  }
-
-  private void onTakePictureButton() {
-    schedulePicture();
   }
 
   private void refreshFlows() {
@@ -311,6 +306,7 @@ public class PourInProgressActivity extends CoreActivity {
     final PictureCallback jpeg = new PictureCallback() {
       @Override
       public void onPictureTaken(byte[] data, Camera camera) {
+        camera.startPreview();
         Log.d(TAG, "camera: jpeg");
         doSaveJpeg(data);
       }
