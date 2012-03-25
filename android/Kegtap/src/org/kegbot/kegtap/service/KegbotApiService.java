@@ -10,6 +10,7 @@ import org.kegbot.api.KegbotApiImpl;
 import org.kegbot.api.KegbotApiNotFoundError;
 import org.kegbot.core.Flow;
 import org.kegbot.kegtap.core.backend.LocalDbHelper;
+import org.kegbot.kegtap.util.PreferenceHelper;
 import org.kegbot.proto.Api.DrinkDetail;
 import org.kegbot.proto.Api.DrinkDetailHtmlSet;
 import org.kegbot.proto.Api.DrinkSet;
@@ -36,12 +37,14 @@ import org.kegbot.proto.Models.User;
 
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Binder;
 import android.os.IBinder;
 import android.os.SystemClock;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.google.protobuf.AbstractMessage;
@@ -67,6 +70,7 @@ public class KegbotApiService extends BackgroundService implements KegbotApi {
   private KegbotApiImpl mApi;
 
   private SQLiteOpenHelper mLocalDbHelper;
+  private SharedPreferences mPreferences;
 
   /**
    * Current state of this service with respect to its backend.
@@ -140,6 +144,7 @@ public class KegbotApiService extends BackgroundService implements KegbotApi {
 
     mApi = KegbotApiImpl.getSingletonInstance();
     mApi.setListener(mApiListener);
+    mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
     //mApi.setApiKey("");
   }
 
@@ -189,19 +194,35 @@ public class KegbotApiService extends BackgroundService implements KegbotApi {
       try {
         final AbstractMessage record = LocalDbHelper.getCurrentRow(db, cursor);
         if (record instanceof PendingPour) {
-          Log.d(TAG, "Posting pour");
           final PendingPour pour = (PendingPour) record;
-          final Drink drink = recordDrink(pour.getDrinkRequest());
-          Log.d(TAG, "Drink posted: " + drink);
+          final RecordDrinkRequest request = pour.getDrinkRequest();
+
+          final PreferenceHelper helper = new PreferenceHelper(mPreferences);
+          final long minVolume = helper.getMinimumVolumeMl();
+
+          final Drink drink;
+          if (request.getVolumeMl() < minVolume) {
+            Log.d(TAG, "Not recording drink: "
+                + "volume (" + request.getVolumeMl() + " mL) is less than minimum "
+                + "(" + minVolume + " mL)");
+            drink = null;
+          } else {
+            Log.d(TAG, "Posting pour");
+            drink = recordDrink(request);
+            Log.d(TAG, "Drink posted: " + drink);
+          }
 
           if (pour.getImagesCount() > 0) {
             Log.d(TAG, "Drink had images, trying to post them..");
             for (final String imagePath : pour.getImagesList()) {
-              Log.d(TAG, "Uploading image: " + imagePath);
               try {
-                uploadDrinkImage(drink.getId(), imagePath);
+                if (drink != null) {
+                  Log.d(TAG, "Uploading image: " + imagePath);
+                  uploadDrinkImage(drink.getId(), imagePath);
+                }
               } finally {
                 new File(imagePath).delete();
+                Log.d(TAG, "Deleted " + imagePath);
               }
             }
           }

@@ -345,14 +345,6 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
    */
   private void recordDrinkForFlow(final Flow ended) {
     Log.d(TAG, "Recording dring for flow: " + ended);
-    final PreferenceHelper helper = new PreferenceHelper(mPreferences);
-    final long minVolume = helper.getMinimumVolumeMl();
-    if (ended.getVolumeMl() < minVolume) {
-      Log.d(TAG, "Not recording flow: "
-          + "volume (" + ended.getVolumeMl() + " mL) is less than minimum "
-          + "(" + minVolume + " mL)");
-      return;
-    }
     mApiService.recordDrinkAsync(ended);
   }
 
