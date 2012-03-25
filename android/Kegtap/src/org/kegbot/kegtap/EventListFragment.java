@@ -86,7 +86,6 @@ public class EventListFragment extends ListFragment {
       }
 
       private void formatEvent(SystemEventDetail eventDetail, View view) {
-        Log.i(LOG_TAG, "Formatting event:" + eventDetail.getEvent().getId());
         final SystemEvent event = eventDetail.getEvent();
         // Common: image.
         final ImageView icon = (ImageView) view.findViewById(R.id.eventIcon);
@@ -95,7 +94,7 @@ public class EventListFragment extends ListFragment {
           icon.setVisibility(View.VISIBLE);
           icon.setImageBitmap(null);
 
-          // Default to unknown drinker, may be immediately replaced by downlaoder.
+          // Default to unknown drinker, may be immediately replaced by downloader.
           icon.setBackgroundResource(R.drawable.unknown_drinker);
           mImageDownloader.download(imageUrl, icon);
         } else {
@@ -174,8 +173,6 @@ public class EventListFragment extends ListFragment {
 
         return null;
       }
-
-
     };
 
     AnimationSet set = new AnimationSet(true);

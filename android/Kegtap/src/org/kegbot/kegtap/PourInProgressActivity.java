@@ -1,10 +1,11 @@
 package org.kegbot.kegtap;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Date;
 
 import org.kegbot.core.Flow;
 import org.kegbot.core.FlowManager;
@@ -19,6 +20,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.CompressFormat;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
 import android.hardware.Camera.ShutterCallback;
@@ -189,11 +194,6 @@ public class PourInProgressActivity extends CoreActivity {
   }
 
   @Override
-  public void onStop() {
-    super.onStop();
-  }
-
-  @Override
   public void onBackPressed() {
     if (!mFlowManager.getAllActiveFlows().isEmpty()) {
       endAllFlows();
@@ -216,11 +216,6 @@ public class PourInProgressActivity extends CoreActivity {
     if (KegtapBroadcast.ACTION_POUR_UPDATE.equals(action)
         || KegtapBroadcast.ACTION_POUR_START.equals(action)) {
       refreshFlows();
-    }
-
-    if (KegtapBroadcast.ACTION_POUR_START.equals(action)) {
-      // TODO(mikey): Do this safely.
-      // schedulePicture();
     }
   }
 
@@ -296,41 +291,49 @@ public class PourInProgressActivity extends CoreActivity {
       }
     };
 
-    final PictureCallback raw = new PictureCallback() {
-      @Override
-      public void onPictureTaken(byte[] data, Camera camera) {
-        Log.d(TAG, "camera: raw");
-      }
-    };
-
     final PictureCallback jpeg = new PictureCallback() {
       @Override
       public void onPictureTaken(byte[] data, Camera camera) {
         camera.startPreview();
-        Log.d(TAG, "camera: jpeg");
+        Log.d(TAG, "camera jpeg: " + data);
         doSaveJpeg(data);
       }
     };
 
-    mCameraFragment.takePicture(shutter, raw, jpeg);
+    mCameraFragment.takePicture(shutter, null, jpeg);
   }
 
   private void doSaveJpeg(final byte[] data) {
-    new ImageSaveTask().execute(data);
+    new ImageSaveTask().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, data);
   }
 
   class ImageSaveTask extends AsyncTask<byte[], Void, Void> {
 
     @Override
     protected Void doInBackground(byte[]... params) {
+      byte[] data = params[0];
+      final int rotation = mCameraFragment.getDisplayOrientation();
+
+      Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+      if (rotation != 0) {
+        Log.w(TAG, "ImageSaveTask: rotation=" + rotation);
+
+        Matrix matrix = new Matrix();
+        matrix.postRotate(rotation);
+        bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix,
+            true);
+      }
+
       for (final Flow flow : mFlowManager.getAllActiveFlows()) {
         if (flow == null) {
-          Log.w(TAG, "ImageSaveTask for empty flow.");
+          Log.d(TAG, "ImageSaveTask for empty flow.");
           return null;
         }
-        final byte[] rawJpegData = params[0];
-        final File imageDir = getDir("pour-images", MODE_WORLD_READABLE);
-        final String baseName = "pour-" + flow.getFlowId();
+
+        final File imageDir = getCacheDir();
+        final Date pourDate = new Date(flow.getStartTime());
+        final SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd-HHmmss");
+        final String baseName = "pour-" + format.format(pourDate) + "-" + flow.getFlowId();
 
         File imageFile = new File(imageDir, baseName + ".jpg");
         imageFile.setReadable(true, false);
@@ -340,17 +343,12 @@ public class PourInProgressActivity extends CoreActivity {
           imageFile.setReadable(true, false);
         }
 
-        // Bitmap imageBitmap = BitmapFactory.decodeByteArray(rawJpegData, 0,
-        // rawJpegData.length);
-
         try {
           FileOutputStream fos = new FileOutputStream(imageFile);
-          BufferedOutputStream bos = new BufferedOutputStream(fos);
-          bos.write(rawJpegData);
-          bos.flush();
-          bos.close();
+          bitmap.compress(CompressFormat.JPEG, 90, fos);
+          fos.close();
         } catch (IOException e) {
-          Log.e(TAG, "Could not save image.", e);
+          Log.w(TAG, "Could not save image.", e);
           return null;
         }
 
