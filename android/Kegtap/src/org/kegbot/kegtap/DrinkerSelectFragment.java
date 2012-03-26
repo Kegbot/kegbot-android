@@ -89,8 +89,6 @@ public class DrinkerSelectFragment extends Fragment {
       }
 
       private void applyUser(UserDetail userDetail, View view) {
-        Log.d(LOG_TAG, "Binding user " + userDetail.getUser().getUsername()
-            + " to view " + view);
         final ImageView icon = (ImageView) view.findViewById(R.id.drinkerIcon);
         final String imageUrl = userDetail.getUser().getImage().getUrl();
         icon.setImageBitmap(null);
