@@ -11,14 +11,10 @@ import org.kegbot.proto.Api.TapDetail;
 import org.kegbot.proto.Api.TapDetailSet;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.hardware.usb.UsbManager;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -27,10 +23,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 
 import com.google.android.apps.analytics.GoogleAnalyticsTracker;
-import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
 public class KegtapActivity extends CoreActivity {
@@ -42,36 +36,12 @@ public class KegtapActivity extends CoreActivity {
   private KegbotApi mApi;
 
   private MyAdapter mTapStatusAdapter;
-
   private ViewPager mTapStatusPager;
-
   private List<TapDetail> mTapDetails = Lists.newArrayList();
-
   private SessionStatsFragment mSession;
-
-  private SharedPreferences mPreferences;
   private PreferenceHelper mPrefsHelper;
-
   private final Handler mHandler = new Handler();
-
   private GoogleAnalyticsTracker mTracker;
-
-  private final OnSharedPreferenceChangeListener mPreferenceListener = new OnSharedPreferenceChangeListener() {
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-      if (PreferenceHelper.KEY_SELECTED_KEGBOT.equals(key)) {
-        initializeUi();
-      }
-    }
-  };
-
-  private final OnClickListener mOnBeerMeClickedListener = new OnClickListener() {
-    @Override
-    public void onClick(View v) {
-      final Intent intent = new Intent(KegtapActivity.this, DrinkerSelectActivity.class);
-      startActivity(intent);
-    }
-  };
 
   private final Runnable mRefreshRunnable = new Runnable() {
     @Override
@@ -92,8 +62,7 @@ public class KegtapActivity extends CoreActivity {
 
     mTracker.trackPageView("/KegtapActivityOnCreate");
 
-    mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-    mPrefsHelper = new PreferenceHelper(mPreferences);
+    mPrefsHelper = new PreferenceHelper(this);
 
     mTapStatusAdapter = new MyAdapter(getSupportFragmentManager());
 
@@ -112,7 +81,7 @@ public class KegtapActivity extends CoreActivity {
   @Override
   public void onStart() {
     super.onStart();
-    mPreferences.registerOnSharedPreferenceChangeListener(mPreferenceListener);
+    mApi = KegbotApiImpl.getSingletonInstance();
     initializeUi();
   }
 
@@ -121,6 +90,7 @@ public class KegtapActivity extends CoreActivity {
     super.onResume();
     handleIntent();
     initializeUi();
+
     mTracker.trackPageView("/KegtapActivityOnResume");
     mHandler.post(mRefreshRunnable);
   }
@@ -129,12 +99,6 @@ public class KegtapActivity extends CoreActivity {
   protected void onPause() {
     mHandler.removeCallbacks(mRefreshRunnable);
     super.onPause();
-  }
-
-  @Override
-  public void onStop() {
-    super.onStop();
-    mPreferences.unregisterOnSharedPreferenceChangeListener(mPreferenceListener);
   }
 
   @Override
@@ -183,21 +147,9 @@ public class KegtapActivity extends CoreActivity {
    * If so, loads from last known kegbot.
    */
   private void initializeUi() {
-    String username = mPrefsHelper.getUsername();
-    if (Strings.isNullOrEmpty(username)) {
-      SettingsActivity.startSettingsActivity(this);
-    } else {
-      // getActionBar().setTitle(mPrefsHelper.getKegbotName());
-      updateApiUrl(mPrefsHelper.getKegbotUrl());
-    }
-  }
-
-  private void updateApiUrl(Uri apiUrl) {
     mApi = KegbotApiImpl.getSingletonInstance();
-    String username = mPrefsHelper.getUsername();
-    String password = mPrefsHelper.getPassword();
-    mApi.setAccountCredentials(username, password);
-    mApi.setApiUrl(apiUrl.toString());
+    mApi.setApiUrl(mPrefsHelper.getKegbotUrl().toString());
+    mApi.setApiKey(mPrefsHelper.getApiKey());
     loadUiFragments();
   }
 

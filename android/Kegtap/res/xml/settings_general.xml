@@ -1,35 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen
-  xmlns:android="http://schemas.android.com/apk/res/android">
-  <EditTextPreference
-    android:key="kegbot_url"
-    android:title="Kegbot API URL"
-    android:inputType="textUri"
-    android:summary="API URL of the Kegbot system (eg http://kegbot.example.com/api)">
-  </EditTextPreference>
-  <EditTextPreference
-    android:key="username"
-    android:title="Username"
-    android:inputType="textWebEmailAddress"
-    android:summary="Admin Username for accessing Kegbot">
-  </EditTextPreference>
-  <EditTextPreference
-    android:key="password"
-    android:title="Password"
-    android:inputType="textWebPassword"
-    android:summary="Admin password for accessing Kegbot">
-  </EditTextPreference>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
-  <CheckBoxPreference
-    android:key="use_manager_pin"
-    android:title="Enable Manager Pin"
-    android:summary="Require the manager pin for certain operations">
-  </CheckBoxPreference>
-  <EditTextPreference
-    android:key="manager_pin"
-    android:title="Manager Pin"
-    android:inputType="numberPassword"
-    android:summary="The manager pin value">
-  </EditTextPreference>
+    <Preference
+        android:key="run_setup"
+        android:summary="Adjust Kegbot URL, username, etc."
+        android:title="Run Setup Wizard" >
+    </Preference>
+
+    <CheckBoxPreference
+        android:key="use_manager_pin"
+        android:summary="Require the manager pin for certain operations"
+        android:title="Enable Manager Pin" >
+    </CheckBoxPreference>
+
+    <EditTextPreference
+        android:inputType="numberPassword"
+        android:key="manager_pin"
+        android:summary="The manager pin value"
+        android:title="Manager Pin" >
+    </EditTextPreference>
 
 </PreferenceScreen>

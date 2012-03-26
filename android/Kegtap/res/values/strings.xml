@@ -16,5 +16,20 @@
     <string name="picture_countdown_3">3...</string>
     <string name="picture_countdown_2">2...</string>
     <string name="picture_countdown_1">1...</string>
+    <string name="setup_welcome_title">Welcome to Kegbot!</string>
+    <string name="setup_welcome_description">Looks like this is your first time running Kegbot. Cool!\n\nWe\'re going to need a little information to get started. Tap the &quot;Next&quot; button below to continue.</string>
+    <string name="setup_api_url_title">Kegbot API URL</string>
+    <string name="setup_api_url_description">We need to talk to your Kegbot system in order to load drinkers, tap status, and other information. Please enter the URL of your Kegbot system.</string>
+    <string name="setup_api_url_api_name">API URL</string>
+    <string name="setup_api_url_api_description">Enter the API URL. &lt;b&gt;Example:&lt;/b&gt; http://example.com/api/</string>
+    <string name="setup_dialog_validate_title">Verifying ...</string>
+    <string name="setup_dialog_validate_description">Verifying information, please wait ...</string>
+    <string name="setup_log_in_title">Log In</string>
+    <string name="setup_log_in_description">In order to talk to your Kegbot server, the Kegtab application needs an API key.\n\nPlease log in with a manager account in order to accquire an API key for this application.</string>
+    <string name="setup_finished_title">Done!</string>
+    <string name="setup_finished_description">You\'re all set!\n\nYour Kegtab is now active. Press Next to finish. Please drink responsibly.</string>
+    <string name="setup_run_core_title">Run Core</string>
+    <string name="setup_run_core_description">Do you want to run this system as a Kegbot Core?\n\nWhen running as the <i>Kegbot Core</i>, the Kegtab application will read hardware and report drinks back to your Kegbot system.\n\nIf you say No, Kegtab will run in browser-only mode, allowing you to look at your Kegbot data. Most people should say Yes.</string>
+    <string name="setup_run_core_name">Run Core?</string>
     
 </resources>

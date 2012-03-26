@@ -23,13 +23,18 @@ import org.kegbot.proto.Models.Image;
 import org.kegbot.proto.Models.ThermoLog;
 import org.kegbot.proto.Models.User;
 
+/**
+ * High-level Kegbot API interface.
+ */
 public interface KegbotApi {
-
-  public boolean setAccountCredentials(String username, String password);
 
   public void setApiUrl(String apiUrl);
 
   public void setApiKey(String apiKey);
+
+  public void login(String username, String password) throws KegbotApiException;
+
+  public String getApiKey() throws KegbotApiException;
 
   /**
    * Returns all kegs known to the system.

@@ -3,6 +3,7 @@ package org.kegbot.kegtap;
 import java.util.List;
 
 import org.kegbot.core.FlowManager;
+import org.kegbot.kegtap.setup.SetupActivity;
 import org.kegbot.kegtap.util.PreferenceHelper;
 
 import android.app.ActionBar;
@@ -16,7 +17,6 @@ import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
-import android.preference.PreferenceManager;
 import android.view.MenuItem;
 
 public class SettingsActivity extends PreferenceActivity {
@@ -32,6 +32,16 @@ public class SettingsActivity extends PreferenceActivity {
     public void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
       addPreferencesFromResource(R.xml.settings_general);
+
+      findPreference("run_setup").setOnPreferenceClickListener(new OnPreferenceClickListener() {
+        @Override
+        public boolean onPreferenceClick(Preference preference) {
+          final Intent setupIntent = new Intent(getActivity(), SetupActivity.class);
+          startActivity(setupIntent);
+          return true;
+        }
+      });
+
       handleEnableManagerPinChanged();
       final ActionBar actionBar = getActivity().getActionBar();
       if (actionBar != null) {
@@ -66,13 +76,14 @@ public class SettingsActivity extends PreferenceActivity {
 
       handleCoreEnabledChanged();
 
-      findPreference("run_core").setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-        @Override
-        public boolean onPreferenceChange(Preference preference, Object newValue) {
-          handleCoreEnabledChanged();
-          return true;
-        }
-      });
+      findPreference(PreferenceHelper.KEY_RUN_CORE).setOnPreferenceChangeListener(
+          new OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+              handleCoreEnabledChanged();
+              return true;
+            }
+          });
 
       findPreference("controller_type").setOnPreferenceChangeListener(
           new OnPreferenceChangeListener() {
@@ -87,8 +98,7 @@ public class SettingsActivity extends PreferenceActivity {
           new OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-              final PreferenceHelper helper = new PreferenceHelper(PreferenceManager
-                  .getDefaultSharedPreferences(getActivity()));
+              final PreferenceHelper helper = new PreferenceHelper(getActivity());
               FlowManager.getSingletonInstance()
                   .setDefaultIdleTimeMillis(helper.getIdleTimeoutMs());
               return true;
@@ -97,7 +107,7 @@ public class SettingsActivity extends PreferenceActivity {
     }
 
     private void handleCoreEnabledChanged() {
-      final CheckBoxPreference enablePref = (CheckBoxPreference) findPreference("run_core");
+      final CheckBoxPreference enablePref = (CheckBoxPreference) findPreference(PreferenceHelper.KEY_RUN_CORE);
       boolean enabled = enablePref.isChecked();
       findPreference("controller_type").setEnabled(enabled);
 
@@ -137,18 +147,6 @@ public class SettingsActivity extends PreferenceActivity {
       default:
         return super.onOptionsItemSelected(item);
     }
-  }
-
-  @Override
-  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    // TODO Auto-generated method stub
-    super.onActivityResult(requestCode, resultCode, data);
-  }
-
-  @Override
-  protected void onCreate(Bundle savedInstanceState) {
-    // TODO Auto-generated method stub
-    super.onCreate(savedInstanceState);
   }
 
   public static void startSettingsActivity(Context context) {

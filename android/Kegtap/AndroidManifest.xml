@@ -12,6 +12,7 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" >
     </uses-permission>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <application
         android:hardwareAccelerated="true"
@@ -25,9 +26,8 @@
         <!-- ########## -->
 
 
-        <!-- KegtapActivity -->
         <activity
-            android:name=".KegtapActivity"
+            android:name=".KegtapLauncherActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
             android:screenOrientation="sensorLandscape"
@@ -45,6 +45,19 @@
             <meta-data
                 android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
                 android:resource="@xml/device_filter" />
+        </activity>
+        <activity
+            android:name=".KegtapActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTop"
+            android:screenOrientation="sensorLandscape"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustPan" >
+        </activity>
+        <activity
+            android:name=".setup.SetupActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTop"
+            android:screenOrientation="sensorLandscape">
         </activity>
         <activity
             android:name=".PourInProgressActivity"

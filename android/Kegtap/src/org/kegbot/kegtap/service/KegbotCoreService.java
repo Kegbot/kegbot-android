@@ -64,7 +64,7 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
   private final ConfigurationManager mConfigManager = ConfigurationManager.getSingletonInstance();
 
   private ExecutorService mExecutorService;
-  private SharedPreferences mPreferences;
+  private PreferenceHelper mPreferences;
 
   private KegbotApiService mApiService;
   private boolean mApiServiceBound;
@@ -126,7 +126,10 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
   private final OnSharedPreferenceChangeListener mPreferenceListener = new OnSharedPreferenceChangeListener() {
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-      updateFromPreferences();
+      if (PreferenceHelper.KEY_API_KEY.equals(key) || PreferenceHelper.KEY_RUN_CORE.equals(key)) {
+        Log.d(TAG, "Shared prefs changed, relaunching core; key=" + key);
+        updateFromPreferences();
+      }
     }
   };
 
@@ -242,18 +245,19 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
   @Override
   public void onCreate() {
     super.onCreate();
-    mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-    mPreferences.registerOnSharedPreferenceChangeListener(mPreferenceListener);
-    final PreferenceHelper helper = new PreferenceHelper(mPreferences);
-    mFlowManager.setDefaultIdleTimeMillis(helper.getIdleTimeoutMs());
-
+    mPreferences = new PreferenceHelper(getApplicationContext());
+    mFlowManager.setDefaultIdleTimeMillis(mPreferences.getIdleTimeoutMs());
     Log.d(TAG, "onCreate()");
     updateFromPreferences();
+    PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
+        .registerOnSharedPreferenceChangeListener(mPreferenceListener);
   }
 
   @Override
   public void onDestroy() {
     Log.d(TAG, "onDestroy()");
+    PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
+        .unregisterOnSharedPreferenceChangeListener(mPreferenceListener);
     stop();
     super.onDestroy();
   }
@@ -313,8 +317,7 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
   }
 
   private void updateFromPreferences() {
-    PreferenceHelper helper = new PreferenceHelper(mPreferences);
-    final boolean runCore = helper.getRunCore();
+    final boolean runCore = mPreferences.getRunCore();
     if (runCore) {
       Log.d(TAG, "Running core!");
       bindToApiService();
@@ -354,13 +357,9 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
    */
   private void configure() throws KegbotApiException {
     Log.d(TAG, "Configuring!");
-    final PreferenceHelper prefs = new PreferenceHelper(mPreferences);
-    final Uri apiUrl = prefs.getKegbotUrl();
+    final Uri apiUrl = mPreferences.getKegbotUrl();
     mApiService.setApiUrl(apiUrl.toString());
-
-    final String username = prefs.getUsername();
-    final String password = prefs.getPassword();
-    mApiService.setAccountCredentials(username, password);
+    mApiService.setApiKey(mPreferences.getApiKey());
 
     final TapDetailSet taps = mApiService.getAllTaps();
     Log.d(TAG, "Taps: " + taps);

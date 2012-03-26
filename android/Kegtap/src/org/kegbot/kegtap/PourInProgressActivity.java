@@ -27,10 +27,10 @@ import android.graphics.Matrix;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
 import android.hardware.Camera.ShutterCallback;
+import android.media.ExifInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -162,7 +162,7 @@ public class PourInProgressActivity extends CoreActivity {
       }
     });
 
-    mPrefs = new PreferenceHelper(PreferenceManager.getDefaultSharedPreferences(this));
+    mPrefs = new PreferenceHelper(this);
   }
 
   @Override

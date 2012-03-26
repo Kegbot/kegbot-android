@@ -73,8 +73,6 @@ public class KegbotApiImpl implements KegbotApi {
   private static KegbotApiImpl sSingleton = null;
 
   private String mBaseUrl;
-  private String mUsername = "";
-  private String mPassword = "";
 
   private String apiKey = null;
 
@@ -94,7 +92,7 @@ public class KegbotApiImpl implements KegbotApi {
 
   private Listener mListener = null;
 
-  private KegbotApiImpl() {
+  public KegbotApiImpl() {
     mBaseUrl = "http://localhost/";
 
     mHttpParams = new BasicHttpParams();
@@ -289,13 +287,6 @@ public class KegbotApiImpl implements KegbotApi {
   }
 
   @Override
-  public boolean setAccountCredentials(String username, String password) {
-    this.mUsername = username;
-    this.mPassword = password;
-    return true;
-  }
-
-  @Override
   public void setApiUrl(String apiUrl) {
     mBaseUrl = apiUrl;
   }
@@ -306,27 +297,24 @@ public class KegbotApiImpl implements KegbotApi {
     debug("Set apiKey=" + apiKey);
   }
 
-  private void login() throws KegbotApiException {
-    if (apiKey == null || apiKey.isEmpty()) {
-      Map<String, String> params = Maps.newLinkedHashMap();
-      params.put("username", mUsername);
-      params.put("password", mPassword);
-      // TODO: removeme!
-      debug("Logging in as username=" + mUsername + " password=" + mPassword);
-      doPost("/login/", params);
+  @Override
+  public void login(String username, String password) throws KegbotApiException {
+    Map<String, String> params = Maps.newLinkedHashMap();
+    params.put("username", username);
+    params.put("password", password);
+    debug("Logging in as username=" + username + " password=XXX");
+    doPost("/login/", params);
+  }
 
-      // Made it this far -- login succeeded.
-      JsonNode result = getJson("/get-api-key/");
-      final JsonNode keyNode = result.get("api_key");
-      if (keyNode != null) {
-        debug("Got api key:" + keyNode.getValueAsText());
-        setApiKey(keyNode.getValueAsText());
-      }
+  @Override
+  public String getApiKey() throws KegbotApiException {
+    JsonNode result = getJson("/get-api-key/");
+    final JsonNode keyNode = result.get("api_key");
+    if (keyNode != null) {
+      debug("Got api key:" + keyNode.getValueAsText());
+      return keyNode.getValueAsText();
     }
-    /*
-     * final int statusCode = response.getStatusLine().getStatusCode(); throw
-     * new IllegalStateException("Got status code: " + statusCode);
-     */
+    throw new KegbotApiServerError("Invalid response.");
   }
 
   @Override
@@ -449,7 +437,6 @@ public class KegbotApiImpl implements KegbotApi {
 
   @Override
   public UserDetailSet getUsers() throws KegbotApiException {
-    login();
     return (UserDetailSet) getProto("/users/", UserDetailSet.newBuilder());
   }
 
@@ -508,7 +495,6 @@ public class KegbotApiImpl implements KegbotApi {
     if (spilled) {
       params.put("spilled", String.valueOf(spilled));
     }
-    login();
     return (Drink) postProto("/taps/" + tapName, Drink.newBuilder(), params);
   }
 
@@ -524,7 +510,6 @@ public class KegbotApiImpl implements KegbotApi {
 
     final Map<String, String> params = Maps.newLinkedHashMap();
     params.put("temp_c", sensorValue);
-    login();
     return (ThermoLog) postProto("/thermo-sensors/" + sensorName, ThermoLog.newBuilder(), params);
   }
 
@@ -534,7 +519,6 @@ public class KegbotApiImpl implements KegbotApi {
     final HttpPost httpost = new HttpPost(getRequestUrl("/drinks/" + drinkId + "/add-photo/"));
     MultipartEntity entity = new MultipartEntity();
     entity.addPart("photo", new FileBody(imageFile));
-    login();
     if (apiKey != null) {
       try {
         entity.addPart("api_key", new StringBody(apiKey));
