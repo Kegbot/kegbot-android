@@ -13,11 +13,9 @@ public class PreferenceHelper {
   public static final String KEY_API_KEY = "api_key";
   public static final String KEY_USERNAME = "username";
   public static final String KEY_PASSWORD = "password";
+  public static final String KEY_PIN = "pin";
 
   public static final String KEY_RUN_CORE = "run_core";
-
-  public static final String KEY_SELECTED_KEGBOT = "selected_kegbot";
-  public static final String KEY_SELECTED_KEGBOT_NAME = "selected_kegbot_name";
 
   private final SharedPreferences mSharedPreferences;
 
@@ -44,20 +42,28 @@ public class PreferenceHelper {
     return mSharedPreferences.getString(KEY_API_KEY, "");
   }
 
+  public String getPin() {
+    return mSharedPreferences.getString(KEY_PIN, "");
+  }
+
+  public void setPin(String pin) {
+    mSharedPreferences.edit().putString(KEY_PIN, pin).apply();
+  }
+
   public String getUsername() {
-    return mSharedPreferences.getString("username", "");
+    return mSharedPreferences.getString(KEY_USERNAME, "");
+  }
+
+  public void setUsername(String username) {
+    mSharedPreferences.edit().putString(KEY_USERNAME, username).apply();
   }
 
   public String getPassword() {
-    return mSharedPreferences.getString("password", "");
+    return mSharedPreferences.getString(KEY_PASSWORD, "");
   }
 
-  public void setKegbotName(final String name) {
-    mSharedPreferences.edit().putString(KEY_SELECTED_KEGBOT_NAME, name).apply();
-  }
-
-  public CharSequence getKegbotName() {
-    return mSharedPreferences.getString(KEY_SELECTED_KEGBOT_NAME, null);
+  public void setPassword(String password) {
+    mSharedPreferences.edit().putString(KEY_PASSWORD, password).apply();
   }
 
   public long getMinimumVolumeMl() {

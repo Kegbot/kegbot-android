@@ -8,25 +8,25 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
+import android.widget.EditText;
 
-public class SetupRunCoreFragment extends Fragment {
+public class SetupManagerPinFragment extends Fragment {
 
   private View mView;
 
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    mView = inflater.inflate(R.layout.setup_run_core_fragment, null);
+    mView = inflater.inflate(R.layout.setup_manager_pin_fragment, null);
     PreferenceHelper prefs = new PreferenceHelper(getActivity());
-    CheckBox box = (CheckBox) mView.findViewById(R.id.runCore);
-    box.setChecked(prefs.getRunCore());
+    EditText text = (EditText) mView.findViewById(R.id.managerPin);
+    text.setText(prefs.getPin());
     mView.setBackgroundDrawable(getResources().getDrawable(R.drawable.shape_rounded_rect));
     return mView;
   }
 
-  public boolean getRunCore() {
-    CheckBox box = (CheckBox) mView.findViewById(R.id.runCore);
-    return box.isChecked();
+  public String getPin() {
+    EditText text = (EditText) mView.findViewById(R.id.managerPin);
+    return text.getText().toString();
   }
 
 }

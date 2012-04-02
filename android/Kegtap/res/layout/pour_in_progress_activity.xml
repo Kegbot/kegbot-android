@@ -1,54 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-  xmlns:android="http://schemas.android.com/apk/res/android"
-  android:orientation="horizontal"
-  android:layout_width="match_parent"
-  android:layout_height="match_parent"
-  android:weightSum="1.0"
-  android:gravity="center">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="horizontal"
+    android:weightSum="1.0" >
 
-  <!-- Left box: PourStatusFragment -->
-  <fragment
-    android:id="@+id/tap_status"
-    class="org.kegbot.kegtap.PourStatusFragment"
-    android:layout_weight="0.6"
-    android:layout_width="0dip"
-    android:layout_height="fill_parent"
-    android:layout_marginRight="10dip" />
+    <!-- Left box: PourStatusFragment -->
 
-  <!-- Right box: Camera Preview -->
-  <LinearLayout
-    android:id="@+id/pourInProgressRightCol"
-    android:orientation="vertical"
-    android:layout_weight="0.4"
-    android:layout_width="0dip"
-    android:layout_height="wrap_content"
-    android:gravity="center">
+    <android.support.v4.view.ViewPager
+        android:id="@+id/tapPager"
+        android:layout_width="0dip"
+        android:layout_height="match_parent"
+        android:layout_marginRight="10dip"
+        android:layout_weight="0.6" >
+    </android.support.v4.view.ViewPager>
 
-    <!-- Header. -->
-    <TextView
-      android:id="@+id/nowPouringTitle"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:textColor="#888"
-      android:textSize="24dip"
-      android:text="Now Pouring..."
-      android:layout_marginLeft="5dip"
-      android:visibility="gone"/>
+    <!-- Right box: Camera Preview & Controls -->
 
-    <!-- Camera. -->
-    <fragment
-      android:id="@+id/camera"
-      class="org.kegbot.kegtap.camera.CameraFragment"
-      android:layout_width="fill_parent"
-      android:layout_height="392dip" />
-      
-    <Button
-      android:id="@+id/takePictureButton"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:textSize="32dip"
-      android:text="@string/pour_take_picture" />
+    <LinearLayout
+        android:id="@+id/pourInProgressRightCol"
+        android:layout_width="0dip"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.4"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:weightSum="1.0" >
 
-  </LinearLayout>
+        <LinearLayout
+            android:id="@+id/cameraBox"
+            android:layout_width="match_parent"
+            android:layout_height="0dip"
+            android:layout_weight="0.5"
+            android:gravity="center"
+            android:orientation="vertical" >
+
+            <!-- Header. -->
+
+            <TextView
+                android:id="@+id/nowPouringTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dip"
+                android:text="Now Pouring..."
+                android:textColor="#888"
+                android:textSize="24dip"
+                android:visibility="gone" />
+
+            <!-- Camera. -->
+
+            <fragment
+                android:id="@+id/camera"
+                android:layout_width="fill_parent"
+                android:layout_height="392dip"
+                class="org.kegbot.kegtap.camera.CameraFragment" />
+
+            <Button
+                android:id="@+id/takePictureButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/pour_take_picture"
+                android:textSize="32dip" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/controlsBox"
+            android:layout_width="match_parent"
+            android:layout_height="0dip"
+            android:layout_weight="0.5"
+            android:gravity="center"
+            android:orientation="vertical" >
+        </LinearLayout>
+        
+    </LinearLayout>
+
 </LinearLayout>

@@ -1,8 +1,14 @@
 package org.kegbot.api;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.ProtocolException;
+import java.net.URL;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
@@ -53,12 +59,12 @@ import org.kegbot.proto.Api.TapDetail;
 import org.kegbot.proto.Api.TapDetailSet;
 import org.kegbot.proto.Api.ThermoLogSet;
 import org.kegbot.proto.Api.ThermoSensorSet;
+import org.kegbot.proto.Api.UserDetail;
 import org.kegbot.proto.Api.UserDetailSet;
 import org.kegbot.proto.Models.AuthenticationToken;
 import org.kegbot.proto.Models.Drink;
 import org.kegbot.proto.Models.Image;
 import org.kegbot.proto.Models.ThermoLog;
-import org.kegbot.proto.Models.User;
 
 import android.os.SystemClock;
 
@@ -140,6 +146,37 @@ public class KegbotApiImpl implements KegbotApi {
       return rootNode;
     } catch (IOException e) {
       throw new KegbotApiException(e);
+    }
+  }
+
+  private JsonNode readResponse(HttpURLConnection conn) throws KegbotApiException {
+    try {
+      int responseCode = conn.getResponseCode();
+
+      String contentType = conn.getContentType();
+      if (!"application/json".equals(contentType)) {
+        throw new KegbotApiServerError("Unknown content-type: " + contentType);
+      }
+
+      InputStream is = conn.getInputStream();
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      byte[] bytes = new byte[1024];
+      int bytesRead;
+      while ((bytesRead = is.read(bytes)) != -1) {
+          baos.write(bytes, 0, bytesRead);
+      }
+      byte[] bytesReceived = baos.toByteArray();
+      baos.close();
+      is.close();
+      String response = new String(bytesReceived);
+
+      final ObjectMapper mapper = new ObjectMapper();
+      final JsonNode rootNode = mapper.readValue(response, JsonNode.class);
+      return rootNode;
+    } catch (IOException e) {
+      throw new KegbotApiServerError("IOException during response: " + e.toString(), e);
+    } finally {
+      conn.disconnect();
     }
   }
 
@@ -420,8 +457,8 @@ public class KegbotApiImpl implements KegbotApi {
   }
 
   @Override
-  public User getUser(String username) throws KegbotApiException {
-    return (User) getProto("/users/" + username, TapDetail.newBuilder());
+  public UserDetail getUserDetail(String username) throws KegbotApiException {
+    return (UserDetail) getProto("/users/" + username, UserDetail.newBuilder());
   }
 
   @Override
@@ -513,8 +550,78 @@ public class KegbotApiImpl implements KegbotApi {
     return (ThermoLog) postProto("/thermo-sensors/" + sensorName, ThermoLog.newBuilder(), params);
   }
 
+  private HttpURLConnection newConnection(String urlString) throws IOException {
+    final URL url = new URL(urlString);
+    final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+    return conn;
+  }
+
+  private Image uploadDrinkImageALT(String drinkId, String imagePath) throws KegbotApiException {
+    HttpURLConnection conn;
+    try {
+      conn = newConnection(getRequestUrl("/drinks/" + drinkId + "/add-photo/"));
+    } catch (IOException e) {
+      throw new KegbotApiException("Error connecting to URL: " + e.toString(), e);
+    }
+
+    byte[] fileBytes;
+    try {
+      fileBytes = Utils.readFile(imagePath);
+    } catch (IOException e1) {
+      throw new KegbotApiException("Error reading image file: " + e1.toString(), e1);
+    }
+
+    final String BOUNDRY = "############apiboundary############";
+
+    conn.setDoOutput(true);
+    conn.setDoInput(true);
+    conn.setUseCaches(false);
+    try {
+      conn.setRequestMethod("POST");
+    } catch (ProtocolException e1) {
+      throw new IllegalStateException("Request method unsupported", e1);
+    }
+    conn.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + BOUNDRY);
+
+    String fileName = new File(imagePath).getName();
+
+    StringBuffer requestBody = new StringBuffer();
+
+    requestBody.append("--").append(BOUNDRY).append("\n");
+    requestBody.append("Content-Disposition: form-data; name=\"photo\"; filename=\"" + fileName + "\"\r\n");
+    requestBody.append("Content-Type: application/octet-stream\r\n");
+    requestBody.append("\r\n");
+    requestBody.append(new String(fileBytes));
+    requestBody.append("\r\n");
+
+    requestBody.append("--").append(BOUNDRY).append("\r\n");
+    requestBody.append("Content-Disposition: form-data; name=\"api_key\"\r\n");
+    requestBody.append("\r\n");
+    requestBody.append(apiKey);
+    requestBody.append("\r\n");
+
+    requestBody.append("--").append(BOUNDRY).append("--").append("\r\n");
+
+    DataOutputStream outputStream;
+    try {
+      outputStream = new DataOutputStream(conn.getOutputStream());
+      outputStream.writeBytes(requestBody.toString());
+      outputStream.flush();
+      outputStream.close();
+    } catch (IOException e1) {
+      throw new KegbotApiException(e1);
+    }
+
+    debug("api_key=" + apiKey);
+
+    final JsonNode responseJson = readResponse(conn);
+    debug("UPLOAD RESPONSE: " + responseJson);
+    return (Image) ProtoEncoder.toProto(Image.newBuilder(), responseJson.get("result")).build();
+  }
+
   @Override
   public Image uploadDrinkImage(String drinkId, String imagePath) throws KegbotApiException {
+
     final File imageFile = new File(imagePath);
     final HttpPost httpost = new HttpPost(getRequestUrl("/drinks/" + drinkId + "/add-photo/"));
     MultipartEntity entity = new MultipartEntity();

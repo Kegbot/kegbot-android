@@ -47,8 +47,6 @@ public abstract class BackgroundService extends Service {
     super.onDestroy();
   }
 
-
-
   protected abstract void runInBackground();
 
 }

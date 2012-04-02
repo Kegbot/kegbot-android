@@ -10,14 +10,14 @@ import org.kegbot.kegtap.util.PreferenceHelper;
 import org.kegbot.proto.Api.TapDetail;
 import org.kegbot.proto.Api.TapDetailSet;
 
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.Intent;
 import android.hardware.usb.UsbManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Menu;
@@ -64,14 +64,14 @@ public class KegtapActivity extends CoreActivity {
 
     mPrefsHelper = new PreferenceHelper(this);
 
-    mTapStatusAdapter = new MyAdapter(getSupportFragmentManager());
+    mTapStatusAdapter = new MyAdapter(getFragmentManager());
 
     mTapStatusPager = (ViewPager) findViewById(R.id.tap_status_pager);
     mTapStatusPager.setAdapter(mTapStatusAdapter);
 
-    mEvents = (EventListFragment) getSupportFragmentManager().findFragmentById(R.id.event_list);
+    mEvents = (EventListFragment) getFragmentManager().findFragmentById(R.id.event_list);
 
-    mSession = (SessionStatsFragment) getSupportFragmentManager().findFragmentById(
+    mSession = (SessionStatsFragment) getFragmentManager().findFragmentById(
         R.id.currentSessionFragment);
 
     View v = findViewById(R.id.tap_status_pager);

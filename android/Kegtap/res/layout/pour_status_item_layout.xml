@@ -1,133 +1,140 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-  xmlns:android="http://schemas.android.com/apk/res/android"
-  android:layout_width="match_parent"
-  android:layout_height="wrap_content"
-  android:orientation="vertical"
-  android:gravity="center">
-
-  <!-- First row: Tap/Beer name -->
-  <TextView
-    android:id="@+id/tapTitle"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:textStyle="bold"
-    android:textSize="24dip"
-    android:visibility="gone" />
-  <TextView
-    android:id="@+id/pourBeerName"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:textColor="#888"
-    android:textSize="36dip"
-    android:textStyle="bold"
-    android:text="Unknown Beer" />
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="24dip">
 
-  <!-- Next row: main stuff -->
-  <LinearLayout
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:layout_width="match_parent"
-    android:gravity="center|left">
+    <!-- First row: Keg Image and Pour Total. -->
 
-    <!-- Keg image. -->
-    <FrameLayout
-      android:layout_width="192dip"
-      android:layout_height="192dip">
-      <ImageView
-        android:id="@+id/pourImage"
-        android:src="@drawable/kegbot_unknown_square_2"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:maxWidth="192dip"
-        android:maxHeight="192dip"
-        android:adjustViewBounds="true"
-        android:scaleType="centerCrop" />
-    </FrameLayout>
-
-    <!-- Pour Details. -->
     <LinearLayout
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:orientation="horizontal"
-      android:gravity="center|bottom">
-      <TextView
-        android:id="@+id/pourVolumeNumbers"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textStyle="bold"
-        android:textSize="96dip"
-        android:text="0.0" />
-      <TextView
-        android:id="@+id/pourVolumeWords"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="18dip"
-        android:gravity="center"
-        android:text="ounces" />
+        android:gravity="center|left"
+        android:orientation="horizontal"
+        android:weightSum="1.0" >
+
+        <!-- Keg image -->
+
+        <ImageView
+            android:id="@+id/pourImage"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:adjustViewBounds="true"
+            android:maxHeight="192dip"
+            android:maxWidth="192dip"
+            android:scaleType="centerInside"/>
+
+        <!-- Pour total. -->
+
+        <LinearLayout
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:gravity="center"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/pourVolumeNumbers"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0.0"
+                android:textSize="152dip"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/pourVolumeWords"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="ounces"
+                android:textSize="18dip" />
+        </LinearLayout>
     </LinearLayout>
-
-  </LinearLayout>
-
-  <View
-    android:layout_width="match_parent"
-    android:layout_height="2dip"
-    android:layout_marginLeft="5dip"
-    android:layout_marginRight="5dip"
-    android:layout_marginTop="10dip"
-    android:layout_marginBottom="10dip"
-    android:background="#1FFFFFFF" />
-
-  <LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:gravity="center|left"
-    android:paddingLeft="16dip">
-    <ImageView
-      android:id="@+id/pourDrinkerImager"
-      android:src="@drawable/unknown_drinker"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:maxWidth="48dip"
-      android:maxHeight="48dip"
-      android:layout_marginRight="16dip"
-      android:adjustViewBounds="true"
-      android:scaleType="centerCrop" />
-    <TextView
-      android:id="@+id/pourDrinkerName"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:textStyle="bold"
-      android:textSize="24dip"
-      android:text="unknown"
-      android:layout_marginRight="16dip" />
-
-    <Button
-      android:id="@+id/logInButton"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:textSize="24dip"
-      android:layout_marginRight="16dip"
-      android:text="Log In" />
+    
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dip"
+        android:layout_marginBottom="10dip"
+        android:layout_marginLeft="5dip"
+        android:layout_marginRight="5dip"
+        android:layout_marginTop="10dip"
+        android:background="#1FFFFFFF" />
 
     <TextView
-      android:id="@+id/pourStatusLine"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:textColor="#888"
-      android:textSize="18dip"
-      android:text="" />
+        android:id="@+id/pourBeerName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Unknown Beer"
+        android:textColor="#888"
+        android:textSize="36dip"
+        android:textStyle="bold" />
+    
+    <TextView
+        android:id="@+id/pourStatusLine"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textColor="@android:color/darker_gray"
+        android:textSize="18dip" />
+
+    <!-- Next row: main stuff -->
+
+    <!-- gone -->
+
+    <TextView
+        android:id="@+id/pourDrinkerName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="16dip"
+        android:text="unknown"
+        android:textSize="24dip"
+        android:textStyle="bold"
+        android:visibility="gone" />
 
     <Button
-      android:id="@+id/endPourButton"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:textSize="24dip"
-      android:text="Done Pouring"
-      android:gravity="right"
-      android:layout_gravity="right"/>
+        android:id="@+id/endPourButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:gravity="right"
+        android:text="Done Pouring"
+        android:textSize="24dip"
+        android:visibility="gone" />
 
-  </LinearLayout>
+    <!--
+    The frame layout is here since we will be showing either
+    the empty view or the list view.
+    -->
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dip"
+        android:layout_weight="1"
+        android:visibility="gone" >
+
+        <!--
+             Here is the list. Since we are using a ListActivity, we
+             have to call it "@android:id/list" so ListActivity will
+             find it
+        -->
+
+        <ListView
+            android:id="@android:id/list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:drawSelectorOnTop="false" />
+
+        <!-- Here is the view to show if the list is emtpy -->
+
+        <TextView
+            android:id="@android:id/empty"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="No items."
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+    </FrameLayout>
 
 </LinearLayout>

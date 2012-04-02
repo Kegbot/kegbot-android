@@ -16,6 +16,7 @@ import org.kegbot.proto.Api.TapDetail;
 import org.kegbot.proto.Api.TapDetailSet;
 import org.kegbot.proto.Api.ThermoLogSet;
 import org.kegbot.proto.Api.ThermoSensorSet;
+import org.kegbot.proto.Api.UserDetail;
 import org.kegbot.proto.Api.UserDetailSet;
 import org.kegbot.proto.Models.AuthenticationToken;
 import org.kegbot.proto.Models.Drink;
@@ -176,7 +177,7 @@ public interface KegbotApi {
    * @return the {@link User}
    * @throws KegbotApiException
    */
-  public User getUser(String username) throws KegbotApiException;
+  public UserDetail getUserDetail(String username) throws KegbotApiException;
 
   public DrinkSet getUserDrinks(String username) throws KegbotApiException;
 

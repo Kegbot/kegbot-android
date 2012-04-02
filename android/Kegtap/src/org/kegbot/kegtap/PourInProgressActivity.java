@@ -6,15 +6,20 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import org.kegbot.core.Flow;
 import org.kegbot.core.FlowManager;
+import org.kegbot.core.Tap;
+import org.kegbot.core.TapManager;
 import org.kegbot.kegtap.camera.CameraFragment;
 import org.kegbot.kegtap.util.PreferenceHelper;
 
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -27,13 +32,17 @@ import android.graphics.Matrix;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
 import android.hardware.Camera.ShutterCallback;
-import android.media.ExifInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v13.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 
 public class PourInProgressActivity extends CoreActivity {
 
@@ -46,11 +55,11 @@ public class PourInProgressActivity extends CoreActivity {
   private static final int DIALOG_IDLE_WARNING = 1;
 
   private final FlowManager mFlowManager = FlowManager.getSingletonInstance();
+  private final TapManager mTapManager = TapManager.getSingletonInstance();
 
   private int mPictureSeconds = 0;
 
   private CameraFragment mCameraFragment;
-  private PourStatusFragment mPourStatus;
 
   private Button mPictureButton;
 
@@ -61,6 +70,10 @@ public class PourInProgressActivity extends CoreActivity {
   private final Handler mHandler = new Handler();
 
   private PreferenceHelper mPrefs;
+
+  private PouringTapAdapter mPouringTapAdapter;
+
+  private ViewPager mTapPager;
 
   private static final boolean DEBUG = false;
 
@@ -114,6 +127,34 @@ public class PourInProgressActivity extends CoreActivity {
     }
   };
 
+  public class PouringTapAdapter extends FragmentPagerAdapter {
+
+    private final List<PourStatusFragment> mFragments;
+
+    public PouringTapAdapter(FragmentManager fm) {
+      super(fm);
+      mFragments = Lists.newArrayList();
+      for (final Tap tap : mTapManager.getTaps()) {
+        mFragments.add(new PourStatusFragment(tap));
+      }
+    }
+
+    @Override
+    public Fragment getItem(int position) {
+      Log.d("PouringTapAdapter", "getItem: " + position);
+      return mFragments.get(position);
+    }
+
+    @Override
+    public int getCount() {
+      return mFragments.size();
+    }
+
+    public List<PourStatusFragment> getFragments() {
+      return ImmutableList.copyOf(mFragments);
+    }
+  }
+
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -127,9 +168,11 @@ public class PourInProgressActivity extends CoreActivity {
     findViewById(R.id.pourInProgressRightCol).setBackgroundDrawable(
         getResources().getDrawable(R.drawable.shape_rounded_rect));
 
-    mPourStatus = (PourStatusFragment) getSupportFragmentManager()
-        .findFragmentById(R.id.tap_status);
-    mCameraFragment = (CameraFragment) getSupportFragmentManager().findFragmentById(R.id.camera);
+    mTapPager = (ViewPager) findViewById(R.id.tapPager);
+    mPouringTapAdapter = new PouringTapAdapter(getFragmentManager());
+    mTapPager.setAdapter(mPouringTapAdapter);
+
+    mCameraFragment = (CameraFragment) getFragmentManager().findFragmentById(R.id.camera);
 
     AlertDialog.Builder builder = new AlertDialog.Builder(this);
     builder.setMessage("Hey, are you still pouring?").setCancelable(false).setPositiveButton(
@@ -234,7 +277,10 @@ public class PourInProgressActivity extends CoreActivity {
     long largestIdleTime = Long.MIN_VALUE;
 
     for (final Flow flow : allFlows) {
-      if (DEBUG) Log.d(TAG, "Refreshing with flow: " + flow);
+      if (DEBUG) {
+        Log.d(TAG, "Refreshing with flow: " + flow);
+      }
+
       if (flow.getState() == Flow.State.ACTIVE) {
         // Consider idle time (for warning) only for non-zero flows.
         if (flow.getTicks() > 0) {
@@ -246,7 +292,15 @@ public class PourInProgressActivity extends CoreActivity {
       }
     }
 
-    mPourStatus.updateWithFlows(allFlows);
+    for (final PourStatusFragment frag : mPouringTapAdapter.getFragments()) {
+      Log.d(TAG, "Fragment: " + frag + " tap: " + frag.getTap());
+      final Flow flow = mFlowManager.getFlowForTap(frag.getTap());
+      if (flow != null) {
+        frag.updateWithFlow(flow);
+      } else {
+        frag.setIdle();
+      }
+    }
 
     if (largestIdleTime >= mPrefs.getIdleWarningMs()) {
       sendIdleWarning();
@@ -267,6 +321,8 @@ public class PourInProgressActivity extends CoreActivity {
     for (final Flow flow : mFlowManager.getAllActiveFlows()) {
       mFlowManager.endFlow(flow);
     }
+    cancelIdleWarning();
+    cancelPendingPicture();
   }
 
   private void sendIdleWarning() {
@@ -303,6 +359,10 @@ public class PourInProgressActivity extends CoreActivity {
     mCameraFragment.takePicture(shutter, null, jpeg);
   }
 
+  private void cancelPendingPicture() {
+    mHandler.removeCallbacks(PICTURE_COUNTDOWN_RUNNABLE);
+  }
+
   private void doSaveJpeg(final byte[] data) {
     new ImageSaveTask().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, data);
   }
@@ -313,16 +373,7 @@ public class PourInProgressActivity extends CoreActivity {
     protected Void doInBackground(byte[]... params) {
       byte[] data = params[0];
       final int rotation = mCameraFragment.getDisplayOrientation();
-
-      Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
-      if (rotation != 0) {
-        Log.w(TAG, "ImageSaveTask: rotation=" + rotation);
-
-        Matrix matrix = new Matrix();
-        matrix.postRotate(rotation);
-        bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix,
-            true);
-      }
+      final Bitmap bitmap = decodeAndRotateFromJpeg(data, rotation);
 
       for (final Flow flow : mFlowManager.getAllActiveFlows()) {
         if (flow == null) {
@@ -357,6 +408,19 @@ public class PourInProgressActivity extends CoreActivity {
         flow.addImage(savedImage);
       }
       return null;
+    }
+
+    private Bitmap decodeAndRotateFromJpeg(byte[] data, int rotation) {
+      Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+      if (rotation != 0) {
+        Log.w(TAG, "ImageSaveTask: rotation=" + rotation);
+
+        Matrix matrix = new Matrix();
+        matrix.postRotate(rotation);
+        bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix,
+            true);
+      }
+      return bitmap;
     }
 
   }

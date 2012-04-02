@@ -17,9 +17,60 @@ import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
+import android.util.Log;
 import android.view.MenuItem;
 
+import com.google.common.base.Strings;
+
 public class SettingsActivity extends PreferenceActivity {
+
+  private static final String TAG = SettingsActivity.class.getSimpleName();
+
+  private static final int REQUEST_PIN = 100;
+
+  private PreferenceHelper mPrefs;
+  private boolean mPinValid = false;
+  private boolean mPinChecked = false;
+
+  @Override
+  protected void onStart() {
+    super.onStart();
+    mPrefs = new PreferenceHelper(getApplicationContext());
+  }
+
+  @Override
+  protected void onResume() {
+    super.onResume();
+    if (Strings.isNullOrEmpty(mPrefs.getPin())) {
+      mPinValid = true;
+    }
+
+    if (!isFinishing()) {
+      if (!mPinValid) {
+        if (!mPinChecked) {
+          Log.d(TAG, "Checking pin...");
+          final Intent intent = new Intent(this, EnterPinActivity.class);
+          startActivityForResult(intent, REQUEST_PIN);
+          mPinChecked = true;
+        } else {
+          Log.d(TAG, "Pin checked, exiting.");
+          finish();
+        }
+      }
+    }
+  }
+
+  @Override
+  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    if (requestCode == REQUEST_PIN) {
+      Log.d(TAG, "Pin result: " + resultCode);
+      if (resultCode == RESULT_OK) {
+        mPinValid = true;
+      }
+    } else {
+      super.onActivityResult(requestCode, resultCode, data);
+    }
+  }
 
   @Override
   public void onBuildHeaders(List<Header> target) {
@@ -42,27 +93,11 @@ public class SettingsActivity extends PreferenceActivity {
         }
       });
 
-      handleEnableManagerPinChanged();
       final ActionBar actionBar = getActivity().getActionBar();
       if (actionBar != null) {
         actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_USE_LOGO);
       }
 
-      final CheckBoxPreference enablePref = (CheckBoxPreference) findPreference("use_manager_pin");
-      enablePref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-        @Override
-        public boolean onPreferenceClick(Preference preference) {
-          handleEnableManagerPinChanged();
-          return true;
-        }
-      });
-
-    }
-
-    private void handleEnableManagerPinChanged() {
-      final CheckBoxPreference enablePref = (CheckBoxPreference) findPreference("use_manager_pin");
-      final boolean enabled = enablePref.isChecked();
-      findPreference("manager_pin").setEnabled(enabled);
     }
 
   }

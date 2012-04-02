@@ -18,11 +18,11 @@ import org.kegbot.core.ThermoSensor;
 import org.kegbot.kegtap.KegtapActivity;
 import org.kegbot.kegtap.KegtapBroadcast;
 import org.kegbot.kegtap.R;
-import org.kegbot.kegtap.service.KegbotApiService.ConnectionState;
 import org.kegbot.kegtap.util.PreferenceHelper;
 import org.kegbot.proto.Api;
 import org.kegbot.proto.Api.RecordTemperatureRequest;
 import org.kegbot.proto.Api.TapDetailSet;
+import org.kegbot.proto.Api.UserDetail;
 import org.kegbot.proto.Models;
 
 import android.app.Notification;
@@ -36,7 +36,6 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.net.Uri;
 import android.os.Binder;
-import android.os.Handler;
 import android.os.IBinder;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
@@ -63,7 +62,7 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
 
   private final ConfigurationManager mConfigManager = ConfigurationManager.getSingletonInstance();
 
-  private ExecutorService mExecutorService;
+  private ExecutorService mFlowExecutorService;
   private PreferenceHelper mPreferences;
 
   private KegbotApiService mApiService;
@@ -71,7 +70,7 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
   private KegbotHardwareService mHardwareService;
   private boolean mHardwareServiceBound;
 
-  private final Handler mHandler = new Handler();
+  private final ExecutorService mExecutorService = Executors.newSingleThreadExecutor();
 
   /**
    * Connection to the API service.
@@ -81,10 +80,9 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
     public void onServiceConnected(ComponentName className, IBinder service) {
       mApiService = ((KegbotApiService.LocalBinder) service).getService();
       debugNotice("Core->APIService connection established.");
-      mApiService.attachListener(mApiListener);
 
-      mExecutorService = Executors.newSingleThreadExecutor();
-      mExecutorService.submit(mFlowManagerWorker);
+      mFlowExecutorService = Executors.newSingleThreadExecutor();
+      mFlowExecutorService.submit(mFlowManagerWorker);
     }
 
     @Override
@@ -146,18 +144,6 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
     }
   };
 
-  private final KegbotApiService.Listener mApiListener = new KegbotApiService.Listener() {
-    @Override
-    public void onConnectionStateChange(ConnectionState newState) {
-      // TODO
-    }
-
-    @Override
-    public void onConfigurationUpdate() {
-      // TODO
-    }
-  };
-
   private final KegbotHardwareService.Listener mHardwareListener = new KegbotHardwareService.Listener() {
     @Override
     public void onTokenSwiped(AuthenticationToken token, String tapName) {
@@ -170,8 +156,36 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
     }
 
     @Override
-    public void onTokenAttached(AuthenticationToken token, String tapName) {
+    public void onTokenAttached(final AuthenticationToken token, final String tapName) {
       Log.d(TAG, "Auth token added: " + token);
+      final Runnable r = new Runnable() {
+        @Override
+        public void run() {
+          try {
+          Log.d(TAG, "onTokenAttached: running");
+
+          UserDetail user;
+          try {
+            user = mApiService.authenticateUser(token.getAuthDevice(), token.getTokenValue());
+            Log.d(TAG, "onTokenAttached: got user");
+            Log.d(TAG, "onTokenAttached: " + user);
+
+          } catch (KegbotApiException e) {
+            Log.w(TAG, "Authentication failed: " + e.toString());
+            user = null;
+          }
+          Log.d(TAG, "Authenticated user: " + user);
+          if (user != null) {
+            for (final Tap tap : mTapManager.getTaps()) {
+              mFlowManager.activateUserAtTap(tap, user.getUser().getUsername());
+            }
+          }
+          } catch (Exception e) {
+            Log.e(TAG, "Exception: " + e, e);
+          }
+        }
+      };
+      mExecutorService.submit(r);
     }
 
     @Override
@@ -186,7 +200,7 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
           mApiService.recordTemperatureAsync(request);
         }
       };
-      mHandler.post(r);
+      mExecutorService.submit(r);
     }
 
     @Override
@@ -198,7 +212,7 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
           mFlowManager.handleMeterActivity(meter.getName(), (int) meter.getTicks());
         }
       };
-      mHandler.post(r);
+      mExecutorService.submit(r);
     }
   };
 
@@ -213,7 +227,7 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
           sendOrderedBroadcast(intent, null);
         }
       };
-      mHandler.post(r);
+      mExecutorService.submit(r);
     }
 
     @Override
@@ -226,7 +240,7 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
           sendOrderedBroadcast(intent, null);
         }
       };
-      mHandler.post(r);
+      mExecutorService.submit(r);
     }
 
     @Override
@@ -238,7 +252,7 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
           recordDrinkForFlow(flow);
         }
       };
-      mHandler.post(r);
+      mExecutorService.submit(r);
     }
   };
 
@@ -310,9 +324,9 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
       mApiServiceBound = false;
     }
     unbindFromHardwareService();
-    if (mExecutorService != null) {
-      mExecutorService.shutdown();
-      mExecutorService = null;
+    if (mFlowExecutorService != null) {
+      mFlowExecutorService.shutdown();
+      mFlowExecutorService = null;
     }
   }
 
@@ -361,7 +375,8 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
     mApiService.setApiUrl(apiUrl.toString());
     mApiService.setApiKey(mPreferences.getApiKey());
 
-    final TapDetailSet taps = mApiService.getAllTaps();
+    final TapDetailSet taps = mApiService.getKegbotApi().getAllTaps();
+
     Log.d(TAG, "Taps: " + taps);
     for (final Api.TapDetail tapDetail : taps.getTapsList()) {
       Models.KegTap tapInfo = tapDetail.getTap();

@@ -5,19 +5,6 @@
     android:gravity="top|left"
     android:orientation="vertical" >
 
-    <ImageView
-        android:id="@+id/setupKegbotLogo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/kegbot_logo" />
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="2dip"
-        android:layout_marginLeft="5dip"
-        android:layout_marginRight="5dip"
-        android:background="#1FFFFFFF" />
-
     <TextView
         android:id="@+id/setupTitleText"
         android:layout_width="match_parent"

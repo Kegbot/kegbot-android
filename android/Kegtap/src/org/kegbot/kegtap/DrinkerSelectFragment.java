@@ -1,20 +1,16 @@
 package org.kegbot.kegtap;
 
-import java.util.Comparator;
 import java.util.List;
 
-import org.kegbot.api.KegbotApi;
-import org.kegbot.api.KegbotApiException;
-import org.kegbot.api.KegbotApiImpl;
 import org.kegbot.kegtap.util.image.ImageDownloader;
 import org.kegbot.proto.Api.UserDetail;
-import org.kegbot.proto.Api.UserDetailSet;
 
 import android.app.Activity;
+import android.app.Fragment;
+import android.app.LoaderManager.LoaderCallbacks;
 import android.content.Intent;
-import android.os.AsyncTask;
+import android.content.Loader;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,7 +28,7 @@ import android.widget.TextView;
 
 import com.google.common.base.Strings;
 
-public class DrinkerSelectFragment extends Fragment {
+public class DrinkerSelectFragment extends Fragment implements LoaderCallbacks<List<UserDetail>> {
 
   private static final String LOG_TAG = DrinkerSelectFragment.class.getSimpleName();
 
@@ -42,16 +38,7 @@ public class DrinkerSelectFragment extends Fragment {
 
   private GridView mGridView;
 
-  private final KegbotApi mApi = KegbotApiImpl.getSingletonInstance();
   private ImageDownloader mImageDownloader;
-
-  private static Comparator<UserDetail> USERS_ALPHABETIC = new Comparator<UserDetail>() {
-    @Override
-    public int compare(UserDetail object1, UserDetail object2) {
-      return object1.getUser().getUsername().toLowerCase()
-          .compareTo(object2.getUser().getUsername().toLowerCase());
-    }
-  };
 
   @Override
   public void onAttach(Activity activity) {
@@ -61,7 +48,7 @@ public class DrinkerSelectFragment extends Fragment {
 
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    mView = inflater.inflate(R.layout.select_drinker_fragment_inner, container);
+    mView = inflater.inflate(R.layout.select_drinker_fragment_inner, null);
     mGridView = (GridView) mView.findViewById(R.id.drinkerGridView);
 
     return mView;
@@ -111,10 +98,9 @@ public class DrinkerSelectFragment extends Fragment {
     Animation animation = new AlphaAnimation(0.0f, 1.0f);
     animation.setDuration(100);
     set.addAnimation(animation);
-    animation = new TranslateAnimation(
-        Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF, 0.0f,
-        Animation.RELATIVE_TO_SELF, -1.0f, Animation.RELATIVE_TO_SELF, 0.0f
-    );
+    animation = new TranslateAnimation(Animation.RELATIVE_TO_SELF, 0.0f,
+        Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF, -1.0f,
+        Animation.RELATIVE_TO_SELF, 0.0f);
     animation.setDuration(300);
     set.addAnimation(animation);
 
@@ -134,53 +120,36 @@ public class DrinkerSelectFragment extends Fragment {
           // Defaults to "" in User if necessary.
           username = user.getUser().getUsername();
         }
-        final String tapName = getActivity().getIntent().getStringExtra(DrinkerSelectActivity.EXTRA_TAP_NAME);
+        final String tapName = getActivity().getIntent().getStringExtra(
+            DrinkerSelectActivity.EXTRA_TAP_NAME);
         final Intent intent = KegtapBroadcast.getUserAuthedBroadcastIntent(username, tapName);
         getActivity().sendBroadcast(intent);
         getActivity().finish();
       }
     });
 
+    getLoaderManager().initLoader(0, null, this);
   }
 
-  /*
   @Override
-  public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    //return super.onCreateView(inflater, container, savedInstanceState);
-    return inflater.inflate(R.layout.select_drinker_fragment_inner, container);
-  }
-  */
-
-  void loadEvents() {
-    Log.d(LOG_TAG, "+++ Loading events");
-    new UserLoaderTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+  public Loader<List<UserDetail>> onCreateLoader(int id, Bundle args) {
+    Log.d(LOG_TAG, "+++ onCreateLoader");
+    return new UserDetailListLoader(getActivity());
   }
 
-  private class UserLoaderTask extends AsyncTask<Void, Void, UserDetailSet> {
+  @Override
+  public void onLoadFinished(Loader<List<UserDetail>> loader, List<UserDetail> userList) {
+    Log.d(LOG_TAG, "+++ onLoadFinished");
 
-    @Override
-    protected UserDetailSet doInBackground(Void... params) {
-      try {
-        Log.d(LOG_TAG, "+++ Fetching users");
-        UserDetailSet result = mApi.getUsers();
-        Log.d(LOG_TAG, "+++ Done! Result = " + result);
-        return result;
-      } catch (KegbotApiException e) {
-        Log.w(LOG_TAG, "Could not load users.", e);
-        return null;
-      }
-    }
-
-    @Override
-    protected void onPostExecute(UserDetailSet result) {
-      Log.d(LOG_TAG, "Users reloaded");
-      if (result != null) {
-        final List<UserDetail> users = result.getUsersList();
-        for (final UserDetail user : users) {
-          mAdapter.add(user);
-        }
-        mAdapter.sort(USERS_ALPHABETIC);
-      }
+    for (final UserDetail user : userList) {
+      mAdapter.add(user);
     }
   }
+
+  @Override
+  public void onLoaderReset(Loader<List<UserDetail>> loader) {
+    Log.d(LOG_TAG, "+++ onLoaderReset");
+    mAdapter.clear();
+  }
+
 }

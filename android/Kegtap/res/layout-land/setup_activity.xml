@@ -2,55 +2,73 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="top|center_horizontal"
-    android:orientation="horizontal"
-    android:padding="32dip"
-    android:paddingLeft="128dip"
-    android:paddingRight="128dip"
-    android:weightSum="1.0" >
+    android:gravity="top|left"
+    android:orientation="vertical"
+    android:padding="32dip" >
 
-    <!-- Left col: Description & nav. -->
+    <ImageView
+        android:id="@+id/setupKegbotLogo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/kegbot_logo_full_white" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dip"
+        android:layout_margin="5dip"
+        android:background="#1FFFFFFF" />
 
     <LinearLayout
-        android:layout_width="0dip"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="0.6"
         android:gravity="top|left"
-        android:orientation="vertical" >
+        android:orientation="horizontal"
+        android:weightSum="1.0" >
 
-        <fragment
-            android:id="@+id/setupTextFragment"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            class="org.kegbot.kegtap.setup.SetupTextFragment" />
+        <!-- Left col: Description & nav. -->
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="fill_parent"
-            android:gravity="bottom|center_horizontal"
-            android:orientation="horizontal" >
+            android:layout_width="0dip"
+            android:layout_height="match_parent"
+            android:layout_weight="0.6"
+            android:gravity="top|left"
+            android:orientation="vertical" >
 
-            <Button
-                android:id="@+id/setupBackButton"
-                android:layout_width="256dip"
+            <fragment
+                android:id="@+id/setupTextFragment"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Back"
-                android:textSize="24dip" />
+                class="org.kegbot.kegtap.setup.SetupTextFragment" />
 
-            <Button
-                android:id="@+id/setupNextButton"
-                android:layout_width="256dip"
-                android:layout_height="wrap_content"
-                android:text="Next"
-                android:textSize="24dip" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="fill_parent"
+                android:gravity="bottom|center_horizontal"
+                android:orientation="horizontal" >
+
+                <Button
+                    android:id="@+id/setupBackButton"
+                    android:layout_width="256dip"
+                    android:layout_height="wrap_content"
+                    android:text="Back"
+                    android:textSize="24dip" />
+
+                <Button
+                    android:id="@+id/setupNextButton"
+                    android:layout_width="256dip"
+                    android:layout_height="wrap_content"
+                    android:text="Next"
+                    android:textSize="24dip" />
+            </LinearLayout>
         </LinearLayout>
-    </LinearLayout>
 
-    <FrameLayout
-        android:id="@+id/setupBodyFragment"
-        android:layout_width="0dip"
-        android:layout_weight="0.4"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"/>
+        <FrameLayout
+            android:id="@+id/setupBodyFragment"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|center_horizontal"
+            android:layout_weight="0.4"
+            android:padding="16dip"/>
+    </LinearLayout>
 
 </LinearLayout>

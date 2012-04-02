@@ -1,5 +1,8 @@
 package org.kegbot.kegtap.service;
 
+import java.io.IOException;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
@@ -8,8 +11,9 @@ import java.util.concurrent.TimeUnit;
 import org.kegbot.core.AuthenticationToken;
 import org.kegbot.core.FlowMeter;
 import org.kegbot.core.ThermoSensor;
+import org.kegbot.core.net.KegnetMessage;
+import org.kegbot.core.net.KegnetServer;
 import org.kegbot.kegboard.KegboardAuthTokenMessage;
-import org.kegbot.kegboard.KegboardAuthTokenMessage.Status;
 import org.kegbot.kegboard.KegboardHelloMessage;
 import org.kegbot.kegboard.KegboardMeterStatusMessage;
 import org.kegbot.kegboard.KegboardOnewirePresenceMessage;
@@ -37,9 +41,9 @@ import com.google.common.collect.Sets;
  * This service listens to and manages kegbot hardware: attached kegboards,
  * sensors, and so on.
  */
-public class KegbotHardwareService extends Service {
+public class KegnetService extends Service {
 
-  private static String TAG = KegbotHardwareService.class.getSimpleName();
+  private static String TAG = KegnetService.class.getSimpleName();
 
   private static final long THERMO_REPORT_PERIOD_MILLIS = TimeUnit.SECONDS.toMillis(30);
 
@@ -114,8 +118,8 @@ public class KegbotHardwareService extends Service {
    * Local binder interface.
    */
   public class LocalBinder extends Binder {
-    KegbotHardwareService getService() {
-      return KegbotHardwareService.this;
+    KegnetService getService() {
+      return KegnetService.this;
     }
   }
 
@@ -165,7 +169,53 @@ public class KegbotHardwareService extends Service {
 
     @Override
     public void onAuthTokenMessage(KegboardAuthTokenMessage message) {
-      handleTokenAuthEvent("", message.getName(), message.getToken(), message.getStatus() == Status.PRESENT);
+    }
+  };
+
+  private final Runnable mKegnetServerRunnable = new Runnable() {
+    @Override
+    public void run() {
+      Log.v(TAG, "Starting kegnet server.");
+
+      final KegnetServer server = new KegnetServer("0.0.0.0", 9805);
+      try {
+        server.bind();
+      } catch (UnknownHostException e) {
+        Log.e(TAG, "Error binding.", e);
+      } catch (IOException e) {
+        Log.e(TAG, "Error binding.", e);
+      }
+      Socket socket = null;
+      while (true) {
+        if (socket == null) {
+          try {
+            socket = server.accept();
+          } catch (IOException e) {
+            Log.e(TAG, "Error accepting.", e);
+            return;
+          }
+        }
+
+        KegnetMessage message = null;
+        try {
+          message = KegnetServer.getNextMessage(socket);
+          if (message == null) {
+            throw new IOException("Remote host closed.");
+          }
+        } catch (IOException e) {
+          Log.w(TAG, "Error getting message.", e);
+          try {
+            socket.close();
+          } catch (IOException e1) {
+            // Ignore
+          } finally {
+            socket = null;
+          }
+        }
+        if (message != null) {
+          handleKegnetMessage(message);
+        }
+      }
     }
   };
 
@@ -205,6 +255,36 @@ public class KegbotHardwareService extends Service {
     return mBinder;
   }
 
+  /**
+   * @param message
+   */
+  private void handleKegnetMessage(KegnetMessage message) {
+    final String eventName = message.getEventName();
+    if ("ThermoEvent".equals(eventName)) {
+      final String sensorName = message.getBody().get("sensor_name").getTextValue();
+      final double value = message.getBody().get("sensor_value").getDoubleValue();
+
+      handleThermoUpdate(sensorName, value);
+    } else if ("MeterUpdate".equals(eventName)) {
+      final String tapName = message.getBody().get("tap_name").getTextValue();
+      final long ticks = message.getBody().get("reading").getLongValue();
+
+      handleMeterUpdate(tapName, ticks);
+    } else if ("TokenAuthEvent".equals(eventName)) {
+      final String status = message.getBody().get("status").getTextValue();
+      final boolean added = status.equals("added");
+      final String authDevice = message.getBody().get("auth_device_name").getTextValue();
+      final String value = message.getBody().get("token_value").getTextValue();
+      final String tapName = message.getBody().get("tap_name").getTextValue();
+
+      handleTokenAuthEvent(tapName, authDevice, value, added);
+    }
+
+  }
+
+  /**
+   * @param message
+   */
   private void handleThermoUpdate(String sensorName, double sensorValue) {
     Log.d(TAG, "Got Thermo Event: " + sensorName + "=" + sensorValue);
     final ThermoSensor sensor = getOrCreateThermoSensor(sensorName);

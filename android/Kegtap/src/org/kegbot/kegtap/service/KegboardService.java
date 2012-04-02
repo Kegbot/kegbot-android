@@ -48,6 +48,8 @@ public class KegboardService extends Service {
   private static final String ACTION_USB_PERMISSION = KegboardService.class.getCanonicalName()
       + ".ACTION_USB_PERMISSION";
 
+  private static final boolean VERBOSE = false;
+
   /**
    * The system's USB service.
    */
@@ -102,8 +104,10 @@ public class KegboardService extends Service {
             break;
           }
           if (amtRead > 0) {
-            Log.i(TAG, "Read " + amtRead + " bytes from kegboard");
-            Log.d(TAG, HexDump.dumpHexString(readBuffer, 0, amtRead));
+            if (VERBOSE) {
+              Log.d(TAG, "Read " + amtRead + " bytes from kegboard");
+              Log.d(TAG, HexDump.dumpHexString(readBuffer, 0, amtRead));
+            }
 
             final List<KegboardMessage> newMessages = mFactory.addBytes(readBuffer, amtRead);
             for (final KegboardMessage message : newMessages) {

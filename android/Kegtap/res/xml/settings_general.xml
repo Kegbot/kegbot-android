@@ -7,17 +7,4 @@
         android:title="Run Setup Wizard" >
     </Preference>
 
-    <CheckBoxPreference
-        android:key="use_manager_pin"
-        android:summary="Require the manager pin for certain operations"
-        android:title="Enable Manager Pin" >
-    </CheckBoxPreference>
-
-    <EditTextPreference
-        android:inputType="numberPassword"
-        android:key="manager_pin"
-        android:summary="The manager pin value"
-        android:title="Manager Pin" >
-    </EditTextPreference>
-
 </PreferenceScreen>

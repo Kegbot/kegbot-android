@@ -2,28 +2,27 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="top|center_horizontal">
+    android:gravity="center|left"
+    android:orientation="vertical" >
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/setup_api_url_api_name"
+        android:text="Manager Pin"
         android:textSize="24dip"
-        android:textStyle="bold"/>
+        android:textStyle="bold" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/setup_api_url_api_description"
+        android:text="Secret PIN for manager access."
         android:textColor="@android:color/darker_gray"
-        android:textSize="18dip"/>
+        android:textSize="18dip" />
     
     <EditText
-        android:id="@+id/apiUrl"
+        android:id="@+id/managerPin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="textUri"
-        android:hint="http://example.com/api"/>
+        android:inputType="text|numberPassword" />
     
 </LinearLayout>

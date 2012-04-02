@@ -8,15 +8,17 @@ import java.util.List;
 import org.kegbot.kegtap.R;
 
 import android.app.ActionBar;
+import android.app.Activity;
+import android.app.DialogFragment;
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
+import android.content.DialogInterface;
 import android.os.AsyncTask;
+import android.os.AsyncTask.Status;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -30,7 +32,7 @@ import com.google.common.collect.Lists;
  *
  * @author mike wakerly (mike@wakerly.com)
  */
-public class SetupActivity extends FragmentActivity {
+public class SetupActivity extends Activity {
 
   private static final String TAG = SetupActivity.class.getSimpleName();
 
@@ -45,6 +47,7 @@ public class SetupActivity extends FragmentActivity {
 
   private static final int MESSAGE_GO_BACK = 100;
   private static final int MESSAGE_START_VALIDATION = 101;
+  private static final int MESSAGE_VALIDATION_ABORTED = 102;
 
   private final Handler mHandler = new Handler() {
     @Override
@@ -56,6 +59,12 @@ public class SetupActivity extends FragmentActivity {
           break;
         case MESSAGE_START_VALIDATION:
           startValidation();
+          break;
+        case MESSAGE_VALIDATION_ABORTED:
+          if (mValidatorTask != null) {
+            mValidatorTask.cancel(true);
+          }
+          showAlertDialog("Verification aborted; please try again.");
           break;
         default:
           super.handleMessage(msg);
@@ -109,14 +118,18 @@ public class SetupActivity extends FragmentActivity {
   private void showAlertDialog(String message) {
     hideDialog();
     final DialogFragment dialog = SetupAlertDialogFragment.newInstance(message);
-    dialog.show(getSupportFragmentManager(), "dialog");
+    dialog.show(getFragmentManager(), "dialog");
   }
 
   private void showProgressDialog() {
     hideDialog();
-    mDialog = new SetupProgressDialogFragment();
-    mDialog.setCancelable(false);
-    mDialog.show(getSupportFragmentManager(), "dialog");
+    mDialog = new SetupProgressDialogFragment(new SetupProgressDialogFragment.Listener() {
+      @Override
+      public void onCancel(DialogInterface dialog) {
+        mHandler.sendEmptyMessage(MESSAGE_VALIDATION_ABORTED);
+      }
+    });
+    mDialog.show(getFragmentManager(), "dialog");
   }
 
   private void hideDialog() {
@@ -188,7 +201,7 @@ public class SetupActivity extends FragmentActivity {
 
     mCurrentTask = task;
 
-    FragmentManager fragmentManager = getSupportFragmentManager();
+    FragmentManager fragmentManager = getFragmentManager();
     final FragmentTransaction transaction = fragmentManager.beginTransaction();
     transaction.replace(R.id.setupTextFragment, textFragment);
     transaction.replace(R.id.setupBodyFragment, bodyFragment);

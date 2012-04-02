@@ -23,6 +23,11 @@ public class KegboardTemperatureReadingMessage extends KegboardMessage {
     return readTagAsString(TAG_SENSOR_NAME);
   }
 
+  @Override
+  protected String getStringExtra() {
+    return String.format("name=%s value=%.2f", getName(), Double.valueOf(getValue()));
+  }
+
   public double getValue() {
     final Long rawValue = readTagAsLong(TAG_SENSOR_VALUE);
     if (rawValue == null) {

@@ -12,8 +12,9 @@ import org.kegbot.kegtap.R;
 import org.kegbot.kegtap.util.PreferenceHelper;
 import org.kegbot.proto.Api.SystemEventDetailSet;
 
+import android.app.Fragment;
 import android.content.Context;
-import android.support.v4.app.Fragment;
+import android.net.Uri;
 import android.util.Log;
 
 import com.google.common.base.Strings;
@@ -55,6 +56,15 @@ public enum SetupTask {
       final String apiUrl = mFragment.getApiUrl();
 
       Log.d(API_URL.toString(), "Got api URL: " + apiUrl);
+      final Uri uri = Uri.parse(apiUrl);
+      final String scheme = uri.getScheme();
+
+      if (!"http".equals(scheme) && !"https".equals(scheme)) {
+        return "Please enter an HTTP or HTTPs URL.";
+      }
+      if (Strings.isNullOrEmpty(uri.getHost())) {
+        return "Please provide a valid URL.";
+      }
 
       KegbotApi api = new KegbotApiImpl();
       api.setApiUrl(apiUrl);
@@ -144,6 +154,8 @@ public enum SetupTask {
         return "Error fetching API key: " + toHumanError(e);
       }
 
+      prefs.setUsername(username);
+      prefs.setPassword(password);
       prefs.setApiKey(apiKey);
 
       return "";
@@ -177,6 +189,37 @@ public enum SetupTask {
     public String validate(Context context) {
       PreferenceHelper prefs = new PreferenceHelper(context);
       prefs.setRunCore(mFragment.getRunCore());
+      return "";
+    }
+
+    @Override
+    public SetupTask next() {
+      return SET_PIN;
+    }
+  },
+
+  SET_PIN {
+    private final SetupManagerPinFragment mFragment = new SetupManagerPinFragment();
+
+    @Override
+    public int getTitle() {
+      return R.string.setup_manager_pin_title;
+    }
+
+    @Override
+    public int getDescription() {
+      return R.string.setup_manager_pin_description;
+    }
+
+    @Override
+    public Fragment getFragment() {
+      return mFragment;
+    }
+
+    @Override
+    public String validate(Context context) {
+      PreferenceHelper prefs = new PreferenceHelper(context);
+      prefs.setPin(mFragment.getPin());
       return "";
     }
 
