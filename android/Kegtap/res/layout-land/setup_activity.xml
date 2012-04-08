@@ -38,7 +38,9 @@
                 android:id="@+id/setupTextFragment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                class="org.kegbot.kegtap.setup.SetupTextFragment" />
+                class="org.kegbot.kegtap.setup.SetupTextFragment" >
+                <!-- Preview: layout=@layout/setup_text_fragment -->
+            </fragment>
 
             <LinearLayout
                 android:layout_width="match_parent"

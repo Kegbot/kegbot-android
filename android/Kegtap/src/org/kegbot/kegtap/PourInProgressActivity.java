@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.kegbot.core.Flow;
 import org.kegbot.core.FlowManager;
@@ -35,6 +36,7 @@ import android.hardware.Camera.ShutterCallback;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.PowerManager;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
@@ -52,12 +54,16 @@ public class PourInProgressActivity extends CoreActivity {
 
   private static final long FLOW_FINISH_DELAY_MILLIS = 5000;
 
+  private static final long IDLE_SCROLL_TIMEOUT_MILLIS = TimeUnit.SECONDS.toMillis(3);
+
   private static final int DIALOG_IDLE_WARNING = 1;
 
   private final FlowManager mFlowManager = FlowManager.getSingletonInstance();
   private final TapManager mTapManager = TapManager.getSingletonInstance();
 
   private int mPictureSeconds = 0;
+
+  private PowerManager.WakeLock mWakeLock;
 
   private CameraFragment mCameraFragment;
 
@@ -74,6 +80,10 @@ public class PourInProgressActivity extends CoreActivity {
   private PouringTapAdapter mPouringTapAdapter;
 
   private ViewPager mTapPager;
+
+  private Tap mCurrentTap;
+
+  private List<Tap> mTaps;
 
   private static final boolean DEBUG = false;
 
@@ -127,6 +137,22 @@ public class PourInProgressActivity extends CoreActivity {
     }
   };
 
+  private final ViewPager.OnPageChangeListener mPageChangeListener = new ViewPager.OnPageChangeListener() {
+
+    @Override
+    public void onPageSelected(int position) {
+      mCurrentTap = ((PourStatusFragment) mPouringTapAdapter.getItem(position)).getTap();
+    }
+
+    @Override
+    public void onPageScrolled(int arg0, float arg1, int arg2) {
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int arg0) {
+    }
+  };
+
   public class PouringTapAdapter extends FragmentPagerAdapter {
 
     private final List<PourStatusFragment> mFragments;
@@ -141,8 +167,11 @@ public class PourInProgressActivity extends CoreActivity {
 
     @Override
     public Fragment getItem(int position) {
-      Log.d("PouringTapAdapter", "getItem: " + position);
       return mFragments.get(position);
+    }
+
+    public Tap getTap(int position) {
+      return ((PourStatusFragment)getItem(position)).getTap();
     }
 
     @Override
@@ -168,9 +197,12 @@ public class PourInProgressActivity extends CoreActivity {
     findViewById(R.id.pourInProgressRightCol).setBackgroundDrawable(
         getResources().getDrawable(R.drawable.shape_rounded_rect));
 
+    mTaps = Lists.newArrayList(mTapManager.getTaps());
     mTapPager = (ViewPager) findViewById(R.id.tapPager);
     mPouringTapAdapter = new PouringTapAdapter(getFragmentManager());
     mTapPager.setAdapter(mPouringTapAdapter);
+    mTapPager.setOnPageChangeListener(mPageChangeListener);
+    scrollToMostActiveTap();
 
     mCameraFragment = (CameraFragment) getFragmentManager().findFragmentById(R.id.camera);
 
@@ -217,13 +249,12 @@ public class PourInProgressActivity extends CoreActivity {
   }
 
   @Override
-  public void onStart() {
-    super.onStart();
-  }
-
-  @Override
   protected void onResume() {
     super.onResume();
+    final PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+    mWakeLock = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ON_AFTER_RELEASE
+        | PowerManager.ACQUIRE_CAUSES_WAKEUP, "kegbot-pour");
+    mWakeLock.acquire();
     registerReceiver(mUpdateReceiver, POUR_INTENT_FILTER);
     handleIntent(getIntent());
     schedulePicture();
@@ -231,6 +262,8 @@ public class PourInProgressActivity extends CoreActivity {
 
   @Override
   protected void onPause() {
+    mWakeLock.release();
+    mWakeLock = null;
     mHandler.removeCallbacks(FLOW_UPDATE_RUNNABLE);
     unregisterReceiver(mUpdateReceiver);
     super.onPause();
@@ -268,6 +301,44 @@ public class PourInProgressActivity extends CoreActivity {
     mHandler.post(PICTURE_COUNTDOWN_RUNNABLE);
   }
 
+  private Tap getMostActiveTap() {
+    Tap tap = mCurrentTap;
+    long leastIdle = Long.MAX_VALUE;
+    for (Flow flow : mFlowManager.getAllActiveFlows()) {
+      final Tap flowTap = flow.getTap();
+      if (flow.getIdleTimeMs() < leastIdle) {
+        tap = flowTap;
+        leastIdle = flow.getIdleTimeMs();
+      }
+    }
+    return tap;
+  }
+
+  private void scrollToMostActiveTap() {
+    final Tap mostActive = getMostActiveTap();
+    if (mostActive == mCurrentTap) {
+      return;
+    }
+
+    if (mCurrentTap != null) {
+      final Flow currentFlow = mFlowManager.getFlowForTap(mCurrentTap);
+      if (currentFlow != null && currentFlow.getIdleTimeMs() < IDLE_SCROLL_TIMEOUT_MILLIS) {
+        return;
+      }
+    }
+
+    final Flow candidateFlow = mFlowManager.getFlowForTap(mostActive);
+    if (candidateFlow.getIdleTimeMs() < IDLE_SCROLL_TIMEOUT_MILLIS) {
+      scrollToPosition(mTaps.indexOf(candidateFlow.getTap()));
+    }
+  }
+
+  private void scrollToPosition(int position) {
+    Log.d(TAG, "scrollToPosition: " + position);
+    mTapPager.setCurrentItem(position, true);
+    mCurrentTap = mPouringTapAdapter.getTap(position);
+  }
+
   private void refreshFlows() {
     mHandler.removeCallbacks(FLOW_UPDATE_RUNNABLE);
 
@@ -281,19 +352,14 @@ public class PourInProgressActivity extends CoreActivity {
         Log.d(TAG, "Refreshing with flow: " + flow);
       }
 
-      if (flow.getState() == Flow.State.ACTIVE) {
-        // Consider idle time (for warning) only for non-zero flows.
-        if (flow.getTicks() > 0) {
-          final long idleTimeMs = flow.getIdleTimeMs();
-          if (idleTimeMs > largestIdleTime) {
-            largestIdleTime = idleTimeMs;
-          }
-        }
+      final long idleTimeMs = flow.getIdleTimeMs();
+      if (idleTimeMs > largestIdleTime) {
+        largestIdleTime = idleTimeMs;
       }
     }
+    scrollToMostActiveTap();
 
     for (final PourStatusFragment frag : mPouringTapAdapter.getFragments()) {
-      Log.d(TAG, "Fragment: " + frag + " tap: " + frag.getTap());
       final Flow flow = mFlowManager.getFlowForTap(frag.getTap());
       if (flow != null) {
         frag.updateWithFlow(flow);
@@ -382,7 +448,7 @@ public class PourInProgressActivity extends CoreActivity {
         }
 
         final File imageDir = getCacheDir();
-        final Date pourDate = new Date(flow.getStartTime());
+        final Date pourDate = new Date(System.currentTimeMillis());
         final SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd-HHmmss");
         final String baseName = "pour-" + format.format(pourDate) + "-" + flow.getFlowId();
 

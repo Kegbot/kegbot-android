@@ -9,7 +9,6 @@ import org.kegbot.core.Tap;
 import org.kegbot.kegtap.util.image.ImageDownloader;
 import org.kegbot.proto.Api.TapDetail;
 import org.kegbot.proto.Models.BeerType;
-import org.kegbot.proto.Models.Image;
 
 import android.app.Activity;
 import android.app.ListFragment;
@@ -32,6 +31,11 @@ public class PourStatusFragment extends ListFragment {
   private final Tap mTap;
 
   private View mView;
+  private TextView mPourVolumeNumbers;
+  private TextView mPourVolumeUnits;
+  private TextView mPourBeerName;
+  private TextView mStatusLine;
+  private ImageView mBeerImage;
 
   /**
    * After this much inactivity, the "pour automatically ends" dialog is shown.
@@ -49,7 +53,13 @@ public class PourStatusFragment extends ListFragment {
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     mView = inflater.inflate(R.layout.pour_status_item_layout, container, false);
-    //mView.setBackgroundDrawable(getResources().getDrawable(R.drawable.shape_rounded_rect));
+
+    mPourVolumeNumbers = (TextView) mView.findViewById(R.id.pourVolumeNumbers);
+    mPourVolumeUnits = (TextView) mView.findViewById(R.id.pourVolumeWords);
+    mPourBeerName = (TextView) mView.findViewById(R.id.pourBeerName);
+    mStatusLine = (TextView) mView.findViewById(R.id.pourStatusLine);
+    mBeerImage = (ImageView) mView.findViewById(R.id.pourImage);
+
     return mView;
   }
 
@@ -57,6 +67,38 @@ public class PourStatusFragment extends ListFragment {
   public void onAttach(Activity activity) {
     super.onAttach(activity);
     mImageDownloader = ImageDownloader.getSingletonInstance(activity);
+  }
+
+  @Override
+  public void onResume() {
+    super.onResume();
+    applyTapDetail();
+  }
+
+  private void applyTapDetail() {
+    final TapDetail tapDetail = ConfigurationManager.getSingletonInstance().getTapDetail(
+        getTap().getMeterName());
+    if (tapDetail == null) {
+      Log.wtf(TAG, "Tap detail is null.");
+      return;
+    }
+
+    mBeerImage.setBackgroundDrawable(getResources().getDrawable(R.drawable.kegbot_unknown_square_2));
+    if (tapDetail.hasBeerType()) {
+      final BeerType type = tapDetail.getBeerType();
+      final String beerName = type.getName();
+
+      // Set beer name.
+      if (!Strings.isNullOrEmpty(beerName) && mPourBeerName != null) {
+        mPourBeerName.setText(beerName);
+      }
+
+      // Set beer image.
+      if (tapDetail.getBeerType().hasImage()) {
+        final String imageUrl = tapDetail.getBeerType().getImage().getUrl();
+        mImageDownloader.download(imageUrl, mBeerImage);
+      }
+    }
   }
 
   public void updateWithFlow(final Flow flow) {
@@ -69,12 +111,6 @@ public class PourStatusFragment extends ListFragment {
     }
 
     final Flow.State flowState = flow.getState();
-    final ConfigurationManager config = ConfigurationManager.getSingletonInstance();
-
-    final TextView pourVolumeNumbers = (TextView) mView.findViewById(R.id.pourVolumeNumbers);
-    final TextView pourVolumeUnits = (TextView) mView.findViewById(R.id.pourVolumeWords);
-    final TextView pourBeerName = (TextView) mView.findViewById(R.id.pourBeerName);
-    final TextView statusLine = (TextView) mView.findViewById(R.id.pourStatusLine);
 
     // Set volume portion.
     final double ounces = Units.volumeMlToOunces(flow.getVolumeMl());
@@ -88,39 +124,11 @@ public class PourStatusFragment extends ListFragment {
     }
 
     // Set pour volume and units.
-    if (pourVolumeNumbers != null) {
-      pourVolumeNumbers.setText(volumeStr);
+    if (mPourVolumeNumbers != null) {
+      mPourVolumeNumbers.setText(volumeStr);
     }
-    if (pourVolumeUnits != null) {
-      pourVolumeUnits.setText(units);
-    }
-
-    // Update tap / beer info.
-    final TapDetail tapDetail = config.getTapDetail(flow.getTap().getMeterName());
-    final ImageView tapImage = (ImageView) mView.findViewById(R.id.pourImage);
-
-    if (tapDetail != null) {
-      if (tapDetail.hasBeerType()) {
-        final BeerType type = tapDetail.getBeerType();
-        final String beerName = type.getName();
-
-        // Set beer name.
-        if (!Strings.isNullOrEmpty(beerName) && pourBeerName != null) {
-          pourBeerName.setText(beerName);
-        }
-
-        // Set beer image.
-        if (tapImage != null) {
-          tapImage.setBackgroundDrawable(null);
-          tapImage.setBackgroundDrawable(getResources().getDrawable(R.drawable.kegbot_unknown_square_2));
-          //tapImage.setBackgroundResource(R.drawable.kegbot_unknown_square_2);
-          if (tapDetail.getBeerType().hasImage()) {
-            final Image image = tapDetail.getBeerType().getImage();
-            final String imageUrl = image.getUrl();
-            mImageDownloader.download(imageUrl, tapImage);
-          }
-        }
-      }
+    if (mPourVolumeUnits != null) {
+      mPourVolumeUnits.setText(units);
     }
 
     // Set drinker image.
@@ -139,19 +147,17 @@ public class PourStatusFragment extends ListFragment {
     */
 
     // Update beer info.
-    if (statusLine != null) {
-      if ((flowState == State.ACTIVE || flowState == State.IDLE)
-          && (flow.getIdleTimeMs() >= IDLE_TOOLTIP_MILLIS)) {
-        final long seconds = flow.getMsUntilIdle() / 1000;
-        statusLine.setText("Pour automatically ends in " + seconds + " second"
-            + ((seconds != 1) ? "s" : "") + ".");
-        statusLine.setVisibility(View.VISIBLE);
-      } else if (flowState == State.COMPLETED) {
-        statusLine.setText("Pour completed!");
-        statusLine.setVisibility(View.VISIBLE);
-      } else {
-        statusLine.setVisibility(View.INVISIBLE);
-      }
+    if ((flowState == State.ACTIVE || flowState == State.IDLE)
+        && (flow.getIdleTimeMs() >= IDLE_TOOLTIP_MILLIS)) {
+      final long seconds = flow.getMsUntilIdle() / 1000;
+      mStatusLine.setText("Pour automatically ends in " + seconds + " second"
+          + ((seconds != 1) ? "s" : "") + ".");
+      mStatusLine.setVisibility(View.VISIBLE);
+    } else if (flowState == State.COMPLETED) {
+      mStatusLine.setText("Pour completed!");
+      mStatusLine.setVisibility(View.VISIBLE);
+    } else {
+      mStatusLine.setVisibility(View.INVISIBLE);
     }
 
     /*
@@ -167,7 +173,10 @@ public class PourStatusFragment extends ListFragment {
   }
 
   public void setIdle() {
-
+    if (mView != null) {
+      mStatusLine.setText("Pour completed!");
+      mStatusLine.setVisibility(View.VISIBLE);
+    }
   }
 
 }

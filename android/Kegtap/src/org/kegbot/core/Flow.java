@@ -2,6 +2,8 @@ package org.kegbot.core;
 
 import java.util.List;
 
+import android.os.SystemClock;
+
 import com.google.common.base.Predicate;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
@@ -74,6 +76,8 @@ public class Flow {
    */
   private long mStartTime;
 
+  private long mEndTime;
+
   /**
    * Time the flow was last updated, or ended, in milliseconds since the epoch.
    */
@@ -95,7 +99,8 @@ public class Flow {
     mUsername = "";
     mTicks = 0;
     mVolumeMl = 0;
-    mStartTime = mUpdateTime = System.currentTimeMillis();
+    mStartTime = SystemClock.uptimeMillis();
+    mUpdateTime = SystemClock.uptimeMillis();
   }
 
   @Override
@@ -125,7 +130,7 @@ public class Flow {
    * Sets the flow's last activity time to now.
    */
   public void pokeActivity() {
-    mUpdateTime = System.currentTimeMillis();
+    mUpdateTime = SystemClock.uptimeMillis();
   }
 
   /**
@@ -192,35 +197,32 @@ public class Flow {
   }
 
   public void setState(State state) {
+    if (mState == State.COMPLETED) {
+      throw new IllegalStateException("Flow already completed, cannot set " + state);
+    }
     mState = state;
-  }
-
-  public void setStartTime(long startTime) {
-    mStartTime = startTime;
-  }
-
-  public void setUpdateTime(long updateTime) {
-    mUpdateTime = updateTime;
+    if (mState == State.COMPLETED) {
+      mEndTime = SystemClock.uptimeMillis();
+    }
   }
 
   public State getState() {
     return mState;
   }
 
-  public long getStartTime() {
-    return mStartTime;
-  }
-
-  public long getUpdateTime() {
-    return mUpdateTime;
+  public long getDurationMs() {
+    if (mState != State.COMPLETED) {
+      return SystemClock.uptimeMillis() - mStartTime;
+    }
+    return mEndTime - mStartTime;
   }
 
   public long getIdleTimeMs() {
-    return System.currentTimeMillis() - mUpdateTime;
+    return SystemClock.uptimeMillis() - mUpdateTime;
   }
 
   public long getMsUntilIdle() {
-    return Math.max(mMaxIdleTimeMs - (System.currentTimeMillis() - mUpdateTime), 0);
+    return Math.max(mMaxIdleTimeMs - getIdleTimeMs(), 0);
   }
 
   public void addImage(String image) {
@@ -243,7 +245,7 @@ public class Flow {
     if (mMaxIdleTimeMs <= 0) {
       return false;
     }
-    return (System.currentTimeMillis() - mUpdateTime) > mMaxIdleTimeMs;
+    return getIdleTimeMs() > mMaxIdleTimeMs;
   }
 
   public boolean isAuthenticated() {

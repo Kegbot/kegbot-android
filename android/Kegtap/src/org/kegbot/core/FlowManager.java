@@ -21,6 +21,13 @@ public class FlowManager {
 
   private static final String TAG = FlowManager.class.getSimpleName();
 
+  /**
+   * Minimum tick delta needed to start a flow. This prevents slight meter
+   * readings (for example those that might be caused by bubbles) from starting
+   * a new pour.
+   */
+  private static final int MIN_FLOW_START_TICKS = 10;
+
   private static FlowManager sSingleton = null;
 
   private final TapManager mTapManager;
@@ -203,17 +210,24 @@ public class FlowManager {
       Log.d(TAG, "Dropping activity for unknown tap: " + tapName);
       return null;
     }
+
     final Integer lastReading = mLastTapReading.get(tap);
     int delta;
-    final boolean isActivity;
     if (lastReading == null || lastReading.intValue() > ticks) {
       // First report for this meter.
       delta = 0;
-      isActivity = true;
     } else {
-      delta = ticks - lastReading.intValue();
-      isActivity = (delta > 0);
+      delta = Math.max(0, ticks - lastReading.intValue());
     }
+
+    // A delta of zero is a special case: either the meter reading overflowed,
+    // or this is the first recorded flow.
+    if (delta > 0 && delta < MIN_FLOW_START_TICKS) {
+      Log.d(TAG, "handleMeterActivity: not enough activity to start " + "flow: delta=" + delta
+          + " min=" + MIN_FLOW_START_TICKS);
+      return null;
+    }
+
     mLastTapReading.put(tap, Integer.valueOf(ticks));
 
     Log.d(TAG, "handleMeterActivity: lastReading=" + lastReading + ", ticks=" + ticks + ", delta="
@@ -221,17 +235,15 @@ public class FlowManager {
 
     Flow flow = null;
     synchronized (mFlowsByTap) {
-      if (isActivity) {
-        flow = getFlowForTap(tap);
-        if (flow == null || flow.getState() != Flow.State.ACTIVE) {
-          flow = startFlow(tap, mDefaultIdleTimeMillis);
-          Log.d(TAG, "  started new flow: " + flow);
-        } else {
-          Log.d(TAG, "  found existing flow: " + flow);
-        }
-        flow.addTicks(delta);
-        publishFlowUpdate(flow);
+      flow = getFlowForTap(tap);
+      if (flow == null || flow.getState() != Flow.State.ACTIVE) {
+        flow = startFlow(tap, mDefaultIdleTimeMillis);
+        Log.d(TAG, "  started new flow: " + flow);
+      } else {
+        Log.d(TAG, "  found existing flow: " + flow);
       }
+      flow.addTicks(delta);
+      publishFlowUpdate(flow);
     }
 
     return flow;

@@ -342,7 +342,7 @@ public class KegbotApiService extends BackgroundService {
         .setTapName(ended.getTap().getMeterName())
         .setTicks(ended.getTicks())
         .setVolumeMl((float) ended.getVolumeMl()).setUsername(ended.getUsername())
-        .setSecondsAgo(0).setDurationSeconds((int) (ended.getUpdateTime() - ended.getStartTime()))
+        .setSecondsAgo(0).setDurationSeconds((int) (ended.getDurationMs() / 1000.0))
         .setSpilled(false).buildPartial();
   }
 
