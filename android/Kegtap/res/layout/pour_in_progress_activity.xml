@@ -27,41 +27,12 @@
         android:orientation="vertical"
         android:weightSum="1.0" >
 
-        <LinearLayout
-            android:id="@+id/cameraBox"
+        <fragment
+            android:id="@+id/camera"
             android:layout_width="match_parent"
             android:layout_height="0dip"
             android:layout_weight="0.5"
-            android:gravity="center"
-            android:orientation="vertical" >
-
-            <!-- Header. -->
-
-            <TextView
-                android:id="@+id/nowPouringTitle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="5dip"
-                android:text="Now Pouring..."
-                android:textColor="#888"
-                android:textSize="24dip"
-                android:visibility="gone" />
-
-            <!-- Camera. -->
-
-            <fragment
-                android:id="@+id/camera"
-                android:layout_width="fill_parent"
-                android:layout_height="392dip"
-                class="org.kegbot.kegtap.camera.CameraFragment" />
-
-            <Button
-                android:id="@+id/takePictureButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/pour_take_picture"
-                android:textSize="32dip" />
-        </LinearLayout>
+            class="org.kegbot.kegtap.camera.CameraFragment" />
 
         <LinearLayout
             android:id="@+id/controlsBox"
@@ -71,7 +42,6 @@
             android:gravity="center"
             android:orientation="vertical" >
         </LinearLayout>
-        
     </LinearLayout>
 
 </LinearLayout>

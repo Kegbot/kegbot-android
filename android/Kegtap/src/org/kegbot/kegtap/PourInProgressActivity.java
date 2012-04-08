@@ -1,11 +1,6 @@
 package org.kegbot.kegtap;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -26,21 +21,12 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Bitmap;
-import android.graphics.Bitmap.CompressFormat;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
-import android.hardware.Camera;
-import android.hardware.Camera.PictureCallback;
-import android.hardware.Camera.ShutterCallback;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 
 import com.google.common.collect.ImmutableList;
@@ -61,13 +47,9 @@ public class PourInProgressActivity extends CoreActivity {
   private final FlowManager mFlowManager = FlowManager.getSingletonInstance();
   private final TapManager mTapManager = TapManager.getSingletonInstance();
 
-  private int mPictureSeconds = 0;
-
   private PowerManager.WakeLock mWakeLock;
 
   private CameraFragment mCameraFragment;
-
-  private Button mPictureButton;
 
   private Button mEndPourButton;
 
@@ -91,6 +73,7 @@ public class PourInProgressActivity extends CoreActivity {
       KegtapBroadcast.ACTION_POUR_START);
   static {
     POUR_INTENT_FILTER.addAction(KegtapBroadcast.ACTION_POUR_UPDATE);
+    POUR_INTENT_FILTER.addAction(KegtapBroadcast.ACTION_PICTURE_TAKEN);
     POUR_INTENT_FILTER.setPriority(100);
   }
 
@@ -102,6 +85,18 @@ public class PourInProgressActivity extends CoreActivity {
           || KegtapBroadcast.ACTION_POUR_START.equals(action)) {
         handleIntent(intent);
         abortBroadcast();
+      } else if (KegtapBroadcast.ACTION_PICTURE_TAKEN.equals(action)) {
+        final String filename = intent.getStringExtra(KegtapBroadcast.PICTURE_TAKEN_EXTRA_FILENAME);
+        Log.d(TAG, "Got photo: " + filename);
+
+        final Tap tap = mCurrentTap;
+        if (tap != null) {
+          final Flow flow = mFlowManager.getFlowForTap(tap);
+          if (flow != null) {
+            Log.d(TAG, "  - attached to flow: " + flow);
+            flow.addImage(filename);
+          }
+        }
       }
     }
   };
@@ -121,24 +116,7 @@ public class PourInProgressActivity extends CoreActivity {
     }
   };
 
-  private final Runnable PICTURE_COUNTDOWN_RUNNABLE = new Runnable() {
-    @Override
-    public void run() {
-      if (mPictureSeconds > 0) {
-        mPictureButton.setClickable(false);
-        mPictureButton.setText(mPictureSeconds + " ...");
-        mPictureSeconds -= 1;
-        mHandler.postDelayed(PICTURE_COUNTDOWN_RUNNABLE, 1000);
-      } else {
-        takePicture();
-        mPictureButton.setClickable(true);
-        mPictureButton.setText("Take Picture");
-      }
-    }
-  };
-
   private final ViewPager.OnPageChangeListener mPageChangeListener = new ViewPager.OnPageChangeListener() {
-
     @Override
     public void onPageSelected(int position) {
       mCurrentTap = ((PourStatusFragment) mPouringTapAdapter.getItem(position)).getTap();
@@ -194,9 +172,6 @@ public class PourInProgressActivity extends CoreActivity {
     setContentView(R.layout.pour_in_progress_activity);
     bindToCoreService();
 
-    findViewById(R.id.pourInProgressRightCol).setBackgroundDrawable(
-        getResources().getDrawable(R.drawable.shape_rounded_rect));
-
     mTaps = Lists.newArrayList(mTapManager.getTaps());
     mTapPager = (ViewPager) findViewById(R.id.tapPager);
     mPouringTapAdapter = new PouringTapAdapter(getFragmentManager());
@@ -227,16 +202,6 @@ public class PourInProgressActivity extends CoreActivity {
     });
 
     mIdleDetectedDialog = builder.create();
-
-    // Attach camera click button.
-    mPictureButton = ((Button) findViewById(R.id.takePictureButton));
-    mPictureButton.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        schedulePicture();
-      }
-    });
-
     mPrefs = new PreferenceHelper(this);
   }
 
@@ -256,8 +221,8 @@ public class PourInProgressActivity extends CoreActivity {
         | PowerManager.ACQUIRE_CAUSES_WAKEUP, "kegbot-pour");
     mWakeLock.acquire();
     registerReceiver(mUpdateReceiver, POUR_INTENT_FILTER);
+
     handleIntent(getIntent());
-    schedulePicture();
   }
 
   @Override
@@ -293,12 +258,6 @@ public class PourInProgressActivity extends CoreActivity {
         || KegtapBroadcast.ACTION_POUR_START.equals(action)) {
       refreshFlows();
     }
-  }
-
-  private void schedulePicture() {
-    mPictureSeconds = 3;
-    mHandler.removeCallbacks(PICTURE_COUNTDOWN_RUNNABLE);
-    mHandler.post(PICTURE_COUNTDOWN_RUNNABLE);
   }
 
   private Tap getMostActiveTap() {
@@ -388,7 +347,7 @@ public class PourInProgressActivity extends CoreActivity {
       mFlowManager.endFlow(flow);
     }
     cancelIdleWarning();
-    cancelPendingPicture();
+    mCameraFragment.cancelPendingPicture();
   }
 
   private void sendIdleWarning() {
@@ -403,92 +362,6 @@ public class PourInProgressActivity extends CoreActivity {
       return;
     }
     dismissDialog(DIALOG_IDLE_WARNING);
-  }
-
-  private void takePicture() {
-    final ShutterCallback shutter = new ShutterCallback() {
-      @Override
-      public void onShutter() {
-        Log.d(TAG, "camera: shutter");
-      }
-    };
-
-    final PictureCallback jpeg = new PictureCallback() {
-      @Override
-      public void onPictureTaken(byte[] data, Camera camera) {
-        camera.startPreview();
-        Log.d(TAG, "camera jpeg: " + data);
-        doSaveJpeg(data);
-      }
-    };
-
-    mCameraFragment.takePicture(shutter, null, jpeg);
-  }
-
-  private void cancelPendingPicture() {
-    mHandler.removeCallbacks(PICTURE_COUNTDOWN_RUNNABLE);
-  }
-
-  private void doSaveJpeg(final byte[] data) {
-    new ImageSaveTask().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, data);
-  }
-
-  class ImageSaveTask extends AsyncTask<byte[], Void, Void> {
-
-    @Override
-    protected Void doInBackground(byte[]... params) {
-      byte[] data = params[0];
-      final int rotation = mCameraFragment.getDisplayOrientation();
-      final Bitmap bitmap = decodeAndRotateFromJpeg(data, rotation);
-
-      for (final Flow flow : mFlowManager.getAllActiveFlows()) {
-        if (flow == null) {
-          Log.d(TAG, "ImageSaveTask for empty flow.");
-          return null;
-        }
-
-        final File imageDir = getCacheDir();
-        final Date pourDate = new Date(System.currentTimeMillis());
-        final SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd-HHmmss");
-        final String baseName = "pour-" + format.format(pourDate) + "-" + flow.getFlowId();
-
-        File imageFile = new File(imageDir, baseName + ".jpg");
-        imageFile.setReadable(true, false);
-        int ext = 2;
-        while (imageFile.exists()) {
-          imageFile = new File(imageDir, baseName + "-" + (ext++) + ".jpg");
-          imageFile.setReadable(true, false);
-        }
-
-        try {
-          FileOutputStream fos = new FileOutputStream(imageFile);
-          bitmap.compress(CompressFormat.JPEG, 90, fos);
-          fos.close();
-        } catch (IOException e) {
-          Log.w(TAG, "Could not save image.", e);
-          return null;
-        }
-
-        final String savedImage = imageFile.getAbsolutePath();
-        Log.i(TAG, "Saved pour image: " + savedImage);
-        flow.addImage(savedImage);
-      }
-      return null;
-    }
-
-    private Bitmap decodeAndRotateFromJpeg(byte[] data, int rotation) {
-      Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
-      if (rotation != 0) {
-        Log.w(TAG, "ImageSaveTask: rotation=" + rotation);
-
-        Matrix matrix = new Matrix();
-        matrix.postRotate(rotation);
-        bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix,
-            true);
-      }
-      return bitmap;
-    }
-
   }
 
   public static Intent getStartIntent(Context context, final String tapName) {

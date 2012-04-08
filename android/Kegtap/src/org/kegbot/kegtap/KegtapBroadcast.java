@@ -43,6 +43,10 @@ public class KegtapBroadcast {
   public static final String USER_AUTHED_EXTRA_TAP_NAME = "tap";
   public static final String USER_AUTHED_EXTRA_USERNAME = "username";
 
+  public static final String ACTION_PICTURE_TAKEN = "org.kegbot.action.PICTURE_TAKEN";
+  public static final String PICTURE_TAKEN_EXTRA_FILENAME = "filename";
+
+
   /**
    * Non-instantiable.
    */
@@ -75,6 +79,12 @@ public class KegtapBroadcast {
     if (!Strings.isNullOrEmpty(tapName)) {
       intent.putExtra(USER_AUTHED_EXTRA_TAP_NAME, tapName);
     }
+    return intent;
+  }
+
+  public static Intent getPictureTakenBroadcastIntent(final String filename) {
+    final Intent intent = new Intent(ACTION_PICTURE_TAKEN);
+    intent.putExtra(PICTURE_TAKEN_EXTRA_FILENAME, filename);
     return intent;
   }
 

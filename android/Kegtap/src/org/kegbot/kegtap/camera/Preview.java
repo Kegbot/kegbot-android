@@ -6,6 +6,7 @@ import java.util.List;
 import android.content.Context;
 import android.hardware.Camera;
 import android.hardware.Camera.Size;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -30,21 +31,22 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback {
   List<Size> mSupportedPreviewSizes;
   Camera mCamera;
 
-  Preview(Context context) {
+  public Preview(Context context) {
     super(context);
+    init(context);
+  }
 
-    mSurfaceView = new SurfaceView(context);
-    addView(mSurfaceView);
+  public Preview(Context context, AttributeSet attrs, int defStyle) {
+    super(context, attrs, defStyle);
+    init(context);
+  }
 
-    // Install a SurfaceHolder.Callback so we get notified when the
-    // underlying surface is created and destroyed.
-    mHolder = mSurfaceView.getHolder();
-    mHolder.addCallback(this);
-    mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+  public Preview(Context context, AttributeSet attrs) {
+    super(context, attrs);
+    init(context);
   }
 
   public void setCamera(Camera camera) {
-    Log.d(TAG, "_____ setCamera camera=" + camera);
     mCamera = camera;
     if (mCamera != null) {
       mSupportedPreviewSizes = mCamera.getParameters().getSupportedPreviewSizes();
@@ -52,9 +54,17 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback {
     }
   }
 
-  public void switchCamera(Camera camera) {
-    Log.d(TAG, "_____ switchCamera camera=" + camera);
+  private void init(Context context) {
+    if (mSurfaceView == null) {
+      mSurfaceView = new SurfaceView(context);
+      addView(mSurfaceView);
+      mHolder = mSurfaceView.getHolder();
+      mHolder.addCallback(this);
+      mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+    }
+  }
 
+  public void switchCamera(Camera camera) {
     setCamera(camera);
     try {
       camera.setPreviewDisplay(mHolder);
