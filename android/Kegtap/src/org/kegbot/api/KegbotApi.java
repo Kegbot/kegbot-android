@@ -1,17 +1,15 @@
 package org.kegbot.api;
 
 import org.kegbot.proto.Api.DrinkDetail;
-import org.kegbot.proto.Api.DrinkDetailHtmlSet;
 import org.kegbot.proto.Api.DrinkSet;
 import org.kegbot.proto.Api.KegDetail;
-import org.kegbot.proto.Api.KegSet;
+import org.kegbot.proto.Api.KegDetailSet;
 import org.kegbot.proto.Api.RecordDrinkRequest;
 import org.kegbot.proto.Api.RecordTemperatureRequest;
 import org.kegbot.proto.Api.SessionDetail;
 import org.kegbot.proto.Api.SessionSet;
 import org.kegbot.proto.Api.SoundEventSet;
 import org.kegbot.proto.Api.SystemEventDetailSet;
-import org.kegbot.proto.Api.SystemEventHtmlSet;
 import org.kegbot.proto.Api.TapDetail;
 import org.kegbot.proto.Api.TapDetailSet;
 import org.kegbot.proto.Api.ThermoLogSet;
@@ -43,7 +41,7 @@ public interface KegbotApi {
    * @return all kegs
    * @throws KegbotApiException
    */
-  public KegSet getAllKegs() throws KegbotApiException;
+  public KegDetailSet getAllKegs() throws KegbotApiException;
 
   /**
    * @return
@@ -119,12 +117,6 @@ public interface KegbotApi {
   public DrinkSet getRecentDrinks() throws KegbotApiException;
 
   /**
-   * @return
-   * @throws KegbotApiException
-   */
-  public DrinkDetailHtmlSet getRecentDrinksHtml() throws KegbotApiException;
-
-  /**
    * Returns recent system events.
    *
    * @return the events
@@ -132,12 +124,6 @@ public interface KegbotApi {
    */
   public SystemEventDetailSet getRecentEvents() throws KegbotApiException;
   public SystemEventDetailSet getRecentEvents(final long sinceEventId) throws KegbotApiException;
-
-  /**
-   * @return
-   * @throws KegbotApiException
-   */
-  public SystemEventHtmlSet getRecentEventsHtml() throws KegbotApiException;
 
   /**
    * Returns detailed information about a session.

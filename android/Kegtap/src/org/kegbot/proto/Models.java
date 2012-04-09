@@ -4076,6 +4076,10 @@ public final class Models {
     // optional string auth_token_id = 10;
     boolean hasAuthTokenId();
     String getAuthTokenId();
+    
+    // optional string url = 11;
+    boolean hasUrl();
+    String getUrl();
   }
   public static final class Drink extends
       com.google.protobuf.GeneratedMessage
@@ -4360,6 +4364,38 @@ public final class Models {
       }
     }
     
+    // optional string url = 11;
+    public static final int URL_FIELD_NUMBER = 11;
+    private Object url_;
+    public boolean hasUrl() {
+      return ((bitField0_ & 0x00000400) == 0x00000400);
+    }
+    public String getUrl() {
+      Object ref = url_;
+      if (ref instanceof String) {
+        return (String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        String s = bs.toStringUtf8();
+        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+          url_ = s;
+        }
+        return s;
+      }
+    }
+    private com.google.protobuf.ByteString getUrlBytes() {
+      Object ref = url_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+        url_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    
     private void initFields() {
       id_ = "";
       ticks_ = 0;
@@ -4371,6 +4407,7 @@ public final class Models {
       kegId_ = "";
       userId_ = "";
       authTokenId_ = "";
+      url_ = "";
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -4438,6 +4475,9 @@ public final class Models {
       if (((bitField0_ & 0x00000200) == 0x00000200)) {
         output.writeBytes(10, getAuthTokenIdBytes());
       }
+      if (((bitField0_ & 0x00000400) == 0x00000400)) {
+        output.writeBytes(11, getUrlBytes());
+      }
       getUnknownFields().writeTo(output);
     }
     
@@ -4486,6 +4526,10 @@ public final class Models {
       if (((bitField0_ & 0x00000200) == 0x00000200)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(10, getAuthTokenIdBytes());
+      }
+      if (((bitField0_ & 0x00000400) == 0x00000400)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(11, getUrlBytes());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -4629,6 +4673,8 @@ public final class Models {
         bitField0_ = (bitField0_ & ~0x00000100);
         authTokenId_ = "";
         bitField0_ = (bitField0_ & ~0x00000200);
+        url_ = "";
+        bitField0_ = (bitField0_ & ~0x00000400);
         return this;
       }
       
@@ -4707,6 +4753,10 @@ public final class Models {
           to_bitField0_ |= 0x00000200;
         }
         result.authTokenId_ = authTokenId_;
+        if (((from_bitField0_ & 0x00000400) == 0x00000400)) {
+          to_bitField0_ |= 0x00000400;
+        }
+        result.url_ = url_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -4752,6 +4802,9 @@ public final class Models {
         }
         if (other.hasAuthTokenId()) {
           setAuthTokenId(other.getAuthTokenId());
+        }
+        if (other.hasUrl()) {
+          setUrl(other.getUrl());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -4856,6 +4909,11 @@ public final class Models {
             case 82: {
               bitField0_ |= 0x00000200;
               authTokenId_ = input.readBytes();
+              break;
+            }
+            case 90: {
+              bitField0_ |= 0x00000400;
+              url_ = input.readBytes();
               break;
             }
           }
@@ -5179,6 +5237,42 @@ public final class Models {
         onChanged();
       }
       
+      // optional string url = 11;
+      private Object url_ = "";
+      public boolean hasUrl() {
+        return ((bitField0_ & 0x00000400) == 0x00000400);
+      }
+      public String getUrl() {
+        Object ref = url_;
+        if (!(ref instanceof String)) {
+          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+          url_ = s;
+          return s;
+        } else {
+          return (String) ref;
+        }
+      }
+      public Builder setUrl(String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000400;
+        url_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearUrl() {
+        bitField0_ = (bitField0_ & ~0x00000400);
+        url_ = getDefaultInstance().getUrl();
+        onChanged();
+        return this;
+      }
+      void setUrl(com.google.protobuf.ByteString value) {
+        bitField0_ |= 0x00000400;
+        url_ = value;
+        onChanged();
+      }
+      
       // @@protoc_insertion_point(builder_scope:Drink)
     }
     
@@ -5204,6 +5298,38 @@ public final class Models {
     // optional uint32 height = 3;
     boolean hasHeight();
     int getHeight();
+    
+    // optional string created_date = 4;
+    boolean hasCreatedDate();
+    String getCreatedDate();
+    
+    // optional string caption = 5;
+    boolean hasCaption();
+    String getCaption();
+    
+    // optional string user_id = 6;
+    boolean hasUserId();
+    String getUserId();
+    
+    // optional string keg_id = 7;
+    boolean hasKegId();
+    String getKegId();
+    
+    // optional string session_id = 8;
+    boolean hasSessionId();
+    String getSessionId();
+    
+    // optional string drink_id = 9;
+    boolean hasDrinkId();
+    String getDrinkId();
+    
+    // optional string thumbnail_url = 10;
+    boolean hasThumbnailUrl();
+    String getThumbnailUrl();
+    
+    // optional string original_url = 11;
+    boolean hasOriginalUrl();
+    String getOriginalUrl();
   }
   public static final class Image extends
       com.google.protobuf.GeneratedMessage
@@ -5286,10 +5412,274 @@ public final class Models {
       return height_;
     }
     
+    // optional string created_date = 4;
+    public static final int CREATED_DATE_FIELD_NUMBER = 4;
+    private Object createdDate_;
+    public boolean hasCreatedDate() {
+      return ((bitField0_ & 0x00000008) == 0x00000008);
+    }
+    public String getCreatedDate() {
+      Object ref = createdDate_;
+      if (ref instanceof String) {
+        return (String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        String s = bs.toStringUtf8();
+        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+          createdDate_ = s;
+        }
+        return s;
+      }
+    }
+    private com.google.protobuf.ByteString getCreatedDateBytes() {
+      Object ref = createdDate_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+        createdDate_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    
+    // optional string caption = 5;
+    public static final int CAPTION_FIELD_NUMBER = 5;
+    private Object caption_;
+    public boolean hasCaption() {
+      return ((bitField0_ & 0x00000010) == 0x00000010);
+    }
+    public String getCaption() {
+      Object ref = caption_;
+      if (ref instanceof String) {
+        return (String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        String s = bs.toStringUtf8();
+        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+          caption_ = s;
+        }
+        return s;
+      }
+    }
+    private com.google.protobuf.ByteString getCaptionBytes() {
+      Object ref = caption_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+        caption_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    
+    // optional string user_id = 6;
+    public static final int USER_ID_FIELD_NUMBER = 6;
+    private Object userId_;
+    public boolean hasUserId() {
+      return ((bitField0_ & 0x00000020) == 0x00000020);
+    }
+    public String getUserId() {
+      Object ref = userId_;
+      if (ref instanceof String) {
+        return (String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        String s = bs.toStringUtf8();
+        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+          userId_ = s;
+        }
+        return s;
+      }
+    }
+    private com.google.protobuf.ByteString getUserIdBytes() {
+      Object ref = userId_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+        userId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    
+    // optional string keg_id = 7;
+    public static final int KEG_ID_FIELD_NUMBER = 7;
+    private Object kegId_;
+    public boolean hasKegId() {
+      return ((bitField0_ & 0x00000040) == 0x00000040);
+    }
+    public String getKegId() {
+      Object ref = kegId_;
+      if (ref instanceof String) {
+        return (String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        String s = bs.toStringUtf8();
+        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+          kegId_ = s;
+        }
+        return s;
+      }
+    }
+    private com.google.protobuf.ByteString getKegIdBytes() {
+      Object ref = kegId_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+        kegId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    
+    // optional string session_id = 8;
+    public static final int SESSION_ID_FIELD_NUMBER = 8;
+    private Object sessionId_;
+    public boolean hasSessionId() {
+      return ((bitField0_ & 0x00000080) == 0x00000080);
+    }
+    public String getSessionId() {
+      Object ref = sessionId_;
+      if (ref instanceof String) {
+        return (String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        String s = bs.toStringUtf8();
+        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+          sessionId_ = s;
+        }
+        return s;
+      }
+    }
+    private com.google.protobuf.ByteString getSessionIdBytes() {
+      Object ref = sessionId_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+        sessionId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    
+    // optional string drink_id = 9;
+    public static final int DRINK_ID_FIELD_NUMBER = 9;
+    private Object drinkId_;
+    public boolean hasDrinkId() {
+      return ((bitField0_ & 0x00000100) == 0x00000100);
+    }
+    public String getDrinkId() {
+      Object ref = drinkId_;
+      if (ref instanceof String) {
+        return (String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        String s = bs.toStringUtf8();
+        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+          drinkId_ = s;
+        }
+        return s;
+      }
+    }
+    private com.google.protobuf.ByteString getDrinkIdBytes() {
+      Object ref = drinkId_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+        drinkId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    
+    // optional string thumbnail_url = 10;
+    public static final int THUMBNAIL_URL_FIELD_NUMBER = 10;
+    private Object thumbnailUrl_;
+    public boolean hasThumbnailUrl() {
+      return ((bitField0_ & 0x00000200) == 0x00000200);
+    }
+    public String getThumbnailUrl() {
+      Object ref = thumbnailUrl_;
+      if (ref instanceof String) {
+        return (String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        String s = bs.toStringUtf8();
+        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+          thumbnailUrl_ = s;
+        }
+        return s;
+      }
+    }
+    private com.google.protobuf.ByteString getThumbnailUrlBytes() {
+      Object ref = thumbnailUrl_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+        thumbnailUrl_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    
+    // optional string original_url = 11;
+    public static final int ORIGINAL_URL_FIELD_NUMBER = 11;
+    private Object originalUrl_;
+    public boolean hasOriginalUrl() {
+      return ((bitField0_ & 0x00000400) == 0x00000400);
+    }
+    public String getOriginalUrl() {
+      Object ref = originalUrl_;
+      if (ref instanceof String) {
+        return (String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        String s = bs.toStringUtf8();
+        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+          originalUrl_ = s;
+        }
+        return s;
+      }
+    }
+    private com.google.protobuf.ByteString getOriginalUrlBytes() {
+      Object ref = originalUrl_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+        originalUrl_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    
     private void initFields() {
       url_ = "";
       width_ = 0;
       height_ = 0;
+      createdDate_ = "";
+      caption_ = "";
+      userId_ = "";
+      kegId_ = "";
+      sessionId_ = "";
+      drinkId_ = "";
+      thumbnailUrl_ = "";
+      originalUrl_ = "";
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -5316,6 +5706,30 @@ public final class Models {
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         output.writeUInt32(3, height_);
       }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        output.writeBytes(4, getCreatedDateBytes());
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        output.writeBytes(5, getCaptionBytes());
+      }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        output.writeBytes(6, getUserIdBytes());
+      }
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+        output.writeBytes(7, getKegIdBytes());
+      }
+      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+        output.writeBytes(8, getSessionIdBytes());
+      }
+      if (((bitField0_ & 0x00000100) == 0x00000100)) {
+        output.writeBytes(9, getDrinkIdBytes());
+      }
+      if (((bitField0_ & 0x00000200) == 0x00000200)) {
+        output.writeBytes(10, getThumbnailUrlBytes());
+      }
+      if (((bitField0_ & 0x00000400) == 0x00000400)) {
+        output.writeBytes(11, getOriginalUrlBytes());
+      }
       getUnknownFields().writeTo(output);
     }
     
@@ -5336,6 +5750,38 @@ public final class Models {
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt32Size(3, height_);
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(4, getCreatedDateBytes());
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(5, getCaptionBytes());
+      }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(6, getUserIdBytes());
+      }
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(7, getKegIdBytes());
+      }
+      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(8, getSessionIdBytes());
+      }
+      if (((bitField0_ & 0x00000100) == 0x00000100)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(9, getDrinkIdBytes());
+      }
+      if (((bitField0_ & 0x00000200) == 0x00000200)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(10, getThumbnailUrlBytes());
+      }
+      if (((bitField0_ & 0x00000400) == 0x00000400)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(11, getOriginalUrlBytes());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -5465,6 +5911,22 @@ public final class Models {
         bitField0_ = (bitField0_ & ~0x00000002);
         height_ = 0;
         bitField0_ = (bitField0_ & ~0x00000004);
+        createdDate_ = "";
+        bitField0_ = (bitField0_ & ~0x00000008);
+        caption_ = "";
+        bitField0_ = (bitField0_ & ~0x00000010);
+        userId_ = "";
+        bitField0_ = (bitField0_ & ~0x00000020);
+        kegId_ = "";
+        bitField0_ = (bitField0_ & ~0x00000040);
+        sessionId_ = "";
+        bitField0_ = (bitField0_ & ~0x00000080);
+        drinkId_ = "";
+        bitField0_ = (bitField0_ & ~0x00000100);
+        thumbnailUrl_ = "";
+        bitField0_ = (bitField0_ & ~0x00000200);
+        originalUrl_ = "";
+        bitField0_ = (bitField0_ & ~0x00000400);
         return this;
       }
       
@@ -5515,6 +5977,38 @@ public final class Models {
           to_bitField0_ |= 0x00000004;
         }
         result.height_ = height_;
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000008;
+        }
+        result.createdDate_ = createdDate_;
+        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+          to_bitField0_ |= 0x00000010;
+        }
+        result.caption_ = caption_;
+        if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
+          to_bitField0_ |= 0x00000020;
+        }
+        result.userId_ = userId_;
+        if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
+          to_bitField0_ |= 0x00000040;
+        }
+        result.kegId_ = kegId_;
+        if (((from_bitField0_ & 0x00000080) == 0x00000080)) {
+          to_bitField0_ |= 0x00000080;
+        }
+        result.sessionId_ = sessionId_;
+        if (((from_bitField0_ & 0x00000100) == 0x00000100)) {
+          to_bitField0_ |= 0x00000100;
+        }
+        result.drinkId_ = drinkId_;
+        if (((from_bitField0_ & 0x00000200) == 0x00000200)) {
+          to_bitField0_ |= 0x00000200;
+        }
+        result.thumbnailUrl_ = thumbnailUrl_;
+        if (((from_bitField0_ & 0x00000400) == 0x00000400)) {
+          to_bitField0_ |= 0x00000400;
+        }
+        result.originalUrl_ = originalUrl_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -5539,6 +6033,30 @@ public final class Models {
         }
         if (other.hasHeight()) {
           setHeight(other.getHeight());
+        }
+        if (other.hasCreatedDate()) {
+          setCreatedDate(other.getCreatedDate());
+        }
+        if (other.hasCaption()) {
+          setCaption(other.getCaption());
+        }
+        if (other.hasUserId()) {
+          setUserId(other.getUserId());
+        }
+        if (other.hasKegId()) {
+          setKegId(other.getKegId());
+        }
+        if (other.hasSessionId()) {
+          setSessionId(other.getSessionId());
+        }
+        if (other.hasDrinkId()) {
+          setDrinkId(other.getDrinkId());
+        }
+        if (other.hasThumbnailUrl()) {
+          setThumbnailUrl(other.getThumbnailUrl());
+        }
+        if (other.hasOriginalUrl()) {
+          setOriginalUrl(other.getOriginalUrl());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -5588,6 +6106,46 @@ public final class Models {
             case 24: {
               bitField0_ |= 0x00000004;
               height_ = input.readUInt32();
+              break;
+            }
+            case 34: {
+              bitField0_ |= 0x00000008;
+              createdDate_ = input.readBytes();
+              break;
+            }
+            case 42: {
+              bitField0_ |= 0x00000010;
+              caption_ = input.readBytes();
+              break;
+            }
+            case 50: {
+              bitField0_ |= 0x00000020;
+              userId_ = input.readBytes();
+              break;
+            }
+            case 58: {
+              bitField0_ |= 0x00000040;
+              kegId_ = input.readBytes();
+              break;
+            }
+            case 66: {
+              bitField0_ |= 0x00000080;
+              sessionId_ = input.readBytes();
+              break;
+            }
+            case 74: {
+              bitField0_ |= 0x00000100;
+              drinkId_ = input.readBytes();
+              break;
+            }
+            case 82: {
+              bitField0_ |= 0x00000200;
+              thumbnailUrl_ = input.readBytes();
+              break;
+            }
+            case 90: {
+              bitField0_ |= 0x00000400;
+              originalUrl_ = input.readBytes();
               break;
             }
           }
@@ -5674,6 +6232,294 @@ public final class Models {
         return this;
       }
       
+      // optional string created_date = 4;
+      private Object createdDate_ = "";
+      public boolean hasCreatedDate() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      public String getCreatedDate() {
+        Object ref = createdDate_;
+        if (!(ref instanceof String)) {
+          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+          createdDate_ = s;
+          return s;
+        } else {
+          return (String) ref;
+        }
+      }
+      public Builder setCreatedDate(String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000008;
+        createdDate_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearCreatedDate() {
+        bitField0_ = (bitField0_ & ~0x00000008);
+        createdDate_ = getDefaultInstance().getCreatedDate();
+        onChanged();
+        return this;
+      }
+      void setCreatedDate(com.google.protobuf.ByteString value) {
+        bitField0_ |= 0x00000008;
+        createdDate_ = value;
+        onChanged();
+      }
+      
+      // optional string caption = 5;
+      private Object caption_ = "";
+      public boolean hasCaption() {
+        return ((bitField0_ & 0x00000010) == 0x00000010);
+      }
+      public String getCaption() {
+        Object ref = caption_;
+        if (!(ref instanceof String)) {
+          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+          caption_ = s;
+          return s;
+        } else {
+          return (String) ref;
+        }
+      }
+      public Builder setCaption(String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000010;
+        caption_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearCaption() {
+        bitField0_ = (bitField0_ & ~0x00000010);
+        caption_ = getDefaultInstance().getCaption();
+        onChanged();
+        return this;
+      }
+      void setCaption(com.google.protobuf.ByteString value) {
+        bitField0_ |= 0x00000010;
+        caption_ = value;
+        onChanged();
+      }
+      
+      // optional string user_id = 6;
+      private Object userId_ = "";
+      public boolean hasUserId() {
+        return ((bitField0_ & 0x00000020) == 0x00000020);
+      }
+      public String getUserId() {
+        Object ref = userId_;
+        if (!(ref instanceof String)) {
+          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+          userId_ = s;
+          return s;
+        } else {
+          return (String) ref;
+        }
+      }
+      public Builder setUserId(String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000020;
+        userId_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearUserId() {
+        bitField0_ = (bitField0_ & ~0x00000020);
+        userId_ = getDefaultInstance().getUserId();
+        onChanged();
+        return this;
+      }
+      void setUserId(com.google.protobuf.ByteString value) {
+        bitField0_ |= 0x00000020;
+        userId_ = value;
+        onChanged();
+      }
+      
+      // optional string keg_id = 7;
+      private Object kegId_ = "";
+      public boolean hasKegId() {
+        return ((bitField0_ & 0x00000040) == 0x00000040);
+      }
+      public String getKegId() {
+        Object ref = kegId_;
+        if (!(ref instanceof String)) {
+          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+          kegId_ = s;
+          return s;
+        } else {
+          return (String) ref;
+        }
+      }
+      public Builder setKegId(String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000040;
+        kegId_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearKegId() {
+        bitField0_ = (bitField0_ & ~0x00000040);
+        kegId_ = getDefaultInstance().getKegId();
+        onChanged();
+        return this;
+      }
+      void setKegId(com.google.protobuf.ByteString value) {
+        bitField0_ |= 0x00000040;
+        kegId_ = value;
+        onChanged();
+      }
+      
+      // optional string session_id = 8;
+      private Object sessionId_ = "";
+      public boolean hasSessionId() {
+        return ((bitField0_ & 0x00000080) == 0x00000080);
+      }
+      public String getSessionId() {
+        Object ref = sessionId_;
+        if (!(ref instanceof String)) {
+          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+          sessionId_ = s;
+          return s;
+        } else {
+          return (String) ref;
+        }
+      }
+      public Builder setSessionId(String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000080;
+        sessionId_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearSessionId() {
+        bitField0_ = (bitField0_ & ~0x00000080);
+        sessionId_ = getDefaultInstance().getSessionId();
+        onChanged();
+        return this;
+      }
+      void setSessionId(com.google.protobuf.ByteString value) {
+        bitField0_ |= 0x00000080;
+        sessionId_ = value;
+        onChanged();
+      }
+      
+      // optional string drink_id = 9;
+      private Object drinkId_ = "";
+      public boolean hasDrinkId() {
+        return ((bitField0_ & 0x00000100) == 0x00000100);
+      }
+      public String getDrinkId() {
+        Object ref = drinkId_;
+        if (!(ref instanceof String)) {
+          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+          drinkId_ = s;
+          return s;
+        } else {
+          return (String) ref;
+        }
+      }
+      public Builder setDrinkId(String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000100;
+        drinkId_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearDrinkId() {
+        bitField0_ = (bitField0_ & ~0x00000100);
+        drinkId_ = getDefaultInstance().getDrinkId();
+        onChanged();
+        return this;
+      }
+      void setDrinkId(com.google.protobuf.ByteString value) {
+        bitField0_ |= 0x00000100;
+        drinkId_ = value;
+        onChanged();
+      }
+      
+      // optional string thumbnail_url = 10;
+      private Object thumbnailUrl_ = "";
+      public boolean hasThumbnailUrl() {
+        return ((bitField0_ & 0x00000200) == 0x00000200);
+      }
+      public String getThumbnailUrl() {
+        Object ref = thumbnailUrl_;
+        if (!(ref instanceof String)) {
+          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+          thumbnailUrl_ = s;
+          return s;
+        } else {
+          return (String) ref;
+        }
+      }
+      public Builder setThumbnailUrl(String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000200;
+        thumbnailUrl_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearThumbnailUrl() {
+        bitField0_ = (bitField0_ & ~0x00000200);
+        thumbnailUrl_ = getDefaultInstance().getThumbnailUrl();
+        onChanged();
+        return this;
+      }
+      void setThumbnailUrl(com.google.protobuf.ByteString value) {
+        bitField0_ |= 0x00000200;
+        thumbnailUrl_ = value;
+        onChanged();
+      }
+      
+      // optional string original_url = 11;
+      private Object originalUrl_ = "";
+      public boolean hasOriginalUrl() {
+        return ((bitField0_ & 0x00000400) == 0x00000400);
+      }
+      public String getOriginalUrl() {
+        Object ref = originalUrl_;
+        if (!(ref instanceof String)) {
+          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+          originalUrl_ = s;
+          return s;
+        } else {
+          return (String) ref;
+        }
+      }
+      public Builder setOriginalUrl(String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000400;
+        originalUrl_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearOriginalUrl() {
+        bitField0_ = (bitField0_ & ~0x00000400);
+        originalUrl_ = getDefaultInstance().getOriginalUrl();
+        onChanged();
+        return this;
+      }
+      void setOriginalUrl(com.google.protobuf.ByteString value) {
+        bitField0_ |= 0x00000400;
+        originalUrl_ = value;
+        onChanged();
+      }
+      
       // @@protoc_insertion_point(builder_scope:Image)
     }
     
@@ -5735,6 +6581,10 @@ public final class Models {
     // optional float spilled_ml = 12;
     boolean hasSpilledMl();
     float getSpilledMl();
+    
+    // optional string url = 13;
+    boolean hasUrl();
+    String getUrl();
   }
   public static final class Keg extends
       com.google.protobuf.GeneratedMessage
@@ -6061,6 +6911,38 @@ public final class Models {
       return spilledMl_;
     }
     
+    // optional string url = 13;
+    public static final int URL_FIELD_NUMBER = 13;
+    private Object url_;
+    public boolean hasUrl() {
+      return ((bitField0_ & 0x00001000) == 0x00001000);
+    }
+    public String getUrl() {
+      Object ref = url_;
+      if (ref instanceof String) {
+        return (String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        String s = bs.toStringUtf8();
+        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+          url_ = s;
+        }
+        return s;
+      }
+    }
+    private com.google.protobuf.ByteString getUrlBytes() {
+      Object ref = url_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+        url_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    
     private void initFields() {
       id_ = "";
       typeId_ = "";
@@ -6074,6 +6956,7 @@ public final class Models {
       status_ = "";
       description_ = "";
       spilledMl_ = 0F;
+      url_ = "";
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -6155,6 +7038,9 @@ public final class Models {
       if (((bitField0_ & 0x00000800) == 0x00000800)) {
         output.writeFloat(12, spilledMl_);
       }
+      if (((bitField0_ & 0x00001000) == 0x00001000)) {
+        output.writeBytes(13, getUrlBytes());
+      }
       getUnknownFields().writeTo(output);
     }
     
@@ -6211,6 +7097,10 @@ public final class Models {
       if (((bitField0_ & 0x00000800) == 0x00000800)) {
         size += com.google.protobuf.CodedOutputStream
           .computeFloatSize(12, spilledMl_);
+      }
+      if (((bitField0_ & 0x00001000) == 0x00001000)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(13, getUrlBytes());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -6358,6 +7248,8 @@ public final class Models {
         bitField0_ = (bitField0_ & ~0x00000400);
         spilledMl_ = 0F;
         bitField0_ = (bitField0_ & ~0x00000800);
+        url_ = "";
+        bitField0_ = (bitField0_ & ~0x00001000);
         return this;
       }
       
@@ -6444,6 +7336,10 @@ public final class Models {
           to_bitField0_ |= 0x00000800;
         }
         result.spilledMl_ = spilledMl_;
+        if (((from_bitField0_ & 0x00001000) == 0x00001000)) {
+          to_bitField0_ |= 0x00001000;
+        }
+        result.url_ = url_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -6495,6 +7391,9 @@ public final class Models {
         }
         if (other.hasSpilledMl()) {
           setSpilledMl(other.getSpilledMl());
+        }
+        if (other.hasUrl()) {
+          setUrl(other.getUrl());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -6617,6 +7516,11 @@ public final class Models {
             case 101: {
               bitField0_ |= 0x00000800;
               spilledMl_ = input.readFloat();
+              break;
+            }
+            case 106: {
+              bitField0_ |= 0x00001000;
+              url_ = input.readBytes();
               break;
             }
           }
@@ -6995,6 +7899,42 @@ public final class Models {
         spilledMl_ = 0F;
         onChanged();
         return this;
+      }
+      
+      // optional string url = 13;
+      private Object url_ = "";
+      public boolean hasUrl() {
+        return ((bitField0_ & 0x00001000) == 0x00001000);
+      }
+      public String getUrl() {
+        Object ref = url_;
+        if (!(ref instanceof String)) {
+          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+          url_ = s;
+          return s;
+        } else {
+          return (String) ref;
+        }
+      }
+      public Builder setUrl(String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00001000;
+        url_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearUrl() {
+        bitField0_ = (bitField0_ & ~0x00001000);
+        url_ = getDefaultInstance().getUrl();
+        onChanged();
+        return this;
+      }
+      void setUrl(com.google.protobuf.ByteString value) {
+        bitField0_ |= 0x00001000;
+        url_ = value;
+        onChanged();
       }
       
       // @@protoc_insertion_point(builder_scope:Keg)
@@ -8763,6 +9703,10 @@ public final class Models {
     // optional string slug = 6;
     boolean hasSlug();
     String getSlug();
+    
+    // optional string url = 7;
+    boolean hasUrl();
+    String getUrl();
   }
   public static final class Session extends
       com.google.protobuf.GeneratedMessage
@@ -8963,6 +9907,38 @@ public final class Models {
       }
     }
     
+    // optional string url = 7;
+    public static final int URL_FIELD_NUMBER = 7;
+    private Object url_;
+    public boolean hasUrl() {
+      return ((bitField0_ & 0x00000040) == 0x00000040);
+    }
+    public String getUrl() {
+      Object ref = url_;
+      if (ref instanceof String) {
+        return (String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        String s = bs.toStringUtf8();
+        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+          url_ = s;
+        }
+        return s;
+      }
+    }
+    private com.google.protobuf.ByteString getUrlBytes() {
+      Object ref = url_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+        url_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    
     private void initFields() {
       id_ = "";
       startTime_ = "";
@@ -8970,6 +9946,7 @@ public final class Models {
       volumeMl_ = 0F;
       name_ = "";
       slug_ = "";
+      url_ = "";
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -9017,6 +9994,9 @@ public final class Models {
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
         output.writeBytes(6, getSlugBytes());
       }
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+        output.writeBytes(7, getUrlBytes());
+      }
       getUnknownFields().writeTo(output);
     }
     
@@ -9049,6 +10029,10 @@ public final class Models {
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(6, getSlugBytes());
+      }
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(7, getUrlBytes());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -9184,6 +10168,8 @@ public final class Models {
         bitField0_ = (bitField0_ & ~0x00000010);
         slug_ = "";
         bitField0_ = (bitField0_ & ~0x00000020);
+        url_ = "";
+        bitField0_ = (bitField0_ & ~0x00000040);
         return this;
       }
       
@@ -9246,6 +10232,10 @@ public final class Models {
           to_bitField0_ |= 0x00000020;
         }
         result.slug_ = slug_;
+        if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
+          to_bitField0_ |= 0x00000040;
+        }
+        result.url_ = url_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -9279,6 +10269,9 @@ public final class Models {
         }
         if (other.hasSlug()) {
           setSlug(other.getSlug());
+        }
+        if (other.hasUrl()) {
+          setUrl(other.getUrl());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -9355,6 +10348,11 @@ public final class Models {
             case 50: {
               bitField0_ |= 0x00000020;
               slug_ = input.readBytes();
+              break;
+            }
+            case 58: {
+              bitField0_ |= 0x00000040;
+              url_ = input.readBytes();
               break;
             }
           }
@@ -9561,6 +10559,42 @@ public final class Models {
       void setSlug(com.google.protobuf.ByteString value) {
         bitField0_ |= 0x00000020;
         slug_ = value;
+        onChanged();
+      }
+      
+      // optional string url = 7;
+      private Object url_ = "";
+      public boolean hasUrl() {
+        return ((bitField0_ & 0x00000040) == 0x00000040);
+      }
+      public String getUrl() {
+        Object ref = url_;
+        if (!(ref instanceof String)) {
+          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+          url_ = s;
+          return s;
+        } else {
+          return (String) ref;
+        }
+      }
+      public Builder setUrl(String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000040;
+        url_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearUrl() {
+        bitField0_ = (bitField0_ & ~0x00000040);
+        url_ = getDefaultInstance().getUrl();
+        onChanged();
+        return this;
+      }
+      void setUrl(com.google.protobuf.ByteString value) {
+        bitField0_ |= 0x00000040;
+        url_ = value;
         onChanged();
       }
       
@@ -11796,6 +12830,10 @@ public final class Models {
     // optional string date_joined = 11;
     boolean hasDateJoined();
     String getDateJoined();
+    
+    // optional string url = 12;
+    boolean hasUrl();
+    String getUrl();
   }
   public static final class User extends
       com.google.protobuf.GeneratedMessage
@@ -12093,6 +13131,38 @@ public final class Models {
       }
     }
     
+    // optional string url = 12;
+    public static final int URL_FIELD_NUMBER = 12;
+    private Object url_;
+    public boolean hasUrl() {
+      return ((bitField0_ & 0x00000800) == 0x00000800);
+    }
+    public String getUrl() {
+      Object ref = url_;
+      if (ref instanceof String) {
+        return (String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        String s = bs.toStringUtf8();
+        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+          url_ = s;
+        }
+        return s;
+      }
+    }
+    private com.google.protobuf.ByteString getUrlBytes() {
+      Object ref = url_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+        url_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    
     private void initFields() {
       username_ = "";
       image_ = org.kegbot.proto.Models.Image.getDefaultInstance();
@@ -12105,6 +13175,7 @@ public final class Models {
       isSuperuser_ = false;
       lastLogin_ = "";
       dateJoined_ = "";
+      url_ = "";
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -12165,6 +13236,9 @@ public final class Models {
       if (((bitField0_ & 0x00000400) == 0x00000400)) {
         output.writeBytes(11, getDateJoinedBytes());
       }
+      if (((bitField0_ & 0x00000800) == 0x00000800)) {
+        output.writeBytes(12, getUrlBytes());
+      }
       getUnknownFields().writeTo(output);
     }
     
@@ -12217,6 +13291,10 @@ public final class Models {
       if (((bitField0_ & 0x00000400) == 0x00000400)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(11, getDateJoinedBytes());
+      }
+      if (((bitField0_ & 0x00000800) == 0x00000800)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(12, getUrlBytes());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -12367,6 +13445,8 @@ public final class Models {
         bitField0_ = (bitField0_ & ~0x00000200);
         dateJoined_ = "";
         bitField0_ = (bitField0_ & ~0x00000400);
+        url_ = "";
+        bitField0_ = (bitField0_ & ~0x00000800);
         return this;
       }
       
@@ -12453,6 +13533,10 @@ public final class Models {
           to_bitField0_ |= 0x00000400;
         }
         result.dateJoined_ = dateJoined_;
+        if (((from_bitField0_ & 0x00000800) == 0x00000800)) {
+          to_bitField0_ |= 0x00000800;
+        }
+        result.url_ = url_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -12501,6 +13585,9 @@ public final class Models {
         }
         if (other.hasDateJoined()) {
           setDateJoined(other.getDateJoined());
+        }
+        if (other.hasUrl()) {
+          setUrl(other.getUrl());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -12604,6 +13691,11 @@ public final class Models {
             case 90: {
               bitField0_ |= 0x00000400;
               dateJoined_ = input.readBytes();
+              break;
+            }
+            case 98: {
+              bitField0_ |= 0x00000800;
+              url_ = input.readBytes();
               break;
             }
           }
@@ -13014,6 +14106,42 @@ public final class Models {
       void setDateJoined(com.google.protobuf.ByteString value) {
         bitField0_ |= 0x00000400;
         dateJoined_ = value;
+        onChanged();
+      }
+      
+      // optional string url = 12;
+      private Object url_ = "";
+      public boolean hasUrl() {
+        return ((bitField0_ & 0x00000800) == 0x00000800);
+      }
+      public String getUrl() {
+        Object ref = url_;
+        if (!(ref instanceof String)) {
+          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+          url_ = s;
+          return s;
+        } else {
+          return (String) ref;
+        }
+      }
+      public Builder setUrl(String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000800;
+        url_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearUrl() {
+        bitField0_ = (bitField0_ & ~0x00000800);
+        url_ = getDefaultInstance().getUrl();
+        onChanged();
+        return this;
+      }
+      void setUrl(com.google.protobuf.ByteString value) {
+        bitField0_ |= 0x00000800;
+        url_ = value;
         onChanged();
       }
       
@@ -16194,6 +17322,39 @@ public final class Models {
         getVolumeByDrinkerOrBuilderList();
     org.kegbot.proto.Models.Stats.DrinkerVolumeOrBuilder getVolumeByDrinkerOrBuilder(
         int index);
+    
+    // repeated string registered_drinkers = 9;
+    java.util.List<String> getRegisteredDrinkersList();
+    int getRegisteredDrinkersCount();
+    String getRegisteredDrinkers(int index);
+    
+    // optional bool has_guest_pour = 10;
+    boolean hasHasGuestPour();
+    boolean getHasGuestPour();
+    
+    // optional uint32 sessions_count = 11;
+    boolean hasSessionsCount();
+    int getSessionsCount();
+    
+    // repeated .Stats.YearlyVolume volume_by_year = 12;
+    java.util.List<org.kegbot.proto.Models.Stats.YearlyVolume> 
+        getVolumeByYearList();
+    org.kegbot.proto.Models.Stats.YearlyVolume getVolumeByYear(int index);
+    int getVolumeByYearCount();
+    java.util.List<? extends org.kegbot.proto.Models.Stats.YearlyVolumeOrBuilder> 
+        getVolumeByYearOrBuilderList();
+    org.kegbot.proto.Models.Stats.YearlyVolumeOrBuilder getVolumeByYearOrBuilder(
+        int index);
+    
+    // repeated .Stats.PeerSessionCount peer_affinities = 13;
+    java.util.List<org.kegbot.proto.Models.Stats.PeerSessionCount> 
+        getPeerAffinitiesList();
+    org.kegbot.proto.Models.Stats.PeerSessionCount getPeerAffinities(int index);
+    int getPeerAffinitiesCount();
+    java.util.List<? extends org.kegbot.proto.Models.Stats.PeerSessionCountOrBuilder> 
+        getPeerAffinitiesOrBuilderList();
+    org.kegbot.proto.Models.Stats.PeerSessionCountOrBuilder getPeerAffinitiesOrBuilder(
+        int index);
   }
   public static final class Stats extends
       com.google.protobuf.GeneratedMessage
@@ -17115,6 +18276,861 @@ public final class Models {
       // @@protoc_insertion_point(class_scope:Stats.DrinkerVolume)
     }
     
+    public interface YearlyVolumeOrBuilder
+        extends com.google.protobuf.MessageOrBuilder {
+      
+      // required uint32 year = 1;
+      boolean hasYear();
+      int getYear();
+      
+      // required float volume_ml = 2;
+      boolean hasVolumeMl();
+      float getVolumeMl();
+    }
+    public static final class YearlyVolume extends
+        com.google.protobuf.GeneratedMessage
+        implements YearlyVolumeOrBuilder {
+      // Use YearlyVolume.newBuilder() to construct.
+      private YearlyVolume(Builder builder) {
+        super(builder);
+      }
+      private YearlyVolume(boolean noInit) {}
+      
+      private static final YearlyVolume defaultInstance;
+      public static YearlyVolume getDefaultInstance() {
+        return defaultInstance;
+      }
+      
+      public YearlyVolume getDefaultInstanceForType() {
+        return defaultInstance;
+      }
+      
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return org.kegbot.proto.Models.internal_static_Stats_YearlyVolume_descriptor;
+      }
+      
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return org.kegbot.proto.Models.internal_static_Stats_YearlyVolume_fieldAccessorTable;
+      }
+      
+      private int bitField0_;
+      // required uint32 year = 1;
+      public static final int YEAR_FIELD_NUMBER = 1;
+      private int year_;
+      public boolean hasYear() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      public int getYear() {
+        return year_;
+      }
+      
+      // required float volume_ml = 2;
+      public static final int VOLUME_ML_FIELD_NUMBER = 2;
+      private float volumeMl_;
+      public boolean hasVolumeMl() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      public float getVolumeMl() {
+        return volumeMl_;
+      }
+      
+      private void initFields() {
+        year_ = 0;
+        volumeMl_ = 0F;
+      }
+      private byte memoizedIsInitialized = -1;
+      public final boolean isInitialized() {
+        byte isInitialized = memoizedIsInitialized;
+        if (isInitialized != -1) return isInitialized == 1;
+        
+        if (!hasYear()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        if (!hasVolumeMl()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        memoizedIsInitialized = 1;
+        return true;
+      }
+      
+      public void writeTo(com.google.protobuf.CodedOutputStream output)
+                          throws java.io.IOException {
+        getSerializedSize();
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          output.writeUInt32(1, year_);
+        }
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
+          output.writeFloat(2, volumeMl_);
+        }
+        getUnknownFields().writeTo(output);
+      }
+      
+      private int memoizedSerializedSize = -1;
+      public int getSerializedSize() {
+        int size = memoizedSerializedSize;
+        if (size != -1) return size;
+      
+        size = 0;
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeUInt32Size(1, year_);
+        }
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeFloatSize(2, volumeMl_);
+        }
+        size += getUnknownFields().getSerializedSize();
+        memoizedSerializedSize = size;
+        return size;
+      }
+      
+      @java.lang.Override
+      protected Object writeReplace() throws java.io.ObjectStreamException {
+        return super.writeReplace();
+      }
+      
+      public static org.kegbot.proto.Models.Stats.YearlyVolume parseFrom(
+          com.google.protobuf.ByteString data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return newBuilder().mergeFrom(data).buildParsed();
+      }
+      public static org.kegbot.proto.Models.Stats.YearlyVolume parseFrom(
+          com.google.protobuf.ByteString data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return newBuilder().mergeFrom(data, extensionRegistry)
+                 .buildParsed();
+      }
+      public static org.kegbot.proto.Models.Stats.YearlyVolume parseFrom(byte[] data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return newBuilder().mergeFrom(data).buildParsed();
+      }
+      public static org.kegbot.proto.Models.Stats.YearlyVolume parseFrom(
+          byte[] data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return newBuilder().mergeFrom(data, extensionRegistry)
+                 .buildParsed();
+      }
+      public static org.kegbot.proto.Models.Stats.YearlyVolume parseFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        return newBuilder().mergeFrom(input).buildParsed();
+      }
+      public static org.kegbot.proto.Models.Stats.YearlyVolume parseFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return newBuilder().mergeFrom(input, extensionRegistry)
+                 .buildParsed();
+      }
+      public static org.kegbot.proto.Models.Stats.YearlyVolume parseDelimitedFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        Builder builder = newBuilder();
+        if (builder.mergeDelimitedFrom(input)) {
+          return builder.buildParsed();
+        } else {
+          return null;
+        }
+      }
+      public static org.kegbot.proto.Models.Stats.YearlyVolume parseDelimitedFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        Builder builder = newBuilder();
+        if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
+          return builder.buildParsed();
+        } else {
+          return null;
+        }
+      }
+      public static org.kegbot.proto.Models.Stats.YearlyVolume parseFrom(
+          com.google.protobuf.CodedInputStream input)
+          throws java.io.IOException {
+        return newBuilder().mergeFrom(input).buildParsed();
+      }
+      public static org.kegbot.proto.Models.Stats.YearlyVolume parseFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return newBuilder().mergeFrom(input, extensionRegistry)
+                 .buildParsed();
+      }
+      
+      public static Builder newBuilder() { return Builder.create(); }
+      public Builder newBuilderForType() { return newBuilder(); }
+      public static Builder newBuilder(org.kegbot.proto.Models.Stats.YearlyVolume prototype) {
+        return newBuilder().mergeFrom(prototype);
+      }
+      public Builder toBuilder() { return newBuilder(this); }
+      
+      @java.lang.Override
+      protected Builder newBuilderForType(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        Builder builder = new Builder(parent);
+        return builder;
+      }
+      public static final class Builder extends
+          com.google.protobuf.GeneratedMessage.Builder<Builder>
+         implements org.kegbot.proto.Models.Stats.YearlyVolumeOrBuilder {
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return org.kegbot.proto.Models.internal_static_Stats_YearlyVolume_descriptor;
+        }
+        
+        protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return org.kegbot.proto.Models.internal_static_Stats_YearlyVolume_fieldAccessorTable;
+        }
+        
+        // Construct using org.kegbot.proto.Models.Stats.YearlyVolume.newBuilder()
+        private Builder() {
+          maybeForceBuilderInitialization();
+        }
+        
+        private Builder(BuilderParent parent) {
+          super(parent);
+          maybeForceBuilderInitialization();
+        }
+        private void maybeForceBuilderInitialization() {
+          if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          }
+        }
+        private static Builder create() {
+          return new Builder();
+        }
+        
+        public Builder clear() {
+          super.clear();
+          year_ = 0;
+          bitField0_ = (bitField0_ & ~0x00000001);
+          volumeMl_ = 0F;
+          bitField0_ = (bitField0_ & ~0x00000002);
+          return this;
+        }
+        
+        public Builder clone() {
+          return create().mergeFrom(buildPartial());
+        }
+        
+        public com.google.protobuf.Descriptors.Descriptor
+            getDescriptorForType() {
+          return org.kegbot.proto.Models.Stats.YearlyVolume.getDescriptor();
+        }
+        
+        public org.kegbot.proto.Models.Stats.YearlyVolume getDefaultInstanceForType() {
+          return org.kegbot.proto.Models.Stats.YearlyVolume.getDefaultInstance();
+        }
+        
+        public org.kegbot.proto.Models.Stats.YearlyVolume build() {
+          org.kegbot.proto.Models.Stats.YearlyVolume result = buildPartial();
+          if (!result.isInitialized()) {
+            throw newUninitializedMessageException(result);
+          }
+          return result;
+        }
+        
+        private org.kegbot.proto.Models.Stats.YearlyVolume buildParsed()
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          org.kegbot.proto.Models.Stats.YearlyVolume result = buildPartial();
+          if (!result.isInitialized()) {
+            throw newUninitializedMessageException(
+              result).asInvalidProtocolBufferException();
+          }
+          return result;
+        }
+        
+        public org.kegbot.proto.Models.Stats.YearlyVolume buildPartial() {
+          org.kegbot.proto.Models.Stats.YearlyVolume result = new org.kegbot.proto.Models.Stats.YearlyVolume(this);
+          int from_bitField0_ = bitField0_;
+          int to_bitField0_ = 0;
+          if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+            to_bitField0_ |= 0x00000001;
+          }
+          result.year_ = year_;
+          if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+            to_bitField0_ |= 0x00000002;
+          }
+          result.volumeMl_ = volumeMl_;
+          result.bitField0_ = to_bitField0_;
+          onBuilt();
+          return result;
+        }
+        
+        public Builder mergeFrom(com.google.protobuf.Message other) {
+          if (other instanceof org.kegbot.proto.Models.Stats.YearlyVolume) {
+            return mergeFrom((org.kegbot.proto.Models.Stats.YearlyVolume)other);
+          } else {
+            super.mergeFrom(other);
+            return this;
+          }
+        }
+        
+        public Builder mergeFrom(org.kegbot.proto.Models.Stats.YearlyVolume other) {
+          if (other == org.kegbot.proto.Models.Stats.YearlyVolume.getDefaultInstance()) return this;
+          if (other.hasYear()) {
+            setYear(other.getYear());
+          }
+          if (other.hasVolumeMl()) {
+            setVolumeMl(other.getVolumeMl());
+          }
+          this.mergeUnknownFields(other.getUnknownFields());
+          return this;
+        }
+        
+        public final boolean isInitialized() {
+          if (!hasYear()) {
+            
+            return false;
+          }
+          if (!hasVolumeMl()) {
+            
+            return false;
+          }
+          return true;
+        }
+        
+        public Builder mergeFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+            com.google.protobuf.UnknownFieldSet.newBuilder(
+              this.getUnknownFields());
+          while (true) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                this.setUnknownFields(unknownFields.build());
+                onChanged();
+                return this;
+              default: {
+                if (!parseUnknownField(input, unknownFields,
+                                       extensionRegistry, tag)) {
+                  this.setUnknownFields(unknownFields.build());
+                  onChanged();
+                  return this;
+                }
+                break;
+              }
+              case 8: {
+                bitField0_ |= 0x00000001;
+                year_ = input.readUInt32();
+                break;
+              }
+              case 21: {
+                bitField0_ |= 0x00000002;
+                volumeMl_ = input.readFloat();
+                break;
+              }
+            }
+          }
+        }
+        
+        private int bitField0_;
+        
+        // required uint32 year = 1;
+        private int year_ ;
+        public boolean hasYear() {
+          return ((bitField0_ & 0x00000001) == 0x00000001);
+        }
+        public int getYear() {
+          return year_;
+        }
+        public Builder setYear(int value) {
+          bitField0_ |= 0x00000001;
+          year_ = value;
+          onChanged();
+          return this;
+        }
+        public Builder clearYear() {
+          bitField0_ = (bitField0_ & ~0x00000001);
+          year_ = 0;
+          onChanged();
+          return this;
+        }
+        
+        // required float volume_ml = 2;
+        private float volumeMl_ ;
+        public boolean hasVolumeMl() {
+          return ((bitField0_ & 0x00000002) == 0x00000002);
+        }
+        public float getVolumeMl() {
+          return volumeMl_;
+        }
+        public Builder setVolumeMl(float value) {
+          bitField0_ |= 0x00000002;
+          volumeMl_ = value;
+          onChanged();
+          return this;
+        }
+        public Builder clearVolumeMl() {
+          bitField0_ = (bitField0_ & ~0x00000002);
+          volumeMl_ = 0F;
+          onChanged();
+          return this;
+        }
+        
+        // @@protoc_insertion_point(builder_scope:Stats.YearlyVolume)
+      }
+      
+      static {
+        defaultInstance = new YearlyVolume(true);
+        defaultInstance.initFields();
+      }
+      
+      // @@protoc_insertion_point(class_scope:Stats.YearlyVolume)
+    }
+    
+    public interface PeerSessionCountOrBuilder
+        extends com.google.protobuf.MessageOrBuilder {
+      
+      // required string peer_name = 1;
+      boolean hasPeerName();
+      String getPeerName();
+      
+      // required uint32 joint_session_count = 2;
+      boolean hasJointSessionCount();
+      int getJointSessionCount();
+    }
+    public static final class PeerSessionCount extends
+        com.google.protobuf.GeneratedMessage
+        implements PeerSessionCountOrBuilder {
+      // Use PeerSessionCount.newBuilder() to construct.
+      private PeerSessionCount(Builder builder) {
+        super(builder);
+      }
+      private PeerSessionCount(boolean noInit) {}
+      
+      private static final PeerSessionCount defaultInstance;
+      public static PeerSessionCount getDefaultInstance() {
+        return defaultInstance;
+      }
+      
+      public PeerSessionCount getDefaultInstanceForType() {
+        return defaultInstance;
+      }
+      
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return org.kegbot.proto.Models.internal_static_Stats_PeerSessionCount_descriptor;
+      }
+      
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return org.kegbot.proto.Models.internal_static_Stats_PeerSessionCount_fieldAccessorTable;
+      }
+      
+      private int bitField0_;
+      // required string peer_name = 1;
+      public static final int PEER_NAME_FIELD_NUMBER = 1;
+      private Object peerName_;
+      public boolean hasPeerName() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      public String getPeerName() {
+        Object ref = peerName_;
+        if (ref instanceof String) {
+          return (String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          String s = bs.toStringUtf8();
+          if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+            peerName_ = s;
+          }
+          return s;
+        }
+      }
+      private com.google.protobuf.ByteString getPeerNameBytes() {
+        Object ref = peerName_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+          peerName_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      
+      // required uint32 joint_session_count = 2;
+      public static final int JOINT_SESSION_COUNT_FIELD_NUMBER = 2;
+      private int jointSessionCount_;
+      public boolean hasJointSessionCount() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      public int getJointSessionCount() {
+        return jointSessionCount_;
+      }
+      
+      private void initFields() {
+        peerName_ = "";
+        jointSessionCount_ = 0;
+      }
+      private byte memoizedIsInitialized = -1;
+      public final boolean isInitialized() {
+        byte isInitialized = memoizedIsInitialized;
+        if (isInitialized != -1) return isInitialized == 1;
+        
+        if (!hasPeerName()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        if (!hasJointSessionCount()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        memoizedIsInitialized = 1;
+        return true;
+      }
+      
+      public void writeTo(com.google.protobuf.CodedOutputStream output)
+                          throws java.io.IOException {
+        getSerializedSize();
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          output.writeBytes(1, getPeerNameBytes());
+        }
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
+          output.writeUInt32(2, jointSessionCount_);
+        }
+        getUnknownFields().writeTo(output);
+      }
+      
+      private int memoizedSerializedSize = -1;
+      public int getSerializedSize() {
+        int size = memoizedSerializedSize;
+        if (size != -1) return size;
+      
+        size = 0;
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeBytesSize(1, getPeerNameBytes());
+        }
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeUInt32Size(2, jointSessionCount_);
+        }
+        size += getUnknownFields().getSerializedSize();
+        memoizedSerializedSize = size;
+        return size;
+      }
+      
+      @java.lang.Override
+      protected Object writeReplace() throws java.io.ObjectStreamException {
+        return super.writeReplace();
+      }
+      
+      public static org.kegbot.proto.Models.Stats.PeerSessionCount parseFrom(
+          com.google.protobuf.ByteString data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return newBuilder().mergeFrom(data).buildParsed();
+      }
+      public static org.kegbot.proto.Models.Stats.PeerSessionCount parseFrom(
+          com.google.protobuf.ByteString data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return newBuilder().mergeFrom(data, extensionRegistry)
+                 .buildParsed();
+      }
+      public static org.kegbot.proto.Models.Stats.PeerSessionCount parseFrom(byte[] data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return newBuilder().mergeFrom(data).buildParsed();
+      }
+      public static org.kegbot.proto.Models.Stats.PeerSessionCount parseFrom(
+          byte[] data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return newBuilder().mergeFrom(data, extensionRegistry)
+                 .buildParsed();
+      }
+      public static org.kegbot.proto.Models.Stats.PeerSessionCount parseFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        return newBuilder().mergeFrom(input).buildParsed();
+      }
+      public static org.kegbot.proto.Models.Stats.PeerSessionCount parseFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return newBuilder().mergeFrom(input, extensionRegistry)
+                 .buildParsed();
+      }
+      public static org.kegbot.proto.Models.Stats.PeerSessionCount parseDelimitedFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        Builder builder = newBuilder();
+        if (builder.mergeDelimitedFrom(input)) {
+          return builder.buildParsed();
+        } else {
+          return null;
+        }
+      }
+      public static org.kegbot.proto.Models.Stats.PeerSessionCount parseDelimitedFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        Builder builder = newBuilder();
+        if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
+          return builder.buildParsed();
+        } else {
+          return null;
+        }
+      }
+      public static org.kegbot.proto.Models.Stats.PeerSessionCount parseFrom(
+          com.google.protobuf.CodedInputStream input)
+          throws java.io.IOException {
+        return newBuilder().mergeFrom(input).buildParsed();
+      }
+      public static org.kegbot.proto.Models.Stats.PeerSessionCount parseFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return newBuilder().mergeFrom(input, extensionRegistry)
+                 .buildParsed();
+      }
+      
+      public static Builder newBuilder() { return Builder.create(); }
+      public Builder newBuilderForType() { return newBuilder(); }
+      public static Builder newBuilder(org.kegbot.proto.Models.Stats.PeerSessionCount prototype) {
+        return newBuilder().mergeFrom(prototype);
+      }
+      public Builder toBuilder() { return newBuilder(this); }
+      
+      @java.lang.Override
+      protected Builder newBuilderForType(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        Builder builder = new Builder(parent);
+        return builder;
+      }
+      public static final class Builder extends
+          com.google.protobuf.GeneratedMessage.Builder<Builder>
+         implements org.kegbot.proto.Models.Stats.PeerSessionCountOrBuilder {
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return org.kegbot.proto.Models.internal_static_Stats_PeerSessionCount_descriptor;
+        }
+        
+        protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return org.kegbot.proto.Models.internal_static_Stats_PeerSessionCount_fieldAccessorTable;
+        }
+        
+        // Construct using org.kegbot.proto.Models.Stats.PeerSessionCount.newBuilder()
+        private Builder() {
+          maybeForceBuilderInitialization();
+        }
+        
+        private Builder(BuilderParent parent) {
+          super(parent);
+          maybeForceBuilderInitialization();
+        }
+        private void maybeForceBuilderInitialization() {
+          if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          }
+        }
+        private static Builder create() {
+          return new Builder();
+        }
+        
+        public Builder clear() {
+          super.clear();
+          peerName_ = "";
+          bitField0_ = (bitField0_ & ~0x00000001);
+          jointSessionCount_ = 0;
+          bitField0_ = (bitField0_ & ~0x00000002);
+          return this;
+        }
+        
+        public Builder clone() {
+          return create().mergeFrom(buildPartial());
+        }
+        
+        public com.google.protobuf.Descriptors.Descriptor
+            getDescriptorForType() {
+          return org.kegbot.proto.Models.Stats.PeerSessionCount.getDescriptor();
+        }
+        
+        public org.kegbot.proto.Models.Stats.PeerSessionCount getDefaultInstanceForType() {
+          return org.kegbot.proto.Models.Stats.PeerSessionCount.getDefaultInstance();
+        }
+        
+        public org.kegbot.proto.Models.Stats.PeerSessionCount build() {
+          org.kegbot.proto.Models.Stats.PeerSessionCount result = buildPartial();
+          if (!result.isInitialized()) {
+            throw newUninitializedMessageException(result);
+          }
+          return result;
+        }
+        
+        private org.kegbot.proto.Models.Stats.PeerSessionCount buildParsed()
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          org.kegbot.proto.Models.Stats.PeerSessionCount result = buildPartial();
+          if (!result.isInitialized()) {
+            throw newUninitializedMessageException(
+              result).asInvalidProtocolBufferException();
+          }
+          return result;
+        }
+        
+        public org.kegbot.proto.Models.Stats.PeerSessionCount buildPartial() {
+          org.kegbot.proto.Models.Stats.PeerSessionCount result = new org.kegbot.proto.Models.Stats.PeerSessionCount(this);
+          int from_bitField0_ = bitField0_;
+          int to_bitField0_ = 0;
+          if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+            to_bitField0_ |= 0x00000001;
+          }
+          result.peerName_ = peerName_;
+          if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+            to_bitField0_ |= 0x00000002;
+          }
+          result.jointSessionCount_ = jointSessionCount_;
+          result.bitField0_ = to_bitField0_;
+          onBuilt();
+          return result;
+        }
+        
+        public Builder mergeFrom(com.google.protobuf.Message other) {
+          if (other instanceof org.kegbot.proto.Models.Stats.PeerSessionCount) {
+            return mergeFrom((org.kegbot.proto.Models.Stats.PeerSessionCount)other);
+          } else {
+            super.mergeFrom(other);
+            return this;
+          }
+        }
+        
+        public Builder mergeFrom(org.kegbot.proto.Models.Stats.PeerSessionCount other) {
+          if (other == org.kegbot.proto.Models.Stats.PeerSessionCount.getDefaultInstance()) return this;
+          if (other.hasPeerName()) {
+            setPeerName(other.getPeerName());
+          }
+          if (other.hasJointSessionCount()) {
+            setJointSessionCount(other.getJointSessionCount());
+          }
+          this.mergeUnknownFields(other.getUnknownFields());
+          return this;
+        }
+        
+        public final boolean isInitialized() {
+          if (!hasPeerName()) {
+            
+            return false;
+          }
+          if (!hasJointSessionCount()) {
+            
+            return false;
+          }
+          return true;
+        }
+        
+        public Builder mergeFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+            com.google.protobuf.UnknownFieldSet.newBuilder(
+              this.getUnknownFields());
+          while (true) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                this.setUnknownFields(unknownFields.build());
+                onChanged();
+                return this;
+              default: {
+                if (!parseUnknownField(input, unknownFields,
+                                       extensionRegistry, tag)) {
+                  this.setUnknownFields(unknownFields.build());
+                  onChanged();
+                  return this;
+                }
+                break;
+              }
+              case 10: {
+                bitField0_ |= 0x00000001;
+                peerName_ = input.readBytes();
+                break;
+              }
+              case 16: {
+                bitField0_ |= 0x00000002;
+                jointSessionCount_ = input.readUInt32();
+                break;
+              }
+            }
+          }
+        }
+        
+        private int bitField0_;
+        
+        // required string peer_name = 1;
+        private Object peerName_ = "";
+        public boolean hasPeerName() {
+          return ((bitField0_ & 0x00000001) == 0x00000001);
+        }
+        public String getPeerName() {
+          Object ref = peerName_;
+          if (!(ref instanceof String)) {
+            String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+            peerName_ = s;
+            return s;
+          } else {
+            return (String) ref;
+          }
+        }
+        public Builder setPeerName(String value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+          peerName_ = value;
+          onChanged();
+          return this;
+        }
+        public Builder clearPeerName() {
+          bitField0_ = (bitField0_ & ~0x00000001);
+          peerName_ = getDefaultInstance().getPeerName();
+          onChanged();
+          return this;
+        }
+        void setPeerName(com.google.protobuf.ByteString value) {
+          bitField0_ |= 0x00000001;
+          peerName_ = value;
+          onChanged();
+        }
+        
+        // required uint32 joint_session_count = 2;
+        private int jointSessionCount_ ;
+        public boolean hasJointSessionCount() {
+          return ((bitField0_ & 0x00000002) == 0x00000002);
+        }
+        public int getJointSessionCount() {
+          return jointSessionCount_;
+        }
+        public Builder setJointSessionCount(int value) {
+          bitField0_ |= 0x00000002;
+          jointSessionCount_ = value;
+          onChanged();
+          return this;
+        }
+        public Builder clearJointSessionCount() {
+          bitField0_ = (bitField0_ & ~0x00000002);
+          jointSessionCount_ = 0;
+          onChanged();
+          return this;
+        }
+        
+        // @@protoc_insertion_point(builder_scope:Stats.PeerSessionCount)
+      }
+      
+      static {
+        defaultInstance = new PeerSessionCount(true);
+        defaultInstance.initFields();
+      }
+      
+      // @@protoc_insertion_point(class_scope:Stats.PeerSessionCount)
+    }
+    
     private int bitField0_;
     // optional string last_drink_id = 1;
     public static final int LAST_DRINK_ID_FIELD_NUMBER = 1;
@@ -17262,6 +19278,82 @@ public final class Models {
       return volumeByDrinker_.get(index);
     }
     
+    // repeated string registered_drinkers = 9;
+    public static final int REGISTERED_DRINKERS_FIELD_NUMBER = 9;
+    private com.google.protobuf.LazyStringList registeredDrinkers_;
+    public java.util.List<String>
+        getRegisteredDrinkersList() {
+      return registeredDrinkers_;
+    }
+    public int getRegisteredDrinkersCount() {
+      return registeredDrinkers_.size();
+    }
+    public String getRegisteredDrinkers(int index) {
+      return registeredDrinkers_.get(index);
+    }
+    
+    // optional bool has_guest_pour = 10;
+    public static final int HAS_GUEST_POUR_FIELD_NUMBER = 10;
+    private boolean hasGuestPour_;
+    public boolean hasHasGuestPour() {
+      return ((bitField0_ & 0x00000040) == 0x00000040);
+    }
+    public boolean getHasGuestPour() {
+      return hasGuestPour_;
+    }
+    
+    // optional uint32 sessions_count = 11;
+    public static final int SESSIONS_COUNT_FIELD_NUMBER = 11;
+    private int sessionsCount_;
+    public boolean hasSessionsCount() {
+      return ((bitField0_ & 0x00000080) == 0x00000080);
+    }
+    public int getSessionsCount() {
+      return sessionsCount_;
+    }
+    
+    // repeated .Stats.YearlyVolume volume_by_year = 12;
+    public static final int VOLUME_BY_YEAR_FIELD_NUMBER = 12;
+    private java.util.List<org.kegbot.proto.Models.Stats.YearlyVolume> volumeByYear_;
+    public java.util.List<org.kegbot.proto.Models.Stats.YearlyVolume> getVolumeByYearList() {
+      return volumeByYear_;
+    }
+    public java.util.List<? extends org.kegbot.proto.Models.Stats.YearlyVolumeOrBuilder> 
+        getVolumeByYearOrBuilderList() {
+      return volumeByYear_;
+    }
+    public int getVolumeByYearCount() {
+      return volumeByYear_.size();
+    }
+    public org.kegbot.proto.Models.Stats.YearlyVolume getVolumeByYear(int index) {
+      return volumeByYear_.get(index);
+    }
+    public org.kegbot.proto.Models.Stats.YearlyVolumeOrBuilder getVolumeByYearOrBuilder(
+        int index) {
+      return volumeByYear_.get(index);
+    }
+    
+    // repeated .Stats.PeerSessionCount peer_affinities = 13;
+    public static final int PEER_AFFINITIES_FIELD_NUMBER = 13;
+    private java.util.List<org.kegbot.proto.Models.Stats.PeerSessionCount> peerAffinities_;
+    public java.util.List<org.kegbot.proto.Models.Stats.PeerSessionCount> getPeerAffinitiesList() {
+      return peerAffinities_;
+    }
+    public java.util.List<? extends org.kegbot.proto.Models.Stats.PeerSessionCountOrBuilder> 
+        getPeerAffinitiesOrBuilderList() {
+      return peerAffinities_;
+    }
+    public int getPeerAffinitiesCount() {
+      return peerAffinities_.size();
+    }
+    public org.kegbot.proto.Models.Stats.PeerSessionCount getPeerAffinities(int index) {
+      return peerAffinities_.get(index);
+    }
+    public org.kegbot.proto.Models.Stats.PeerSessionCountOrBuilder getPeerAffinitiesOrBuilder(
+        int index) {
+      return peerAffinities_.get(index);
+    }
+    
     private void initFields() {
       lastDrinkId_ = "";
       totalVolumeMl_ = 0F;
@@ -17271,6 +19363,11 @@ public final class Models {
       greatestVolumeId_ = "";
       volumeByDayOfWeek_ = java.util.Collections.emptyList();
       volumeByDrinker_ = java.util.Collections.emptyList();
+      registeredDrinkers_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      hasGuestPour_ = false;
+      sessionsCount_ = 0;
+      volumeByYear_ = java.util.Collections.emptyList();
+      peerAffinities_ = java.util.Collections.emptyList();
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -17285,6 +19382,18 @@ public final class Models {
       }
       for (int i = 0; i < getVolumeByDrinkerCount(); i++) {
         if (!getVolumeByDrinker(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      for (int i = 0; i < getVolumeByYearCount(); i++) {
+        if (!getVolumeByYear(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      for (int i = 0; i < getPeerAffinitiesCount(); i++) {
+        if (!getPeerAffinities(i).isInitialized()) {
           memoizedIsInitialized = 0;
           return false;
         }
@@ -17319,6 +19428,21 @@ public final class Models {
       }
       for (int i = 0; i < volumeByDrinker_.size(); i++) {
         output.writeMessage(8, volumeByDrinker_.get(i));
+      }
+      for (int i = 0; i < registeredDrinkers_.size(); i++) {
+        output.writeBytes(9, registeredDrinkers_.getByteString(i));
+      }
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+        output.writeBool(10, hasGuestPour_);
+      }
+      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+        output.writeUInt32(11, sessionsCount_);
+      }
+      for (int i = 0; i < volumeByYear_.size(); i++) {
+        output.writeMessage(12, volumeByYear_.get(i));
+      }
+      for (int i = 0; i < peerAffinities_.size(); i++) {
+        output.writeMessage(13, peerAffinities_.get(i));
       }
       getUnknownFields().writeTo(output);
     }
@@ -17360,6 +19484,31 @@ public final class Models {
       for (int i = 0; i < volumeByDrinker_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(8, volumeByDrinker_.get(i));
+      }
+      {
+        int dataSize = 0;
+        for (int i = 0; i < registeredDrinkers_.size(); i++) {
+          dataSize += com.google.protobuf.CodedOutputStream
+            .computeBytesSizeNoTag(registeredDrinkers_.getByteString(i));
+        }
+        size += dataSize;
+        size += 1 * getRegisteredDrinkersList().size();
+      }
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(10, hasGuestPour_);
+      }
+      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(11, sessionsCount_);
+      }
+      for (int i = 0; i < volumeByYear_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(12, volumeByYear_.get(i));
+      }
+      for (int i = 0; i < peerAffinities_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(13, peerAffinities_.get(i));
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -17477,6 +19626,8 @@ public final class Models {
         if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
           getVolumeByDayOfWeekFieldBuilder();
           getVolumeByDrinkerFieldBuilder();
+          getVolumeByYearFieldBuilder();
+          getPeerAffinitiesFieldBuilder();
         }
       }
       private static Builder create() {
@@ -17508,6 +19659,24 @@ public final class Models {
           bitField0_ = (bitField0_ & ~0x00000080);
         } else {
           volumeByDrinkerBuilder_.clear();
+        }
+        registeredDrinkers_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000100);
+        hasGuestPour_ = false;
+        bitField0_ = (bitField0_ & ~0x00000200);
+        sessionsCount_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000400);
+        if (volumeByYearBuilder_ == null) {
+          volumeByYear_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000800);
+        } else {
+          volumeByYearBuilder_.clear();
+        }
+        if (peerAffinitiesBuilder_ == null) {
+          peerAffinities_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00001000);
+        } else {
+          peerAffinitiesBuilder_.clear();
         }
         return this;
       }
@@ -17588,6 +19757,38 @@ public final class Models {
           result.volumeByDrinker_ = volumeByDrinker_;
         } else {
           result.volumeByDrinker_ = volumeByDrinkerBuilder_.build();
+        }
+        if (((bitField0_ & 0x00000100) == 0x00000100)) {
+          registeredDrinkers_ = new com.google.protobuf.UnmodifiableLazyStringList(
+              registeredDrinkers_);
+          bitField0_ = (bitField0_ & ~0x00000100);
+        }
+        result.registeredDrinkers_ = registeredDrinkers_;
+        if (((from_bitField0_ & 0x00000200) == 0x00000200)) {
+          to_bitField0_ |= 0x00000040;
+        }
+        result.hasGuestPour_ = hasGuestPour_;
+        if (((from_bitField0_ & 0x00000400) == 0x00000400)) {
+          to_bitField0_ |= 0x00000080;
+        }
+        result.sessionsCount_ = sessionsCount_;
+        if (volumeByYearBuilder_ == null) {
+          if (((bitField0_ & 0x00000800) == 0x00000800)) {
+            volumeByYear_ = java.util.Collections.unmodifiableList(volumeByYear_);
+            bitField0_ = (bitField0_ & ~0x00000800);
+          }
+          result.volumeByYear_ = volumeByYear_;
+        } else {
+          result.volumeByYear_ = volumeByYearBuilder_.build();
+        }
+        if (peerAffinitiesBuilder_ == null) {
+          if (((bitField0_ & 0x00001000) == 0x00001000)) {
+            peerAffinities_ = java.util.Collections.unmodifiableList(peerAffinities_);
+            bitField0_ = (bitField0_ & ~0x00001000);
+          }
+          result.peerAffinities_ = peerAffinities_;
+        } else {
+          result.peerAffinities_ = peerAffinitiesBuilder_.build();
         }
         result.bitField0_ = to_bitField0_;
         onBuilt();
@@ -17675,6 +19876,74 @@ public final class Models {
             }
           }
         }
+        if (!other.registeredDrinkers_.isEmpty()) {
+          if (registeredDrinkers_.isEmpty()) {
+            registeredDrinkers_ = other.registeredDrinkers_;
+            bitField0_ = (bitField0_ & ~0x00000100);
+          } else {
+            ensureRegisteredDrinkersIsMutable();
+            registeredDrinkers_.addAll(other.registeredDrinkers_);
+          }
+          onChanged();
+        }
+        if (other.hasHasGuestPour()) {
+          setHasGuestPour(other.getHasGuestPour());
+        }
+        if (other.hasSessionsCount()) {
+          setSessionsCount(other.getSessionsCount());
+        }
+        if (volumeByYearBuilder_ == null) {
+          if (!other.volumeByYear_.isEmpty()) {
+            if (volumeByYear_.isEmpty()) {
+              volumeByYear_ = other.volumeByYear_;
+              bitField0_ = (bitField0_ & ~0x00000800);
+            } else {
+              ensureVolumeByYearIsMutable();
+              volumeByYear_.addAll(other.volumeByYear_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.volumeByYear_.isEmpty()) {
+            if (volumeByYearBuilder_.isEmpty()) {
+              volumeByYearBuilder_.dispose();
+              volumeByYearBuilder_ = null;
+              volumeByYear_ = other.volumeByYear_;
+              bitField0_ = (bitField0_ & ~0x00000800);
+              volumeByYearBuilder_ = 
+                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                   getVolumeByYearFieldBuilder() : null;
+            } else {
+              volumeByYearBuilder_.addAllMessages(other.volumeByYear_);
+            }
+          }
+        }
+        if (peerAffinitiesBuilder_ == null) {
+          if (!other.peerAffinities_.isEmpty()) {
+            if (peerAffinities_.isEmpty()) {
+              peerAffinities_ = other.peerAffinities_;
+              bitField0_ = (bitField0_ & ~0x00001000);
+            } else {
+              ensurePeerAffinitiesIsMutable();
+              peerAffinities_.addAll(other.peerAffinities_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.peerAffinities_.isEmpty()) {
+            if (peerAffinitiesBuilder_.isEmpty()) {
+              peerAffinitiesBuilder_.dispose();
+              peerAffinitiesBuilder_ = null;
+              peerAffinities_ = other.peerAffinities_;
+              bitField0_ = (bitField0_ & ~0x00001000);
+              peerAffinitiesBuilder_ = 
+                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                   getPeerAffinitiesFieldBuilder() : null;
+            } else {
+              peerAffinitiesBuilder_.addAllMessages(other.peerAffinities_);
+            }
+          }
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
@@ -17688,6 +19957,18 @@ public final class Models {
         }
         for (int i = 0; i < getVolumeByDrinkerCount(); i++) {
           if (!getVolumeByDrinker(i).isInitialized()) {
+            
+            return false;
+          }
+        }
+        for (int i = 0; i < getVolumeByYearCount(); i++) {
+          if (!getVolumeByYear(i).isInitialized()) {
+            
+            return false;
+          }
+        }
+        for (int i = 0; i < getPeerAffinitiesCount(); i++) {
+          if (!getPeerAffinities(i).isInitialized()) {
             
             return false;
           }
@@ -17758,6 +20039,33 @@ public final class Models {
               org.kegbot.proto.Models.Stats.DrinkerVolume.Builder subBuilder = org.kegbot.proto.Models.Stats.DrinkerVolume.newBuilder();
               input.readMessage(subBuilder, extensionRegistry);
               addVolumeByDrinker(subBuilder.buildPartial());
+              break;
+            }
+            case 74: {
+              ensureRegisteredDrinkersIsMutable();
+              registeredDrinkers_.add(input.readBytes());
+              break;
+            }
+            case 80: {
+              bitField0_ |= 0x00000200;
+              hasGuestPour_ = input.readBool();
+              break;
+            }
+            case 88: {
+              bitField0_ |= 0x00000400;
+              sessionsCount_ = input.readUInt32();
+              break;
+            }
+            case 98: {
+              org.kegbot.proto.Models.Stats.YearlyVolume.Builder subBuilder = org.kegbot.proto.Models.Stats.YearlyVolume.newBuilder();
+              input.readMessage(subBuilder, extensionRegistry);
+              addVolumeByYear(subBuilder.buildPartial());
+              break;
+            }
+            case 106: {
+              org.kegbot.proto.Models.Stats.PeerSessionCount.Builder subBuilder = org.kegbot.proto.Models.Stats.PeerSessionCount.newBuilder();
+              input.readMessage(subBuilder, extensionRegistry);
+              addPeerAffinities(subBuilder.buildPartial());
               break;
             }
           }
@@ -18294,6 +20602,476 @@ public final class Models {
         return volumeByDrinkerBuilder_;
       }
       
+      // repeated string registered_drinkers = 9;
+      private com.google.protobuf.LazyStringList registeredDrinkers_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      private void ensureRegisteredDrinkersIsMutable() {
+        if (!((bitField0_ & 0x00000100) == 0x00000100)) {
+          registeredDrinkers_ = new com.google.protobuf.LazyStringArrayList(registeredDrinkers_);
+          bitField0_ |= 0x00000100;
+         }
+      }
+      public java.util.List<String>
+          getRegisteredDrinkersList() {
+        return java.util.Collections.unmodifiableList(registeredDrinkers_);
+      }
+      public int getRegisteredDrinkersCount() {
+        return registeredDrinkers_.size();
+      }
+      public String getRegisteredDrinkers(int index) {
+        return registeredDrinkers_.get(index);
+      }
+      public Builder setRegisteredDrinkers(
+          int index, String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureRegisteredDrinkersIsMutable();
+        registeredDrinkers_.set(index, value);
+        onChanged();
+        return this;
+      }
+      public Builder addRegisteredDrinkers(String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureRegisteredDrinkersIsMutable();
+        registeredDrinkers_.add(value);
+        onChanged();
+        return this;
+      }
+      public Builder addAllRegisteredDrinkers(
+          java.lang.Iterable<String> values) {
+        ensureRegisteredDrinkersIsMutable();
+        super.addAll(values, registeredDrinkers_);
+        onChanged();
+        return this;
+      }
+      public Builder clearRegisteredDrinkers() {
+        registeredDrinkers_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000100);
+        onChanged();
+        return this;
+      }
+      void addRegisteredDrinkers(com.google.protobuf.ByteString value) {
+        ensureRegisteredDrinkersIsMutable();
+        registeredDrinkers_.add(value);
+        onChanged();
+      }
+      
+      // optional bool has_guest_pour = 10;
+      private boolean hasGuestPour_ ;
+      public boolean hasHasGuestPour() {
+        return ((bitField0_ & 0x00000200) == 0x00000200);
+      }
+      public boolean getHasGuestPour() {
+        return hasGuestPour_;
+      }
+      public Builder setHasGuestPour(boolean value) {
+        bitField0_ |= 0x00000200;
+        hasGuestPour_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearHasGuestPour() {
+        bitField0_ = (bitField0_ & ~0x00000200);
+        hasGuestPour_ = false;
+        onChanged();
+        return this;
+      }
+      
+      // optional uint32 sessions_count = 11;
+      private int sessionsCount_ ;
+      public boolean hasSessionsCount() {
+        return ((bitField0_ & 0x00000400) == 0x00000400);
+      }
+      public int getSessionsCount() {
+        return sessionsCount_;
+      }
+      public Builder setSessionsCount(int value) {
+        bitField0_ |= 0x00000400;
+        sessionsCount_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearSessionsCount() {
+        bitField0_ = (bitField0_ & ~0x00000400);
+        sessionsCount_ = 0;
+        onChanged();
+        return this;
+      }
+      
+      // repeated .Stats.YearlyVolume volume_by_year = 12;
+      private java.util.List<org.kegbot.proto.Models.Stats.YearlyVolume> volumeByYear_ =
+        java.util.Collections.emptyList();
+      private void ensureVolumeByYearIsMutable() {
+        if (!((bitField0_ & 0x00000800) == 0x00000800)) {
+          volumeByYear_ = new java.util.ArrayList<org.kegbot.proto.Models.Stats.YearlyVolume>(volumeByYear_);
+          bitField0_ |= 0x00000800;
+         }
+      }
+      
+      private com.google.protobuf.RepeatedFieldBuilder<
+          org.kegbot.proto.Models.Stats.YearlyVolume, org.kegbot.proto.Models.Stats.YearlyVolume.Builder, org.kegbot.proto.Models.Stats.YearlyVolumeOrBuilder> volumeByYearBuilder_;
+      
+      public java.util.List<org.kegbot.proto.Models.Stats.YearlyVolume> getVolumeByYearList() {
+        if (volumeByYearBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(volumeByYear_);
+        } else {
+          return volumeByYearBuilder_.getMessageList();
+        }
+      }
+      public int getVolumeByYearCount() {
+        if (volumeByYearBuilder_ == null) {
+          return volumeByYear_.size();
+        } else {
+          return volumeByYearBuilder_.getCount();
+        }
+      }
+      public org.kegbot.proto.Models.Stats.YearlyVolume getVolumeByYear(int index) {
+        if (volumeByYearBuilder_ == null) {
+          return volumeByYear_.get(index);
+        } else {
+          return volumeByYearBuilder_.getMessage(index);
+        }
+      }
+      public Builder setVolumeByYear(
+          int index, org.kegbot.proto.Models.Stats.YearlyVolume value) {
+        if (volumeByYearBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureVolumeByYearIsMutable();
+          volumeByYear_.set(index, value);
+          onChanged();
+        } else {
+          volumeByYearBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      public Builder setVolumeByYear(
+          int index, org.kegbot.proto.Models.Stats.YearlyVolume.Builder builderForValue) {
+        if (volumeByYearBuilder_ == null) {
+          ensureVolumeByYearIsMutable();
+          volumeByYear_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          volumeByYearBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addVolumeByYear(org.kegbot.proto.Models.Stats.YearlyVolume value) {
+        if (volumeByYearBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureVolumeByYearIsMutable();
+          volumeByYear_.add(value);
+          onChanged();
+        } else {
+          volumeByYearBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      public Builder addVolumeByYear(
+          int index, org.kegbot.proto.Models.Stats.YearlyVolume value) {
+        if (volumeByYearBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureVolumeByYearIsMutable();
+          volumeByYear_.add(index, value);
+          onChanged();
+        } else {
+          volumeByYearBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      public Builder addVolumeByYear(
+          org.kegbot.proto.Models.Stats.YearlyVolume.Builder builderForValue) {
+        if (volumeByYearBuilder_ == null) {
+          ensureVolumeByYearIsMutable();
+          volumeByYear_.add(builderForValue.build());
+          onChanged();
+        } else {
+          volumeByYearBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addVolumeByYear(
+          int index, org.kegbot.proto.Models.Stats.YearlyVolume.Builder builderForValue) {
+        if (volumeByYearBuilder_ == null) {
+          ensureVolumeByYearIsMutable();
+          volumeByYear_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          volumeByYearBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addAllVolumeByYear(
+          java.lang.Iterable<? extends org.kegbot.proto.Models.Stats.YearlyVolume> values) {
+        if (volumeByYearBuilder_ == null) {
+          ensureVolumeByYearIsMutable();
+          super.addAll(values, volumeByYear_);
+          onChanged();
+        } else {
+          volumeByYearBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      public Builder clearVolumeByYear() {
+        if (volumeByYearBuilder_ == null) {
+          volumeByYear_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000800);
+          onChanged();
+        } else {
+          volumeByYearBuilder_.clear();
+        }
+        return this;
+      }
+      public Builder removeVolumeByYear(int index) {
+        if (volumeByYearBuilder_ == null) {
+          ensureVolumeByYearIsMutable();
+          volumeByYear_.remove(index);
+          onChanged();
+        } else {
+          volumeByYearBuilder_.remove(index);
+        }
+        return this;
+      }
+      public org.kegbot.proto.Models.Stats.YearlyVolume.Builder getVolumeByYearBuilder(
+          int index) {
+        return getVolumeByYearFieldBuilder().getBuilder(index);
+      }
+      public org.kegbot.proto.Models.Stats.YearlyVolumeOrBuilder getVolumeByYearOrBuilder(
+          int index) {
+        if (volumeByYearBuilder_ == null) {
+          return volumeByYear_.get(index);  } else {
+          return volumeByYearBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      public java.util.List<? extends org.kegbot.proto.Models.Stats.YearlyVolumeOrBuilder> 
+           getVolumeByYearOrBuilderList() {
+        if (volumeByYearBuilder_ != null) {
+          return volumeByYearBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(volumeByYear_);
+        }
+      }
+      public org.kegbot.proto.Models.Stats.YearlyVolume.Builder addVolumeByYearBuilder() {
+        return getVolumeByYearFieldBuilder().addBuilder(
+            org.kegbot.proto.Models.Stats.YearlyVolume.getDefaultInstance());
+      }
+      public org.kegbot.proto.Models.Stats.YearlyVolume.Builder addVolumeByYearBuilder(
+          int index) {
+        return getVolumeByYearFieldBuilder().addBuilder(
+            index, org.kegbot.proto.Models.Stats.YearlyVolume.getDefaultInstance());
+      }
+      public java.util.List<org.kegbot.proto.Models.Stats.YearlyVolume.Builder> 
+           getVolumeByYearBuilderList() {
+        return getVolumeByYearFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilder<
+          org.kegbot.proto.Models.Stats.YearlyVolume, org.kegbot.proto.Models.Stats.YearlyVolume.Builder, org.kegbot.proto.Models.Stats.YearlyVolumeOrBuilder> 
+          getVolumeByYearFieldBuilder() {
+        if (volumeByYearBuilder_ == null) {
+          volumeByYearBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+              org.kegbot.proto.Models.Stats.YearlyVolume, org.kegbot.proto.Models.Stats.YearlyVolume.Builder, org.kegbot.proto.Models.Stats.YearlyVolumeOrBuilder>(
+                  volumeByYear_,
+                  ((bitField0_ & 0x00000800) == 0x00000800),
+                  getParentForChildren(),
+                  isClean());
+          volumeByYear_ = null;
+        }
+        return volumeByYearBuilder_;
+      }
+      
+      // repeated .Stats.PeerSessionCount peer_affinities = 13;
+      private java.util.List<org.kegbot.proto.Models.Stats.PeerSessionCount> peerAffinities_ =
+        java.util.Collections.emptyList();
+      private void ensurePeerAffinitiesIsMutable() {
+        if (!((bitField0_ & 0x00001000) == 0x00001000)) {
+          peerAffinities_ = new java.util.ArrayList<org.kegbot.proto.Models.Stats.PeerSessionCount>(peerAffinities_);
+          bitField0_ |= 0x00001000;
+         }
+      }
+      
+      private com.google.protobuf.RepeatedFieldBuilder<
+          org.kegbot.proto.Models.Stats.PeerSessionCount, org.kegbot.proto.Models.Stats.PeerSessionCount.Builder, org.kegbot.proto.Models.Stats.PeerSessionCountOrBuilder> peerAffinitiesBuilder_;
+      
+      public java.util.List<org.kegbot.proto.Models.Stats.PeerSessionCount> getPeerAffinitiesList() {
+        if (peerAffinitiesBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(peerAffinities_);
+        } else {
+          return peerAffinitiesBuilder_.getMessageList();
+        }
+      }
+      public int getPeerAffinitiesCount() {
+        if (peerAffinitiesBuilder_ == null) {
+          return peerAffinities_.size();
+        } else {
+          return peerAffinitiesBuilder_.getCount();
+        }
+      }
+      public org.kegbot.proto.Models.Stats.PeerSessionCount getPeerAffinities(int index) {
+        if (peerAffinitiesBuilder_ == null) {
+          return peerAffinities_.get(index);
+        } else {
+          return peerAffinitiesBuilder_.getMessage(index);
+        }
+      }
+      public Builder setPeerAffinities(
+          int index, org.kegbot.proto.Models.Stats.PeerSessionCount value) {
+        if (peerAffinitiesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensurePeerAffinitiesIsMutable();
+          peerAffinities_.set(index, value);
+          onChanged();
+        } else {
+          peerAffinitiesBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      public Builder setPeerAffinities(
+          int index, org.kegbot.proto.Models.Stats.PeerSessionCount.Builder builderForValue) {
+        if (peerAffinitiesBuilder_ == null) {
+          ensurePeerAffinitiesIsMutable();
+          peerAffinities_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          peerAffinitiesBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addPeerAffinities(org.kegbot.proto.Models.Stats.PeerSessionCount value) {
+        if (peerAffinitiesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensurePeerAffinitiesIsMutable();
+          peerAffinities_.add(value);
+          onChanged();
+        } else {
+          peerAffinitiesBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      public Builder addPeerAffinities(
+          int index, org.kegbot.proto.Models.Stats.PeerSessionCount value) {
+        if (peerAffinitiesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensurePeerAffinitiesIsMutable();
+          peerAffinities_.add(index, value);
+          onChanged();
+        } else {
+          peerAffinitiesBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      public Builder addPeerAffinities(
+          org.kegbot.proto.Models.Stats.PeerSessionCount.Builder builderForValue) {
+        if (peerAffinitiesBuilder_ == null) {
+          ensurePeerAffinitiesIsMutable();
+          peerAffinities_.add(builderForValue.build());
+          onChanged();
+        } else {
+          peerAffinitiesBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addPeerAffinities(
+          int index, org.kegbot.proto.Models.Stats.PeerSessionCount.Builder builderForValue) {
+        if (peerAffinitiesBuilder_ == null) {
+          ensurePeerAffinitiesIsMutable();
+          peerAffinities_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          peerAffinitiesBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addAllPeerAffinities(
+          java.lang.Iterable<? extends org.kegbot.proto.Models.Stats.PeerSessionCount> values) {
+        if (peerAffinitiesBuilder_ == null) {
+          ensurePeerAffinitiesIsMutable();
+          super.addAll(values, peerAffinities_);
+          onChanged();
+        } else {
+          peerAffinitiesBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      public Builder clearPeerAffinities() {
+        if (peerAffinitiesBuilder_ == null) {
+          peerAffinities_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00001000);
+          onChanged();
+        } else {
+          peerAffinitiesBuilder_.clear();
+        }
+        return this;
+      }
+      public Builder removePeerAffinities(int index) {
+        if (peerAffinitiesBuilder_ == null) {
+          ensurePeerAffinitiesIsMutable();
+          peerAffinities_.remove(index);
+          onChanged();
+        } else {
+          peerAffinitiesBuilder_.remove(index);
+        }
+        return this;
+      }
+      public org.kegbot.proto.Models.Stats.PeerSessionCount.Builder getPeerAffinitiesBuilder(
+          int index) {
+        return getPeerAffinitiesFieldBuilder().getBuilder(index);
+      }
+      public org.kegbot.proto.Models.Stats.PeerSessionCountOrBuilder getPeerAffinitiesOrBuilder(
+          int index) {
+        if (peerAffinitiesBuilder_ == null) {
+          return peerAffinities_.get(index);  } else {
+          return peerAffinitiesBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      public java.util.List<? extends org.kegbot.proto.Models.Stats.PeerSessionCountOrBuilder> 
+           getPeerAffinitiesOrBuilderList() {
+        if (peerAffinitiesBuilder_ != null) {
+          return peerAffinitiesBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(peerAffinities_);
+        }
+      }
+      public org.kegbot.proto.Models.Stats.PeerSessionCount.Builder addPeerAffinitiesBuilder() {
+        return getPeerAffinitiesFieldBuilder().addBuilder(
+            org.kegbot.proto.Models.Stats.PeerSessionCount.getDefaultInstance());
+      }
+      public org.kegbot.proto.Models.Stats.PeerSessionCount.Builder addPeerAffinitiesBuilder(
+          int index) {
+        return getPeerAffinitiesFieldBuilder().addBuilder(
+            index, org.kegbot.proto.Models.Stats.PeerSessionCount.getDefaultInstance());
+      }
+      public java.util.List<org.kegbot.proto.Models.Stats.PeerSessionCount.Builder> 
+           getPeerAffinitiesBuilderList() {
+        return getPeerAffinitiesFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilder<
+          org.kegbot.proto.Models.Stats.PeerSessionCount, org.kegbot.proto.Models.Stats.PeerSessionCount.Builder, org.kegbot.proto.Models.Stats.PeerSessionCountOrBuilder> 
+          getPeerAffinitiesFieldBuilder() {
+        if (peerAffinitiesBuilder_ == null) {
+          peerAffinitiesBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+              org.kegbot.proto.Models.Stats.PeerSessionCount, org.kegbot.proto.Models.Stats.PeerSessionCount.Builder, org.kegbot.proto.Models.Stats.PeerSessionCountOrBuilder>(
+                  peerAffinities_,
+                  ((bitField0_ & 0x00001000) == 0x00001000),
+                  getParentForChildren(),
+                  isClean());
+          peerAffinities_ = null;
+        }
+        return peerAffinitiesBuilder_;
+      }
+      
       // @@protoc_insertion_point(builder_scope:Stats)
     }
     
@@ -18410,6 +21188,16 @@ public final class Models {
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_Stats_DrinkerVolume_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_Stats_YearlyVolume_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_Stats_YearlyVolume_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_Stats_PeerSessionCount_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_Stats_PeerSessionCount_fieldAccessorTable;
   
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -18435,62 +21223,74 @@ public final class Models {
       "\014origin_state\030\004 \001(\t:\000\022\025\n\013origin_city\030\005 \001" +
       "(\t:\000\022\024\n\nproduction\030\006 \001(\t:\000\022\r\n\003url\030\007 \001(\t:" +
       "\000\022\025\n\013description\030\010 \001(\t:\000\022\025\n\005image\030\t \001(\0132" +
-      "\006.Image\"\266\001\n\005Drink\022\n\n\002id\030\001 \002(\t\022\r\n\005ticks\030\002" +
+      "\006.Image\"\303\001\n\005Drink\022\n\n\002id\030\001 \002(\t\022\r\n\005ticks\030\002" +
       " \002(\r\022\021\n\tvolume_ml\030\003 \002(\002\022\022\n\nsession_id\030\004 " +
       "\002(\t\022\021\n\tpour_time\030\005 \002(\t\022\020\n\010duration\030\006 \001(\r" +
       "\022\016\n\006status\030\007 \002(\t\022\016\n\006keg_id\030\010 \001(\t\022\017\n\007user",
-      "_id\030\t \001(\t\022\025\n\rauth_token_id\030\n \001(\t\"3\n\005Imag" +
-      "e\022\013\n\003url\030\001 \002(\t\022\r\n\005width\030\002 \001(\r\022\016\n\006height\030" +
-      "\003 \001(\r\"\364\001\n\003Keg\022\n\n\002id\030\001 \002(\t\022\017\n\007type_id\030\002 \002" +
-      "(\t\022\017\n\007size_id\030\003 \002(\t\022\021\n\tsize_name\030\004 \001(\t\022\026" +
-      "\n\016size_volume_ml\030\005 \001(\002\022\030\n\020volume_ml_rema" +
-      "in\030\006 \002(\002\022\024\n\014percent_full\030\007 \002(\002\022\024\n\014starte" +
-      "d_time\030\010 \002(\t\022\025\n\rfinished_time\030\t \002(\t\022\016\n\006s" +
-      "tatus\030\n \002(\t\022\023\n\013description\030\013 \001(\t\022\022\n\nspil" +
-      "led_ml\030\014 \001(\002\"6\n\007KegSize\022\n\n\002id\030\001 \002(\t\022\014\n\004n" +
-      "ame\030\002 \002(\t\022\021\n\tvolume_ml\030\003 \002(\002\"\314\001\n\006KegTap\022",
-      "\n\n\002id\030\001 \002(\t\022\014\n\004name\030\002 \002(\t\022\022\n\nmeter_name\030" +
-      "\003 \002(\t\022\022\n\nrelay_name\030\004 \001(\t\022\023\n\013ml_per_tick" +
-      "\030\005 \002(\002\022\023\n\013description\030\006 \001(\t\022\026\n\016current_k" +
-      "eg_id\030\007 \001(\t\022\030\n\020thermo_sensor_id\030\010 \001(\t\022$\n" +
-      "\020last_temperature\030\t \001(\0132\n.ThermoLog\"j\n\007S" +
-      "ession\022\n\n\002id\030\001 \002(\t\022\022\n\nstart_time\030\002 \002(\t\022\020" +
-      "\n\010end_time\030\003 \002(\t\022\021\n\tvolume_ml\030\004 \002(\002\022\014\n\004n" +
-      "ame\030\005 \001(\t\022\014\n\004slug\030\006 \001(\t\"V\n\tThermoLog\022\n\n\002" +
-      "id\030\001 \002(\t\022\021\n\tsensor_id\030\002 \002(\t\022\025\n\rtemperatu" +
-      "re_c\030\003 \002(\002\022\023\n\013record_time\030\004 \002(\t\"B\n\014Therm",
-      "oSensor\022\n\n\002id\030\001 \002(\t\022\023\n\013sensor_name\030\002 \002(\t" +
-      "\022\021\n\tnice_name\030\003 \001(\t\"\234\001\n\020ThermoSummaryLog" +
-      "\022\n\n\002id\030\001 \002(\t\022\021\n\tsensor_id\030\002 \002(\t\022\014\n\004date\030" +
-      "\003 \002(\t\022\016\n\006period\030\004 \002(\t\022\024\n\014num_readings\030\005 " +
-      "\002(\r\022\020\n\010min_temp\030\006 \002(\002\022\020\n\010max_temp\030\007 \002(\002\022" +
-      "\021\n\tmean_temp\030\010 \002(\002\"\341\001\n\004User\022\020\n\010username\030" +
-      "\001 \002(\t\022\025\n\005image\030\002 \001(\0132\006.Image\022\027\n\tis_activ" +
-      "e\030\003 \002(\010:\004true\022\022\n\nfirst_name\030\004 \001(\t\022\021\n\tlas" +
-      "t_name\030\005 \001(\t\022\r\n\005email\030\006 \001(\t\022\020\n\010password\030" +
-      "\007 \001(\t\022\020\n\010is_staff\030\010 \001(\010\022\024\n\014is_superuser\030",
-      "\t \001(\010\022\022\n\nlast_login\030\n \001(\t\022\023\n\013date_joined" +
-      "\030\013 \001(\t\"?\n\013UserProfile\022\020\n\010username\030\001 \002(\t\022" +
-      "\016\n\006gender\030\002 \001(\t\022\016\n\006weight\030\003 \001(\002\"\211\001\n\014Sess" +
-      "ionChunk\022\n\n\002id\030\001 \002(\t\022\022\n\nsession_id\030\002 \002(\t" +
-      "\022\020\n\010username\030\003 \002(\t\022\016\n\006keg_id\030\004 \002(\t\022\022\n\nst" +
-      "art_time\030\005 \002(\t\022\020\n\010end_time\030\006 \002(\t\022\021\n\tvolu" +
-      "me_ml\030\007 \002(\002\"|\n\013SystemEvent\022\n\n\002id\030\001 \002(\t\022\014" +
-      "\n\004kind\030\002 \002(\t\022\014\n\004time\030\003 \002(\t\022\020\n\010drink_id\030\004" +
-      " \001(\t\022\016\n\006keg_id\030\005 \001(\t\022\022\n\nsession_id\030\006 \001(\t" +
-      "\022\017\n\007user_id\030\007 \001(\t\"Z\n\nSoundEvent\022\022\n\nevent",
-      "_name\030\001 \002(\t\022\027\n\017event_predicate\030\002 \001(\t\022\021\n\t" +
-      "sound_url\030\003 \002(\t\022\014\n\004user\030\004 \001(\t\"\360\002\n\005Stats\022" +
-      "\025\n\rlast_drink_id\030\001 \001(\t\022\027\n\017total_volume_m" +
-      "l\030\002 \001(\002\022\023\n\013total_pours\030\003 \001(\r\022\031\n\021average_" +
-      "volume_ml\030\004 \001(\002\022\032\n\022greatest_volume_ml\030\005 " +
-      "\001(\002\022\032\n\022greatest_volume_id\030\006 \001(\t\0223\n\025volum" +
-      "e_by_day_of_week\030\007 \003(\0132\024.Stats.WeekdayVo" +
-      "lume\022/\n\021volume_by_drinker\030\010 \003(\0132\024.Stats." +
-      "DrinkerVolume\0323\n\rWeekdayVolume\022\017\n\007weekda" +
-      "y\030\001 \002(\t\022\021\n\tvolume_ml\030\002 \002(\002\0324\n\rDrinkerVol",
-      "ume\022\020\n\010username\030\001 \002(\t\022\021\n\tvolume_ml\030\002 \002(\002" +
-      "B\022\n\020org.kegbot.proto"
+      "_id\030\t \001(\t\022\025\n\rauth_token_id\030\n \001(\t\022\013\n\003url\030" +
+      "\013 \001(\t\"\316\001\n\005Image\022\013\n\003url\030\001 \002(\t\022\r\n\005width\030\002 " +
+      "\001(\r\022\016\n\006height\030\003 \001(\r\022\024\n\014created_date\030\004 \001(" +
+      "\t\022\017\n\007caption\030\005 \001(\t\022\017\n\007user_id\030\006 \001(\t\022\016\n\006k" +
+      "eg_id\030\007 \001(\t\022\022\n\nsession_id\030\010 \001(\t\022\020\n\010drink" +
+      "_id\030\t \001(\t\022\025\n\rthumbnail_url\030\n \001(\t\022\024\n\014orig" +
+      "inal_url\030\013 \001(\t\"\201\002\n\003Keg\022\n\n\002id\030\001 \002(\t\022\017\n\007ty" +
+      "pe_id\030\002 \002(\t\022\017\n\007size_id\030\003 \002(\t\022\021\n\tsize_nam" +
+      "e\030\004 \001(\t\022\026\n\016size_volume_ml\030\005 \001(\002\022\030\n\020volum" +
+      "e_ml_remain\030\006 \002(\002\022\024\n\014percent_full\030\007 \002(\002\022",
+      "\024\n\014started_time\030\010 \002(\t\022\025\n\rfinished_time\030\t" +
+      " \002(\t\022\016\n\006status\030\n \002(\t\022\023\n\013description\030\013 \001(" +
+      "\t\022\022\n\nspilled_ml\030\014 \001(\002\022\013\n\003url\030\r \001(\t\"6\n\007Ke" +
+      "gSize\022\n\n\002id\030\001 \002(\t\022\014\n\004name\030\002 \002(\t\022\021\n\tvolum" +
+      "e_ml\030\003 \002(\002\"\314\001\n\006KegTap\022\n\n\002id\030\001 \002(\t\022\014\n\004nam" +
+      "e\030\002 \002(\t\022\022\n\nmeter_name\030\003 \002(\t\022\022\n\nrelay_nam" +
+      "e\030\004 \001(\t\022\023\n\013ml_per_tick\030\005 \002(\002\022\023\n\013descript" +
+      "ion\030\006 \001(\t\022\026\n\016current_keg_id\030\007 \001(\t\022\030\n\020the" +
+      "rmo_sensor_id\030\010 \001(\t\022$\n\020last_temperature\030" +
+      "\t \001(\0132\n.ThermoLog\"w\n\007Session\022\n\n\002id\030\001 \002(\t",
+      "\022\022\n\nstart_time\030\002 \002(\t\022\020\n\010end_time\030\003 \002(\t\022\021" +
+      "\n\tvolume_ml\030\004 \002(\002\022\014\n\004name\030\005 \001(\t\022\014\n\004slug\030" +
+      "\006 \001(\t\022\013\n\003url\030\007 \001(\t\"V\n\tThermoLog\022\n\n\002id\030\001 " +
+      "\002(\t\022\021\n\tsensor_id\030\002 \002(\t\022\025\n\rtemperature_c\030" +
+      "\003 \002(\002\022\023\n\013record_time\030\004 \002(\t\"B\n\014ThermoSens" +
+      "or\022\n\n\002id\030\001 \002(\t\022\023\n\013sensor_name\030\002 \002(\t\022\021\n\tn" +
+      "ice_name\030\003 \001(\t\"\234\001\n\020ThermoSummaryLog\022\n\n\002i" +
+      "d\030\001 \002(\t\022\021\n\tsensor_id\030\002 \002(\t\022\014\n\004date\030\003 \002(\t" +
+      "\022\016\n\006period\030\004 \002(\t\022\024\n\014num_readings\030\005 \002(\r\022\020" +
+      "\n\010min_temp\030\006 \002(\002\022\020\n\010max_temp\030\007 \002(\002\022\021\n\tme",
+      "an_temp\030\010 \002(\002\"\356\001\n\004User\022\020\n\010username\030\001 \002(\t" +
+      "\022\025\n\005image\030\002 \001(\0132\006.Image\022\027\n\tis_active\030\003 \002" +
+      "(\010:\004true\022\022\n\nfirst_name\030\004 \001(\t\022\021\n\tlast_nam" +
+      "e\030\005 \001(\t\022\r\n\005email\030\006 \001(\t\022\020\n\010password\030\007 \001(\t" +
+      "\022\020\n\010is_staff\030\010 \001(\010\022\024\n\014is_superuser\030\t \001(\010" +
+      "\022\022\n\nlast_login\030\n \001(\t\022\023\n\013date_joined\030\013 \001(" +
+      "\t\022\013\n\003url\030\014 \001(\t\"?\n\013UserProfile\022\020\n\010usernam" +
+      "e\030\001 \002(\t\022\016\n\006gender\030\002 \001(\t\022\016\n\006weight\030\003 \001(\002\"" +
+      "\211\001\n\014SessionChunk\022\n\n\002id\030\001 \002(\t\022\022\n\nsession_" +
+      "id\030\002 \002(\t\022\020\n\010username\030\003 \002(\t\022\016\n\006keg_id\030\004 \002",
+      "(\t\022\022\n\nstart_time\030\005 \002(\t\022\020\n\010end_time\030\006 \002(\t" +
+      "\022\021\n\tvolume_ml\030\007 \002(\002\"|\n\013SystemEvent\022\n\n\002id" +
+      "\030\001 \002(\t\022\014\n\004kind\030\002 \002(\t\022\014\n\004time\030\003 \002(\t\022\020\n\010dr" +
+      "ink_id\030\004 \001(\t\022\016\n\006keg_id\030\005 \001(\t\022\022\n\nsession_" +
+      "id\030\006 \001(\t\022\017\n\007user_id\030\007 \001(\t\"Z\n\nSoundEvent\022" +
+      "\022\n\nevent_name\030\001 \002(\t\022\027\n\017event_predicate\030\002" +
+      " \001(\t\022\021\n\tsound_url\030\003 \002(\t\022\014\n\004user\030\004 \001(\t\"\221\005" +
+      "\n\005Stats\022\025\n\rlast_drink_id\030\001 \001(\t\022\027\n\017total_" +
+      "volume_ml\030\002 \001(\002\022\023\n\013total_pours\030\003 \001(\r\022\031\n\021" +
+      "average_volume_ml\030\004 \001(\002\022\032\n\022greatest_volu",
+      "me_ml\030\005 \001(\002\022\032\n\022greatest_volume_id\030\006 \001(\t\022" +
+      "3\n\025volume_by_day_of_week\030\007 \003(\0132\024.Stats.W" +
+      "eekdayVolume\022/\n\021volume_by_drinker\030\010 \003(\0132" +
+      "\024.Stats.DrinkerVolume\022\033\n\023registered_drin" +
+      "kers\030\t \003(\t\022\026\n\016has_guest_pour\030\n \001(\010\022\026\n\016se" +
+      "ssions_count\030\013 \001(\r\022+\n\016volume_by_year\030\014 \003" +
+      "(\0132\023.Stats.YearlyVolume\0220\n\017peer_affiniti" +
+      "es\030\r \003(\0132\027.Stats.PeerSessionCount\0323\n\rWee" +
+      "kdayVolume\022\017\n\007weekday\030\001 \002(\t\022\021\n\tvolume_ml" +
+      "\030\002 \002(\002\0324\n\rDrinkerVolume\022\020\n\010username\030\001 \002(",
+      "\t\022\021\n\tvolume_ml\030\002 \002(\002\032/\n\014YearlyVolume\022\014\n\004" +
+      "year\030\001 \002(\r\022\021\n\tvolume_ml\030\002 \002(\002\032B\n\020PeerSes" +
+      "sionCount\022\021\n\tpeer_name\030\001 \002(\t\022\033\n\023joint_se" +
+      "ssion_count\030\002 \002(\rB\022\n\020org.kegbot.proto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -18534,7 +21334,7 @@ public final class Models {
           internal_static_Drink_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_Drink_descriptor,
-              new java.lang.String[] { "Id", "Ticks", "VolumeMl", "SessionId", "PourTime", "Duration", "Status", "KegId", "UserId", "AuthTokenId", },
+              new java.lang.String[] { "Id", "Ticks", "VolumeMl", "SessionId", "PourTime", "Duration", "Status", "KegId", "UserId", "AuthTokenId", "Url", },
               org.kegbot.proto.Models.Drink.class,
               org.kegbot.proto.Models.Drink.Builder.class);
           internal_static_Image_descriptor =
@@ -18542,7 +21342,7 @@ public final class Models {
           internal_static_Image_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_Image_descriptor,
-              new java.lang.String[] { "Url", "Width", "Height", },
+              new java.lang.String[] { "Url", "Width", "Height", "CreatedDate", "Caption", "UserId", "KegId", "SessionId", "DrinkId", "ThumbnailUrl", "OriginalUrl", },
               org.kegbot.proto.Models.Image.class,
               org.kegbot.proto.Models.Image.Builder.class);
           internal_static_Keg_descriptor =
@@ -18550,7 +21350,7 @@ public final class Models {
           internal_static_Keg_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_Keg_descriptor,
-              new java.lang.String[] { "Id", "TypeId", "SizeId", "SizeName", "SizeVolumeMl", "VolumeMlRemain", "PercentFull", "StartedTime", "FinishedTime", "Status", "Description", "SpilledMl", },
+              new java.lang.String[] { "Id", "TypeId", "SizeId", "SizeName", "SizeVolumeMl", "VolumeMlRemain", "PercentFull", "StartedTime", "FinishedTime", "Status", "Description", "SpilledMl", "Url", },
               org.kegbot.proto.Models.Keg.class,
               org.kegbot.proto.Models.Keg.Builder.class);
           internal_static_KegSize_descriptor =
@@ -18574,7 +21374,7 @@ public final class Models {
           internal_static_Session_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_Session_descriptor,
-              new java.lang.String[] { "Id", "StartTime", "EndTime", "VolumeMl", "Name", "Slug", },
+              new java.lang.String[] { "Id", "StartTime", "EndTime", "VolumeMl", "Name", "Slug", "Url", },
               org.kegbot.proto.Models.Session.class,
               org.kegbot.proto.Models.Session.Builder.class);
           internal_static_ThermoLog_descriptor =
@@ -18606,7 +21406,7 @@ public final class Models {
           internal_static_User_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_User_descriptor,
-              new java.lang.String[] { "Username", "Image", "IsActive", "FirstName", "LastName", "Email", "Password", "IsStaff", "IsSuperuser", "LastLogin", "DateJoined", },
+              new java.lang.String[] { "Username", "Image", "IsActive", "FirstName", "LastName", "Email", "Password", "IsStaff", "IsSuperuser", "LastLogin", "DateJoined", "Url", },
               org.kegbot.proto.Models.User.class,
               org.kegbot.proto.Models.User.Builder.class);
           internal_static_UserProfile_descriptor =
@@ -18646,7 +21446,7 @@ public final class Models {
           internal_static_Stats_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_Stats_descriptor,
-              new java.lang.String[] { "LastDrinkId", "TotalVolumeMl", "TotalPours", "AverageVolumeMl", "GreatestVolumeMl", "GreatestVolumeId", "VolumeByDayOfWeek", "VolumeByDrinker", },
+              new java.lang.String[] { "LastDrinkId", "TotalVolumeMl", "TotalPours", "AverageVolumeMl", "GreatestVolumeMl", "GreatestVolumeId", "VolumeByDayOfWeek", "VolumeByDrinker", "RegisteredDrinkers", "HasGuestPour", "SessionsCount", "VolumeByYear", "PeerAffinities", },
               org.kegbot.proto.Models.Stats.class,
               org.kegbot.proto.Models.Stats.Builder.class);
           internal_static_Stats_WeekdayVolume_descriptor =
@@ -18665,6 +21465,22 @@ public final class Models {
               new java.lang.String[] { "Username", "VolumeMl", },
               org.kegbot.proto.Models.Stats.DrinkerVolume.class,
               org.kegbot.proto.Models.Stats.DrinkerVolume.Builder.class);
+          internal_static_Stats_YearlyVolume_descriptor =
+            internal_static_Stats_descriptor.getNestedTypes().get(2);
+          internal_static_Stats_YearlyVolume_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_Stats_YearlyVolume_descriptor,
+              new java.lang.String[] { "Year", "VolumeMl", },
+              org.kegbot.proto.Models.Stats.YearlyVolume.class,
+              org.kegbot.proto.Models.Stats.YearlyVolume.Builder.class);
+          internal_static_Stats_PeerSessionCount_descriptor =
+            internal_static_Stats_descriptor.getNestedTypes().get(3);
+          internal_static_Stats_PeerSessionCount_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_Stats_PeerSessionCount_descriptor,
+              new java.lang.String[] { "PeerName", "JointSessionCount", },
+              org.kegbot.proto.Models.Stats.PeerSessionCount.class,
+              org.kegbot.proto.Models.Stats.PeerSessionCount.Builder.class);
           return null;
         }
       };

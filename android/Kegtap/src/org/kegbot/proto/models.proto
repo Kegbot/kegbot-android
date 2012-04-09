@@ -150,6 +150,9 @@ message Drink {
 
   // Auth token value used to pour the drink, if known.
   optional string auth_token_id = 10;
+
+  // Canonical URL for this object.
+  optional string url = 11;
 }
 
 // Describes an image.
@@ -163,6 +166,28 @@ message Image {
 
   // The height of the image in pixels.
   optional uint32 height = 3;
+
+  // The date the picture was created.
+  optional string created_date = 4;
+
+  // The caption, if any.
+  optional string caption = 5;
+
+  // The user associated with this picture, if any.
+  optional string user_id = 6;
+
+  // The keg associated with this picture, if any.
+  optional string keg_id = 7;
+
+  // The session associated with this picture, if any.
+  optional string session_id = 8;
+
+  // The drink associated with this picture, if any.
+  optional string drink_id = 9;
+
+  optional string thumbnail_url = 10;
+
+  optional string original_url = 11;
 }
 
 // A single instance of a Keg that was attached to the Kegbot.
@@ -207,6 +232,9 @@ message Keg {
   // Spilled volume is not attributed to any drink, but deducts from the keg
   // total.
   optional float spilled_ml = 12;
+
+  // Canonical URL for this object.
+  optional string url = 13;
 }
 
 // A common keg size.
@@ -276,6 +304,9 @@ message Session {
 
   // The slugified name of this session.
   optional string slug = 6;
+
+  // Canonical URL for this object.
+  optional string url = 7;
 }
 
 // A log entry for a temperature sensor.
@@ -380,6 +411,9 @@ message User {
   // UTC time for the user's registration, as ISO8061 string.
   // Only available to admin users.
   optional string date_joined = 11;
+
+  // Canonical URL for this object.
+  optional string url = 12;
 }
 
 // Extended information about a specific user.
@@ -517,5 +551,38 @@ message Stats {
   // Pour volume, grouped by drinker.  Guest/anonymous pours are listed with
   // an empty "username" field.
   repeated DrinkerVolume volume_by_drinker = 8;
+
+  // List of all known drinkers.
+  repeated string registered_drinkers = 9;
+
+  // True if these stats include at least one guest pour.
+  optional bool has_guest_pour = 10;
+
+  // Count of all sessions.
+  optional uint32 sessions_count = 11;
+
+  // Container message for volumes by year.
+  message YearlyVolume {
+    // The year.
+    required uint32 year = 1;
+
+    // The volume.
+    required float volume_ml = 2;
+  }
+
+  // Volume by year.
+  repeated YearlyVolume volume_by_year = 12;
+
+  // Container message for sessions by peer.
+  message PeerSessionCount {
+    // The peer.
+    required string peer_name = 1;
+
+    // The count.
+    required uint32 joint_session_count = 2;
+  }
+
+  // Sessions by peer.
+  repeated PeerSessionCount peer_affinities = 13;
 
 }
