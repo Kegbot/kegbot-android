@@ -57,8 +57,17 @@ public class CameraFragment extends Fragment {
   int mRotation = 0;
 
   private Button mPictureButton;
+  private ViewGroup mPostButtons;
   private int mPictureSeconds = 0;
   private final Handler mHandler = new Handler();
+
+  private String mLastFilename = "";
+
+  private enum State {
+    INITIAL, IN_PROGRESS, TAKEN, COMPLETE;
+  }
+
+  private State mState = State.INITIAL;
 
   // The first rear facing camera
   int mDefaultCameraId;
@@ -73,8 +82,6 @@ public class CameraFragment extends Fragment {
         mHandler.postDelayed(PICTURE_COUNTDOWN_RUNNABLE, 1000);
       } else {
         takePicture();
-        mPictureButton.setClickable(true);
-        mPictureButton.setText("Take Picture");
       }
     }
   };
@@ -94,6 +101,35 @@ public class CameraFragment extends Fragment {
     }
   }
 
+  private void updateState(State newState) {
+    mState = newState;
+
+    switch (mState) {
+      case INITIAL:
+        mCamera.startPreview();
+        mPostButtons.setVisibility(View.GONE);
+        mPictureButton.setVisibility(View.VISIBLE);
+        mPictureButton.setClickable(true);
+        mPictureButton.setText("Take Picture");
+        break;
+      case IN_PROGRESS:
+        mPostButtons.setVisibility(View.GONE);
+        mPictureButton.setVisibility(View.VISIBLE);
+        break;
+      case TAKEN:
+        //mPreview.stopCameraPreview();
+        mCamera.stopPreview();
+        mPostButtons.setVisibility(View.VISIBLE);
+        mPictureButton.setVisibility(View.GONE);
+        break;
+      case COMPLETE:
+        mPostButtons.setVisibility(View.GONE);
+        mPictureButton.setVisibility(View.VISIBLE);
+        mPictureButton.setText("Pour Complete");
+        break;
+    }
+  }
+
   public void takePicture() {
     final ShutterCallback shutterCallback = new ShutterCallback() {
       @Override
@@ -105,7 +141,6 @@ public class CameraFragment extends Fragment {
     final PictureCallback jpegCallback = new PictureCallback() {
       @Override
       public void onPictureTaken(byte[] data, Camera camera) {
-        camera.startPreview();
         Log.d(TAG, "camera jpeg: " + data);
         new ImageSaveTask().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, data);
       }
@@ -152,6 +187,8 @@ public class CameraFragment extends Fragment {
     @Override
     protected void onPostExecute(String result) {
       super.onPostExecute(result);
+      mLastFilename = result;
+      updateState(State.TAKEN);
       final Intent intent = KegtapBroadcast.getPictureTakenBroadcastIntent(result);
       getActivity().sendBroadcast(intent);
     }
@@ -186,15 +223,44 @@ public class CameraFragment extends Fragment {
     final View view = inflater.inflate(R.layout.camera_fragment_layout, container, false);
     mPreview = (Preview) view.findViewById(R.id.cameraPreview);
     mPictureButton = ((Button) view.findViewById(R.id.cameraTakePictureButton));
+    mPostButtons = (ViewGroup) view.findViewById(R.id.cameraPostPictureButtons);
+
     mPictureButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
         schedulePicture();
       }
     });
+
+    Button discardButton = (Button) view.findViewById(R.id.cameraDiscardPictureButton);
+    discardButton.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        discardLastPicture();
+        updateState(State.INITIAL);
+      }
+    });
+
+    Button retakeButton = (Button) view.findViewById(R.id.cameraTakeAnotherButton);
+    retakeButton.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        discardLastPicture();
+        updateState(State.INITIAL);
+        schedulePicture();
+      }
+    });
+
     view.setBackgroundDrawable(
         getResources().getDrawable(R.drawable.shape_rounded_rect));
     return view;
+  }
+
+  private void discardLastPicture() {
+    final Intent intent = KegtapBroadcast.getPictureDiscardedBroadcastIntent(mLastFilename);
+    getActivity().sendBroadcast(intent);
+    mLastFilename = "";
+    //mPreview.startCameraPreview();
   }
 
   public void schedulePicture() {
@@ -213,6 +279,9 @@ public class CameraFragment extends Fragment {
     mCamera = Camera.open(mDefaultCameraId);
     setCameraDisplayOrientation(getActivity(), mDefaultCameraId, mCamera);
     mPreview.setCamera(mCamera);
+    //mPreview.startCameraPreview();
+    updateState(State.INITIAL);
+    schedulePicture();
   }
 
   @Override

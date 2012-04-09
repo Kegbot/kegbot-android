@@ -31,6 +31,8 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback {
   List<Size> mSupportedPreviewSizes;
   Camera mCamera;
 
+  private boolean mPreviewStarted = false;
+
   public Preview(Context context) {
     super(context);
     init(context);
@@ -191,6 +193,21 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback {
 
     mCamera.setParameters(parameters);
     mCamera.startPreview();
+    mPreviewStarted = true;
   }
+
+//  public void startCameraPreview() {
+//    if (!mPreviewStarted) {
+//      mCamera.startPreview();
+//      mPreviewStarted = true;
+//    }
+//  }
+//
+//  public void stopCameraPreview() {
+//    if (mPreviewStarted) {
+//      mCamera.stopPreview();
+//      mPreviewStarted = false;
+//    }
+//  }
 
 }

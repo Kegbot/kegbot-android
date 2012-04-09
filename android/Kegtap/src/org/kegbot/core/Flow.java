@@ -229,6 +229,10 @@ public class Flow {
     mImages.add(image);
   }
 
+  public boolean removeImage(String image) {
+    return mImages.remove(image);
+  }
+
   public List<String> getImages() {
     return ImmutableList.copyOf(mImages);
   }

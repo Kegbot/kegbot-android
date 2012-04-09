@@ -74,6 +74,7 @@ public class PourInProgressActivity extends CoreActivity {
   static {
     POUR_INTENT_FILTER.addAction(KegtapBroadcast.ACTION_POUR_UPDATE);
     POUR_INTENT_FILTER.addAction(KegtapBroadcast.ACTION_PICTURE_TAKEN);
+    POUR_INTENT_FILTER.addAction(KegtapBroadcast.ACTION_PICTURE_DISCARDED);
     POUR_INTENT_FILTER.setPriority(100);
   }
 
@@ -88,14 +89,19 @@ public class PourInProgressActivity extends CoreActivity {
       } else if (KegtapBroadcast.ACTION_PICTURE_TAKEN.equals(action)) {
         final String filename = intent.getStringExtra(KegtapBroadcast.PICTURE_TAKEN_EXTRA_FILENAME);
         Log.d(TAG, "Got photo: " + filename);
-
-        final Tap tap = mCurrentTap;
-        if (tap != null) {
-          final Flow flow = mFlowManager.getFlowForTap(tap);
-          if (flow != null) {
-            Log.d(TAG, "  - attached to flow: " + flow);
-            flow.addImage(filename);
-          }
+        final Flow flow = getCurrentlyFocusedFlow();
+        if (flow != null) {
+          Log.d(TAG, "  - attached to flow: " + flow);
+          flow.addImage(filename);
+        }
+      } else if (KegtapBroadcast.ACTION_PICTURE_DISCARDED.equals(action)) {
+        final String filename =
+            intent.getStringExtra(KegtapBroadcast.PICTURE_DISCARDED_EXTRA_FILENAME);
+        Log.d(TAG, "Discarded photo: " + filename);
+        final Flow flow = getCurrentlyFocusedFlow();
+        if (flow != null) {
+          Log.d(TAG, "  - remove from flow: " + flow);
+          flow.removeImage(filename);
         }
       }
     }
@@ -149,7 +155,7 @@ public class PourInProgressActivity extends CoreActivity {
     }
 
     public Tap getTap(int position) {
-      return ((PourStatusFragment)getItem(position)).getTap();
+      return ((PourStatusFragment) getItem(position)).getTap();
     }
 
     @Override
@@ -205,6 +211,17 @@ public class PourInProgressActivity extends CoreActivity {
     mPrefs = new PreferenceHelper(this);
   }
 
+  private Flow getCurrentlyFocusedFlow() {
+    final Tap tap = mCurrentTap;
+    if (tap != null) {
+      final Flow flow = mFlowManager.getFlowForTap(tap);
+      if (flow != null) {
+        return flow;
+      }
+    }
+    return null;
+  }
+
   @Override
   protected Dialog onCreateDialog(int id) {
     if (id == DIALOG_IDLE_WARNING) {
@@ -221,7 +238,6 @@ public class PourInProgressActivity extends CoreActivity {
         | PowerManager.ACQUIRE_CAUSES_WAKEUP, "kegbot-pour");
     mWakeLock.acquire();
     registerReceiver(mUpdateReceiver, POUR_INTENT_FILTER);
-
     handleIntent(getIntent());
   }
 

@@ -46,6 +46,9 @@ public class KegtapBroadcast {
   public static final String ACTION_PICTURE_TAKEN = "org.kegbot.action.PICTURE_TAKEN";
   public static final String PICTURE_TAKEN_EXTRA_FILENAME = "filename";
 
+  public static final String ACTION_PICTURE_DISCARDED = "org.kegbot.action.PICTURE_DISCARDED";
+  public static final String PICTURE_DISCARDED_EXTRA_FILENAME = "filename";
+
 
   /**
    * Non-instantiable.
@@ -85,6 +88,12 @@ public class KegtapBroadcast {
   public static Intent getPictureTakenBroadcastIntent(final String filename) {
     final Intent intent = new Intent(ACTION_PICTURE_TAKEN);
     intent.putExtra(PICTURE_TAKEN_EXTRA_FILENAME, filename);
+    return intent;
+  }
+
+  public static Intent getPictureDiscardedBroadcastIntent(final String filename) {
+    final Intent intent = new Intent(ACTION_PICTURE_DISCARDED);
+    intent.putExtra(PICTURE_DISCARDED_EXTRA_FILENAME, filename);
     return intent;
   }
 
