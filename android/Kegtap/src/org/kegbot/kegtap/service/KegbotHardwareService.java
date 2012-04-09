@@ -165,7 +165,13 @@ public class KegbotHardwareService extends Service {
 
     @Override
     public void onAuthTokenMessage(KegboardAuthTokenMessage message) {
-      handleTokenAuthEvent("", message.getName(), message.getToken(), message.getStatus() == Status.PRESENT);
+      String deviceName = message.getName();
+      if ("onewire".equals(deviceName)) {
+        deviceName = "core.onewire";
+      } else if ("rfid".equals(deviceName)) {
+        deviceName = "core.rfid";
+      }
+      handleTokenAuthEvent("", deviceName, message.getToken(), message.getStatus() == Status.PRESENT);
     }
   };
 

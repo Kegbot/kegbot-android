@@ -169,6 +169,7 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
           UserDetail user = am.authenticateToken(token);
           Log.d(TAG, "Authenticated user: " + user);
           if (user != null) {
+            am.noteUserAuthenticated(user);
             for (final Tap tap : mTapManager.getTaps()) {
               mFlowManager.activateUserAtTap(tap, user.getUser().getUsername());
             }
