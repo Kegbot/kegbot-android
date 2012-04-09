@@ -3,6 +3,7 @@
  */
 package org.kegbot.kegtap;
 
+import org.kegbot.core.AuthenticationManager;
 import org.kegbot.kegtap.setup.SetupEmptyFragment;
 
 import android.app.ActionBar;
@@ -42,10 +43,12 @@ public class DrinkerSelectActivity extends CoreActivity {
         .setTabListener(new TabListener<DrinkerSelectFragment>(
                 this, "simple", DrinkerSelectFragment.class)));
 
+    final Bundle args = new Bundle();
+    args.putString(DrinkerSelectFragment.LOAD_SOURCE, DrinkerSelectFragment.LOAD_SOURCE_RECENT);
     bar.addTab(bar.newTab()
         .setText("Recent Drinkers")
-        .setTabListener(new TabListener<SetupEmptyFragment>(
-                this, "recent", SetupEmptyFragment.class)));
+        .setTabListener(new TabListener<DrinkerSelectFragment>(
+                this, "recent", DrinkerSelectFragment.class, args)));
 
     bar.addTab(bar.newTab()
         .setText("New Drinker")
@@ -56,6 +59,17 @@ public class DrinkerSelectActivity extends CoreActivity {
 
     if (savedInstanceState != null) {
         bar.setSelectedNavigationItem(savedInstanceState.getInt("tab", 0));
+    }
+  }
+
+  @Override
+  protected void onResume() {
+    super.onResume();
+    final AuthenticationManager am = AuthenticationManager.getSingletonInstance();
+
+    if (!am.getAllRecent().isEmpty()) {
+      final ActionBar bar = getActionBar();
+      bar.setSelectedNavigationItem(1);
     }
   }
 

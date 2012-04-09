@@ -7,6 +7,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.kegbot.api.KegbotApiException;
+import org.kegbot.core.AuthenticationManager;
 import org.kegbot.core.AuthenticationToken;
 import org.kegbot.core.ConfigurationManager;
 import org.kegbot.core.Flow;
@@ -164,16 +165,8 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
           try {
           Log.d(TAG, "onTokenAttached: running");
 
-          UserDetail user;
-          try {
-            user = mApiService.authenticateUser(token.getAuthDevice(), token.getTokenValue());
-            Log.d(TAG, "onTokenAttached: got user");
-            Log.d(TAG, "onTokenAttached: " + user);
-
-          } catch (KegbotApiException e) {
-            Log.w(TAG, "Authentication failed: " + e.toString());
-            user = null;
-          }
+          final AuthenticationManager am = AuthenticationManager.getSingletonInstance();
+          UserDetail user = am.authenticateToken(token);
           Log.d(TAG, "Authenticated user: " + user);
           if (user != null) {
             for (final Tap tap : mTapManager.getTaps()) {

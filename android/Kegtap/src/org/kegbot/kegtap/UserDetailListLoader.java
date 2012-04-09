@@ -90,5 +90,4 @@ public class UserDetailListLoader extends AsyncTaskLoader<List<UserDetail>> {
     super.onReset();
   }
 
-
 }

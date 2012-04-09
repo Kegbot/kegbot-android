@@ -10,6 +10,7 @@ import org.kegbot.api.KegbotApiImpl;
 import org.kegbot.kegtap.util.image.ImageDownloader;
 import org.kegbot.proto.Api.SystemEventDetail;
 import org.kegbot.proto.Api.SystemEventDetailSet;
+import org.kegbot.proto.Models.Drink;
 import org.kegbot.proto.Models.SystemEvent;
 
 import android.app.Activity;
@@ -113,7 +114,7 @@ public class EventListFragment extends ListFragment {
 
         // Event body.
         final TextView title = (TextView) view.findViewById(R.id.eventTitle);
-        title.setText(getTitle(eventDetail.getEvent()));
+        title.setText(getTitle(eventDetail));
 
         // Date and time.
         TextView dateView = (TextView) view.findViewById(R.id.eventDate);
@@ -131,8 +132,9 @@ public class EventListFragment extends ListFragment {
 
       }
 
-      private String getTitle(SystemEvent event) {
-        final String kind = event.getKind();
+      private String getTitle(SystemEventDetail eventDetail) {
+        final String kind = eventDetail.getEvent().getKind();
+        final Drink drink = eventDetail.getDrink();
         String result;
 
         if ("keg_ended".equals(kind)) {
@@ -140,7 +142,8 @@ public class EventListFragment extends ListFragment {
         } else if ("keg_tapped".equals(kind)) {
           result = "tapped";
         } else if ("drink_poured".equals(kind)) {
-          result = "poured a drink";
+          double ounces = Units.volumeMlToOunces(drink.getVolumeMl());
+          result = String.format("poured %.1f ounces", Double.valueOf(ounces));
         } else if ("session_joined".equals(kind)) {
           result = "started drinking";
         } else if ("session_started".equals(kind)) {

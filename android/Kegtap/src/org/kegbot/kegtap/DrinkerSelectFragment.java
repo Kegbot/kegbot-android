@@ -2,6 +2,7 @@ package org.kegbot.kegtap;
 
 import java.util.List;
 
+import org.kegbot.core.AuthenticationManager;
 import org.kegbot.kegtap.util.image.ImageDownloader;
 import org.kegbot.proto.Api.UserDetail;
 
@@ -38,7 +39,12 @@ public class DrinkerSelectFragment extends Fragment implements LoaderCallbacks<L
 
   private GridView mGridView;
 
+  private AuthenticationManager mAuthManager;
+
   private ImageDownloader mImageDownloader;
+
+  public static final String LOAD_SOURCE = "source";
+  public static final String LOAD_SOURCE_RECENT = "recent";
 
   @Override
   public void onAttach(Activity activity) {
@@ -50,7 +56,7 @@ public class DrinkerSelectFragment extends Fragment implements LoaderCallbacks<L
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     mView = inflater.inflate(R.layout.select_drinker_fragment_inner, null);
     mGridView = (GridView) mView.findViewById(R.id.drinkerGridView);
-
+    mAuthManager = AuthenticationManager.getSingletonInstance();
     return mView;
   }
 
@@ -113,6 +119,8 @@ public class DrinkerSelectFragment extends Fragment implements LoaderCallbacks<L
       public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
         final UserDetail user = (UserDetail) mGridView.getItemAtPosition(position);
         Log.d(LOG_TAG, "Clicked on user: " + user);
+        mAuthManager.noteUserAuthenticated(user);
+
         final String username;
         if (user == null) {
           username = "";
@@ -134,7 +142,19 @@ public class DrinkerSelectFragment extends Fragment implements LoaderCallbacks<L
   @Override
   public Loader<List<UserDetail>> onCreateLoader(int id, Bundle args) {
     Log.d(LOG_TAG, "+++ onCreateLoader");
-    return new UserDetailListLoader(getActivity());
+    final Bundle fragArgs = getArguments();
+
+    String method = "";
+    if (fragArgs != null) {
+      method = getArguments().getString(LOAD_SOURCE, method);
+    }
+
+    if (LOAD_SOURCE_RECENT.equalsIgnoreCase(method)) {
+      Log.d(LOG_TAG, "load from recent!");
+      return new RecentUserDetailLoader(getActivity());
+    } else {
+      return new UserDetailListLoader(getActivity());
+    }
   }
 
   @Override
