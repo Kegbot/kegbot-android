@@ -14,8 +14,10 @@ import org.kegbot.kegtap.util.PreferenceHelper;
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -26,8 +28,13 @@ import android.os.Handler;
 import android.os.PowerManager;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
@@ -38,7 +45,7 @@ public class PourInProgressActivity extends CoreActivity {
 
   private static final long FLOW_UPDATE_MILLIS = 500;
 
-  private static final long FLOW_FINISH_DELAY_MILLIS = 5000;
+  private static final long FLOW_FINISH_DELAY_MILLIS = TimeUnit.SECONDS.toMillis(3);
 
   private static final long IDLE_SCROLL_TIMEOUT_MILLIS = TimeUnit.SECONDS.toMillis(3);
 
@@ -53,6 +60,10 @@ public class PourInProgressActivity extends CoreActivity {
 
   private Button mEndPourButton;
 
+  private ImageView mPourDrinkerImage;
+
+  private EditText mShoutText;
+
   private AlertDialog mIdleDetectedDialog;
 
   private final Handler mHandler = new Handler();
@@ -60,6 +71,8 @@ public class PourInProgressActivity extends CoreActivity {
   private PreferenceHelper mPrefs;
 
   private PouringTapAdapter mPouringTapAdapter;
+
+  private DialogFragment mProgressDialog;
 
   private ViewPager mTapPager;
 
@@ -117,6 +130,10 @@ public class PourInProgressActivity extends CoreActivity {
   private final Runnable FINISH_ACTIVITY_RUNNABLE = new Runnable() {
     @Override
     public void run() {
+      if (mProgressDialog != null) {
+        mProgressDialog.dismiss();
+        mProgressDialog = null;
+      }
       cancelIdleWarning();
       finish();
     }
@@ -168,6 +185,19 @@ public class PourInProgressActivity extends CoreActivity {
     }
   }
 
+  private class PourFinishProgressDialog extends DialogFragment {
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+      ProgressDialog dialog = new ProgressDialog(getActivity());
+      dialog.setIndeterminate(true);
+      dialog.setCancelable(false);
+      dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+      dialog.setMessage("Please wait..");
+      dialog.setTitle("Saving drink");
+      return dialog;
+    }
+  }
+
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -184,6 +214,44 @@ public class PourInProgressActivity extends CoreActivity {
     mTapPager.setAdapter(mPouringTapAdapter);
     mTapPager.setOnPageChangeListener(mPageChangeListener);
     scrollToMostActiveTap();
+
+    mEndPourButton = (Button) findViewById(R.id.pourEndButton);
+    mEndPourButton.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        endAllFlows();
+      }
+    });
+
+    mShoutText = (EditText) findViewById(R.id.shoutText);
+    mShoutText.addTextChangedListener(new TextWatcher() {
+      @Override
+      public void onTextChanged(CharSequence s, int start, int before, int count) {
+      }
+
+      @Override
+      public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+      }
+
+      @Override
+      public void afterTextChanged(Editable s) {
+        final Tap tap = mCurrentTap;
+        if (tap == null) {
+          Log.w(TAG, "Bad tap.");
+          return;
+        }
+        final Flow flow = mFlowManager.getFlowForTap(tap);
+        if (flow == null) {
+          Log.w(TAG, "Flow went away, dropping shout.");
+          return;
+        }
+        flow.setShout(s.toString());
+        flow.pokeActivity();
+      }
+    });
+
+    findViewById(R.id.controlsBox).setBackgroundDrawable(
+        getResources().getDrawable(R.drawable.shape_rounded_rect));
 
     mCameraFragment = (CameraFragment) getFragmentManager().findFragmentById(R.id.camera);
 
@@ -220,6 +288,18 @@ public class PourInProgressActivity extends CoreActivity {
       }
     }
     return null;
+  }
+
+  private void updateForNewlyFocusedTap(Tap tap) {
+    if (tap == mCurrentTap) {
+      return;
+    }
+    mCurrentTap = tap;
+    final Flow flow = mFlowManager.getFlowForTap(tap);
+    if (flow == null) {
+      return;
+    }
+    final String username = flow.getUsername();
   }
 
   @Override
@@ -314,6 +394,12 @@ public class PourInProgressActivity extends CoreActivity {
     mCurrentTap = mPouringTapAdapter.getTap(position);
   }
 
+  private void enableUiComponents(boolean enable) {
+    mShoutText.setEnabled(enable);
+    mEndPourButton.setEnabled(enable);
+    mCameraFragment.setEnabled(enable);
+  }
+
   private void refreshFlows() {
     mHandler.removeCallbacks(FLOW_UPDATE_RUNNABLE);
 
@@ -321,6 +407,8 @@ public class PourInProgressActivity extends CoreActivity {
 
     // Fetch all flows.
     long largestIdleTime = Long.MIN_VALUE;
+
+    enableUiComponents(!allFlows.isEmpty());
 
     for (final Flow flow : allFlows) {
       if (DEBUG) {
@@ -354,6 +442,8 @@ public class PourInProgressActivity extends CoreActivity {
       mHandler.postDelayed(FLOW_UPDATE_RUNNABLE, FLOW_UPDATE_MILLIS);
     } else {
       cancelIdleWarning();
+      mProgressDialog = new PourFinishProgressDialog();
+      mProgressDialog.show(getFragmentManager(), "finish");
       mHandler.postDelayed(FINISH_ACTIVITY_RUNNABLE, FLOW_FINISH_DELAY_MILLIS);
     }
   }
@@ -364,6 +454,8 @@ public class PourInProgressActivity extends CoreActivity {
     }
     cancelIdleWarning();
     mCameraFragment.cancelPendingPicture();
+    mShoutText.setEnabled(false);
+    mEndPourButton.setEnabled(false);
   }
 
   private void sendIdleWarning() {

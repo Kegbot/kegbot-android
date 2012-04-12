@@ -63,7 +63,8 @@
             android:name=".PourInProgressActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
-            android:screenOrientation="sensorLandscape" />
+            android:screenOrientation="sensorLandscape"
+            android:windowSoftInputMode="stateHidden|adjustPan"/>
         <activity
             android:name=".DrinkerSelectActivity"
             android:label="@string/app_name"

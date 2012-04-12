@@ -89,6 +89,11 @@ public class Flow {
    */
   private long mMaxIdleTimeMs;
 
+  /**
+   * Shout text from the user.
+   */
+  private String mShout = "";
+
   private final List<String> mImages = Lists.newArrayList();
 
   private Flow(int flowId, Tap tap, long maxIdleTimeMs) {
@@ -111,7 +116,8 @@ public class Flow {
         .append(" tap=").append(mTap)
         .append(" user=").append(mUsername)
         .append(" ticks=").append(mTicks)
-        .append(" numImages=").append(mImages.size());
+        .append(" numImages=").append(mImages.size())
+        .append(" shout='").append(mShout).append("'");
     return builder.toString();
   }
 
@@ -235,6 +241,18 @@ public class Flow {
 
   public List<String> getImages() {
     return ImmutableList.copyOf(mImages);
+  }
+
+  public void setShout(String shout) {
+    if (shout == null) {
+      mShout = "";
+    } else {
+      mShout = shout;
+    }
+  }
+
+  public String getShout() {
+    return mShout;
   }
 
   /**
