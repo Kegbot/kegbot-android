@@ -24,7 +24,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.google.android.apps.analytics.GoogleAnalyticsTracker;
 import com.google.common.collect.Lists;
 
 public class KegtapActivity extends CoreActivity {
@@ -41,12 +40,10 @@ public class KegtapActivity extends CoreActivity {
   private SessionStatsFragment mSession;
   private PreferenceHelper mPrefsHelper;
   private final Handler mHandler = new Handler();
-  private GoogleAnalyticsTracker mTracker;
 
   private final Runnable mRefreshRunnable = new Runnable() {
     @Override
     public void run() {
-      Log.d(LOG_TAG, "Reloading events.");
       mEvents.loadEvents();
       mHandler.postDelayed(this, 10000);
     }
@@ -57,11 +54,13 @@ public class KegtapActivity extends CoreActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.main_activity);
 
+    /*
     mTracker = GoogleAnalyticsTracker.getInstance();
     mTracker.startNewSession("UA-73794-6", 60, this);
+    mTracker.setProductVersion(BuildInfo.BUILD_DATE_HUMAN, BuildInfo.BUILD_TAGS);
 
     mTracker.trackPageView("/KegtapActivityOnCreate");
-
+  */
     mPrefsHelper = new PreferenceHelper(this);
 
     mTapStatusAdapter = new MyAdapter(getFragmentManager());
@@ -90,8 +89,6 @@ public class KegtapActivity extends CoreActivity {
     super.onResume();
     handleIntent();
     initializeUi();
-
-    mTracker.trackPageView("/KegtapActivityOnResume");
     mHandler.post(mRefreshRunnable);
   }
 

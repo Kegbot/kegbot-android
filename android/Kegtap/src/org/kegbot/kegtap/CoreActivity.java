@@ -15,6 +15,8 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.view.MenuItem;
 
+import com.google.android.apps.analytics.easytracking.EasyTracker;
+
 /**
  * An activity which is bound to the core service.
  *
@@ -45,7 +47,20 @@ public class CoreActivity extends Activity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    EasyTracker.getTracker().setContext(this);
     bindToCoreService();
+  }
+
+  @Override
+  protected void onStart() {
+    super.onStart();
+    EasyTracker.getTracker().trackActivityStart(this);
+  }
+
+  @Override
+  protected void onStop() {
+    super.onStop();
+    EasyTracker.getTracker().trackActivityStop(this);
   }
 
   @Override

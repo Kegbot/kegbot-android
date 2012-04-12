@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="ga_api_key">UA-73794-6</string>
+
+  <bool name="ga_debug">true</bool>
+  <bool name="ga_dryRun">false</bool>
+  <bool name="ga_auto_activity_tracking">true</bool>
+
+  <!-- <string name="com.example.android.notepad.NoteEditor">NoteEditor</string>
+  -->
+</resources>

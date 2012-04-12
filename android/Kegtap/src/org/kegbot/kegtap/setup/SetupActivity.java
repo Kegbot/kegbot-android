@@ -15,7 +15,6 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
-import android.os.AsyncTask.Status;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -25,6 +24,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
+import com.google.android.apps.analytics.easytracking.EasyTracker;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
@@ -95,6 +95,7 @@ public class SetupActivity extends Activity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    EasyTracker.getTracker().setContext(this);
     setContentView(R.layout.setup_activity);
   }
 
@@ -149,7 +150,11 @@ public class SetupActivity extends Activity {
 
       @Override
       protected String doInBackground(Void... params) {
-        return mCurrentTask.validate(SetupActivity.this.getApplicationContext());
+        final String result = mCurrentTask.validate(SetupActivity.this.getApplicationContext());
+        if (Strings.isNullOrEmpty(result)) {
+          EasyTracker.getTracker().trackEvent("SetupTask", mCurrentTask.toString(), "", 1);
+        }
+        return result;
       }
 
       @Override
@@ -233,14 +238,15 @@ public class SetupActivity extends Activity {
 
   @Override
   protected void onStart() {
-    // TODO Auto-generated method stub
     super.onStart();
+    EasyTracker.getTracker().trackActivityStart(this);
   }
 
   @Override
   protected void onStop() {
-    // TODO Auto-generated method stub
     super.onStop();
+    EasyTracker.getTracker().trackActivityStop(this);
+
   }
 
 }
