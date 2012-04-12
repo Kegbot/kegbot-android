@@ -343,7 +343,9 @@ public class KegbotApiService extends BackgroundService {
         .setTicks(ended.getTicks())
         .setVolumeMl((float) ended.getVolumeMl()).setUsername(ended.getUsername())
         .setSecondsAgo(0).setDurationSeconds((int) (ended.getDurationMs() / 1000.0))
-        .setSpilled(false).buildPartial();
+        .setSpilled(false)
+        .setShout(ended.getShout())
+        .buildPartial();
   }
 
 }

@@ -1261,6 +1261,10 @@ public final class Api {
     // optional bool spilled = 9;
     boolean hasSpilled();
     boolean getSpilled();
+    
+    // optional string shout = 10;
+    boolean hasShout();
+    String getShout();
   }
   public static final class RecordDrinkRequest extends
       com.google.protobuf.GeneratedMessage
@@ -1469,6 +1473,38 @@ public final class Api {
       return spilled_;
     }
     
+    // optional string shout = 10;
+    public static final int SHOUT_FIELD_NUMBER = 10;
+    private Object shout_;
+    public boolean hasShout() {
+      return ((bitField0_ & 0x00000200) == 0x00000200);
+    }
+    public String getShout() {
+      Object ref = shout_;
+      if (ref instanceof String) {
+        return (String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        String s = bs.toStringUtf8();
+        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+          shout_ = s;
+        }
+        return s;
+      }
+    }
+    private com.google.protobuf.ByteString getShoutBytes() {
+      Object ref = shout_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+        shout_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    
     private void initFields() {
       tapName_ = "";
       ticks_ = 0;
@@ -1479,6 +1515,7 @@ public final class Api {
       durationSeconds_ = 0;
       authToken_ = "";
       spilled_ = false;
+      shout_ = "";
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -1522,6 +1559,9 @@ public final class Api {
       }
       if (((bitField0_ & 0x00000100) == 0x00000100)) {
         output.writeBool(9, spilled_);
+      }
+      if (((bitField0_ & 0x00000200) == 0x00000200)) {
+        output.writeBytes(10, getShoutBytes());
       }
       getUnknownFields().writeTo(output);
     }
@@ -1567,6 +1607,10 @@ public final class Api {
       if (((bitField0_ & 0x00000100) == 0x00000100)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBoolSize(9, spilled_);
+      }
+      if (((bitField0_ & 0x00000200) == 0x00000200)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(10, getShoutBytes());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -1708,6 +1752,8 @@ public final class Api {
         bitField0_ = (bitField0_ & ~0x00000080);
         spilled_ = false;
         bitField0_ = (bitField0_ & ~0x00000100);
+        shout_ = "";
+        bitField0_ = (bitField0_ & ~0x00000200);
         return this;
       }
       
@@ -1782,6 +1828,10 @@ public final class Api {
           to_bitField0_ |= 0x00000100;
         }
         result.spilled_ = spilled_;
+        if (((from_bitField0_ & 0x00000200) == 0x00000200)) {
+          to_bitField0_ |= 0x00000200;
+        }
+        result.shout_ = shout_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -1824,6 +1874,9 @@ public final class Api {
         }
         if (other.hasSpilled()) {
           setSpilled(other.getSpilled());
+        }
+        if (other.hasShout()) {
+          setShout(other.getShout());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -1903,6 +1956,11 @@ public final class Api {
             case 72: {
               bitField0_ |= 0x00000100;
               spilled_ = input.readBool();
+              break;
+            }
+            case 82: {
+              bitField0_ |= 0x00000200;
+              shout_ = input.readBytes();
               break;
             }
           }
@@ -2158,6 +2216,42 @@ public final class Api {
         spilled_ = false;
         onChanged();
         return this;
+      }
+      
+      // optional string shout = 10;
+      private Object shout_ = "";
+      public boolean hasShout() {
+        return ((bitField0_ & 0x00000200) == 0x00000200);
+      }
+      public String getShout() {
+        Object ref = shout_;
+        if (!(ref instanceof String)) {
+          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+          shout_ = s;
+          return s;
+        } else {
+          return (String) ref;
+        }
+      }
+      public Builder setShout(String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000200;
+        shout_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearShout() {
+        bitField0_ = (bitField0_ & ~0x00000200);
+        shout_ = getDefaultInstance().getShout();
+        onChanged();
+        return this;
+      }
+      void setShout(com.google.protobuf.ByteString value) {
+        bitField0_ |= 0x00000200;
+        shout_ = value;
+        onChanged();
       }
       
       // @@protoc_insertion_point(builder_scope:RecordDrinkRequest)
@@ -16426,52 +16520,52 @@ public final class Api {
       "otal\030\001 \001(\r\022\r\n\005limit\030\002 \001(\r\022\013\n\003pos\030\003 \001(\r\"r" +
       "\n\027UserRegistrationRequest\022\020\n\010username\030\001 " +
       "\002(\t\022\r\n\005email\030\002 \002(\t\022\020\n\010password\030\003 \001(\t\022\016\n\006" +
-      "gender\030\004 \001(\t\022\024\n\014twitter_name\030\005 \001(\t\"\306\001\n\022R" +
+      "gender\030\004 \001(\t\022\024\n\014twitter_name\030\005 \001(\t\"\325\001\n\022R" +
       "ecordDrinkRequest\022\020\n\010tap_name\030\001 \001(\t\022\r\n\005t" +
       "icks\030\002 \002(\r\022\021\n\tvolume_ml\030\003 \001(\002\022\020\n\010usernam" +
       "e\030\004 \001(\t\022\026\n\013seconds_ago\030\005 \001(\r:\0010\022\023\n\013recor" +
       "d_date\030\006 \001(\t\022\030\n\020duration_seconds\030\007 \001(\r\022\022" +
-      "\n\nauth_token\030\010 \001(\t\022\017\n\007spilled\030\t \001(\010\"T\n\030R",
-      "ecordTemperatureRequest\022\023\n\013sensor_name\030\001" +
-      " \002(\t\022\016\n\006temp_c\030\002 \002(\002\022\023\n\013record_date\030\003 \001(" +
-      "\t\";\n\010DrinkSet\022\026\n\006drinks\030\001 \003(\0132\006.Drink\022\027\n" +
-      "\006paging\030\002 \001(\0132\007.Paging\"A\n\014KegDetailSet\022\030" +
-      "\n\004kegs\030\001 \003(\0132\n.KegDetail\022\027\n\006paging\030\002 \001(\013" +
-      "2\007.Paging\"A\n\nSessionSet\022\032\n\010sessions\030\001 \003(" +
-      "\0132\010.Session\022\027\n\006paging\030\002 \001(\0132\007.Paging\"G\n\016" +
-      "SystemEventSet\022\034\n\006events\030\001 \003(\0132\014.SystemE" +
-      "vent\022\027\n\006paging\030\002 \001(\0132\007.Paging\"S\n\024SystemE" +
-      "ventDetailSet\022\"\n\006events\030\001 \003(\0132\022.SystemEv",
-      "entDetail\022\027\n\006paging\030\002 \001(\0132\007.Paging\"E\n\rSo" +
-      "undEventSet\022\033\n\006events\030\001 \003(\0132\013.SoundEvent" +
-      "\022\027\n\006paging\030\002 \001(\0132\007.Paging\"A\n\014TapDetailSe" +
-      "t\022\030\n\004taps\030\001 \003(\0132\n.TapDetail\022\027\n\006paging\030\002 " +
-      "\001(\0132\007.Paging\"J\n\017ThermoSensorSet\022\036\n\007senso" +
-      "rs\030\001 \003(\0132\r.ThermoSensor\022\027\n\006paging\030\002 \001(\0132" +
-      "\007.Paging\"A\n\014ThermoLogSet\022\030\n\004logs\030\001 \003(\0132\n" +
-      ".ThermoLog\022\027\n\006paging\030\002 \001(\0132\007.Paging\"k\n\tT" +
-      "apDetail\022\024\n\003tap\030\001 \002(\0132\007.KegTap\022\021\n\003keg\030\002 " +
-      "\001(\0132\004.Keg\022\034\n\tbeer_type\030\003 \001(\0132\t.BeerType\022",
-      "\027\n\006brewer\030\004 \001(\0132\007.Brewer\"g\n\013DrinkDetail\022" +
-      "\025\n\005drink\030\001 \002(\0132\006.Drink\022\023\n\004user\030\002 \001(\0132\005.U" +
-      "ser\022\021\n\003keg\030\003 \001(\0132\004.Keg\022\031\n\007session\030\004 \001(\0132" +
-      "\010.Session\"m\n\rSessionDetail\022\031\n\007session\030\001 " +
-      "\002(\0132\010.Session\022\025\n\005stats\030\002 \001(\0132\006.Stats\022\022\n\004" +
-      "kegs\030\003 \003(\0132\004.Keg\022\026\n\006drinks\030\004 \003(\0132\006.Drink" +
-      "\"\203\001\n\tKegDetail\022\021\n\003keg\030\001 \002(\0132\004.Keg\022\027\n\004typ" +
-      "e\030\002 \001(\0132\t.BeerType\022\026\n\004size\030\003 \001(\0132\010.KegSi" +
-      "ze\022\026\n\006drinks\030\004 \003(\0132\006.Drink\022\032\n\010sessions\030\005" +
-      " \003(\0132\010.Session\"!\n\nUserDetail\022\023\n\004user\030\001 \002",
-      "(\0132\005.User\"D\n\rUserDetailSet\022\032\n\005users\030\001 \003(" +
-      "\0132\013.UserDetail\022\027\n\006paging\030\002 \001(\0132\007.Paging\"" +
-      "\241\001\n\021SystemEventDetail\022\033\n\005event\030\001 \002(\0132\014.S" +
-      "ystemEvent\022\025\n\005image\030\002 \001(\0132\006.Image\022\023\n\004use" +
-      "r\030\003 \001(\0132\005.User\022\025\n\005drink\030\004 \001(\0132\006.Drink\022\021\n" +
-      "\003keg\030\005 \001(\0132\004.Keg\022\031\n\007session\030\006 \001(\0132\010.Sess" +
-      "ion\"Y\n\022ThermoSensorDetail\022\035\n\006sensor\030\001 \002(" +
-      "\0132\r.ThermoSensor\022\021\n\tlast_temp\030\002 \001(\002\022\021\n\tl" +
-      "ast_time\030\003 \001(\t2\013\n\tKegwebApiB\022\n\020org.kegbo" +
-      "t.proto"
+      "\n\nauth_token\030\010 \001(\t\022\017\n\007spilled\030\t \001(\010\022\r\n\005s",
+      "hout\030\n \001(\t\"T\n\030RecordTemperatureRequest\022\023" +
+      "\n\013sensor_name\030\001 \002(\t\022\016\n\006temp_c\030\002 \002(\002\022\023\n\013r" +
+      "ecord_date\030\003 \001(\t\";\n\010DrinkSet\022\026\n\006drinks\030\001" +
+      " \003(\0132\006.Drink\022\027\n\006paging\030\002 \001(\0132\007.Paging\"A\n" +
+      "\014KegDetailSet\022\030\n\004kegs\030\001 \003(\0132\n.KegDetail\022" +
+      "\027\n\006paging\030\002 \001(\0132\007.Paging\"A\n\nSessionSet\022\032" +
+      "\n\010sessions\030\001 \003(\0132\010.Session\022\027\n\006paging\030\002 \001" +
+      "(\0132\007.Paging\"G\n\016SystemEventSet\022\034\n\006events\030" +
+      "\001 \003(\0132\014.SystemEvent\022\027\n\006paging\030\002 \001(\0132\007.Pa" +
+      "ging\"S\n\024SystemEventDetailSet\022\"\n\006events\030\001",
+      " \003(\0132\022.SystemEventDetail\022\027\n\006paging\030\002 \001(\013" +
+      "2\007.Paging\"E\n\rSoundEventSet\022\033\n\006events\030\001 \003" +
+      "(\0132\013.SoundEvent\022\027\n\006paging\030\002 \001(\0132\007.Paging" +
+      "\"A\n\014TapDetailSet\022\030\n\004taps\030\001 \003(\0132\n.TapDeta" +
+      "il\022\027\n\006paging\030\002 \001(\0132\007.Paging\"J\n\017ThermoSen" +
+      "sorSet\022\036\n\007sensors\030\001 \003(\0132\r.ThermoSensor\022\027" +
+      "\n\006paging\030\002 \001(\0132\007.Paging\"A\n\014ThermoLogSet\022" +
+      "\030\n\004logs\030\001 \003(\0132\n.ThermoLog\022\027\n\006paging\030\002 \001(" +
+      "\0132\007.Paging\"k\n\tTapDetail\022\024\n\003tap\030\001 \002(\0132\007.K" +
+      "egTap\022\021\n\003keg\030\002 \001(\0132\004.Keg\022\034\n\tbeer_type\030\003 ",
+      "\001(\0132\t.BeerType\022\027\n\006brewer\030\004 \001(\0132\007.Brewer\"" +
+      "g\n\013DrinkDetail\022\025\n\005drink\030\001 \002(\0132\006.Drink\022\023\n" +
+      "\004user\030\002 \001(\0132\005.User\022\021\n\003keg\030\003 \001(\0132\004.Keg\022\031\n" +
+      "\007session\030\004 \001(\0132\010.Session\"m\n\rSessionDetai" +
+      "l\022\031\n\007session\030\001 \002(\0132\010.Session\022\025\n\005stats\030\002 " +
+      "\001(\0132\006.Stats\022\022\n\004kegs\030\003 \003(\0132\004.Keg\022\026\n\006drink" +
+      "s\030\004 \003(\0132\006.Drink\"\203\001\n\tKegDetail\022\021\n\003keg\030\001 \002" +
+      "(\0132\004.Keg\022\027\n\004type\030\002 \001(\0132\t.BeerType\022\026\n\004siz" +
+      "e\030\003 \001(\0132\010.KegSize\022\026\n\006drinks\030\004 \003(\0132\006.Drin" +
+      "k\022\032\n\010sessions\030\005 \003(\0132\010.Session\"!\n\nUserDet",
+      "ail\022\023\n\004user\030\001 \002(\0132\005.User\"D\n\rUserDetailSe" +
+      "t\022\032\n\005users\030\001 \003(\0132\013.UserDetail\022\027\n\006paging\030" +
+      "\002 \001(\0132\007.Paging\"\241\001\n\021SystemEventDetail\022\033\n\005" +
+      "event\030\001 \002(\0132\014.SystemEvent\022\025\n\005image\030\002 \001(\013" +
+      "2\006.Image\022\023\n\004user\030\003 \001(\0132\005.User\022\025\n\005drink\030\004" +
+      " \001(\0132\006.Drink\022\021\n\003keg\030\005 \001(\0132\004.Keg\022\031\n\007sessi" +
+      "on\030\006 \001(\0132\010.Session\"Y\n\022ThermoSensorDetail" +
+      "\022\035\n\006sensor\030\001 \002(\0132\r.ThermoSensor\022\021\n\tlast_" +
+      "temp\030\002 \001(\002\022\021\n\tlast_time\030\003 \001(\t2\013\n\tKegwebA" +
+      "piB\022\n\020org.kegbot.proto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -16499,7 +16593,7 @@ public final class Api {
           internal_static_RecordDrinkRequest_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_RecordDrinkRequest_descriptor,
-              new java.lang.String[] { "TapName", "Ticks", "VolumeMl", "Username", "SecondsAgo", "RecordDate", "DurationSeconds", "AuthToken", "Spilled", },
+              new java.lang.String[] { "TapName", "Ticks", "VolumeMl", "Username", "SecondsAgo", "RecordDate", "DurationSeconds", "AuthToken", "Spilled", "Shout", },
               org.kegbot.proto.Api.RecordDrinkRequest.class,
               org.kegbot.proto.Api.RecordDrinkRequest.Builder.class);
           internal_static_RecordTemperatureRequest_descriptor =

@@ -103,6 +103,7 @@ public class KegbotApiImpl implements KegbotApi {
     HttpProtocolParams.setVersion(mHttpParams, HttpVersion.HTTP_1_1);
     HttpProtocolParams.setContentCharset(mHttpParams, HTTP.DEFAULT_CONTENT_CHARSET);
     HttpProtocolParams.setUseExpectContinue(mHttpParams, true);
+    HttpProtocolParams.setUserAgent(mHttpParams, Utils.getUserAgent());
 
     SchemeRegistry registry = new SchemeRegistry();
     registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
@@ -110,7 +111,6 @@ public class KegbotApiImpl implements KegbotApi {
 
     mConnManager = new ThreadSafeClientConnManager(mHttpParams, registry);
     mHttpClient = new DefaultHttpClient(mConnManager, mHttpParams);
-
   }
 
   public synchronized void setListener(Listener listener) {
@@ -520,6 +520,12 @@ public class KegbotApiImpl implements KegbotApi {
     if (spilled) {
       params.put("spilled", String.valueOf(spilled));
     }
+
+    final String shout = request.getShout();
+    if (!Strings.isNullOrEmpty(shout)) {
+      params.put("shout", shout);
+    }
+
     return (Drink) postProto("/taps/" + tapName, Drink.newBuilder(), params);
   }
 

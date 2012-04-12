@@ -4080,6 +4080,10 @@ public final class Models {
     // optional string url = 11;
     boolean hasUrl();
     String getUrl();
+    
+    // optional string shout = 12;
+    boolean hasShout();
+    String getShout();
   }
   public static final class Drink extends
       com.google.protobuf.GeneratedMessage
@@ -4396,6 +4400,38 @@ public final class Models {
       }
     }
     
+    // optional string shout = 12;
+    public static final int SHOUT_FIELD_NUMBER = 12;
+    private Object shout_;
+    public boolean hasShout() {
+      return ((bitField0_ & 0x00000800) == 0x00000800);
+    }
+    public String getShout() {
+      Object ref = shout_;
+      if (ref instanceof String) {
+        return (String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        String s = bs.toStringUtf8();
+        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+          shout_ = s;
+        }
+        return s;
+      }
+    }
+    private com.google.protobuf.ByteString getShoutBytes() {
+      Object ref = shout_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+        shout_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    
     private void initFields() {
       id_ = "";
       ticks_ = 0;
@@ -4408,6 +4444,7 @@ public final class Models {
       userId_ = "";
       authTokenId_ = "";
       url_ = "";
+      shout_ = "";
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -4478,6 +4515,9 @@ public final class Models {
       if (((bitField0_ & 0x00000400) == 0x00000400)) {
         output.writeBytes(11, getUrlBytes());
       }
+      if (((bitField0_ & 0x00000800) == 0x00000800)) {
+        output.writeBytes(12, getShoutBytes());
+      }
       getUnknownFields().writeTo(output);
     }
     
@@ -4530,6 +4570,10 @@ public final class Models {
       if (((bitField0_ & 0x00000400) == 0x00000400)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(11, getUrlBytes());
+      }
+      if (((bitField0_ & 0x00000800) == 0x00000800)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(12, getShoutBytes());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -4675,6 +4719,8 @@ public final class Models {
         bitField0_ = (bitField0_ & ~0x00000200);
         url_ = "";
         bitField0_ = (bitField0_ & ~0x00000400);
+        shout_ = "";
+        bitField0_ = (bitField0_ & ~0x00000800);
         return this;
       }
       
@@ -4757,6 +4803,10 @@ public final class Models {
           to_bitField0_ |= 0x00000400;
         }
         result.url_ = url_;
+        if (((from_bitField0_ & 0x00000800) == 0x00000800)) {
+          to_bitField0_ |= 0x00000800;
+        }
+        result.shout_ = shout_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -4805,6 +4855,9 @@ public final class Models {
         }
         if (other.hasUrl()) {
           setUrl(other.getUrl());
+        }
+        if (other.hasShout()) {
+          setShout(other.getShout());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -4914,6 +4967,11 @@ public final class Models {
             case 90: {
               bitField0_ |= 0x00000400;
               url_ = input.readBytes();
+              break;
+            }
+            case 98: {
+              bitField0_ |= 0x00000800;
+              shout_ = input.readBytes();
               break;
             }
           }
@@ -5270,6 +5328,42 @@ public final class Models {
       void setUrl(com.google.protobuf.ByteString value) {
         bitField0_ |= 0x00000400;
         url_ = value;
+        onChanged();
+      }
+      
+      // optional string shout = 12;
+      private Object shout_ = "";
+      public boolean hasShout() {
+        return ((bitField0_ & 0x00000800) == 0x00000800);
+      }
+      public String getShout() {
+        Object ref = shout_;
+        if (!(ref instanceof String)) {
+          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+          shout_ = s;
+          return s;
+        } else {
+          return (String) ref;
+        }
+      }
+      public Builder setShout(String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000800;
+        shout_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearShout() {
+        bitField0_ = (bitField0_ & ~0x00000800);
+        shout_ = getDefaultInstance().getShout();
+        onChanged();
+        return this;
+      }
+      void setShout(com.google.protobuf.ByteString value) {
+        bitField0_ |= 0x00000800;
+        shout_ = value;
         onChanged();
       }
       
@@ -21223,74 +21317,75 @@ public final class Models {
       "\014origin_state\030\004 \001(\t:\000\022\025\n\013origin_city\030\005 \001" +
       "(\t:\000\022\024\n\nproduction\030\006 \001(\t:\000\022\r\n\003url\030\007 \001(\t:" +
       "\000\022\025\n\013description\030\010 \001(\t:\000\022\025\n\005image\030\t \001(\0132" +
-      "\006.Image\"\303\001\n\005Drink\022\n\n\002id\030\001 \002(\t\022\r\n\005ticks\030\002" +
+      "\006.Image\"\322\001\n\005Drink\022\n\n\002id\030\001 \002(\t\022\r\n\005ticks\030\002" +
       " \002(\r\022\021\n\tvolume_ml\030\003 \002(\002\022\022\n\nsession_id\030\004 " +
       "\002(\t\022\021\n\tpour_time\030\005 \002(\t\022\020\n\010duration\030\006 \001(\r" +
       "\022\016\n\006status\030\007 \002(\t\022\016\n\006keg_id\030\010 \001(\t\022\017\n\007user",
       "_id\030\t \001(\t\022\025\n\rauth_token_id\030\n \001(\t\022\013\n\003url\030" +
-      "\013 \001(\t\"\316\001\n\005Image\022\013\n\003url\030\001 \002(\t\022\r\n\005width\030\002 " +
-      "\001(\r\022\016\n\006height\030\003 \001(\r\022\024\n\014created_date\030\004 \001(" +
-      "\t\022\017\n\007caption\030\005 \001(\t\022\017\n\007user_id\030\006 \001(\t\022\016\n\006k" +
-      "eg_id\030\007 \001(\t\022\022\n\nsession_id\030\010 \001(\t\022\020\n\010drink" +
-      "_id\030\t \001(\t\022\025\n\rthumbnail_url\030\n \001(\t\022\024\n\014orig" +
-      "inal_url\030\013 \001(\t\"\201\002\n\003Keg\022\n\n\002id\030\001 \002(\t\022\017\n\007ty" +
-      "pe_id\030\002 \002(\t\022\017\n\007size_id\030\003 \002(\t\022\021\n\tsize_nam" +
-      "e\030\004 \001(\t\022\026\n\016size_volume_ml\030\005 \001(\002\022\030\n\020volum" +
-      "e_ml_remain\030\006 \002(\002\022\024\n\014percent_full\030\007 \002(\002\022",
-      "\024\n\014started_time\030\010 \002(\t\022\025\n\rfinished_time\030\t" +
-      " \002(\t\022\016\n\006status\030\n \002(\t\022\023\n\013description\030\013 \001(" +
-      "\t\022\022\n\nspilled_ml\030\014 \001(\002\022\013\n\003url\030\r \001(\t\"6\n\007Ke" +
-      "gSize\022\n\n\002id\030\001 \002(\t\022\014\n\004name\030\002 \002(\t\022\021\n\tvolum" +
-      "e_ml\030\003 \002(\002\"\314\001\n\006KegTap\022\n\n\002id\030\001 \002(\t\022\014\n\004nam" +
-      "e\030\002 \002(\t\022\022\n\nmeter_name\030\003 \002(\t\022\022\n\nrelay_nam" +
-      "e\030\004 \001(\t\022\023\n\013ml_per_tick\030\005 \002(\002\022\023\n\013descript" +
-      "ion\030\006 \001(\t\022\026\n\016current_keg_id\030\007 \001(\t\022\030\n\020the" +
-      "rmo_sensor_id\030\010 \001(\t\022$\n\020last_temperature\030" +
-      "\t \001(\0132\n.ThermoLog\"w\n\007Session\022\n\n\002id\030\001 \002(\t",
-      "\022\022\n\nstart_time\030\002 \002(\t\022\020\n\010end_time\030\003 \002(\t\022\021" +
-      "\n\tvolume_ml\030\004 \002(\002\022\014\n\004name\030\005 \001(\t\022\014\n\004slug\030" +
-      "\006 \001(\t\022\013\n\003url\030\007 \001(\t\"V\n\tThermoLog\022\n\n\002id\030\001 " +
-      "\002(\t\022\021\n\tsensor_id\030\002 \002(\t\022\025\n\rtemperature_c\030" +
-      "\003 \002(\002\022\023\n\013record_time\030\004 \002(\t\"B\n\014ThermoSens" +
-      "or\022\n\n\002id\030\001 \002(\t\022\023\n\013sensor_name\030\002 \002(\t\022\021\n\tn" +
-      "ice_name\030\003 \001(\t\"\234\001\n\020ThermoSummaryLog\022\n\n\002i" +
-      "d\030\001 \002(\t\022\021\n\tsensor_id\030\002 \002(\t\022\014\n\004date\030\003 \002(\t" +
-      "\022\016\n\006period\030\004 \002(\t\022\024\n\014num_readings\030\005 \002(\r\022\020" +
-      "\n\010min_temp\030\006 \002(\002\022\020\n\010max_temp\030\007 \002(\002\022\021\n\tme",
-      "an_temp\030\010 \002(\002\"\356\001\n\004User\022\020\n\010username\030\001 \002(\t" +
-      "\022\025\n\005image\030\002 \001(\0132\006.Image\022\027\n\tis_active\030\003 \002" +
-      "(\010:\004true\022\022\n\nfirst_name\030\004 \001(\t\022\021\n\tlast_nam" +
-      "e\030\005 \001(\t\022\r\n\005email\030\006 \001(\t\022\020\n\010password\030\007 \001(\t" +
-      "\022\020\n\010is_staff\030\010 \001(\010\022\024\n\014is_superuser\030\t \001(\010" +
-      "\022\022\n\nlast_login\030\n \001(\t\022\023\n\013date_joined\030\013 \001(" +
-      "\t\022\013\n\003url\030\014 \001(\t\"?\n\013UserProfile\022\020\n\010usernam" +
-      "e\030\001 \002(\t\022\016\n\006gender\030\002 \001(\t\022\016\n\006weight\030\003 \001(\002\"" +
-      "\211\001\n\014SessionChunk\022\n\n\002id\030\001 \002(\t\022\022\n\nsession_" +
-      "id\030\002 \002(\t\022\020\n\010username\030\003 \002(\t\022\016\n\006keg_id\030\004 \002",
-      "(\t\022\022\n\nstart_time\030\005 \002(\t\022\020\n\010end_time\030\006 \002(\t" +
-      "\022\021\n\tvolume_ml\030\007 \002(\002\"|\n\013SystemEvent\022\n\n\002id" +
-      "\030\001 \002(\t\022\014\n\004kind\030\002 \002(\t\022\014\n\004time\030\003 \002(\t\022\020\n\010dr" +
-      "ink_id\030\004 \001(\t\022\016\n\006keg_id\030\005 \001(\t\022\022\n\nsession_" +
-      "id\030\006 \001(\t\022\017\n\007user_id\030\007 \001(\t\"Z\n\nSoundEvent\022" +
-      "\022\n\nevent_name\030\001 \002(\t\022\027\n\017event_predicate\030\002" +
-      " \001(\t\022\021\n\tsound_url\030\003 \002(\t\022\014\n\004user\030\004 \001(\t\"\221\005" +
-      "\n\005Stats\022\025\n\rlast_drink_id\030\001 \001(\t\022\027\n\017total_" +
-      "volume_ml\030\002 \001(\002\022\023\n\013total_pours\030\003 \001(\r\022\031\n\021" +
-      "average_volume_ml\030\004 \001(\002\022\032\n\022greatest_volu",
-      "me_ml\030\005 \001(\002\022\032\n\022greatest_volume_id\030\006 \001(\t\022" +
-      "3\n\025volume_by_day_of_week\030\007 \003(\0132\024.Stats.W" +
-      "eekdayVolume\022/\n\021volume_by_drinker\030\010 \003(\0132" +
-      "\024.Stats.DrinkerVolume\022\033\n\023registered_drin" +
-      "kers\030\t \003(\t\022\026\n\016has_guest_pour\030\n \001(\010\022\026\n\016se" +
-      "ssions_count\030\013 \001(\r\022+\n\016volume_by_year\030\014 \003" +
-      "(\0132\023.Stats.YearlyVolume\0220\n\017peer_affiniti" +
-      "es\030\r \003(\0132\027.Stats.PeerSessionCount\0323\n\rWee" +
-      "kdayVolume\022\017\n\007weekday\030\001 \002(\t\022\021\n\tvolume_ml" +
-      "\030\002 \002(\002\0324\n\rDrinkerVolume\022\020\n\010username\030\001 \002(",
-      "\t\022\021\n\tvolume_ml\030\002 \002(\002\032/\n\014YearlyVolume\022\014\n\004" +
-      "year\030\001 \002(\r\022\021\n\tvolume_ml\030\002 \002(\002\032B\n\020PeerSes" +
-      "sionCount\022\021\n\tpeer_name\030\001 \002(\t\022\033\n\023joint_se" +
-      "ssion_count\030\002 \002(\rB\022\n\020org.kegbot.proto"
+      "\013 \001(\t\022\r\n\005shout\030\014 \001(\t\"\316\001\n\005Image\022\013\n\003url\030\001 " +
+      "\002(\t\022\r\n\005width\030\002 \001(\r\022\016\n\006height\030\003 \001(\r\022\024\n\014cr" +
+      "eated_date\030\004 \001(\t\022\017\n\007caption\030\005 \001(\t\022\017\n\007use" +
+      "r_id\030\006 \001(\t\022\016\n\006keg_id\030\007 \001(\t\022\022\n\nsession_id" +
+      "\030\010 \001(\t\022\020\n\010drink_id\030\t \001(\t\022\025\n\rthumbnail_ur" +
+      "l\030\n \001(\t\022\024\n\014original_url\030\013 \001(\t\"\201\002\n\003Keg\022\n\n" +
+      "\002id\030\001 \002(\t\022\017\n\007type_id\030\002 \002(\t\022\017\n\007size_id\030\003 " +
+      "\002(\t\022\021\n\tsize_name\030\004 \001(\t\022\026\n\016size_volume_ml" +
+      "\030\005 \001(\002\022\030\n\020volume_ml_remain\030\006 \002(\002\022\024\n\014perc",
+      "ent_full\030\007 \002(\002\022\024\n\014started_time\030\010 \002(\t\022\025\n\r" +
+      "finished_time\030\t \002(\t\022\016\n\006status\030\n \002(\t\022\023\n\013d" +
+      "escription\030\013 \001(\t\022\022\n\nspilled_ml\030\014 \001(\002\022\013\n\003" +
+      "url\030\r \001(\t\"6\n\007KegSize\022\n\n\002id\030\001 \002(\t\022\014\n\004name" +
+      "\030\002 \002(\t\022\021\n\tvolume_ml\030\003 \002(\002\"\314\001\n\006KegTap\022\n\n\002" +
+      "id\030\001 \002(\t\022\014\n\004name\030\002 \002(\t\022\022\n\nmeter_name\030\003 \002" +
+      "(\t\022\022\n\nrelay_name\030\004 \001(\t\022\023\n\013ml_per_tick\030\005 " +
+      "\002(\002\022\023\n\013description\030\006 \001(\t\022\026\n\016current_keg_" +
+      "id\030\007 \001(\t\022\030\n\020thermo_sensor_id\030\010 \001(\t\022$\n\020la" +
+      "st_temperature\030\t \001(\0132\n.ThermoLog\"w\n\007Sess",
+      "ion\022\n\n\002id\030\001 \002(\t\022\022\n\nstart_time\030\002 \002(\t\022\020\n\010e" +
+      "nd_time\030\003 \002(\t\022\021\n\tvolume_ml\030\004 \002(\002\022\014\n\004name" +
+      "\030\005 \001(\t\022\014\n\004slug\030\006 \001(\t\022\013\n\003url\030\007 \001(\t\"V\n\tThe" +
+      "rmoLog\022\n\n\002id\030\001 \002(\t\022\021\n\tsensor_id\030\002 \002(\t\022\025\n" +
+      "\rtemperature_c\030\003 \002(\002\022\023\n\013record_time\030\004 \002(" +
+      "\t\"B\n\014ThermoSensor\022\n\n\002id\030\001 \002(\t\022\023\n\013sensor_" +
+      "name\030\002 \002(\t\022\021\n\tnice_name\030\003 \001(\t\"\234\001\n\020Thermo" +
+      "SummaryLog\022\n\n\002id\030\001 \002(\t\022\021\n\tsensor_id\030\002 \002(" +
+      "\t\022\014\n\004date\030\003 \002(\t\022\016\n\006period\030\004 \002(\t\022\024\n\014num_r" +
+      "eadings\030\005 \002(\r\022\020\n\010min_temp\030\006 \002(\002\022\020\n\010max_t",
+      "emp\030\007 \002(\002\022\021\n\tmean_temp\030\010 \002(\002\"\356\001\n\004User\022\020\n" +
+      "\010username\030\001 \002(\t\022\025\n\005image\030\002 \001(\0132\006.Image\022\027" +
+      "\n\tis_active\030\003 \002(\010:\004true\022\022\n\nfirst_name\030\004 " +
+      "\001(\t\022\021\n\tlast_name\030\005 \001(\t\022\r\n\005email\030\006 \001(\t\022\020\n" +
+      "\010password\030\007 \001(\t\022\020\n\010is_staff\030\010 \001(\010\022\024\n\014is_" +
+      "superuser\030\t \001(\010\022\022\n\nlast_login\030\n \001(\t\022\023\n\013d" +
+      "ate_joined\030\013 \001(\t\022\013\n\003url\030\014 \001(\t\"?\n\013UserPro" +
+      "file\022\020\n\010username\030\001 \002(\t\022\016\n\006gender\030\002 \001(\t\022\016" +
+      "\n\006weight\030\003 \001(\002\"\211\001\n\014SessionChunk\022\n\n\002id\030\001 " +
+      "\002(\t\022\022\n\nsession_id\030\002 \002(\t\022\020\n\010username\030\003 \002(",
+      "\t\022\016\n\006keg_id\030\004 \002(\t\022\022\n\nstart_time\030\005 \002(\t\022\020\n" +
+      "\010end_time\030\006 \002(\t\022\021\n\tvolume_ml\030\007 \002(\002\"|\n\013Sy" +
+      "stemEvent\022\n\n\002id\030\001 \002(\t\022\014\n\004kind\030\002 \002(\t\022\014\n\004t" +
+      "ime\030\003 \002(\t\022\020\n\010drink_id\030\004 \001(\t\022\016\n\006keg_id\030\005 " +
+      "\001(\t\022\022\n\nsession_id\030\006 \001(\t\022\017\n\007user_id\030\007 \001(\t" +
+      "\"Z\n\nSoundEvent\022\022\n\nevent_name\030\001 \002(\t\022\027\n\017ev" +
+      "ent_predicate\030\002 \001(\t\022\021\n\tsound_url\030\003 \002(\t\022\014" +
+      "\n\004user\030\004 \001(\t\"\221\005\n\005Stats\022\025\n\rlast_drink_id\030" +
+      "\001 \001(\t\022\027\n\017total_volume_ml\030\002 \001(\002\022\023\n\013total_" +
+      "pours\030\003 \001(\r\022\031\n\021average_volume_ml\030\004 \001(\002\022\032",
+      "\n\022greatest_volume_ml\030\005 \001(\002\022\032\n\022greatest_v" +
+      "olume_id\030\006 \001(\t\0223\n\025volume_by_day_of_week\030" +
+      "\007 \003(\0132\024.Stats.WeekdayVolume\022/\n\021volume_by" +
+      "_drinker\030\010 \003(\0132\024.Stats.DrinkerVolume\022\033\n\023" +
+      "registered_drinkers\030\t \003(\t\022\026\n\016has_guest_p" +
+      "our\030\n \001(\010\022\026\n\016sessions_count\030\013 \001(\r\022+\n\016vol" +
+      "ume_by_year\030\014 \003(\0132\023.Stats.YearlyVolume\0220" +
+      "\n\017peer_affinities\030\r \003(\0132\027.Stats.PeerSess" +
+      "ionCount\0323\n\rWeekdayVolume\022\017\n\007weekday\030\001 \002" +
+      "(\t\022\021\n\tvolume_ml\030\002 \002(\002\0324\n\rDrinkerVolume\022\020",
+      "\n\010username\030\001 \002(\t\022\021\n\tvolume_ml\030\002 \002(\002\032/\n\014Y" +
+      "earlyVolume\022\014\n\004year\030\001 \002(\r\022\021\n\tvolume_ml\030\002" +
+      " \002(\002\032B\n\020PeerSessionCount\022\021\n\tpeer_name\030\001 " +
+      "\002(\t\022\033\n\023joint_session_count\030\002 \002(\rB\022\n\020org." +
+      "kegbot.proto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -21334,7 +21429,7 @@ public final class Models {
           internal_static_Drink_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_Drink_descriptor,
-              new java.lang.String[] { "Id", "Ticks", "VolumeMl", "SessionId", "PourTime", "Duration", "Status", "KegId", "UserId", "AuthTokenId", "Url", },
+              new java.lang.String[] { "Id", "Ticks", "VolumeMl", "SessionId", "PourTime", "Duration", "Status", "KegId", "UserId", "AuthTokenId", "Url", "Shout", },
               org.kegbot.proto.Models.Drink.class,
               org.kegbot.proto.Models.Drink.Builder.class);
           internal_static_Image_descriptor =

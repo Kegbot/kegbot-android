@@ -8,6 +8,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
 
+import org.kegbot.kegtap.build.BuildInfo;
+
+import android.os.Build;
+
 public class Utils {
 
   public static final DateFormat ISO8601_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
@@ -46,6 +50,24 @@ public class Utils {
     } finally {
       f.close();
     }
+  }
+
+  public static String getUserAgent() {
+    return new StringBuilder()
+      .append("Kegtap/")
+      .append(BuildInfo.BUILD_DATE_HUMAN)
+      .append(" (Android ")
+      .append(Build.VERSION.RELEASE)
+      .append("/")
+      .append(Build.VERSION.SDK_INT)
+      .append("; ")
+      .append(Build.MANUFACTURER)
+      .append(" ")
+      .append(Build.MODEL)
+      .append("; ")
+      .append(Build.FINGERPRINT)
+      .append(")")
+      .toString();
   }
 
 }
