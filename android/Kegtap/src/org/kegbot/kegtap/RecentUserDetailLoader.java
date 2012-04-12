@@ -10,8 +10,8 @@ import java.util.List;
 import org.kegbot.core.AuthenticationManager;
 import org.kegbot.proto.Api.UserDetail;
 
-import android.content.AsyncTaskLoader;
 import android.content.Context;
+import android.content.Loader;
 import android.util.Log;
 
 import com.google.common.collect.Lists;
@@ -20,9 +20,11 @@ import com.google.common.collect.Lists;
  *
  * @author mike wakerly (mike@wakerly.com)
  */
-public class RecentUserDetailLoader extends AsyncTaskLoader<List<UserDetail>> {
+public class RecentUserDetailLoader extends Loader<List<UserDetail>> {
 
   private static final String TAG = RecentUserDetailLoader.class.getSimpleName();
+
+  private boolean mReported = false;
 
   /**
    * @param context
@@ -40,24 +42,24 @@ public class RecentUserDetailLoader extends AsyncTaskLoader<List<UserDetail>> {
   };
 
   @Override
-  public List<UserDetail> loadInBackground() {
-    Log.d(TAG, "loadInBackground");
-    final AuthenticationManager am = AuthenticationManager.getSingletonInstance();
-    final List<UserDetail> result = Lists.newArrayList(am.getAllRecent());
-    Collections.sort(result, USERS_ALPHABETIC);
-    return result;
-  }
-
-  @Override
   protected void onStartLoading() {
-    Log.d(TAG, "onStartLoading");
-    forceLoad();
     super.onStartLoading();
+    Log.d(TAG, "onStartLoading isStarted=" + isStarted() + " isReset=" + isReset()
+        + " isAbandoned=" + isAbandoned());
+    if (!mReported) {
+      final AuthenticationManager am = AuthenticationManager.getSingletonInstance();
+      final List<UserDetail> result = Lists.newArrayList(am.getAllRecent());
+      Log.d(TAG, "Load result size: " + result.size());
+      Collections.sort(result, USERS_ALPHABETIC);
+      deliverResult(result);
+      mReported = true;
+    }
   }
 
   @Override
   protected void onReset() {
     Log.d(TAG, "onReset");
+    mReported = false;
     super.onReset();
   }
 

@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <string name="build_date">2012-02-19 17:03:09.080031</string>
+  <string name="BUILD_DATE_HUMAN">20120411-224812</string>
+  <string name="BUILD_TAGS">dev</string>
+  <string name="RELEASE_BUILD">false</string>
 </resources>

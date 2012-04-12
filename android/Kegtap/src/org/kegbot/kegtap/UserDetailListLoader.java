@@ -57,7 +57,6 @@ public class UserDetailListLoader extends AsyncTaskLoader<List<UserDetail>> {
     mLastLoadMillis = SystemClock.uptimeMillis();
     try {
       final UserDetailSet apiResult = mApi.getUsers();
-      Log.d(TAG, "apiResult=" + apiResult);
       final List<UserDetail> result = Lists.newArrayList(apiResult.getUsersList());
       Collections.sort(result, USERS_ALPHABETIC);
       mUsers = result;

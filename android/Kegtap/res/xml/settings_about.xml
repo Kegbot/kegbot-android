@@ -4,7 +4,7 @@
   <Preference
     android:key="build_date"
     android:title="Build Date"
-    android:summary="@string/build_date">
+    android:summary="@string/BUILD_DATE_HUMAN">
   </Preference>
     <Preference
     android:key="copyright"
