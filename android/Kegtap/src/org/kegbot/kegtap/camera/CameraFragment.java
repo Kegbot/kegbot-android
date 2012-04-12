@@ -57,6 +57,8 @@ public class CameraFragment extends Fragment {
   int mRotation = 0;
 
   private Button mPictureButton;
+  private Button mDiscardButton;
+  private Button mRetakeButton;
   private ViewGroup mPostButtons;
   private int mPictureSeconds = 0;
   private final Handler mHandler = new Handler();
@@ -101,16 +103,26 @@ public class CameraFragment extends Fragment {
     }
   }
 
+  public void setEnabled(boolean enabled) {
+    mPictureButton.setEnabled(enabled);
+    mRetakeButton.setEnabled(enabled);
+    mDiscardButton.setEnabled(enabled);
+    if (!enabled) {
+      cancelPendingPicture();
+    }
+  }
+
   private void updateState(State newState) {
     mState = newState;
 
     switch (mState) {
       case INITIAL:
-        mCamera.startPreview();
+        //mCamera.startPreview();
         mPostButtons.setVisibility(View.GONE);
         mPictureButton.setVisibility(View.VISIBLE);
         mPictureButton.setClickable(true);
         mPictureButton.setText("Take Picture");
+        setEnabled(true);
         break;
       case IN_PROGRESS:
         mPostButtons.setVisibility(View.GONE);
@@ -118,7 +130,7 @@ public class CameraFragment extends Fragment {
         break;
       case TAKEN:
         //mPreview.stopCameraPreview();
-        mCamera.stopPreview();
+        //mCamera.stopPreview();
         mPostButtons.setVisibility(View.VISIBLE);
         mPictureButton.setVisibility(View.GONE);
         break;
@@ -126,6 +138,7 @@ public class CameraFragment extends Fragment {
         mPostButtons.setVisibility(View.GONE);
         mPictureButton.setVisibility(View.VISIBLE);
         mPictureButton.setText("Pour Complete");
+        setEnabled(false);
         break;
     }
   }
@@ -232,20 +245,22 @@ public class CameraFragment extends Fragment {
       }
     });
 
-    Button discardButton = (Button) view.findViewById(R.id.cameraDiscardPictureButton);
-    discardButton.setOnClickListener(new View.OnClickListener() {
+    mDiscardButton = (Button) view.findViewById(R.id.cameraDiscardPictureButton);
+    mDiscardButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
         discardLastPicture();
+        mCamera.startPreview();
         updateState(State.INITIAL);
       }
     });
 
-    Button retakeButton = (Button) view.findViewById(R.id.cameraTakeAnotherButton);
-    retakeButton.setOnClickListener(new View.OnClickListener() {
+    mRetakeButton = (Button) view.findViewById(R.id.cameraTakeAnotherButton);
+    mRetakeButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
         discardLastPicture();
+        mCamera.startPreview();
         updateState(State.INITIAL);
         schedulePicture();
       }

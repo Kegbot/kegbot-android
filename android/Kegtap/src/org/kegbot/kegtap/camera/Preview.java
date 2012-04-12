@@ -5,6 +5,7 @@ import java.util.List;
 
 import android.content.Context;
 import android.hardware.Camera;
+import android.hardware.Camera.Parameters;
 import android.hardware.Camera.Size;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -30,8 +31,6 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback {
   Size mPreviewSize;
   List<Size> mSupportedPreviewSizes;
   Camera mCamera;
-
-  private boolean mPreviewStarted = false;
 
   public Preview(Context context) {
     super(context);
@@ -66,19 +65,19 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback {
     }
   }
 
-  public void switchCamera(Camera camera) {
-    setCamera(camera);
-    try {
-      camera.setPreviewDisplay(mHolder);
-    } catch (IOException exception) {
-      Log.e(TAG, "IOException caused by setPreviewDisplay()", exception);
-    }
-    Camera.Parameters parameters = camera.getParameters();
-    parameters.setPreviewSize(mPreviewSize.width, mPreviewSize.height);
-    requestLayout();
-
-    camera.setParameters(parameters);
-  }
+//  public void switchCamera(Camera camera) {
+//    setCamera(camera);
+//    try {
+//      camera.setPreviewDisplay(mHolder);
+//    } catch (IOException exception) {
+//      Log.e(TAG, "IOException caused by setPreviewDisplay()", exception);
+//    }
+//    Camera.Parameters parameters = camera.getParameters();
+//    parameters.setPreviewSize(mPreviewSize.width, mPreviewSize.height);
+//    parameters.setFlashMode(Parameters.FLASH_MODE_AUTO);
+//    requestLayout();
+//    camera.setParameters(parameters);
+//  }
 
   @Override
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
@@ -189,25 +188,15 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback {
     }
     Camera.Parameters parameters = mCamera.getParameters();
     parameters.setPreviewSize(mPreviewSize.width, mPreviewSize.height);
+
+    List<String> flashModes = parameters.getSupportedFlashModes();
+    if (flashModes != null && flashModes.contains(Parameters.FLASH_MODE_AUTO)) {
+      parameters.setFlashMode(Parameters.FLASH_MODE_AUTO);
+    }
     requestLayout();
 
     mCamera.setParameters(parameters);
     mCamera.startPreview();
-    mPreviewStarted = true;
   }
-
-//  public void startCameraPreview() {
-//    if (!mPreviewStarted) {
-//      mCamera.startPreview();
-//      mPreviewStarted = true;
-//    }
-//  }
-//
-//  public void stopCameraPreview() {
-//    if (mPreviewStarted) {
-//      mCamera.stopPreview();
-//      mPreviewStarted = false;
-//    }
-//  }
 
 }
