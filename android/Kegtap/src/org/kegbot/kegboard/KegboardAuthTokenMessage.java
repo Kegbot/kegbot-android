@@ -17,6 +17,9 @@ public class KegboardAuthTokenMessage extends KegboardMessage {
   public static final int TAG_TOKEN = 0x02;
   public static final int TAG_STATUS = 0x03;
 
+  private final String mComputedName;
+  private final String mComputedToken;
+
   public enum Status {
     REMOVED,
     PRESENT,
@@ -25,6 +28,24 @@ public class KegboardAuthTokenMessage extends KegboardMessage {
 
   public KegboardAuthTokenMessage(byte[] wholeMessage) throws KegboardMessageException {
     super(wholeMessage);
+
+    final String tagName = readTagAsString(TAG_DEVICE_NAME);
+    byte[] tokenBytes = readTag(TAG_TOKEN);
+    if (tokenBytes == null) {
+      tokenBytes = new byte[0];
+    }
+
+    if ("onewire".equals(tagName)) {
+      final byte[] copyBytes = new byte[tokenBytes.length];
+      for (int i = 0; i < copyBytes.length; i++) {
+        copyBytes[tokenBytes.length - i - 1] = tokenBytes[i];
+      }
+      mComputedName = "core.onewire";
+      mComputedToken = HexDump.toHexString(copyBytes);
+    } else {
+      mComputedName = tagName;
+      mComputedToken = HexDump.toHexString(tokenBytes);
+    }
   }
 
   @Override
@@ -33,15 +54,11 @@ public class KegboardAuthTokenMessage extends KegboardMessage {
   }
 
   public String getName() {
-    return readTagAsString(TAG_DEVICE_NAME);
+    return mComputedName;
   }
 
   public String getToken() {
-    final byte[] tokenBytes = readTag(TAG_TOKEN);
-    if (tokenBytes == null) {
-      return "";
-    }
-    return HexDump.toHexString(tokenBytes);
+    return mComputedToken;
   }
 
   public Status getStatus() {
