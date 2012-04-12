@@ -217,15 +217,19 @@ public class EventListFragment extends ListFragment {
 
     @Override
     protected void onPostExecute(SystemEventDetailSet result) {
-      Log.d(LOG_TAG, "Events reloaded.");
+      long greatestEventId = mLastEventId;
       if (result != null) {
         final List<SystemEventDetail> events = result.getEventsList();
         for (final SystemEventDetail event : events) {
           mAdapter.add(event);
           final long eventId = Long.valueOf(event.getEvent().getId()).longValue();
-          if (eventId > mLastEventId) {
-            mLastEventId = eventId;
+          if (eventId > greatestEventId) {
+            greatestEventId = eventId;
           }
+        }
+        if (greatestEventId != mLastEventId) {
+          mLastEventId = greatestEventId;
+          Log.d(LOG_TAG, "Events reloaded, most recent event id: " + mLastEventId);
         }
         if (!events.isEmpty()) {
           mAdapter.sort(EVENTS_DESCENDING);

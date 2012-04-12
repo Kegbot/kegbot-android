@@ -19,6 +19,7 @@ import org.kegbot.core.ThermoSensor;
 import org.kegbot.kegtap.KegtapActivity;
 import org.kegbot.kegtap.KegtapBroadcast;
 import org.kegbot.kegtap.R;
+import org.kegbot.kegtap.Utils;
 import org.kegbot.kegtap.util.PreferenceHelper;
 import org.kegbot.proto.Api;
 import org.kegbot.proto.Api.RecordTemperatureRequest;
@@ -256,6 +257,7 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
     mPreferences = new PreferenceHelper(getApplicationContext());
     mFlowManager.setDefaultIdleTimeMillis(mPreferences.getIdleTimeoutMs());
     Log.d(TAG, "onCreate()");
+    Log.d(TAG, "Kegtap User-Agent: " + Utils.getUserAgent());
     updateFromPreferences();
     PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
         .registerOnSharedPreferenceChangeListener(mPreferenceListener);
@@ -371,10 +373,10 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
 
     final TapDetailSet taps = mApiService.getKegbotApi().getAllTaps();
 
-    Log.d(TAG, "Taps: " + taps);
+    Log.d(TAG, "Found " + taps.getTapsCount() + " tap(s).");
     for (final Api.TapDetail tapDetail : taps.getTapsList()) {
       Models.KegTap tapInfo = tapDetail.getTap();
-      Log.d(TAG, "Adding tap: " + tapInfo.getDescription());
+      Log.d(TAG, "Adding tap: " + tapInfo.getMeterName());
       final Tap tap = new Tap(tapInfo.getDescription(), tapInfo.getMlPerTick(), tapInfo
           .getMeterName(), tapInfo.getRelayName());
       mTapManager.addTap(tap);

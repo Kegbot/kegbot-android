@@ -145,7 +145,7 @@ public class ImageDownloader {
 
       // No bitmap in cache: enqueue the download.
       synchronized (mDownloadRequests) {
-        Log.d(LOG_TAG, "download: adding to request queue");
+        if (DEBUG) Log.d(LOG_TAG, "download: adding to request queue");
         if (!mDownloadRequests.containsValue(url)) {
           enqueueDownload(url);
         }
