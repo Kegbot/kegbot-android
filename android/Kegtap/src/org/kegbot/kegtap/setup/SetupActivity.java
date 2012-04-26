@@ -150,9 +150,14 @@ public class SetupActivity extends Activity {
 
       @Override
       protected String doInBackground(Void... params) {
-        final String result = mCurrentTask.validate(SetupActivity.this.getApplicationContext());
-        if (Strings.isNullOrEmpty(result)) {
-          EasyTracker.getTracker().trackEvent("SetupTask", mCurrentTask.toString(), "", 1);
+        final Fragment fragment = mCurrentTask.getFragment();
+        String result = "";
+        if (fragment instanceof SetupFragment) {
+          final SetupFragment setupFragment = (SetupFragment) fragment;
+          result = setupFragment.validate();
+          if (Strings.isNullOrEmpty(result)) {
+            EasyTracker.getTracker().trackEvent("SetupTask", mCurrentTask.toString(), "", 1);
+          }
         }
         return result;
       }
@@ -176,9 +181,15 @@ public class SetupActivity extends Activity {
   private void onValidationResult(final String result) {
     if (Strings.isNullOrEmpty(result)) {
       Log.d(TAG, "Validation for " + mCurrentTask + " successful!");
+      mCurrentTask.onExitSuccess(this);
       setTask(mCurrentTask.next());
     } else {
       Log.d(TAG, "Validation for " + mCurrentTask + " unsuccessful: " + result);
+      final Fragment fragment = mCurrentTask.getFragment();
+      if (fragment instanceof SetupFragment) {
+        final SetupFragment setupFragment = (SetupFragment) fragment;
+        setupFragment.onValidationFailed();
+      }
       showAlertDialog(result);
     }
   }
@@ -246,7 +257,6 @@ public class SetupActivity extends Activity {
   protected void onStop() {
     super.onStop();
     EasyTracker.getTracker().trackActivityStop(this);
-
   }
 
 }

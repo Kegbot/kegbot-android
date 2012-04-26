@@ -127,14 +127,15 @@ public class KegbotApiService extends BackgroundService {
     Log.i(TAG, "Running in background.");
 
     try {
-      boolean isRunning;
-      synchronized (this) {
-        isRunning = mRunning;
-      }
-
-      while (isRunning) {
-        writeNewRequestsToDb();
-        postPendingRequestsToServer();
+      while (true) {
+        synchronized (this) {
+          if (!mRunning) {
+            Log.d(TAG, "No longer running, exiting.");
+            break;
+          }
+          writeNewRequestsToDb();
+          postPendingRequestsToServer();
+        }
         SystemClock.sleep(1000);
       }
     } catch (Throwable e) {

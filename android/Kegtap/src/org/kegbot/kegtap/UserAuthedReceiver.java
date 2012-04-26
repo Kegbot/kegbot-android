@@ -3,9 +3,6 @@
  */
 package org.kegbot.kegtap;
 
-import java.util.Collection;
-import java.util.Collections;
-
 import org.kegbot.core.FlowManager;
 import org.kegbot.core.Tap;
 import org.kegbot.core.TapManager;
@@ -36,30 +33,17 @@ public class UserAuthedReceiver extends BroadcastReceiver {
   private void handleUserAuthed(Context context, Intent intent) {
     Log.d(TAG, "handleUserAuthed: " + intent);
     final String username = intent.getStringExtra(KegtapBroadcast.USER_AUTHED_EXTRA_USERNAME);
-    final String tapName = intent.getStringExtra(KegtapBroadcast.USER_AUTHED_EXTRA_TAP_NAME);
+    final String tapName = intent.getStringExtra(KegtapBroadcast.DRINKER_SELECT_EXTRA_TAP_NAME);
 
     FlowManager flowManager = FlowManager.getSingletonInstance();
     TapManager tapManager = TapManager.getSingletonInstance();
-
-    final Tap authedTap;
     if (!Strings.isNullOrEmpty(tapName)) {
-      authedTap = tapManager.getTapForMeterName(tapName);  // might be null
-    } else {
-      authedTap = null;
-    }
-
-    final Collection<Tap> taps;
-    if (authedTap != null) {
-      // A specific tap.
-      taps = Collections.singleton(authedTap);
-    } else {
-      // All taps.
-      taps = tapManager.getTaps();
-    }
-
-    for (final Tap tap : taps) {
-      Log.d(TAG, "Activating user " + username + " at tap: " + tap);
+      final Tap tap = tapManager.getTapForMeterName(tapName);
       flowManager.activateUserAtTap(tap, username);
+    } else {
+      for (final Tap tap : tapManager.getTaps()) {
+        flowManager.activateUserAtTap(tap, username);
+      }
     }
   }
 

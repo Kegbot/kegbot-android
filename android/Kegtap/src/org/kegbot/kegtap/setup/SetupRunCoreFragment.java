@@ -3,14 +3,13 @@ package org.kegbot.kegtap.setup;
 import org.kegbot.kegtap.R;
 import org.kegbot.kegtap.util.PreferenceHelper;
 
-import android.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 
-public class SetupRunCoreFragment extends Fragment {
+public class SetupRunCoreFragment extends SetupFragment {
 
   private View mView;
 
@@ -27,6 +26,13 @@ public class SetupRunCoreFragment extends Fragment {
   public boolean getRunCore() {
     CheckBox box = (CheckBox) mView.findViewById(R.id.runCore);
     return box.isChecked();
+  }
+
+  @Override
+  public String validate() {
+    PreferenceHelper prefs = new PreferenceHelper(getActivity());
+    prefs.setRunCore(getRunCore());
+    return "";
   }
 
 }

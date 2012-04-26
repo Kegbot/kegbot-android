@@ -190,6 +190,8 @@ public class CameraFragment extends Fragment {
       } catch (IOException e) {
         Log.w(TAG, "Could not save image.", e);
         return null;
+      } finally {
+        bitmap.recycle();
       }
 
       final String savedImage = imageFile.getAbsolutePath();
@@ -207,16 +209,18 @@ public class CameraFragment extends Fragment {
     }
 
     private Bitmap decodeAndRotateFromJpeg(byte[] data, int rotation) {
-      Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+      final Bitmap origBitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
       if (rotation != 0) {
         Log.w(TAG, "ImageSaveTask: rotation=" + rotation);
 
         Matrix matrix = new Matrix();
         matrix.postRotate(rotation);
-        bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix,
-            true);
+        final Bitmap newBitmap = Bitmap.createBitmap(origBitmap, 0, 0, origBitmap.getWidth(),
+            origBitmap.getHeight(), matrix, true);
+        origBitmap.recycle();
+        return newBitmap;
       }
-      return bitmap;
+      return origBitmap;
     }
   }
 

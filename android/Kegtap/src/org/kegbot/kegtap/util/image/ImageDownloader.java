@@ -155,7 +155,7 @@ public class ImageDownloader {
   }
 
   private void enqueueDownload(final String url) {
-    Log.d(LOG_TAG, "Enqueuing download: url=" + url);
+    if (DEBUG) Log.d(LOG_TAG, "Enqueuing download: url=" + url);
     mExecutor.submit(new Runnable() {
       @Override
       public void run() {
@@ -167,6 +167,7 @@ public class ImageDownloader {
         } else {
           if (DEBUG) Log.d(LOG_TAG, "Download running for url=" + url);
           bitmap = downloadBitmap(url);
+          Log.d(LOG_TAG, "Downloaded: " + url);
           addBitmapToFileCache(url, bitmap);
         }
 
@@ -186,6 +187,7 @@ public class ImageDownloader {
     if (DEBUG) Log.d(LOG_TAG, "Assigning bitmap=" + bitmap + " imageView=" + imageView);
     imageView.setBackgroundDrawable(null);
     imageView.setImageBitmap(bitmap);
+    imageView.setAlpha(1.0f);
   }
 
   private void handleDownloadComplete(DownloadResult downloadResult) {
@@ -205,7 +207,6 @@ public class ImageDownloader {
             applyBitmapToImageView(bitmap, imageView);
             Animation myFadeInAnimation = AnimationUtils.loadAnimation(mContext, R.anim.image_fade_in);
             imageView.startAnimation(myFadeInAnimation); //Set animation to your ImageView
-
           }
         }
       }
@@ -213,6 +214,13 @@ public class ImageDownloader {
       for (final ImageView view : toRemove) {
         mDownloadRequests.remove(view);
       }
+    }
+  }
+
+  public void cancelDownloadForView(ImageView view) {
+    view.setTag(null);
+    synchronized (mDownloadRequests) {
+      mDownloadRequests.remove(view);
     }
   }
 
@@ -378,6 +386,7 @@ public class ImageDownloader {
       fos.close();
     } catch (IOException e) {
       Log.w(LOG_TAG, "Error adding cache file.", e);
+      cacheFile.delete();
     }
 
   }
@@ -385,9 +394,9 @@ public class ImageDownloader {
   private Bitmap getBitmapFromFileCache(String url) {
     final File cacheFile = getCacheFilename(url);
     if (cacheFile.exists()) {
-      Log.d(LOG_TAG, "getFromFileCache hit: url=" + url + " filename=" + cacheFile);
+      if (DEBUG) Log.d(LOG_TAG, "getFromFileCache hit: url=" + url + " filename=" + cacheFile);
     } else {
-      Log.d(LOG_TAG, "getFromFileCache MISS: url=" + url + " filename=" + cacheFile);
+      if (DEBUG) Log.d(LOG_TAG, "getFromFileCache MISS: url=" + url + " filename=" + cacheFile);
       return null;
     }
     return BitmapFactory.decodeFile(cacheFile.getAbsolutePath());

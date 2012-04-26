@@ -26,8 +26,6 @@ public class DrinkerSelectActivity extends CoreActivity {
 
   private static final String EXTRA_USERNAME = "username";
 
-  static final String EXTRA_TAP_NAME = "tap";
-
   private String mSelectedUsername = "";
 
   @Override
@@ -65,7 +63,7 @@ public class DrinkerSelectActivity extends CoreActivity {
   @Override
   protected void onResume() {
     super.onResume();
-    final AuthenticationManager am = AuthenticationManager.getSingletonInstance();
+    final AuthenticationManager am = AuthenticationManager.getSingletonInstance(this);
 
     if (!am.getAllRecent().isEmpty()) {
       final ActionBar bar = getActionBar();
@@ -89,7 +87,7 @@ public class DrinkerSelectActivity extends CoreActivity {
 
   public static Intent getStartIntentForTap(final Context context, final String tapName) {
     final Intent intent = new Intent(context, DrinkerSelectActivity.class);
-    intent.putExtra(EXTRA_TAP_NAME, tapName);
+    intent.putExtra(KegtapBroadcast.DRINKER_SELECT_EXTRA_TAP_NAME, tapName);
     return intent;
   }
 

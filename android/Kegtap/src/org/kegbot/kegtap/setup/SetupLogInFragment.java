@@ -1,16 +1,20 @@
 package org.kegbot.kegtap.setup;
 
+import org.kegbot.api.KegbotApi;
+import org.kegbot.api.KegbotApiException;
+import org.kegbot.api.KegbotApiImpl;
 import org.kegbot.kegtap.R;
 import org.kegbot.kegtap.util.PreferenceHelper;
 
-import android.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
-public class SetupLogInFragment extends Fragment {
+import com.google.common.base.Strings;
+
+public class SetupLogInFragment extends SetupFragment {
 
   private View mView;
 
@@ -37,6 +41,41 @@ public class SetupLogInFragment extends Fragment {
   public String getPassword() {
     EditText text = (EditText) mView.findViewById(R.id.apiPassword);
     return text.getText().toString();
+  }
+
+  @Override
+  public String validate() {
+    final String username = getUsername();
+    final String password = getPassword();
+
+    if (Strings.isNullOrEmpty(username)) {
+      return "Please enter a username.";
+    } else if (Strings.isNullOrEmpty(password)) {
+      return "Please enter a password";
+    }
+
+    PreferenceHelper prefs = new PreferenceHelper(getActivity());
+    KegbotApi api = new KegbotApiImpl();
+    api.setApiUrl(prefs.getKegbotUrl().toString());
+
+    try {
+      api.login(username, password);
+    } catch (KegbotApiException e) {
+      return "Error logging in: " + toHumanError(e);
+    }
+
+    final String apiKey;
+    try {
+      apiKey = api.getApiKey();
+    } catch (KegbotApiException e) {
+      return "Error fetching API key: " + toHumanError(e);
+    }
+
+    prefs.setUsername(username);
+    prefs.setPassword(password);
+    prefs.setApiKey(apiKey);
+
+    return "";
   }
 
 }

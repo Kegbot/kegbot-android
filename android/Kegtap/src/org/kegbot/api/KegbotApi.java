@@ -176,7 +176,14 @@ public interface KegbotApi {
 
   public UserDetailSet getUsers() throws KegbotApiException;
 
-  public SessionSet getCurrentSessions() throws KegbotApiException;
+  /**
+   * Returns the currently-active drinking session, or {@code null} if none is
+   * active.
+   *
+   * @return
+   * @throws KegbotApiException
+   */
+  public SessionDetail getCurrentSession() throws KegbotApiException;
 
   public Image uploadDrinkImage(final String drinkId, final String imagePath) throws KegbotApiException;
 

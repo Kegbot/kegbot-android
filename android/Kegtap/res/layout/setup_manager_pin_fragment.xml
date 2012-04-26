@@ -18,11 +18,24 @@
         android:text="Secret PIN for manager access."
         android:textColor="@android:color/darker_gray"
         android:textSize="18dip" />
-    
+
     <EditText
         android:id="@+id/managerPin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="numberPassword" />
-    
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Confirm Pin"
+        android:textSize="24dip"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/managerPinConfirm"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="numberPassword" />
+
 </LinearLayout>

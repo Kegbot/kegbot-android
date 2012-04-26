@@ -10093,6 +10093,16 @@ public final class Api {
     boolean hasSession();
     org.kegbot.proto.Models.Session getSession();
     org.kegbot.proto.Models.SessionOrBuilder getSessionOrBuilder();
+    
+    // repeated .Image images = 5;
+    java.util.List<org.kegbot.proto.Models.Image> 
+        getImagesList();
+    org.kegbot.proto.Models.Image getImages(int index);
+    int getImagesCount();
+    java.util.List<? extends org.kegbot.proto.Models.ImageOrBuilder> 
+        getImagesOrBuilderList();
+    org.kegbot.proto.Models.ImageOrBuilder getImagesOrBuilder(
+        int index);
   }
   public static final class DrinkDetail extends
       com.google.protobuf.GeneratedMessage
@@ -10175,11 +10185,33 @@ public final class Api {
       return session_;
     }
     
+    // repeated .Image images = 5;
+    public static final int IMAGES_FIELD_NUMBER = 5;
+    private java.util.List<org.kegbot.proto.Models.Image> images_;
+    public java.util.List<org.kegbot.proto.Models.Image> getImagesList() {
+      return images_;
+    }
+    public java.util.List<? extends org.kegbot.proto.Models.ImageOrBuilder> 
+        getImagesOrBuilderList() {
+      return images_;
+    }
+    public int getImagesCount() {
+      return images_.size();
+    }
+    public org.kegbot.proto.Models.Image getImages(int index) {
+      return images_.get(index);
+    }
+    public org.kegbot.proto.Models.ImageOrBuilder getImagesOrBuilder(
+        int index) {
+      return images_.get(index);
+    }
+    
     private void initFields() {
       drink_ = org.kegbot.proto.Models.Drink.getDefaultInstance();
       user_ = org.kegbot.proto.Models.User.getDefaultInstance();
       keg_ = org.kegbot.proto.Models.Keg.getDefaultInstance();
       session_ = org.kegbot.proto.Models.Session.getDefaultInstance();
+      images_ = java.util.Collections.emptyList();
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -10212,6 +10244,12 @@ public final class Api {
           return false;
         }
       }
+      for (int i = 0; i < getImagesCount(); i++) {
+        if (!getImages(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
       memoizedIsInitialized = 1;
       return true;
     }
@@ -10230,6 +10268,9 @@ public final class Api {
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         output.writeMessage(4, session_);
+      }
+      for (int i = 0; i < images_.size(); i++) {
+        output.writeMessage(5, images_.get(i));
       }
       getUnknownFields().writeTo(output);
     }
@@ -10255,6 +10296,10 @@ public final class Api {
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(4, session_);
+      }
+      for (int i = 0; i < images_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(5, images_.get(i));
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -10374,6 +10419,7 @@ public final class Api {
           getUserFieldBuilder();
           getKegFieldBuilder();
           getSessionFieldBuilder();
+          getImagesFieldBuilder();
         }
       }
       private static Builder create() {
@@ -10406,6 +10452,12 @@ public final class Api {
           sessionBuilder_.clear();
         }
         bitField0_ = (bitField0_ & ~0x00000008);
+        if (imagesBuilder_ == null) {
+          images_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000010);
+        } else {
+          imagesBuilder_.clear();
+        }
         return this;
       }
       
@@ -10476,6 +10528,15 @@ public final class Api {
         } else {
           result.session_ = sessionBuilder_.build();
         }
+        if (imagesBuilder_ == null) {
+          if (((bitField0_ & 0x00000010) == 0x00000010)) {
+            images_ = java.util.Collections.unmodifiableList(images_);
+            bitField0_ = (bitField0_ & ~0x00000010);
+          }
+          result.images_ = images_;
+        } else {
+          result.images_ = imagesBuilder_.build();
+        }
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -10504,6 +10565,32 @@ public final class Api {
         if (other.hasSession()) {
           mergeSession(other.getSession());
         }
+        if (imagesBuilder_ == null) {
+          if (!other.images_.isEmpty()) {
+            if (images_.isEmpty()) {
+              images_ = other.images_;
+              bitField0_ = (bitField0_ & ~0x00000010);
+            } else {
+              ensureImagesIsMutable();
+              images_.addAll(other.images_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.images_.isEmpty()) {
+            if (imagesBuilder_.isEmpty()) {
+              imagesBuilder_.dispose();
+              imagesBuilder_ = null;
+              images_ = other.images_;
+              bitField0_ = (bitField0_ & ~0x00000010);
+              imagesBuilder_ = 
+                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                   getImagesFieldBuilder() : null;
+            } else {
+              imagesBuilder_.addAllMessages(other.images_);
+            }
+          }
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
@@ -10531,6 +10618,12 @@ public final class Api {
         }
         if (hasSession()) {
           if (!getSession().isInitialized()) {
+            
+            return false;
+          }
+        }
+        for (int i = 0; i < getImagesCount(); i++) {
+          if (!getImages(i).isInitialized()) {
             
             return false;
           }
@@ -10595,6 +10688,12 @@ public final class Api {
               }
               input.readMessage(subBuilder, extensionRegistry);
               setSession(subBuilder.buildPartial());
+              break;
+            }
+            case 42: {
+              org.kegbot.proto.Models.Image.Builder subBuilder = org.kegbot.proto.Models.Image.newBuilder();
+              input.readMessage(subBuilder, extensionRegistry);
+              addImages(subBuilder.buildPartial());
               break;
             }
           }
@@ -10963,6 +11062,192 @@ public final class Api {
         return sessionBuilder_;
       }
       
+      // repeated .Image images = 5;
+      private java.util.List<org.kegbot.proto.Models.Image> images_ =
+        java.util.Collections.emptyList();
+      private void ensureImagesIsMutable() {
+        if (!((bitField0_ & 0x00000010) == 0x00000010)) {
+          images_ = new java.util.ArrayList<org.kegbot.proto.Models.Image>(images_);
+          bitField0_ |= 0x00000010;
+         }
+      }
+      
+      private com.google.protobuf.RepeatedFieldBuilder<
+          org.kegbot.proto.Models.Image, org.kegbot.proto.Models.Image.Builder, org.kegbot.proto.Models.ImageOrBuilder> imagesBuilder_;
+      
+      public java.util.List<org.kegbot.proto.Models.Image> getImagesList() {
+        if (imagesBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(images_);
+        } else {
+          return imagesBuilder_.getMessageList();
+        }
+      }
+      public int getImagesCount() {
+        if (imagesBuilder_ == null) {
+          return images_.size();
+        } else {
+          return imagesBuilder_.getCount();
+        }
+      }
+      public org.kegbot.proto.Models.Image getImages(int index) {
+        if (imagesBuilder_ == null) {
+          return images_.get(index);
+        } else {
+          return imagesBuilder_.getMessage(index);
+        }
+      }
+      public Builder setImages(
+          int index, org.kegbot.proto.Models.Image value) {
+        if (imagesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureImagesIsMutable();
+          images_.set(index, value);
+          onChanged();
+        } else {
+          imagesBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      public Builder setImages(
+          int index, org.kegbot.proto.Models.Image.Builder builderForValue) {
+        if (imagesBuilder_ == null) {
+          ensureImagesIsMutable();
+          images_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          imagesBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addImages(org.kegbot.proto.Models.Image value) {
+        if (imagesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureImagesIsMutable();
+          images_.add(value);
+          onChanged();
+        } else {
+          imagesBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      public Builder addImages(
+          int index, org.kegbot.proto.Models.Image value) {
+        if (imagesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureImagesIsMutable();
+          images_.add(index, value);
+          onChanged();
+        } else {
+          imagesBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      public Builder addImages(
+          org.kegbot.proto.Models.Image.Builder builderForValue) {
+        if (imagesBuilder_ == null) {
+          ensureImagesIsMutable();
+          images_.add(builderForValue.build());
+          onChanged();
+        } else {
+          imagesBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addImages(
+          int index, org.kegbot.proto.Models.Image.Builder builderForValue) {
+        if (imagesBuilder_ == null) {
+          ensureImagesIsMutable();
+          images_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          imagesBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addAllImages(
+          java.lang.Iterable<? extends org.kegbot.proto.Models.Image> values) {
+        if (imagesBuilder_ == null) {
+          ensureImagesIsMutable();
+          super.addAll(values, images_);
+          onChanged();
+        } else {
+          imagesBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      public Builder clearImages() {
+        if (imagesBuilder_ == null) {
+          images_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000010);
+          onChanged();
+        } else {
+          imagesBuilder_.clear();
+        }
+        return this;
+      }
+      public Builder removeImages(int index) {
+        if (imagesBuilder_ == null) {
+          ensureImagesIsMutable();
+          images_.remove(index);
+          onChanged();
+        } else {
+          imagesBuilder_.remove(index);
+        }
+        return this;
+      }
+      public org.kegbot.proto.Models.Image.Builder getImagesBuilder(
+          int index) {
+        return getImagesFieldBuilder().getBuilder(index);
+      }
+      public org.kegbot.proto.Models.ImageOrBuilder getImagesOrBuilder(
+          int index) {
+        if (imagesBuilder_ == null) {
+          return images_.get(index);  } else {
+          return imagesBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      public java.util.List<? extends org.kegbot.proto.Models.ImageOrBuilder> 
+           getImagesOrBuilderList() {
+        if (imagesBuilder_ != null) {
+          return imagesBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(images_);
+        }
+      }
+      public org.kegbot.proto.Models.Image.Builder addImagesBuilder() {
+        return getImagesFieldBuilder().addBuilder(
+            org.kegbot.proto.Models.Image.getDefaultInstance());
+      }
+      public org.kegbot.proto.Models.Image.Builder addImagesBuilder(
+          int index) {
+        return getImagesFieldBuilder().addBuilder(
+            index, org.kegbot.proto.Models.Image.getDefaultInstance());
+      }
+      public java.util.List<org.kegbot.proto.Models.Image.Builder> 
+           getImagesBuilderList() {
+        return getImagesFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilder<
+          org.kegbot.proto.Models.Image, org.kegbot.proto.Models.Image.Builder, org.kegbot.proto.Models.ImageOrBuilder> 
+          getImagesFieldBuilder() {
+        if (imagesBuilder_ == null) {
+          imagesBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+              org.kegbot.proto.Models.Image, org.kegbot.proto.Models.Image.Builder, org.kegbot.proto.Models.ImageOrBuilder>(
+                  images_,
+                  ((bitField0_ & 0x00000010) == 0x00000010),
+                  getParentForChildren(),
+                  isClean());
+          images_ = null;
+        }
+        return imagesBuilder_;
+      }
+      
       // @@protoc_insertion_point(builder_scope:DrinkDetail)
     }
     
@@ -11005,6 +11290,16 @@ public final class Api {
     java.util.List<? extends org.kegbot.proto.Models.DrinkOrBuilder> 
         getDrinksOrBuilderList();
     org.kegbot.proto.Models.DrinkOrBuilder getDrinksOrBuilder(
+        int index);
+    
+    // repeated .Image images = 5;
+    java.util.List<org.kegbot.proto.Models.Image> 
+        getImagesList();
+    org.kegbot.proto.Models.Image getImages(int index);
+    int getImagesCount();
+    java.util.List<? extends org.kegbot.proto.Models.ImageOrBuilder> 
+        getImagesOrBuilderList();
+    org.kegbot.proto.Models.ImageOrBuilder getImagesOrBuilder(
         int index);
   }
   public static final class SessionDetail extends
@@ -11104,11 +11399,33 @@ public final class Api {
       return drinks_.get(index);
     }
     
+    // repeated .Image images = 5;
+    public static final int IMAGES_FIELD_NUMBER = 5;
+    private java.util.List<org.kegbot.proto.Models.Image> images_;
+    public java.util.List<org.kegbot.proto.Models.Image> getImagesList() {
+      return images_;
+    }
+    public java.util.List<? extends org.kegbot.proto.Models.ImageOrBuilder> 
+        getImagesOrBuilderList() {
+      return images_;
+    }
+    public int getImagesCount() {
+      return images_.size();
+    }
+    public org.kegbot.proto.Models.Image getImages(int index) {
+      return images_.get(index);
+    }
+    public org.kegbot.proto.Models.ImageOrBuilder getImagesOrBuilder(
+        int index) {
+      return images_.get(index);
+    }
+    
     private void initFields() {
       session_ = org.kegbot.proto.Models.Session.getDefaultInstance();
       stats_ = org.kegbot.proto.Models.Stats.getDefaultInstance();
       kegs_ = java.util.Collections.emptyList();
       drinks_ = java.util.Collections.emptyList();
+      images_ = java.util.Collections.emptyList();
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -11141,6 +11458,12 @@ public final class Api {
           return false;
         }
       }
+      for (int i = 0; i < getImagesCount(); i++) {
+        if (!getImages(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
       memoizedIsInitialized = 1;
       return true;
     }
@@ -11159,6 +11482,9 @@ public final class Api {
       }
       for (int i = 0; i < drinks_.size(); i++) {
         output.writeMessage(4, drinks_.get(i));
+      }
+      for (int i = 0; i < images_.size(); i++) {
+        output.writeMessage(5, images_.get(i));
       }
       getUnknownFields().writeTo(output);
     }
@@ -11184,6 +11510,10 @@ public final class Api {
       for (int i = 0; i < drinks_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(4, drinks_.get(i));
+      }
+      for (int i = 0; i < images_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(5, images_.get(i));
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -11303,6 +11633,7 @@ public final class Api {
           getStatsFieldBuilder();
           getKegsFieldBuilder();
           getDrinksFieldBuilder();
+          getImagesFieldBuilder();
         }
       }
       private static Builder create() {
@@ -11334,6 +11665,12 @@ public final class Api {
           bitField0_ = (bitField0_ & ~0x00000008);
         } else {
           drinksBuilder_.clear();
+        }
+        if (imagesBuilder_ == null) {
+          images_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000010);
+        } else {
+          imagesBuilder_.clear();
         }
         return this;
       }
@@ -11406,6 +11743,15 @@ public final class Api {
           result.drinks_ = drinks_;
         } else {
           result.drinks_ = drinksBuilder_.build();
+        }
+        if (imagesBuilder_ == null) {
+          if (((bitField0_ & 0x00000010) == 0x00000010)) {
+            images_ = java.util.Collections.unmodifiableList(images_);
+            bitField0_ = (bitField0_ & ~0x00000010);
+          }
+          result.images_ = images_;
+        } else {
+          result.images_ = imagesBuilder_.build();
         }
         result.bitField0_ = to_bitField0_;
         onBuilt();
@@ -11481,6 +11827,32 @@ public final class Api {
             }
           }
         }
+        if (imagesBuilder_ == null) {
+          if (!other.images_.isEmpty()) {
+            if (images_.isEmpty()) {
+              images_ = other.images_;
+              bitField0_ = (bitField0_ & ~0x00000010);
+            } else {
+              ensureImagesIsMutable();
+              images_.addAll(other.images_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.images_.isEmpty()) {
+            if (imagesBuilder_.isEmpty()) {
+              imagesBuilder_.dispose();
+              imagesBuilder_ = null;
+              images_ = other.images_;
+              bitField0_ = (bitField0_ & ~0x00000010);
+              imagesBuilder_ = 
+                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                   getImagesFieldBuilder() : null;
+            } else {
+              imagesBuilder_.addAllMessages(other.images_);
+            }
+          }
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
@@ -11508,6 +11880,12 @@ public final class Api {
         }
         for (int i = 0; i < getDrinksCount(); i++) {
           if (!getDrinks(i).isInitialized()) {
+            
+            return false;
+          }
+        }
+        for (int i = 0; i < getImagesCount(); i++) {
+          if (!getImages(i).isInitialized()) {
             
             return false;
           }
@@ -11566,6 +11944,12 @@ public final class Api {
               org.kegbot.proto.Models.Drink.Builder subBuilder = org.kegbot.proto.Models.Drink.newBuilder();
               input.readMessage(subBuilder, extensionRegistry);
               addDrinks(subBuilder.buildPartial());
+              break;
+            }
+            case 42: {
+              org.kegbot.proto.Models.Image.Builder subBuilder = org.kegbot.proto.Models.Image.newBuilder();
+              input.readMessage(subBuilder, extensionRegistry);
+              addImages(subBuilder.buildPartial());
               break;
             }
           }
@@ -12126,6 +12510,192 @@ public final class Api {
         return drinksBuilder_;
       }
       
+      // repeated .Image images = 5;
+      private java.util.List<org.kegbot.proto.Models.Image> images_ =
+        java.util.Collections.emptyList();
+      private void ensureImagesIsMutable() {
+        if (!((bitField0_ & 0x00000010) == 0x00000010)) {
+          images_ = new java.util.ArrayList<org.kegbot.proto.Models.Image>(images_);
+          bitField0_ |= 0x00000010;
+         }
+      }
+      
+      private com.google.protobuf.RepeatedFieldBuilder<
+          org.kegbot.proto.Models.Image, org.kegbot.proto.Models.Image.Builder, org.kegbot.proto.Models.ImageOrBuilder> imagesBuilder_;
+      
+      public java.util.List<org.kegbot.proto.Models.Image> getImagesList() {
+        if (imagesBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(images_);
+        } else {
+          return imagesBuilder_.getMessageList();
+        }
+      }
+      public int getImagesCount() {
+        if (imagesBuilder_ == null) {
+          return images_.size();
+        } else {
+          return imagesBuilder_.getCount();
+        }
+      }
+      public org.kegbot.proto.Models.Image getImages(int index) {
+        if (imagesBuilder_ == null) {
+          return images_.get(index);
+        } else {
+          return imagesBuilder_.getMessage(index);
+        }
+      }
+      public Builder setImages(
+          int index, org.kegbot.proto.Models.Image value) {
+        if (imagesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureImagesIsMutable();
+          images_.set(index, value);
+          onChanged();
+        } else {
+          imagesBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      public Builder setImages(
+          int index, org.kegbot.proto.Models.Image.Builder builderForValue) {
+        if (imagesBuilder_ == null) {
+          ensureImagesIsMutable();
+          images_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          imagesBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addImages(org.kegbot.proto.Models.Image value) {
+        if (imagesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureImagesIsMutable();
+          images_.add(value);
+          onChanged();
+        } else {
+          imagesBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      public Builder addImages(
+          int index, org.kegbot.proto.Models.Image value) {
+        if (imagesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureImagesIsMutable();
+          images_.add(index, value);
+          onChanged();
+        } else {
+          imagesBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      public Builder addImages(
+          org.kegbot.proto.Models.Image.Builder builderForValue) {
+        if (imagesBuilder_ == null) {
+          ensureImagesIsMutable();
+          images_.add(builderForValue.build());
+          onChanged();
+        } else {
+          imagesBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addImages(
+          int index, org.kegbot.proto.Models.Image.Builder builderForValue) {
+        if (imagesBuilder_ == null) {
+          ensureImagesIsMutable();
+          images_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          imagesBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addAllImages(
+          java.lang.Iterable<? extends org.kegbot.proto.Models.Image> values) {
+        if (imagesBuilder_ == null) {
+          ensureImagesIsMutable();
+          super.addAll(values, images_);
+          onChanged();
+        } else {
+          imagesBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      public Builder clearImages() {
+        if (imagesBuilder_ == null) {
+          images_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000010);
+          onChanged();
+        } else {
+          imagesBuilder_.clear();
+        }
+        return this;
+      }
+      public Builder removeImages(int index) {
+        if (imagesBuilder_ == null) {
+          ensureImagesIsMutable();
+          images_.remove(index);
+          onChanged();
+        } else {
+          imagesBuilder_.remove(index);
+        }
+        return this;
+      }
+      public org.kegbot.proto.Models.Image.Builder getImagesBuilder(
+          int index) {
+        return getImagesFieldBuilder().getBuilder(index);
+      }
+      public org.kegbot.proto.Models.ImageOrBuilder getImagesOrBuilder(
+          int index) {
+        if (imagesBuilder_ == null) {
+          return images_.get(index);  } else {
+          return imagesBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      public java.util.List<? extends org.kegbot.proto.Models.ImageOrBuilder> 
+           getImagesOrBuilderList() {
+        if (imagesBuilder_ != null) {
+          return imagesBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(images_);
+        }
+      }
+      public org.kegbot.proto.Models.Image.Builder addImagesBuilder() {
+        return getImagesFieldBuilder().addBuilder(
+            org.kegbot.proto.Models.Image.getDefaultInstance());
+      }
+      public org.kegbot.proto.Models.Image.Builder addImagesBuilder(
+          int index) {
+        return getImagesFieldBuilder().addBuilder(
+            index, org.kegbot.proto.Models.Image.getDefaultInstance());
+      }
+      public java.util.List<org.kegbot.proto.Models.Image.Builder> 
+           getImagesBuilderList() {
+        return getImagesFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilder<
+          org.kegbot.proto.Models.Image, org.kegbot.proto.Models.Image.Builder, org.kegbot.proto.Models.ImageOrBuilder> 
+          getImagesFieldBuilder() {
+        if (imagesBuilder_ == null) {
+          imagesBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+              org.kegbot.proto.Models.Image, org.kegbot.proto.Models.Image.Builder, org.kegbot.proto.Models.ImageOrBuilder>(
+                  images_,
+                  ((bitField0_ & 0x00000010) == 0x00000010),
+                  getParentForChildren(),
+                  isClean());
+          images_ = null;
+        }
+        return imagesBuilder_;
+      }
+      
       // @@protoc_insertion_point(builder_scope:SessionDetail)
     }
     
@@ -12173,6 +12743,16 @@ public final class Api {
     java.util.List<? extends org.kegbot.proto.Models.SessionOrBuilder> 
         getSessionsOrBuilderList();
     org.kegbot.proto.Models.SessionOrBuilder getSessionsOrBuilder(
+        int index);
+    
+    // repeated .Image images = 6;
+    java.util.List<org.kegbot.proto.Models.Image> 
+        getImagesList();
+    org.kegbot.proto.Models.Image getImages(int index);
+    int getImagesCount();
+    java.util.List<? extends org.kegbot.proto.Models.ImageOrBuilder> 
+        getImagesOrBuilderList();
+    org.kegbot.proto.Models.ImageOrBuilder getImagesOrBuilder(
         int index);
   }
   public static final class KegDetail extends
@@ -12285,12 +12865,34 @@ public final class Api {
       return sessions_.get(index);
     }
     
+    // repeated .Image images = 6;
+    public static final int IMAGES_FIELD_NUMBER = 6;
+    private java.util.List<org.kegbot.proto.Models.Image> images_;
+    public java.util.List<org.kegbot.proto.Models.Image> getImagesList() {
+      return images_;
+    }
+    public java.util.List<? extends org.kegbot.proto.Models.ImageOrBuilder> 
+        getImagesOrBuilderList() {
+      return images_;
+    }
+    public int getImagesCount() {
+      return images_.size();
+    }
+    public org.kegbot.proto.Models.Image getImages(int index) {
+      return images_.get(index);
+    }
+    public org.kegbot.proto.Models.ImageOrBuilder getImagesOrBuilder(
+        int index) {
+      return images_.get(index);
+    }
+    
     private void initFields() {
       keg_ = org.kegbot.proto.Models.Keg.getDefaultInstance();
       type_ = org.kegbot.proto.Models.BeerType.getDefaultInstance();
       size_ = org.kegbot.proto.Models.KegSize.getDefaultInstance();
       drinks_ = java.util.Collections.emptyList();
       sessions_ = java.util.Collections.emptyList();
+      images_ = java.util.Collections.emptyList();
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -12329,6 +12931,12 @@ public final class Api {
           return false;
         }
       }
+      for (int i = 0; i < getImagesCount(); i++) {
+        if (!getImages(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
       memoizedIsInitialized = 1;
       return true;
     }
@@ -12350,6 +12958,9 @@ public final class Api {
       }
       for (int i = 0; i < sessions_.size(); i++) {
         output.writeMessage(5, sessions_.get(i));
+      }
+      for (int i = 0; i < images_.size(); i++) {
+        output.writeMessage(6, images_.get(i));
       }
       getUnknownFields().writeTo(output);
     }
@@ -12379,6 +12990,10 @@ public final class Api {
       for (int i = 0; i < sessions_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(5, sessions_.get(i));
+      }
+      for (int i = 0; i < images_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(6, images_.get(i));
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -12499,6 +13114,7 @@ public final class Api {
           getSizeFieldBuilder();
           getDrinksFieldBuilder();
           getSessionsFieldBuilder();
+          getImagesFieldBuilder();
         }
       }
       private static Builder create() {
@@ -12536,6 +13152,12 @@ public final class Api {
           bitField0_ = (bitField0_ & ~0x00000010);
         } else {
           sessionsBuilder_.clear();
+        }
+        if (imagesBuilder_ == null) {
+          images_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000020);
+        } else {
+          imagesBuilder_.clear();
         }
         return this;
       }
@@ -12617,6 +13239,15 @@ public final class Api {
         } else {
           result.sessions_ = sessionsBuilder_.build();
         }
+        if (imagesBuilder_ == null) {
+          if (((bitField0_ & 0x00000020) == 0x00000020)) {
+            images_ = java.util.Collections.unmodifiableList(images_);
+            bitField0_ = (bitField0_ & ~0x00000020);
+          }
+          result.images_ = images_;
+        } else {
+          result.images_ = imagesBuilder_.build();
+        }
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -12694,6 +13325,32 @@ public final class Api {
             }
           }
         }
+        if (imagesBuilder_ == null) {
+          if (!other.images_.isEmpty()) {
+            if (images_.isEmpty()) {
+              images_ = other.images_;
+              bitField0_ = (bitField0_ & ~0x00000020);
+            } else {
+              ensureImagesIsMutable();
+              images_.addAll(other.images_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.images_.isEmpty()) {
+            if (imagesBuilder_.isEmpty()) {
+              imagesBuilder_.dispose();
+              imagesBuilder_ = null;
+              images_ = other.images_;
+              bitField0_ = (bitField0_ & ~0x00000020);
+              imagesBuilder_ = 
+                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                   getImagesFieldBuilder() : null;
+            } else {
+              imagesBuilder_.addAllMessages(other.images_);
+            }
+          }
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
@@ -12727,6 +13384,12 @@ public final class Api {
         }
         for (int i = 0; i < getSessionsCount(); i++) {
           if (!getSessions(i).isInitialized()) {
+            
+            return false;
+          }
+        }
+        for (int i = 0; i < getImagesCount(); i++) {
+          if (!getImages(i).isInitialized()) {
             
             return false;
           }
@@ -12794,6 +13457,12 @@ public final class Api {
               org.kegbot.proto.Models.Session.Builder subBuilder = org.kegbot.proto.Models.Session.newBuilder();
               input.readMessage(subBuilder, extensionRegistry);
               addSessions(subBuilder.buildPartial());
+              break;
+            }
+            case 50: {
+              org.kegbot.proto.Models.Image.Builder subBuilder = org.kegbot.proto.Models.Image.newBuilder();
+              input.readMessage(subBuilder, extensionRegistry);
+              addImages(subBuilder.buildPartial());
               break;
             }
           }
@@ -13442,6 +14111,192 @@ public final class Api {
           sessions_ = null;
         }
         return sessionsBuilder_;
+      }
+      
+      // repeated .Image images = 6;
+      private java.util.List<org.kegbot.proto.Models.Image> images_ =
+        java.util.Collections.emptyList();
+      private void ensureImagesIsMutable() {
+        if (!((bitField0_ & 0x00000020) == 0x00000020)) {
+          images_ = new java.util.ArrayList<org.kegbot.proto.Models.Image>(images_);
+          bitField0_ |= 0x00000020;
+         }
+      }
+      
+      private com.google.protobuf.RepeatedFieldBuilder<
+          org.kegbot.proto.Models.Image, org.kegbot.proto.Models.Image.Builder, org.kegbot.proto.Models.ImageOrBuilder> imagesBuilder_;
+      
+      public java.util.List<org.kegbot.proto.Models.Image> getImagesList() {
+        if (imagesBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(images_);
+        } else {
+          return imagesBuilder_.getMessageList();
+        }
+      }
+      public int getImagesCount() {
+        if (imagesBuilder_ == null) {
+          return images_.size();
+        } else {
+          return imagesBuilder_.getCount();
+        }
+      }
+      public org.kegbot.proto.Models.Image getImages(int index) {
+        if (imagesBuilder_ == null) {
+          return images_.get(index);
+        } else {
+          return imagesBuilder_.getMessage(index);
+        }
+      }
+      public Builder setImages(
+          int index, org.kegbot.proto.Models.Image value) {
+        if (imagesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureImagesIsMutable();
+          images_.set(index, value);
+          onChanged();
+        } else {
+          imagesBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      public Builder setImages(
+          int index, org.kegbot.proto.Models.Image.Builder builderForValue) {
+        if (imagesBuilder_ == null) {
+          ensureImagesIsMutable();
+          images_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          imagesBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addImages(org.kegbot.proto.Models.Image value) {
+        if (imagesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureImagesIsMutable();
+          images_.add(value);
+          onChanged();
+        } else {
+          imagesBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      public Builder addImages(
+          int index, org.kegbot.proto.Models.Image value) {
+        if (imagesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureImagesIsMutable();
+          images_.add(index, value);
+          onChanged();
+        } else {
+          imagesBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      public Builder addImages(
+          org.kegbot.proto.Models.Image.Builder builderForValue) {
+        if (imagesBuilder_ == null) {
+          ensureImagesIsMutable();
+          images_.add(builderForValue.build());
+          onChanged();
+        } else {
+          imagesBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addImages(
+          int index, org.kegbot.proto.Models.Image.Builder builderForValue) {
+        if (imagesBuilder_ == null) {
+          ensureImagesIsMutable();
+          images_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          imagesBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addAllImages(
+          java.lang.Iterable<? extends org.kegbot.proto.Models.Image> values) {
+        if (imagesBuilder_ == null) {
+          ensureImagesIsMutable();
+          super.addAll(values, images_);
+          onChanged();
+        } else {
+          imagesBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      public Builder clearImages() {
+        if (imagesBuilder_ == null) {
+          images_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000020);
+          onChanged();
+        } else {
+          imagesBuilder_.clear();
+        }
+        return this;
+      }
+      public Builder removeImages(int index) {
+        if (imagesBuilder_ == null) {
+          ensureImagesIsMutable();
+          images_.remove(index);
+          onChanged();
+        } else {
+          imagesBuilder_.remove(index);
+        }
+        return this;
+      }
+      public org.kegbot.proto.Models.Image.Builder getImagesBuilder(
+          int index) {
+        return getImagesFieldBuilder().getBuilder(index);
+      }
+      public org.kegbot.proto.Models.ImageOrBuilder getImagesOrBuilder(
+          int index) {
+        if (imagesBuilder_ == null) {
+          return images_.get(index);  } else {
+          return imagesBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      public java.util.List<? extends org.kegbot.proto.Models.ImageOrBuilder> 
+           getImagesOrBuilderList() {
+        if (imagesBuilder_ != null) {
+          return imagesBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(images_);
+        }
+      }
+      public org.kegbot.proto.Models.Image.Builder addImagesBuilder() {
+        return getImagesFieldBuilder().addBuilder(
+            org.kegbot.proto.Models.Image.getDefaultInstance());
+      }
+      public org.kegbot.proto.Models.Image.Builder addImagesBuilder(
+          int index) {
+        return getImagesFieldBuilder().addBuilder(
+            index, org.kegbot.proto.Models.Image.getDefaultInstance());
+      }
+      public java.util.List<org.kegbot.proto.Models.Image.Builder> 
+           getImagesBuilderList() {
+        return getImagesFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilder<
+          org.kegbot.proto.Models.Image, org.kegbot.proto.Models.Image.Builder, org.kegbot.proto.Models.ImageOrBuilder> 
+          getImagesFieldBuilder() {
+        if (imagesBuilder_ == null) {
+          imagesBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+              org.kegbot.proto.Models.Image, org.kegbot.proto.Models.Image.Builder, org.kegbot.proto.Models.ImageOrBuilder>(
+                  images_,
+                  ((bitField0_ & 0x00000020) == 0x00000020),
+                  getParentForChildren(),
+                  isClean());
+          images_ = null;
+        }
+        return imagesBuilder_;
       }
       
       // @@protoc_insertion_point(builder_scope:KegDetail)
@@ -16547,25 +17402,27 @@ public final class Api {
       "\0132\007.Paging\"k\n\tTapDetail\022\024\n\003tap\030\001 \002(\0132\007.K" +
       "egTap\022\021\n\003keg\030\002 \001(\0132\004.Keg\022\034\n\tbeer_type\030\003 ",
       "\001(\0132\t.BeerType\022\027\n\006brewer\030\004 \001(\0132\007.Brewer\"" +
-      "g\n\013DrinkDetail\022\025\n\005drink\030\001 \002(\0132\006.Drink\022\023\n" +
+      "\177\n\013DrinkDetail\022\025\n\005drink\030\001 \002(\0132\006.Drink\022\023\n" +
       "\004user\030\002 \001(\0132\005.User\022\021\n\003keg\030\003 \001(\0132\004.Keg\022\031\n" +
-      "\007session\030\004 \001(\0132\010.Session\"m\n\rSessionDetai" +
-      "l\022\031\n\007session\030\001 \002(\0132\010.Session\022\025\n\005stats\030\002 " +
-      "\001(\0132\006.Stats\022\022\n\004kegs\030\003 \003(\0132\004.Keg\022\026\n\006drink" +
-      "s\030\004 \003(\0132\006.Drink\"\203\001\n\tKegDetail\022\021\n\003keg\030\001 \002" +
-      "(\0132\004.Keg\022\027\n\004type\030\002 \001(\0132\t.BeerType\022\026\n\004siz" +
-      "e\030\003 \001(\0132\010.KegSize\022\026\n\006drinks\030\004 \003(\0132\006.Drin" +
-      "k\022\032\n\010sessions\030\005 \003(\0132\010.Session\"!\n\nUserDet",
-      "ail\022\023\n\004user\030\001 \002(\0132\005.User\"D\n\rUserDetailSe" +
-      "t\022\032\n\005users\030\001 \003(\0132\013.UserDetail\022\027\n\006paging\030" +
-      "\002 \001(\0132\007.Paging\"\241\001\n\021SystemEventDetail\022\033\n\005" +
-      "event\030\001 \002(\0132\014.SystemEvent\022\025\n\005image\030\002 \001(\013" +
-      "2\006.Image\022\023\n\004user\030\003 \001(\0132\005.User\022\025\n\005drink\030\004" +
-      " \001(\0132\006.Drink\022\021\n\003keg\030\005 \001(\0132\004.Keg\022\031\n\007sessi" +
-      "on\030\006 \001(\0132\010.Session\"Y\n\022ThermoSensorDetail" +
-      "\022\035\n\006sensor\030\001 \002(\0132\r.ThermoSensor\022\021\n\tlast_" +
-      "temp\030\002 \001(\002\022\021\n\tlast_time\030\003 \001(\t2\013\n\tKegwebA" +
-      "piB\022\n\020org.kegbot.proto"
+      "\007session\030\004 \001(\0132\010.Session\022\026\n\006images\030\005 \003(\013" +
+      "2\006.Image\"\205\001\n\rSessionDetail\022\031\n\007session\030\001 " +
+      "\002(\0132\010.Session\022\025\n\005stats\030\002 \001(\0132\006.Stats\022\022\n\004" +
+      "kegs\030\003 \003(\0132\004.Keg\022\026\n\006drinks\030\004 \003(\0132\006.Drink" +
+      "\022\026\n\006images\030\005 \003(\0132\006.Image\"\233\001\n\tKegDetail\022\021" +
+      "\n\003keg\030\001 \002(\0132\004.Keg\022\027\n\004type\030\002 \001(\0132\t.BeerTy" +
+      "pe\022\026\n\004size\030\003 \001(\0132\010.KegSize\022\026\n\006drinks\030\004 \003",
+      "(\0132\006.Drink\022\032\n\010sessions\030\005 \003(\0132\010.Session\022\026" +
+      "\n\006images\030\006 \003(\0132\006.Image\"!\n\nUserDetail\022\023\n\004" +
+      "user\030\001 \002(\0132\005.User\"D\n\rUserDetailSet\022\032\n\005us" +
+      "ers\030\001 \003(\0132\013.UserDetail\022\027\n\006paging\030\002 \001(\0132\007" +
+      ".Paging\"\241\001\n\021SystemEventDetail\022\033\n\005event\030\001" +
+      " \002(\0132\014.SystemEvent\022\025\n\005image\030\002 \001(\0132\006.Imag" +
+      "e\022\023\n\004user\030\003 \001(\0132\005.User\022\025\n\005drink\030\004 \001(\0132\006." +
+      "Drink\022\021\n\003keg\030\005 \001(\0132\004.Keg\022\031\n\007session\030\006 \001(" +
+      "\0132\010.Session\"Y\n\022ThermoSensorDetail\022\035\n\006sen" +
+      "sor\030\001 \002(\0132\r.ThermoSensor\022\021\n\tlast_temp\030\002 ",
+      "\001(\002\022\021\n\tlast_time\030\003 \001(\t2\013\n\tKegwebApiB\022\n\020o" +
+      "rg.kegbot.proto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -16689,7 +17546,7 @@ public final class Api {
           internal_static_DrinkDetail_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_DrinkDetail_descriptor,
-              new java.lang.String[] { "Drink", "User", "Keg", "Session", },
+              new java.lang.String[] { "Drink", "User", "Keg", "Session", "Images", },
               org.kegbot.proto.Api.DrinkDetail.class,
               org.kegbot.proto.Api.DrinkDetail.Builder.class);
           internal_static_SessionDetail_descriptor =
@@ -16697,7 +17554,7 @@ public final class Api {
           internal_static_SessionDetail_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_SessionDetail_descriptor,
-              new java.lang.String[] { "Session", "Stats", "Kegs", "Drinks", },
+              new java.lang.String[] { "Session", "Stats", "Kegs", "Drinks", "Images", },
               org.kegbot.proto.Api.SessionDetail.class,
               org.kegbot.proto.Api.SessionDetail.Builder.class);
           internal_static_KegDetail_descriptor =
@@ -16705,7 +17562,7 @@ public final class Api {
           internal_static_KegDetail_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_KegDetail_descriptor,
-              new java.lang.String[] { "Keg", "Type", "Size", "Drinks", "Sessions", },
+              new java.lang.String[] { "Keg", "Type", "Size", "Drinks", "Sessions", "Images", },
               org.kegbot.proto.Api.KegDetail.class,
               org.kegbot.proto.Api.KegDetail.Builder.class);
           internal_static_UserDetail_descriptor =

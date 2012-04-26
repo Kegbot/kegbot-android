@@ -4,20 +4,13 @@
 package org.kegbot.kegtap.setup;
 
 import org.apache.http.conn.HttpHostConnectException;
-import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiException;
-import org.kegbot.api.KegbotApiImpl;
 import org.kegbot.api.KegbotApiServerError;
 import org.kegbot.kegtap.R;
 import org.kegbot.kegtap.util.PreferenceHelper;
-import org.kegbot.proto.Api.SystemEventDetailSet;
 
 import android.app.Fragment;
 import android.content.Context;
-import android.net.Uri;
-import android.util.Log;
-
-import com.google.common.base.Strings;
 
 /**
  *
@@ -50,42 +43,6 @@ public enum SetupTask {
    */
   API_URL {
     private final SetupApiUrlFragment mFragment = new SetupApiUrlFragment();
-
-    @Override
-    public String validate(Context context) {
-      final String apiUrl = mFragment.getApiUrl();
-
-      Log.d(API_URL.toString(), "Got api URL: " + apiUrl);
-      final Uri uri = Uri.parse(apiUrl);
-      final String scheme = uri.getScheme();
-
-      if (!"http".equals(scheme) && !"https".equals(scheme)) {
-        return "Please enter an HTTP or HTTPs URL.";
-      }
-      if (Strings.isNullOrEmpty(uri.getHost())) {
-        return "Please provide a valid URL.";
-      }
-
-      KegbotApi api = new KegbotApiImpl();
-      api.setApiUrl(apiUrl);
-
-      try {
-        SystemEventDetailSet events = api.getRecentEvents();
-        Log.d(API_URL.toString(), "Success: " + events);
-      } catch (KegbotApiException e) {
-        Log.d(API_URL.toString(), "Error: " + e.toString(), e);
-        StringBuilder builder = new StringBuilder();
-        builder.append("Error contacting the Kegbot site: ");
-        builder.append(toHumanError(e));
-        builder.append("\n\nPlease check the URL and try again.");
-        return builder.toString();
-      }
-
-      PreferenceHelper prefs = new PreferenceHelper(context);
-      prefs.setKegbotUrl(apiUrl);
-
-      return "";
-    }
 
     @Override
     public SetupTask next() {
@@ -127,41 +84,6 @@ public enum SetupTask {
     }
 
     @Override
-    public String validate(Context context) {
-      final String username = mFragment.getUsername();
-      final String password = mFragment.getPassword();
-
-      if (Strings.isNullOrEmpty(username)) {
-        return "Please enter a username.";
-      } else if (Strings.isNullOrEmpty(password)) {
-        return "Please enter a password";
-      }
-
-      PreferenceHelper prefs = new PreferenceHelper(context);
-      KegbotApi api = new KegbotApiImpl();
-      api.setApiUrl(prefs.getKegbotUrl().toString());
-
-      try {
-        api.login(username, password);
-      } catch (KegbotApiException e) {
-        return "Error logging in: " + toHumanError(e);
-      }
-
-      final String apiKey;
-      try {
-        apiKey = api.getApiKey();
-      } catch (KegbotApiException e) {
-        return "Error fetching API key: " + toHumanError(e);
-      }
-
-      prefs.setUsername(username);
-      prefs.setPassword(password);
-      prefs.setApiKey(apiKey);
-
-      return "";
-    }
-
-    @Override
     public SetupTask next() {
       return RUN_CORE;
     }
@@ -183,13 +105,6 @@ public enum SetupTask {
     @Override
     public Fragment getFragment() {
       return mFragment;
-    }
-
-    @Override
-    public String validate(Context context) {
-      PreferenceHelper prefs = new PreferenceHelper(context);
-      prefs.setRunCore(mFragment.getRunCore());
-      return "";
     }
 
     @Override
@@ -217,13 +132,6 @@ public enum SetupTask {
     }
 
     @Override
-    public String validate(Context context) {
-      PreferenceHelper prefs = new PreferenceHelper(context);
-      prefs.setPin(mFragment.getPin());
-      return "";
-    }
-
-    @Override
     public SetupTask next() {
       return FINISHED;
     }
@@ -241,10 +149,9 @@ public enum SetupTask {
     }
 
     @Override
-    public String validate(Context context) {
+    public void onExitSuccess(Context context) {
       PreferenceHelper prefs = new PreferenceHelper(context);
       prefs.setSetupVersion(SETUP_VERSION);
-      return null;
     }
 
     @Override
@@ -270,20 +177,16 @@ public enum SetupTask {
    */
   public abstract int getDescription();
 
-  /**
-   * Run any applicable validation steps, returning a String error message if
-   * the task is incomplete. A null or empty String indicates success.
-   */
-  public String validate(Context context) {
-    return "";
-  }
-
   public static final int SETUP_VERSION = 1;
 
   /**
    * Returns the next task to be performed.  If this is the final task, use {@code null};
    */
   public abstract SetupTask next();
+
+  protected void onExitSuccess(Context context) {
+
+  }
 
   private static String toHumanError(KegbotApiException e) {
     StringBuilder builder = new StringBuilder();

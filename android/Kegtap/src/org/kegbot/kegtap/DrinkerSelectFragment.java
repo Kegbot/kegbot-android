@@ -56,7 +56,7 @@ public class DrinkerSelectFragment extends Fragment implements LoaderCallbacks<L
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     mView = inflater.inflate(R.layout.select_drinker_fragment_inner, null);
     mGridView = (GridView) mView.findViewById(R.id.drinkerGridView);
-    mAuthManager = AuthenticationManager.getSingletonInstance();
+    mAuthManager = AuthenticationManager.getSingletonInstance(getActivity());
     return mView;
   }
 
@@ -89,7 +89,9 @@ public class DrinkerSelectFragment extends Fragment implements LoaderCallbacks<L
         if (!Strings.isNullOrEmpty(imageUrl)) {
           mImageDownloader.download(imageUrl, icon);
         } else {
+          mImageDownloader.cancelDownloadForView(icon);
           icon.setBackgroundResource(R.drawable.unknown_drinker);
+          icon.setAlpha(1.0f);
         }
 
         final TextView userName = (TextView) view.findViewById(R.id.drinkerName);
@@ -118,20 +120,18 @@ public class DrinkerSelectFragment extends Fragment implements LoaderCallbacks<L
       @Override
       public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
         final UserDetail user = (UserDetail) mGridView.getItemAtPosition(position);
-        Log.d(LOG_TAG, "Clicked on user: " + user);
-        mAuthManager.noteUserAuthenticated(user);
-
-        final String username;
         if (user == null) {
-          username = "";
-        } else {
-          // Defaults to "" in User if necessary.
-          username = user.getUser().getUsername();
+          Log.wtf(LOG_TAG, "Null user selected.");
+          return;
         }
-        final String tapName = getActivity().getIntent().getStringExtra(
-            DrinkerSelectActivity.EXTRA_TAP_NAME);
-        final Intent intent = KegtapBroadcast.getUserAuthedBroadcastIntent(username, tapName);
-        getActivity().sendBroadcast(intent);
+        Log.d(LOG_TAG, "Clicked on user: " + user);
+        final Intent srcIntent = getActivity().getIntent();
+        final String tapName = srcIntent.getStringExtra(KegtapBroadcast.DRINKER_SELECT_EXTRA_TAP_NAME);
+        if (!Strings.isNullOrEmpty(tapName)) {
+          mAuthManager.noteUserAuthenticated(user, tapName);
+        } else {
+          mAuthManager.noteUserAuthenticated(user);
+        }
         getActivity().finish();
       }
     });

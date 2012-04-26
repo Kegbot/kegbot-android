@@ -36,7 +36,7 @@
 
             <ImageView
                 android:id="@+id/pourDrinkerImage"
-                android:layout_width="wrap_content"
+                android:layout_width="128dip"
                 android:layout_height="128dip"
                 android:scaleType="centerCrop"
                 android:layout_margin="5dip"

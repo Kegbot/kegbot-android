@@ -7,8 +7,6 @@ import org.kegbot.core.Flow;
 
 import android.content.Intent;
 
-import com.google.common.base.Strings;
-
 /**
  *
  * @author mike wakerly (mike@wakerly.com)
@@ -40,8 +38,8 @@ public class KegtapBroadcast {
   public static final String THERMO_UPDATE_EXTRA_TEMP_C = "temp_c";
 
   public static final String ACTION_USER_AUTHED = "org.kegbot.action.USER_AUTHED";
-  public static final String USER_AUTHED_EXTRA_TAP_NAME = "tap";
   public static final String USER_AUTHED_EXTRA_USERNAME = "username";
+  public static final String USER_AUTHED_EXTRA_TAP_NAME = "tap_name";
 
   public static final String ACTION_PICTURE_TAKEN = "org.kegbot.action.PICTURE_TAKEN";
   public static final String PICTURE_TAKEN_EXTRA_FILENAME = "filename";
@@ -49,6 +47,7 @@ public class KegtapBroadcast {
   public static final String ACTION_PICTURE_DISCARDED = "org.kegbot.action.PICTURE_DISCARDED";
   public static final String PICTURE_DISCARDED_EXTRA_FILENAME = "filename";
 
+  public static final String DRINKER_SELECT_EXTRA_TAP_NAME = "tap";
 
   /**
    * Non-instantiable.
@@ -76,12 +75,9 @@ public class KegtapBroadcast {
     return intent;
   }
 
-  public static Intent getUserAuthedBroadcastIntent(final String username, final String tapName) {
+  public static Intent getUserAuthedBroadcastIntent(final String username) {
     final Intent intent = new Intent(ACTION_USER_AUTHED);
     intent.putExtra(USER_AUTHED_EXTRA_USERNAME, username);
-    if (!Strings.isNullOrEmpty(tapName)) {
-      intent.putExtra(USER_AUTHED_EXTRA_TAP_NAME, tapName);
-    }
     return intent;
   }
 

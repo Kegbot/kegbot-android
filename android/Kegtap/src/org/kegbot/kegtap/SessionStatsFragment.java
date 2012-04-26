@@ -8,7 +8,6 @@ import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiException;
 import org.kegbot.api.KegbotApiImpl;
 import org.kegbot.proto.Api.SessionDetail;
-import org.kegbot.proto.Api.SessionSet;
 import org.kegbot.proto.Models.Session;
 import org.kegbot.proto.Models.Stats;
 import org.kegbot.proto.Models.Stats.DrinkerVolume;
@@ -25,6 +24,8 @@ import android.widget.TextView;
 import com.google.common.collect.Lists;
 
 public class SessionStatsFragment extends Fragment {
+
+  private static final String TAG = SessionStatsFragment.class.getSimpleName();
 
   private final KegbotApi mApi = KegbotApiImpl.getSingletonInstance();
 
@@ -111,14 +112,10 @@ public class SessionStatsFragment extends Fragment {
     @Override
     protected SessionDetail doInBackground(Void... params) {
       try {
-        SessionSet sessions = mApi.getCurrentSessions();
-        if (sessions.getSessionsCount() == 1) {
-          Session session = sessions.getSessions(0);
-          SessionDetail sessionDetail = mApi.getSessionDetail(session.getId());
-          return sessionDetail;
-        }
-        return null;
+        return mApi.getCurrentSession();
       } catch (KegbotApiException e) {
+        return null;
+      } catch (RuntimeException e) {
         return null;
       }
     }

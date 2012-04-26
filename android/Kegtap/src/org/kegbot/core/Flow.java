@@ -57,11 +57,6 @@ public class Flow {
   private String mUsername;
 
   /**
-   * Current volume record, in milliliters
-   */
-  private double mVolumeMl = 0.0;
-
-  /**
    * Current volume record, in flow meter ticks.
    */
   private int mTicks = 0;
@@ -103,7 +98,6 @@ public class Flow {
     mMaxIdleTimeMs = maxIdleTimeMs;
     mUsername = "";
     mTicks = 0;
-    mVolumeMl = 0;
     mStartTime = SystemClock.uptimeMillis();
     mUpdateTime = SystemClock.uptimeMillis();
   }
@@ -115,9 +109,14 @@ public class Flow {
         .append(" state=").append(mState)
         .append(" tap=").append(mTap)
         .append(" user=").append(mUsername)
-        .append(" ticks=").append(mTicks)
-        .append(" numImages=").append(mImages.size())
-        .append(" shout='").append(mShout).append("'");
+        .append(" ticks=").append(getTicks())
+        .append(" volume_ml=").append(getVolumeMl());
+    if (!mImages.isEmpty()) {
+      builder.append(" numImages=").append(mImages.size());
+    }
+    if (!Strings.isNullOrEmpty(mShout)) {
+      builder.append(" shout='").append(mShout).append("'");
+    }
     return builder.toString();
   }
 
@@ -148,29 +147,6 @@ public class Flow {
    */
   public void addTicks(int ticks) {
     mTicks += ticks;
-    mVolumeMl += mTap.getVolumeMlForTicks(ticks);
-    pokeActivity();
-  }
-
-  /**
-   * Increments the flow by the specified volume. The number of recorded ticks
-   * is not changed.
-   *
-   * @param volumeMl
-   */
-  public void addVolumeMl(double volumeMl) {
-    mVolumeMl += volumeMl;
-    pokeActivity();
-  }
-
-  /**
-   * Sets the flow volume to the value given. The number of recorded ticks is
-   * not changed.
-   *
-   * @param volumeMl
-   */
-  public void setVolumeMl(double volumeMl) {
-    mVolumeMl = volumeMl;
     pokeActivity();
   }
 
@@ -191,7 +167,7 @@ public class Flow {
   }
 
   public double getVolumeMl() {
-    return mVolumeMl;
+    return mTap.getVolumeMlForTicks(mTicks);
   }
 
   public int getTicks() {

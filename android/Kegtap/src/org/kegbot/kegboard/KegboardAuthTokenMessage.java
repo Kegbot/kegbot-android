@@ -17,6 +17,8 @@ public class KegboardAuthTokenMessage extends KegboardMessage {
   public static final int TAG_TOKEN = 0x02;
   public static final int TAG_STATUS = 0x03;
 
+  private static final String CORE_ONEWIRE = "core.onewire";
+
   private final String mComputedName;
   private final String mComputedToken;
 
@@ -40,12 +42,16 @@ public class KegboardAuthTokenMessage extends KegboardMessage {
       for (int i = 0; i < copyBytes.length; i++) {
         copyBytes[tokenBytes.length - i - 1] = tokenBytes[i];
       }
-      mComputedName = "core.onewire";
-      mComputedToken = HexDump.toHexString(copyBytes);
+      mComputedName = CORE_ONEWIRE;
+      mComputedToken = HexDump.toHexString(copyBytes).toUpperCase();
+    } else if (CORE_ONEWIRE.equals(tagName)) {
+      mComputedName = CORE_ONEWIRE;
+      mComputedToken = HexDump.toHexString(tokenBytes).toUpperCase();
     } else {
       mComputedName = tagName;
-      mComputedToken = HexDump.toHexString(tokenBytes);
+      mComputedToken = HexDump.toHexString(tokenBytes).toLowerCase();
     }
+
   }
 
   @Override

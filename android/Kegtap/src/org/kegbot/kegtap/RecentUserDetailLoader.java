@@ -47,7 +47,7 @@ public class RecentUserDetailLoader extends Loader<List<UserDetail>> {
     Log.d(TAG, "onStartLoading isStarted=" + isStarted() + " isReset=" + isReset()
         + " isAbandoned=" + isAbandoned());
     if (!mReported) {
-      final AuthenticationManager am = AuthenticationManager.getSingletonInstance();
+      final AuthenticationManager am = AuthenticationManager.getSingletonInstance(getContext());
       final List<UserDetail> result = Lists.newArrayList(am.getAllRecent());
       Log.d(TAG, "Load result size: " + result.size());
       Collections.sort(result, USERS_ALPHABETIC);

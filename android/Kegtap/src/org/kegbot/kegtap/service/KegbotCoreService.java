@@ -69,15 +69,19 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
 
   private KegbotApiService mApiService;
   private boolean mApiServiceBound;
+
   private KegbotHardwareService mHardwareService;
   private boolean mHardwareServiceBound;
+
+  private KegbotSoundService mSoundService;
+  private boolean mSoundServiceBound;
 
   private final ExecutorService mExecutorService = Executors.newSingleThreadExecutor();
 
   /**
    * Connection to the API service.
    */
-  private ServiceConnection mApiServiceConnection = new ServiceConnection() {
+  private final ServiceConnection mApiServiceConnection = new ServiceConnection() {
     @Override
     public void onServiceConnected(ComponentName className, IBinder service) {
       mApiService = ((KegbotApiService.LocalBinder) service).getService();
@@ -97,7 +101,7 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
   /**
    * Connection to the hardware service.
    */
-  private ServiceConnection mHardwareServiceConnection = new ServiceConnection() {
+  private final ServiceConnection mHardwareServiceConnection = new ServiceConnection() {
     @Override
     public void onServiceConnected(ComponentName className, IBinder service) {
       mHardwareService = ((KegbotHardwareService.LocalBinder) service).getService();
@@ -109,6 +113,23 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
     public void onServiceDisconnected(ComponentName className) {
       mHardwareService = null;
       debugNotice("Core->HardwareService connection lost.");
+    }
+  };
+
+  /**
+   * Connection to the hardware service.
+   */
+  private final ServiceConnection mSoundServiceConnection = new ServiceConnection() {
+    @Override
+    public void onServiceConnected(ComponentName className, IBinder service) {
+      mSoundService = ((KegbotSoundService.LocalBinder) service).getService();
+      debugNotice("Core->SoundService connection established.");
+    }
+
+    @Override
+    public void onServiceDisconnected(ComponentName className) {
+      mSoundService = null;
+      debugNotice("Core->SoundService connection lost.");
     }
   };
 
@@ -164,17 +185,18 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
         @Override
         public void run() {
           try {
-          Log.d(TAG, "onTokenAttached: running");
+            Log.d(TAG, "onTokenAttached: running");
 
-          final AuthenticationManager am = AuthenticationManager.getSingletonInstance();
-          UserDetail user = am.authenticateToken(token);
-          Log.d(TAG, "Authenticated user: " + user);
-          if (user != null) {
-            am.noteUserAuthenticated(user);
-            for (final Tap tap : mTapManager.getTaps()) {
-              mFlowManager.activateUserAtTap(tap, user.getUser().getUsername());
+            final AuthenticationManager am =
+                AuthenticationManager.getSingletonInstance(KegbotCoreService.this);
+            UserDetail user = am.authenticateToken(token);
+            Log.d(TAG, "Authenticated user: " + user);
+            if (user != null) {
+              am.noteUserAuthenticated(user);
+              for (final Tap tap : mTapManager.getTaps()) {
+                mFlowManager.activateUserAtTap(tap, user.getUser().getUsername());
+              }
             }
-          }
           } catch (Exception e) {
             Log.e(TAG, "Exception: " + e, e);
           }
@@ -291,20 +313,15 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
    * Attaches to the running {@link KegbotHardwareService}.
    */
   private synchronized void bindToHardwareService() {
-    startService(new Intent(this, KegbotHardwareService.class));
-    bindService(new Intent(KegbotCoreService.this, KegbotHardwareService.class),
-        mHardwareServiceConnection, Context.BIND_AUTO_CREATE);
-    Log.d(TAG, "Bound to hardware service.");
+    final Intent intent = new Intent(this, KegbotHardwareService.class);
+    bindService(intent, mHardwareServiceConnection, Context.BIND_AUTO_CREATE);
     mHardwareServiceBound = true;
   }
 
-  private synchronized void unbindFromHardwareService() {
-    if (mHardwareServiceBound) {
-      unbindService(mHardwareServiceConnection);
-      stopService(new Intent(this, KegbotHardwareService.class));
-      Log.d(TAG, "Unbound from hardware service");
-      mHardwareServiceBound = false;
-    }
+  private synchronized void bindToSoundService() {
+    final Intent intent = new Intent(this, KegbotSoundService.class);
+    bindService(intent, mSoundServiceConnection, Context.BIND_AUTO_CREATE);
+    mSoundServiceBound = true;
   }
 
   @Override
@@ -312,14 +329,21 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
     return mBinder;
   }
 
-  private void stop() {
+  public void stop() {
     mFlowManager.stop();
     mFlowManager.removeFlowListener(mFlowListener);
     if (mApiServiceBound) {
       unbindService(mApiServiceConnection);
       mApiServiceBound = false;
     }
-    unbindFromHardwareService();
+    if (mHardwareServiceBound) {
+      unbindService(mHardwareServiceConnection);
+      mHardwareServiceBound = false;
+    }
+    if (mSoundServiceBound) {
+      unbindService(mSoundServiceConnection);
+      mSoundServiceBound = false;
+    }
     if (mFlowExecutorService != null) {
       mFlowExecutorService.shutdown();
       mFlowExecutorService = null;
@@ -332,6 +356,7 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
       Log.d(TAG, "Running core!");
       bindToApiService();
       bindToHardwareService();
+      bindToSoundService();
       mFlowManager.addFlowListener(mFlowListener);
       startForeground(NOTIFICATION_FOREGROUND, buildForegroundNotification());
     } else {
@@ -357,7 +382,8 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
    * @param ended
    */
   private void recordDrinkForFlow(final Flow ended) {
-    Log.d(TAG, "Recording dring for flow: " + ended);
+    Log.d(TAG, "Recording drink for flow: " + ended);
+    Log.d(TAG, "Tap: "  + ended.getTap());
     mApiService.recordDrinkAsync(ended);
   }
 

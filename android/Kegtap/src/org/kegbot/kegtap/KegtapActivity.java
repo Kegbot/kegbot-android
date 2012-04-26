@@ -13,6 +13,7 @@ import org.kegbot.proto.Api.TapDetailSet;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.hardware.usb.UsbManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -45,6 +46,7 @@ public class KegtapActivity extends CoreActivity {
     @Override
     public void run() {
       mEvents.loadEvents();
+      mSession.loadCurrentSessionDetail();
       mHandler.postDelayed(this, 10000);
     }
   };
@@ -54,13 +56,6 @@ public class KegtapActivity extends CoreActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.main_activity);
 
-    /*
-    mTracker = GoogleAnalyticsTracker.getInstance();
-    mTracker.startNewSession("UA-73794-6", 60, this);
-    mTracker.setProductVersion(BuildInfo.BUILD_DATE_HUMAN, BuildInfo.BUILD_TAGS);
-
-    mTracker.trackPageView("/KegtapActivityOnCreate");
-  */
     mPrefsHelper = new PreferenceHelper(this);
 
     mTapStatusAdapter = new MyAdapter(getFragmentManager());
@@ -75,12 +70,15 @@ public class KegtapActivity extends CoreActivity {
 
     View v = findViewById(R.id.tap_status_pager);
     v.setSystemUiVisibility(View.STATUS_BAR_HIDDEN);
+
+    mApi = KegbotApiImpl.getSingletonInstance();
+    mApi.setApiUrl(mPrefsHelper.getKegbotUrl().toString());
+    mApi.setApiKey(mPrefsHelper.getApiKey());
   }
 
   @Override
   public void onStart() {
     super.onStart();
-    mApi = KegbotApiImpl.getSingletonInstance();
     initializeUi();
   }
 
@@ -111,7 +109,6 @@ public class KegtapActivity extends CoreActivity {
       SettingsActivity.startSettingsActivity(this);
       return true;
     } else if (itemId == android.R.id.home) {
-      // TODO: navigate up
       return true;
     } else {
       return super.onOptionsItemSelected(item);
@@ -144,16 +141,15 @@ public class KegtapActivity extends CoreActivity {
    * If so, loads from last known kegbot.
    */
   private void initializeUi() {
-    mApi = KegbotApiImpl.getSingletonInstance();
-    mApi.setApiUrl(mPrefsHelper.getKegbotUrl().toString());
-    mApi.setApiKey(mPrefsHelper.getApiKey());
-    loadUiFragments();
-  }
-
-  private void loadUiFragments() {
     new TapLoaderTask().execute();
     // mEvents.loadEvents();
     mSession.loadCurrentSessionDetail();
+  }
+
+  @Override
+  public void onConfigurationChanged(Configuration newConfig) {
+    super.onConfigurationChanged(newConfig);
+    initializeUi();
   }
 
   public class MyAdapter extends FragmentPagerAdapter {

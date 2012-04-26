@@ -4,12 +4,15 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.kegbot.core.AuthenticationManager;
 import org.kegbot.core.Flow;
 import org.kegbot.core.FlowManager;
 import org.kegbot.core.Tap;
 import org.kegbot.core.TapManager;
 import org.kegbot.kegtap.camera.CameraFragment;
 import org.kegbot.kegtap.util.PreferenceHelper;
+import org.kegbot.kegtap.util.image.ImageDownloader;
+import org.kegbot.proto.Api.UserDetail;
 
 import android.app.ActionBar;
 import android.app.AlertDialog;
@@ -36,6 +39,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
@@ -79,6 +83,10 @@ public class PourInProgressActivity extends CoreActivity {
   private Tap mCurrentTap;
 
   private List<Tap> mTaps;
+
+  private AuthenticationManager mAuthManager;
+
+  private ImageDownloader mImageDownloader;
 
   private static final boolean DEBUG = false;
 
@@ -142,7 +150,10 @@ public class PourInProgressActivity extends CoreActivity {
   private final ViewPager.OnPageChangeListener mPageChangeListener = new ViewPager.OnPageChangeListener() {
     @Override
     public void onPageSelected(int position) {
-      mCurrentTap = ((PourStatusFragment) mPouringTapAdapter.getItem(position)).getTap();
+      final Tap tap = ((PourStatusFragment) mPouringTapAdapter.getItem(position)).getTap();
+      if (tap != mCurrentTap) {
+        updateForNewlyFocusedTap(tap);
+      }
     }
 
     @Override
@@ -208,7 +219,18 @@ public class PourInProgressActivity extends CoreActivity {
     setContentView(R.layout.pour_in_progress_activity);
     bindToCoreService();
 
+    mAuthManager = AuthenticationManager.getSingletonInstance(this);
+    mImageDownloader = ImageDownloader.getSingletonInstance(this);
+
     mTaps = Lists.newArrayList(mTapManager.getTaps());
+    if (mTaps.isEmpty()) {
+      Log.e(TAG, "No taps!");
+      finish();
+      return;
+    }
+
+    mPourDrinkerImage = (ImageView) findViewById(R.id.pourDrinkerImage);
+
     mTapPager = (ViewPager) findViewById(R.id.tapPager);
     mPouringTapAdapter = new PouringTapAdapter(getFragmentManager());
     mTapPager.setAdapter(mPouringTapAdapter);
@@ -290,16 +312,41 @@ public class PourInProgressActivity extends CoreActivity {
     return null;
   }
 
-  private void updateForNewlyFocusedTap(Tap tap) {
-    if (tap == mCurrentTap) {
-      return;
-    }
+  private void updateForNewlyFocusedTap(final Tap tap) {
     mCurrentTap = tap;
+
     final Flow flow = mFlowManager.getFlowForTap(tap);
     if (flow == null) {
       return;
     }
+
     final String username = flow.getUsername();
+    boolean imageSet = false;
+    if (!Strings.isNullOrEmpty(username)) {
+      final UserDetail user = mAuthManager.getUserDetail(username);
+      if (user.getUser().hasImage()) {
+        // NOTE(mikey): Use the full-sized image rather than the thumbnail;
+        // in many cases the former will already be in the cache from
+        // DrinkerSelectActivity.
+        mImageDownloader.download(user.getUser().getImage().getUrl(), mPourDrinkerImage);
+        imageSet = true;
+      }
+    }
+    if (!imageSet) {
+      mPourDrinkerImage.setBackgroundResource(R.drawable.unknown_drinker);
+    }
+    if (flow.isAnonymous()) {
+      mPourDrinkerImage.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+          final Intent intent = DrinkerSelectActivity.getStartIntentForTap(getApplicationContext(),
+              tap.getMeterName());
+          startActivity(intent);
+        }
+      });
+    } else {
+      mPourDrinkerImage.setOnClickListener(null);
+    }
   }
 
   @Override
@@ -314,11 +361,18 @@ public class PourInProgressActivity extends CoreActivity {
   protected void onResume() {
     super.onResume();
     final PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+
+    // TODO(mikey): Silly to set this on any random view. Better way?
+    mPourDrinkerImage.setSystemUiVisibility(View.STATUS_BAR_HIDDEN);
+
     mWakeLock = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ON_AFTER_RELEASE
         | PowerManager.ACQUIRE_CAUSES_WAKEUP, "kegbot-pour");
     mWakeLock.acquire();
     registerReceiver(mUpdateReceiver, POUR_INTENT_FILTER);
     handleIntent(getIntent());
+    if (mCurrentTap != null) {
+      updateForNewlyFocusedTap(mCurrentTap);
+    }
   }
 
   @Override
@@ -391,7 +445,10 @@ public class PourInProgressActivity extends CoreActivity {
   private void scrollToPosition(int position) {
     Log.d(TAG, "scrollToPosition: " + position);
     mTapPager.setCurrentItem(position, true);
-    mCurrentTap = mPouringTapAdapter.getTap(position);
+    final Tap tap = mPouringTapAdapter.getTap(position);
+    if (tap != mCurrentTap) {
+      updateForNewlyFocusedTap(tap);
+    }
   }
 
   private void enableUiComponents(boolean enable) {

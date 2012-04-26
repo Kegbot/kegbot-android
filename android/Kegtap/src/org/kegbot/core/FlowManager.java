@@ -261,6 +261,7 @@ public class FlowManager {
    */
   public synchronized Flow activateUserAtTap(final Tap tap, final String username) {
     Flow flow = getFlowForTap(tap);
+    Log.d(TAG, "Activating user " + username + " at tap: " + tap);
 
     if (flow != null && flow.getUsername().equals(username)) {
       Log.d(TAG, "activateUserAtTap: got same username, nothing to do.");

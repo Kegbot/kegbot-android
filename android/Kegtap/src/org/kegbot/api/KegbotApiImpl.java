@@ -466,8 +466,12 @@ public class KegbotApiImpl implements KegbotApi {
   }
 
   @Override
-  public SessionSet getCurrentSessions() throws KegbotApiException {
-    return (SessionSet) getProto("/sessions/current/", SessionSet.newBuilder());
+  public SessionDetail getCurrentSession() throws KegbotApiException {
+    try {
+      return (SessionDetail) getProto("/sessions/current/", SessionDetail.newBuilder());
+    } catch (KegbotApiNotFoundError e) {
+      return null;
+    }
   }
 
   @Override
@@ -506,6 +510,7 @@ public class KegbotApiImpl implements KegbotApi {
       }
     }
 
+
     final int secondsAgo = request.getSecondsAgo();
     if (!haveDate & secondsAgo > 0) {
       params.put("seconds_ago", String.valueOf(secondsAgo));
@@ -513,7 +518,7 @@ public class KegbotApiImpl implements KegbotApi {
 
     final int durationSeconds = request.getDurationSeconds();
     if (durationSeconds > 0) {
-      params.put("duration_seconds", String.valueOf(durationSeconds));
+      params.put("duration", String.valueOf(durationSeconds));
     }
 
     final boolean spilled = request.getSpilled();

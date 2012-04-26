@@ -24,6 +24,12 @@ public class Units {
     return ounces;
   }
 
+  public static double volumeOuncesToMl(double volumeOunces) {
+    Measure<Volume> vol = Measure.valueOf(volumeOunces, NonSI.OUNCE_LIQUID_US);
+    double ml = vol.doubleValue(SI.MILLI(NonSI.LITER));
+    return ml;
+  }
+
   public static double volumeMlToPints(double volumeMl) {
     return volumeMlToOunces(volumeMl) / 16.0;
   }

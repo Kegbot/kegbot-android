@@ -6,6 +6,9 @@ import javax.measure.units.NonSI;
 import javax.measure.units.SI;
 
 import org.jscience.physics.measures.Measure;
+import org.kegbot.core.FlowManager;
+import org.kegbot.core.Tap;
+import org.kegbot.core.TapManager;
 import org.kegbot.kegtap.util.image.ImageDownloader;
 import org.kegbot.proto.Api.TapDetail;
 import org.kegbot.proto.Models.Image;
@@ -34,14 +37,33 @@ public class TapStatusFragment extends ListFragment {
 
   private ImageDownloader mImageDownloader;
 
+  private static final int SELECT_DRINKER = 100;
+
   private final OnClickListener mOnBeerMeClickedListener = new OnClickListener() {
     @Override
     public void onClick(View v) {
       final String tapName = mTapDetail.getTap().getMeterName();
       final Intent intent = DrinkerSelectActivity.getStartIntentForTap(getActivity(), tapName);
       startActivity(intent);
+      //startActivityForResult(intent, SELECT_DRINKER);
     }
   };
+
+  @Override
+  public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    switch (requestCode) {
+      case SELECT_DRINKER:
+        if (resultCode == Activity.RESULT_OK) {
+          String username = data.getStringExtra("username");
+          final String tapName = mTapDetail.getTap().getMeterName();
+          final Tap tap = TapManager.getSingletonInstance().getTapForMeterName(tapName);
+          FlowManager.getSingletonInstance().activateUserAtTap(tap, username);
+        }
+        break;
+      default:
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+  }
 
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

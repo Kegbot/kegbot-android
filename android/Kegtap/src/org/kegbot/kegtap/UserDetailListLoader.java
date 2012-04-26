@@ -71,7 +71,9 @@ public class UserDetailListLoader extends AsyncTaskLoader<List<UserDetail>> {
   @Override
   protected void onStartLoading() {
     Log.d(TAG, "onStartLoading");
+    /*
     if (mUsers != null) {
+      // TODO(mikey): figure out how to avoid duplicate load results.
       Log.d(TAG, "delivering cached results");
       deliverResult(mUsers);
     }
@@ -79,6 +81,8 @@ public class UserDetailListLoader extends AsyncTaskLoader<List<UserDetail>> {
       Log.d(TAG, "Forcing load, mLastLoadMillis=" + mLastLoadMillis);
       forceLoad();
     }
+    */
+    forceLoad();
     super.onStartLoading();
   }
 

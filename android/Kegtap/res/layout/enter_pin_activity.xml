@@ -2,26 +2,26 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center|left"
+    android:gravity="top|center"
     android:orientation="vertical"
-    android:padding="24dip">
+    android:padding="128dip">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Enter Manager Pin"
+        android:text="Please enter the Manager Pin to continue."
         android:textSize="24dip"
         android:textStyle="bold" />
 
     <EditText
         android:id="@+id/managerPin"
-        android:layout_width="match_parent"
+        android:layout_width="256dip"
         android:layout_height="wrap_content"
-        android:inputType="text|numberPassword" />
+        android:inputType="numberPassword" />
     
     <Button 
         android:id="@+id/submitButton"
-        android:layout_width="match_parent"
+        android:layout_width="256dip"
         android:layout_height="wrap_content"
         android:text="Submit" />
     

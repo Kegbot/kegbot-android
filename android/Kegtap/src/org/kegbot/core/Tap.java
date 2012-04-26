@@ -27,7 +27,7 @@ public class Tap {
 
   /**
    * Constructs a new tap instance.
-   * 
+   *
    * @param name
    *          the name of the tap
    * @param mlPerTick
@@ -48,13 +48,13 @@ public class Tap {
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder("[Tap").append(" meterName=").append(mMeterName)
-    .append(" name=").append(mName).append("]");
+    .append(" name=").append(mName).append(" mlPerTick=").append(mMlPerTick).append("]");
     return builder.toString();
   }
 
   /**
    * Returns the volume corresponding to the number of ticks given.
-   * 
+   *
    * @param ticks
    * @return
    */

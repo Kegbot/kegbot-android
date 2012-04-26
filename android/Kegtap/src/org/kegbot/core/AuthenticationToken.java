@@ -17,6 +17,11 @@ public class AuthenticationToken {
     mTokenValue = tokenValue;
   }
 
+  @Override
+  public String toString() {
+    return "[AuthenticationToken authDevice=" + mAuthDevice + " tokenValue=" + mTokenValue + "]";
+  }
+
   public String getAuthDevice() {
     return mAuthDevice;
   }
