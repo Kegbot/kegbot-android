@@ -49,6 +49,9 @@ public class KegtapLauncherActivity extends Activity {
       Log.d(TAG, "Setup is not complete, version=" + setupVersion + "current="
           + SetupTask.SETUP_VERSION);
       final Intent setupIntent = new Intent(this, SetupActivity.class);
+      if (setupVersion > 0) {
+        setupIntent.putExtra(SetupActivity.EXTRA_REASON, SetupActivity.EXTRA_REASON_UPGRADE);
+      }
       startActivityForResult(setupIntent, REQUEST_START_SETUP);
     } else {
       Log.d(TAG, "Starting main activity");

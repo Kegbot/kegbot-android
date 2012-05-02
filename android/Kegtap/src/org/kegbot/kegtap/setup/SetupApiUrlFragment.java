@@ -1,5 +1,7 @@
 package org.kegbot.kegtap.setup;
 
+import java.io.IOException;
+
 import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiException;
 import org.kegbot.api.KegbotApiImpl;
@@ -57,6 +59,16 @@ public class SetupApiUrlFragment extends SetupFragment {
       return "Please provide a valid URL.";
     }
 
+    PreferenceHelper prefs = new PreferenceHelper(getActivity());
+
+    final CheckinClient checkinClient = new CheckinClient(getActivity());
+    try {
+      checkinClient.checkin();
+      prefs.setIsRegistered(true);
+    } catch (IOException e) {
+      return "Could not verify network connection. Please verify network is up.";
+    }
+
     KegbotApi api = new KegbotApiImpl();
     api.setApiUrl(apiUrl);
 
@@ -72,7 +84,6 @@ public class SetupApiUrlFragment extends SetupFragment {
       return builder.toString();
     }
 
-    PreferenceHelper prefs = new PreferenceHelper(getActivity());
     prefs.setKegbotUrl(apiUrl);
 
     return "";

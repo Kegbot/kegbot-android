@@ -18,6 +18,8 @@
     <string name="picture_countdown_1">1...</string>
     <string name="setup_welcome_title">Welcome to Kegbot!</string>
     <string name="setup_welcome_description">Looks like this is your first time running Kegbot. Cool!\n\nWe\'re going to need a little information to get started. Tap the &quot;Next&quot; button below to continue.</string>
+    <string name="setup_upgrade_title">Upgrade Kegbot</string>
+    <string name="setup_upgrade_description">Kegbot has been updated. Please verify your current settings before continuing. Tap the &quot;Next&quot; button below to continue.</string>
     <string name="setup_api_url_title">Kegbot API URL</string>
     <string name="setup_api_url_description">We need to talk to your Kegbot system in order to load drinkers, tap status, and other information. Please enter the URL of your Kegbot system.</string>
     <string name="setup_api_url_api_name">API URL</string>

@@ -39,6 +39,26 @@ public enum SetupTask {
   },
 
   /**
+   * Alternate task, shows "getting started".
+   */
+  UPGRADE {
+    @Override
+    public SetupTask next() {
+      return API_URL;
+    }
+
+    @Override
+    public int getTitle() {
+      return R.string.setup_upgrade_title;
+    }
+
+    @Override
+    public int getDescription() {
+      return R.string.setup_upgrade_description;
+    }
+  },
+
+  /**
    * Requests and validates the API URL.
    */
   API_URL {
@@ -177,7 +197,9 @@ public enum SetupTask {
    */
   public abstract int getDescription();
 
-  public static final int SETUP_VERSION = 1;
+  public static final SetupTask FIRST_SETUP_STEP = API_URL;
+
+  public static final int SETUP_VERSION = 2;
 
   /**
    * Returns the next task to be performed.  If this is the final task, use {@code null};

@@ -14,6 +14,8 @@ public class PreferenceHelper {
   public static final String KEY_USERNAME = "username";
   public static final String KEY_PASSWORD = "password";
   public static final String KEY_PIN = "pin";
+  public static final String KEY_DEVICE_ID = "kbid";
+  public static final String KEY_IS_REGISTERED = "is_registered";
 
   public static final String KEY_RUN_CORE = "run_core";
 
@@ -92,6 +94,22 @@ public class PreferenceHelper {
 
   public void setSetupVersion(int value) {
     mSharedPreferences.edit().putInt(KEY_SETUP_VERSION, value).apply();
+  }
+
+  public String getDeviceId() {
+    return mSharedPreferences.getString(KEY_DEVICE_ID, "");
+  }
+
+  public void setDeviceId(String value) {
+    mSharedPreferences.edit().putString(KEY_DEVICE_ID, value).apply();
+  }
+
+  public boolean getIsRegistered() {
+    return mSharedPreferences.getBoolean(KEY_IS_REGISTERED, false);
+  }
+
+  public void setIsRegistered(boolean value) {
+    mSharedPreferences.edit().putBoolean(KEY_IS_REGISTERED, value).apply();
   }
 
 }

@@ -4,7 +4,6 @@
 package org.kegbot.kegtap.setup;
 
 import org.apache.http.conn.HttpHostConnectException;
-import org.kegbot.api.KegbotApiException;
 import org.kegbot.api.KegbotApiServerError;
 
 import android.app.Fragment;
@@ -21,7 +20,7 @@ public abstract class SetupFragment extends Fragment {
 
   }
 
-  protected static String toHumanError(KegbotApiException e) {
+  protected static String toHumanError(Exception e) {
     StringBuilder builder = new StringBuilder();
     if (e.getCause() instanceof HttpHostConnectException) {
       builder.append("Could not connect to remote host.");

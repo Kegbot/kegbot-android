@@ -88,6 +88,7 @@ public class SettingsActivity extends PreferenceActivity {
         @Override
         public boolean onPreferenceClick(Preference preference) {
           final Intent setupIntent = new Intent(getActivity(), SetupActivity.class);
+          setupIntent.putExtra(SetupActivity.EXTRA_REASON, SetupActivity.EXTRA_REASON_USER);
           startActivity(setupIntent);
           return true;
         }

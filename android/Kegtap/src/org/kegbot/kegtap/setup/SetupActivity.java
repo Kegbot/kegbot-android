@@ -45,6 +45,10 @@ public class SetupActivity extends Activity {
 
   private AsyncTask<Void, Void, String> mValidatorTask;
 
+  public static final String EXTRA_REASON = "reason";
+  public static final String EXTRA_REASON_UPGRADE = "upgrade";
+  public static final String EXTRA_REASON_USER = "user";
+
   private static final int MESSAGE_GO_BACK = 100;
   private static final int MESSAGE_START_VALIDATION = 101;
   private static final int MESSAGE_VALIDATION_ABORTED = 102;
@@ -112,7 +116,16 @@ public class SetupActivity extends Activity {
     mNextButton.setOnClickListener(mNextListener);
 
     if (mCurrentTask == null) {
-      setTask(SetupTask.WELCOME);
+      final String reason = getIntent().getStringExtra(EXTRA_REASON);
+      final SetupTask initialTask;
+      if (EXTRA_REASON_USER.equals(reason)) {
+        initialTask = SetupTask.FIRST_SETUP_STEP;
+      } else if (EXTRA_REASON_UPGRADE.equals(reason)) {
+        initialTask = SetupTask.UPGRADE;
+      } else {
+        initialTask = SetupTask.WELCOME;
+      }
+      setTask(initialTask);
     }
   }
 
