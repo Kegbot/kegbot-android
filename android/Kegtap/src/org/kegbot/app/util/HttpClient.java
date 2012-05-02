@@ -1,7 +1,7 @@
 /**
  *
  */
-package org.kegbot.kegtap.util;
+package org.kegbot.app.util;
 
 
 /**

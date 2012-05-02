@@ -1,6 +1,6 @@
-package org.kegbot.kegtap.setup;
+package org.kegbot.app.setup;
 
-import org.kegbot.kegtap.R;
+import org.kegbot.app.R;
 
 import android.app.Fragment;
 import android.os.Bundle;

@@ -1,4 +1,4 @@
-package org.kegbot.kegtap;
+package org.kegbot.app;
 
 import java.text.ParseException;
 
@@ -6,7 +6,8 @@ import javax.measure.units.NonSI;
 import javax.measure.units.SI;
 
 import org.jscience.physics.measures.Measure;
-import org.kegbot.kegtap.util.image.ImageDownloader;
+import org.kegbot.app.util.image.ImageDownloader;
+import org.kegbot.app.R;
 import org.kegbot.proto.Api.TapDetail;
 import org.kegbot.proto.Models.Image;
 

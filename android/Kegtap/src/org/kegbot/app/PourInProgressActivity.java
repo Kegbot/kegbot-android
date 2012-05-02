@@ -1,17 +1,18 @@
-package org.kegbot.kegtap;
+package org.kegbot.app;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.kegbot.app.camera.CameraFragment;
+import org.kegbot.app.util.PreferenceHelper;
+import org.kegbot.app.util.image.ImageDownloader;
 import org.kegbot.core.AuthenticationManager;
 import org.kegbot.core.Flow;
 import org.kegbot.core.FlowManager;
 import org.kegbot.core.Tap;
 import org.kegbot.core.TapManager;
-import org.kegbot.kegtap.camera.CameraFragment;
-import org.kegbot.kegtap.util.PreferenceHelper;
-import org.kegbot.kegtap.util.image.ImageDownloader;
+import org.kegbot.app.R;
 import org.kegbot.proto.Api.UserDetail;
 
 import android.app.ActionBar;

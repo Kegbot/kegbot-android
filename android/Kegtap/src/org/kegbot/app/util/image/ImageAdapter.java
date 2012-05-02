@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.kegbot.kegtap.util.image;
+package org.kegbot.app.util.image;
 
 import android.view.View;
 import android.view.ViewGroup;

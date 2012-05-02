@@ -40,7 +40,7 @@ import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HTTP;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.kegbot.kegtap.Utils;
+import org.kegbot.app.Utils;
 import org.kegbot.proto.Api.DrinkDetail;
 import org.kegbot.proto.Api.DrinkSet;
 import org.kegbot.proto.Api.KegDetail;

@@ -1,9 +1,10 @@
-package org.kegbot.kegtap;
+package org.kegbot.app;
 
 import java.util.List;
 
+import org.kegbot.app.util.image.ImageDownloader;
 import org.kegbot.core.AuthenticationManager;
-import org.kegbot.kegtap.util.image.ImageDownloader;
+import org.kegbot.app.R;
 import org.kegbot.proto.Api.UserDetail;
 
 import android.app.Activity;

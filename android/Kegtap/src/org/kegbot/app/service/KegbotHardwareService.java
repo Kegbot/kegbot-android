@@ -1,4 +1,4 @@
-package org.kegbot.kegtap.service;
+package org.kegbot.app.service;
 
 import java.util.Collection;
 import java.util.Map;

@@ -1,4 +1,4 @@
-package org.kegbot.kegtap;
+package org.kegbot.app;
 
 import java.io.File;
 import java.io.IOException;
@@ -8,7 +8,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
 
-import org.kegbot.kegtap.build.BuildInfo;
+import org.kegbot.app.build.BuildInfo;
 
 import android.os.Build;
 

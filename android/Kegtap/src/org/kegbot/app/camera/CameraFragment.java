@@ -15,7 +15,7 @@
  * the License.
  */
 
-package org.kegbot.kegtap.camera;
+package org.kegbot.app.camera;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -23,8 +23,8 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.kegbot.kegtap.KegtapBroadcast;
-import org.kegbot.kegtap.R;
+import org.kegbot.app.KegtapBroadcast;
+import org.kegbot.app.R;
 
 import android.app.Activity;
 import android.app.Fragment;

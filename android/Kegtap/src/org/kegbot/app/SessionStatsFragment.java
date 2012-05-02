@@ -1,4 +1,4 @@
-package org.kegbot.kegtap;
+package org.kegbot.app;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -7,6 +7,7 @@ import java.util.List;
 import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiException;
 import org.kegbot.api.KegbotApiImpl;
+import org.kegbot.app.R;
 import org.kegbot.proto.Api.SessionDetail;
 import org.kegbot.proto.Models.Session;
 import org.kegbot.proto.Models.Stats;

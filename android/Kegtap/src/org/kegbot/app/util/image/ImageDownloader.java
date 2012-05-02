@@ -14,7 +14,7 @@
  * the License.
  */
 
-package org.kegbot.kegtap.util.image;
+package org.kegbot.app.util.image;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -39,7 +39,7 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.kegbot.kegtap.R;
+import org.kegbot.app.R;
 
 import android.content.Context;
 import android.graphics.Bitmap;

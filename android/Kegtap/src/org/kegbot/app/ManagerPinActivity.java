@@ -1,7 +1,7 @@
 /**
  *
  */
-package org.kegbot.kegtap;
+package org.kegbot.app;
 
 import android.app.Activity;
 import android.os.Bundle;

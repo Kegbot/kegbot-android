@@ -1,12 +1,12 @@
-package org.kegbot.kegtap.setup;
+package org.kegbot.app.setup;
 
 import java.io.IOException;
 
 import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiException;
 import org.kegbot.api.KegbotApiImpl;
-import org.kegbot.kegtap.R;
-import org.kegbot.kegtap.util.PreferenceHelper;
+import org.kegbot.app.util.PreferenceHelper;
+import org.kegbot.app.R;
 import org.kegbot.proto.Api.SystemEventDetailSet;
 
 import android.net.Uri;

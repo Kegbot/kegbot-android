@@ -1,7 +1,7 @@
 /**
  *
  */
-package org.kegbot.kegtap.service;
+package org.kegbot.app.service;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -20,12 +20,12 @@ import java.util.concurrent.TimeUnit;
 import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiException;
 import org.kegbot.api.KegbotApiImpl;
+import org.kegbot.app.KegtapBroadcast;
+import org.kegbot.app.Units;
+import org.kegbot.app.util.Downloader;
 import org.kegbot.core.Flow;
 import org.kegbot.core.Flow.State;
 import org.kegbot.core.FlowManager;
-import org.kegbot.kegtap.KegtapBroadcast;
-import org.kegbot.kegtap.Units;
-import org.kegbot.kegtap.util.Downloader;
 import org.kegbot.proto.Api.SoundEventSet;
 import org.kegbot.proto.Models.SoundEvent;
 

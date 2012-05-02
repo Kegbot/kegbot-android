@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiImpl;
 import org.kegbot.api.KegbotApiNotFoundError;
-import org.kegbot.kegtap.KegtapBroadcast;
+import org.kegbot.app.KegtapBroadcast;
 import org.kegbot.proto.Api.UserDetail;
 
 import android.content.Context;

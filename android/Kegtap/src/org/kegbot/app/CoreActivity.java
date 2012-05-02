@@ -1,10 +1,10 @@
 /**
  *
  */
-package org.kegbot.kegtap;
+package org.kegbot.app;
 
-import org.kegbot.kegtap.service.KegbotCoreService;
-import org.kegbot.kegtap.service.KegbotCoreServiceInterface;
+import org.kegbot.app.service.KegbotCoreService;
+import org.kegbot.app.service.KegbotCoreServiceInterface;
 
 import android.app.ActionBar;
 import android.app.Activity;

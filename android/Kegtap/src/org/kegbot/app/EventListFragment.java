@@ -1,4 +1,4 @@
-package org.kegbot.kegtap;
+package org.kegbot.app;
 
 import java.text.ParseException;
 import java.util.Comparator;
@@ -7,7 +7,8 @@ import java.util.List;
 import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiException;
 import org.kegbot.api.KegbotApiImpl;
-import org.kegbot.kegtap.util.image.ImageDownloader;
+import org.kegbot.app.util.image.ImageDownloader;
+import org.kegbot.app.R;
 import org.kegbot.proto.Api.SystemEventDetail;
 import org.kegbot.proto.Api.SystemEventDetailSet;
 import org.kegbot.proto.Models.Drink;

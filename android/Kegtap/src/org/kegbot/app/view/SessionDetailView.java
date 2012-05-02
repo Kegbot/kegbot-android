@@ -1,9 +1,9 @@
 /**
  *
  */
-package org.kegbot.kegtap.view;
+package org.kegbot.app.view;
 
-import org.kegbot.kegtap.R;
+import org.kegbot.app.R;
 import org.kegbot.proto.Api.SessionDetail;
 
 import android.content.Context;

@@ -1,12 +1,13 @@
-package org.kegbot.kegtap;
+package org.kegbot.app;
 
 import java.util.List;
 
 import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiException;
 import org.kegbot.api.KegbotApiImpl;
-import org.kegbot.kegtap.service.KegboardService;
-import org.kegbot.kegtap.util.PreferenceHelper;
+import org.kegbot.app.service.KegboardService;
+import org.kegbot.app.util.PreferenceHelper;
+import org.kegbot.app.R;
 import org.kegbot.proto.Api.TapDetail;
 import org.kegbot.proto.Api.TapDetailSet;
 

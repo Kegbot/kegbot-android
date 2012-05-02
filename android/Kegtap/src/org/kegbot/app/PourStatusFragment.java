@@ -1,12 +1,13 @@
-package org.kegbot.kegtap;
+package org.kegbot.app;
 
 import java.util.concurrent.TimeUnit;
 
+import org.kegbot.app.util.image.ImageDownloader;
 import org.kegbot.core.ConfigurationManager;
 import org.kegbot.core.Flow;
 import org.kegbot.core.Flow.State;
 import org.kegbot.core.Tap;
-import org.kegbot.kegtap.util.image.ImageDownloader;
+import org.kegbot.app.R;
 import org.kegbot.proto.Api.TapDetail;
 import org.kegbot.proto.Models.BeerType;
 

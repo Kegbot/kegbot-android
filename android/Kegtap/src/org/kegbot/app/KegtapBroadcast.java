@@ -1,7 +1,7 @@
 /**
  *
  */
-package org.kegbot.kegtap;
+package org.kegbot.app;
 
 import org.kegbot.core.Flow;
 

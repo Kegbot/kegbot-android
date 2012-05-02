@@ -1,11 +1,11 @@
 /**
  *
  */
-package org.kegbot.kegtap;
+package org.kegbot.app;
 
-import org.kegbot.kegtap.setup.SetupActivity;
-import org.kegbot.kegtap.setup.SetupTask;
-import org.kegbot.kegtap.util.PreferenceHelper;
+import org.kegbot.app.setup.SetupActivity;
+import org.kegbot.app.setup.SetupTask;
+import org.kegbot.app.util.PreferenceHelper;
 
 import android.app.Activity;
 import android.content.Intent;

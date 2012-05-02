@@ -1,7 +1,7 @@
 /**
  *
  */
-package org.kegbot.kegtap.core.backend;
+package org.kegbot.app.core.backend;
 
 import org.kegbot.proto.Api.RecordTemperatureRequest;
 import org.kegbot.proto.Internal.PendingPour;

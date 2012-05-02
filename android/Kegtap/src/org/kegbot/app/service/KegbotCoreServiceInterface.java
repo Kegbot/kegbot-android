@@ -1,7 +1,7 @@
 /**
  *
  */
-package org.kegbot.kegtap.service;
+package org.kegbot.app.service;
 
 import org.kegbot.core.FlowManager;
 import org.kegbot.core.TapManager;

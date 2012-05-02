@@ -22,13 +22,13 @@
     
     <fragment
       android:id="@+id/currentSessionFragment"
-      class="org.kegbot.kegtap.SessionStatsFragment"
+      class="org.kegbot.app.SessionStatsFragment"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"/>
 
     <fragment
       android:id="@+id/event_list"
-      class="org.kegbot.kegtap.EventListFragment"
+      class="org.kegbot.app.EventListFragment"
       android:layout_width="match_parent"
       android:layout_height="wrap_content" />
 

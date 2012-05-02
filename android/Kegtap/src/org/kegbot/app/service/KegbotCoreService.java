@@ -1,12 +1,16 @@
 /**
  * CONFIDENTIAL -- NOT OPEN SOURCE
  */
-package org.kegbot.kegtap.service;
+package org.kegbot.app.service;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.kegbot.api.KegbotApiException;
+import org.kegbot.app.KegtapActivity;
+import org.kegbot.app.KegtapBroadcast;
+import org.kegbot.app.Utils;
+import org.kegbot.app.util.PreferenceHelper;
 import org.kegbot.core.AuthenticationManager;
 import org.kegbot.core.AuthenticationToken;
 import org.kegbot.core.ConfigurationManager;
@@ -16,11 +20,7 @@ import org.kegbot.core.FlowMeter;
 import org.kegbot.core.Tap;
 import org.kegbot.core.TapManager;
 import org.kegbot.core.ThermoSensor;
-import org.kegbot.kegtap.KegtapActivity;
-import org.kegbot.kegtap.KegtapBroadcast;
-import org.kegbot.kegtap.R;
-import org.kegbot.kegtap.Utils;
-import org.kegbot.kegtap.util.PreferenceHelper;
+import org.kegbot.app.R;
 import org.kegbot.proto.Api;
 import org.kegbot.proto.Api.RecordTemperatureRequest;
 import org.kegbot.proto.Api.TapDetailSet;

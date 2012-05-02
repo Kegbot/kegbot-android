@@ -50,7 +50,7 @@
                 android:gravity="center"
                 android:orientation="vertical" >
 
-                <org.kegbot.kegtap.util.SoftMultiLineEditText
+                <org.kegbot.app.util.SoftMultiLineEditText
                     android:id="@+id/shoutText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -78,7 +78,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            class="org.kegbot.kegtap.camera.CameraFragment" >
+            class="org.kegbot.app.camera.CameraFragment" >
             <!-- Preview: layout=@layout/camera_fragment_layout -->
         </fragment>
     </LinearLayout>

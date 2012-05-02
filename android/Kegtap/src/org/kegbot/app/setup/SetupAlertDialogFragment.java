@@ -1,7 +1,7 @@
 /**
  *
  */
-package org.kegbot.kegtap.setup;
+package org.kegbot.app.setup;
 
 import android.R;
 import android.app.AlertDialog;

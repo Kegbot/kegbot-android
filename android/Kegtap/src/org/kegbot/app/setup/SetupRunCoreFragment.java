@@ -1,7 +1,7 @@
-package org.kegbot.kegtap.setup;
+package org.kegbot.app.setup;
 
-import org.kegbot.kegtap.R;
-import org.kegbot.kegtap.util.PreferenceHelper;
+import org.kegbot.app.util.PreferenceHelper;
+import org.kegbot.app.R;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

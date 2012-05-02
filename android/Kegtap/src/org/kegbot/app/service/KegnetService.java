@@ -1,4 +1,4 @@
-package org.kegbot.kegtap.service;
+package org.kegbot.app.service;
 
 import java.io.IOException;
 import java.net.Socket;

@@ -1,7 +1,7 @@
 /**
  *
  */
-package org.kegbot.kegtap.service;
+package org.kegbot.app.service;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

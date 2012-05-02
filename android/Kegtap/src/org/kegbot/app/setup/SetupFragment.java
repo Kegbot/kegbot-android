@@ -1,7 +1,7 @@
 /**
  *
  */
-package org.kegbot.kegtap.setup;
+package org.kegbot.app.setup;
 
 import org.apache.http.conn.HttpHostConnectException;
 import org.kegbot.api.KegbotApiServerError;

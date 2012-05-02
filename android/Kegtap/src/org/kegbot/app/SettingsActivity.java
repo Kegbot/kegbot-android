@@ -1,10 +1,11 @@
-package org.kegbot.kegtap;
+package org.kegbot.app;
 
 import java.util.List;
 
+import org.kegbot.app.setup.SetupActivity;
+import org.kegbot.app.util.PreferenceHelper;
 import org.kegbot.core.FlowManager;
-import org.kegbot.kegtap.setup.SetupActivity;
-import org.kegbot.kegtap.util.PreferenceHelper;
+import org.kegbot.app.R;
 
 import android.app.ActionBar;
 import android.content.Context;

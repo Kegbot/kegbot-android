@@ -1,7 +1,7 @@
 /**
  *
  */
-package org.kegbot.kegtap;
+package org.kegbot.app;
 
 import java.util.Collections;
 import java.util.Comparator;

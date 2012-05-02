@@ -1,4 +1,4 @@
-package org.kegbot.kegtap.camera;
+package org.kegbot.app.camera;
 
 import java.io.IOException;
 import java.util.List;

@@ -1,4 +1,4 @@
-package org.kegbot.kegtap.service;
+package org.kegbot.app.service;
 
 import java.io.File;
 import java.util.concurrent.BlockingQueue;
@@ -8,9 +8,9 @@ import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiException;
 import org.kegbot.api.KegbotApiImpl;
 import org.kegbot.api.KegbotApiNotFoundError;
+import org.kegbot.app.core.backend.LocalDbHelper;
+import org.kegbot.app.util.PreferenceHelper;
 import org.kegbot.core.Flow;
-import org.kegbot.kegtap.core.backend.LocalDbHelper;
-import org.kegbot.kegtap.util.PreferenceHelper;
 import org.kegbot.proto.Api.RecordDrinkRequest;
 import org.kegbot.proto.Api.RecordTemperatureRequest;
 import org.kegbot.proto.Api.UserDetail;

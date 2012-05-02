@@ -2,7 +2,7 @@
  * Copyright 2011 mike wakerly (mike@wakerly.com). All rights reserved.
  * Confidential and proprietary.
  */
-package org.kegbot.kegtap.service;
+package org.kegbot.app.service;
 
 import java.io.IOException;
 import java.util.Arrays;

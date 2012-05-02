@@ -23,7 +23,7 @@
         android:id="@+id/cameraPreview"
         android:layout_width="fill_parent"
         android:layout_height="392dip"
-        class="org.kegbot.kegtap.camera.Preview" />
+        class="org.kegbot.app.camera.Preview" />
 
     <Button
         android:id="@+id/cameraTakePictureButton"

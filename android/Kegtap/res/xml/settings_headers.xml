@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <preference-headers xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <header android:fragment="org.kegbot.kegtap.SettingsActivity$GeneralFragment"
+    <header android:fragment="org.kegbot.app.SettingsActivity$GeneralFragment"
             android:title="@string/settings_general_header"
             />
-    <header android:fragment="org.kegbot.kegtap.SettingsActivity$KegeratorFragment"
+    <header android:fragment="org.kegbot.app.SettingsActivity$KegeratorFragment"
             android:title="@string/settings_kegerator_header"
             />
-    <header android:fragment="org.kegbot.kegtap.SettingsActivity$AboutFragment"
+    <header android:fragment="org.kegbot.app.SettingsActivity$AboutFragment"
             android:title="@string/settings_about_header"
             />
 

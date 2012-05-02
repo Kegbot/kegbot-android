@@ -1,13 +1,13 @@
 /**
  *
  */
-package org.kegbot.kegtap.setup;
+package org.kegbot.app.setup;
 
 import org.apache.http.conn.HttpHostConnectException;
 import org.kegbot.api.KegbotApiException;
 import org.kegbot.api.KegbotApiServerError;
-import org.kegbot.kegtap.R;
-import org.kegbot.kegtap.util.PreferenceHelper;
+import org.kegbot.app.util.PreferenceHelper;
+import org.kegbot.app.R;
 
 import android.app.Fragment;
 import android.content.Context;

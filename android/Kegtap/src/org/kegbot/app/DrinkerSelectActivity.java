@@ -1,10 +1,10 @@
 /**
  *
  */
-package org.kegbot.kegtap;
+package org.kegbot.app;
 
+import org.kegbot.app.setup.SetupEmptyFragment;
 import org.kegbot.core.AuthenticationManager;
-import org.kegbot.kegtap.setup.SetupEmptyFragment;
 
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;

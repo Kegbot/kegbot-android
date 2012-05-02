@@ -1,7 +1,7 @@
 /**
  *
  */
-package org.kegbot.kegtap;
+package org.kegbot.app;
 
 import javax.measure.quantities.Volume;
 import javax.measure.units.NonSI;

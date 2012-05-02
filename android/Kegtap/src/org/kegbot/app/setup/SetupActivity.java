@@ -1,11 +1,11 @@
 /**
  *
  */
-package org.kegbot.kegtap.setup;
+package org.kegbot.app.setup;
 
 import java.util.List;
 
-import org.kegbot.kegtap.R;
+import org.kegbot.app.R;
 
 import android.app.ActionBar;
 import android.app.Activity;

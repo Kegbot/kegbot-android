@@ -1,9 +1,10 @@
 /**
  *
  */
-package org.kegbot.kegtap;
+package org.kegbot.app;
 
-import org.kegbot.kegtap.util.PreferenceHelper;
+import org.kegbot.app.util.PreferenceHelper;
+import org.kegbot.app.R;
 
 import android.app.ActionBar;
 import android.app.Activity;
