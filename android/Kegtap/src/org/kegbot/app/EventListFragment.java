@@ -8,7 +8,6 @@ import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiException;
 import org.kegbot.api.KegbotApiImpl;
 import org.kegbot.app.util.image.ImageDownloader;
-import org.kegbot.app.R;
 import org.kegbot.proto.Api.SystemEventDetail;
 import org.kegbot.proto.Api.SystemEventDetailSet;
 import org.kegbot.proto.Models.Drink;
@@ -211,7 +210,7 @@ public class EventListFragment extends ListFragment {
           return mApi.getRecentEvents(mLastEventId);
         }
       } catch (KegbotApiException e) {
-        Log.w(LOG_TAG, "Could not load events.", e);
+        Log.w(LOG_TAG, "Could not load events: " + e.toString());
         return null;
       }
     }

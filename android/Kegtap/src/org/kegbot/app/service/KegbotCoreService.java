@@ -208,24 +208,35 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
     @Override
     public void onTokenAttached(final AuthenticationToken token, final String tapName) {
       Log.d(TAG, "Auth token added: " + token);
+      final Intent intent = KegtapBroadcast.getAuthBeginIntent(token);
+      sendBroadcast(intent);
+
       final Runnable r = new Runnable() {
         @Override
         public void run() {
+          boolean success = false;
+          String message = "";
           try {
             Log.d(TAG, "onTokenAttached: running");
-
             final AuthenticationManager am =
                 AuthenticationManager.getSingletonInstance(KegbotCoreService.this);
             UserDetail user = am.authenticateToken(token);
             Log.d(TAG, "Authenticated user: " + user);
             if (user != null) {
+              success = true;
               am.noteUserAuthenticated(user);
               for (final Tap tap : mTapManager.getTaps()) {
                 mFlowManager.activateUserAtTap(tap, user.getUser().getUsername());
               }
+            } else {
+              message = getString(R.string.authenticating_no_access_token);
             }
           } catch (Exception e) {
             Log.e(TAG, "Exception: " + e, e);
+            message = getString(R.string.authenticating_connection_error);
+          }
+          if (!success) {
+            sendBroadcast(KegtapBroadcast.getAuthFailIntent(message));
           }
         }
       };

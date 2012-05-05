@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="authenticating_begin_title">Authenticating...</string>
+    <string name="authenticating_fail_title">Access Denied!</string>
+    <string name="authenticating_no_access_token">Your access token was not recognized.</string>
+    <string name="authenticating_connection_error">Could not contact the Kegbot server.</string>
+    
     <string name="hello">Give me a beer!</string>
     <string name="app_name">Kegbot</string>
     <string name="events_title">recent events</string>

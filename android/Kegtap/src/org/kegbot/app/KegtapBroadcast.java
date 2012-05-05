@@ -3,9 +3,12 @@
  */
 package org.kegbot.app;
 
+import org.kegbot.core.AuthenticationToken;
 import org.kegbot.core.Flow;
 
 import android.content.Intent;
+
+import com.google.common.base.Strings;
 
 /**
  *
@@ -49,6 +52,10 @@ public class KegtapBroadcast {
 
   public static final String DRINKER_SELECT_EXTRA_TAP_NAME = "tap";
 
+  public static final String ACTION_AUTH_BEGIN = "org.kegbot.action.AUTH_BEGIN";
+  public static final String ACTION_AUTH_FAIL = "org.kegbot.action.AUTH_FAIL";
+  public static final String AUTH_FAIL_EXTRA_MESSAGE = "message";
+
   /**
    * Non-instantiable.
    */
@@ -90,6 +97,19 @@ public class KegtapBroadcast {
   public static Intent getPictureDiscardedBroadcastIntent(final String filename) {
     final Intent intent = new Intent(ACTION_PICTURE_DISCARDED);
     intent.putExtra(PICTURE_DISCARDED_EXTRA_FILENAME, filename);
+    return intent;
+  }
+
+  public static Intent getAuthBeginIntent(AuthenticationToken token) {
+    final Intent intent = new Intent(ACTION_AUTH_BEGIN);
+    return intent;
+  }
+
+  public static Intent getAuthFailIntent(String message) {
+    final Intent intent = new Intent(ACTION_AUTH_FAIL);
+    if (!Strings.isNullOrEmpty(message)) {
+      intent.putExtra(AUTH_FAIL_EXTRA_MESSAGE, message);
+    }
     return intent;
   }
 
