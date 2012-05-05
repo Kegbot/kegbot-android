@@ -3,13 +3,18 @@
  */
 package org.kegbot.app.service;
 
+import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.kegbot.api.KegbotApiException;
 import org.kegbot.app.KegtapActivity;
 import org.kegbot.app.KegtapBroadcast;
+import org.kegbot.app.R;
 import org.kegbot.app.Utils;
+import org.kegbot.app.setup.CheckinClient;
 import org.kegbot.app.util.PreferenceHelper;
 import org.kegbot.core.AuthenticationManager;
 import org.kegbot.core.AuthenticationToken;
@@ -20,7 +25,6 @@ import org.kegbot.core.FlowMeter;
 import org.kegbot.core.Tap;
 import org.kegbot.core.TapManager;
 import org.kegbot.core.ThermoSensor;
-import org.kegbot.app.R;
 import org.kegbot.proto.Api;
 import org.kegbot.proto.Api.RecordTemperatureRequest;
 import org.kegbot.proto.Api.TapDetailSet;
@@ -77,6 +81,29 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
   private boolean mSoundServiceBound;
 
   private final ExecutorService mExecutorService = Executors.newSingleThreadExecutor();
+
+  private final ScheduledExecutorService mScheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+
+  private static final long CHECKIN_RETRY_DELAY_MINUTES = 120;
+
+  private static final long CHECKIN_INTERVAL_MINUTES = TimeUnit.HOURS.toMinutes(12);
+
+  private final Runnable mCheckinRunnable = new Runnable() {
+    @Override
+    public void run() {
+      final CheckinClient client = new CheckinClient(KegbotCoreService.this);
+      long nextDelay = CHECKIN_INTERVAL_MINUTES;
+      try {
+        // TODO(mikey): process messages/errors/updates
+        client.checkin();
+      } catch (IOException e) {
+        // Ignore
+        nextDelay = CHECKIN_RETRY_DELAY_MINUTES;
+      }
+      Log.d(TAG, "Next checking: " + nextDelay);
+      mScheduledExecutorService.schedule(this, nextDelay, TimeUnit.MINUTES);
+    }
+  };
 
   /**
    * Connection to the API service.
@@ -283,6 +310,8 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
     updateFromPreferences();
     PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
         .registerOnSharedPreferenceChangeListener(mPreferenceListener);
+
+    mScheduledExecutorService.submit(mCheckinRunnable);
   }
 
   @Override
