@@ -7,13 +7,13 @@ import org.kegbot.core.ConfigurationManager;
 import org.kegbot.core.Flow;
 import org.kegbot.core.Flow.State;
 import org.kegbot.core.Tap;
-import org.kegbot.app.R;
 import org.kegbot.proto.Api.TapDetail;
 import org.kegbot.proto.Models.BeerType;
 
 import android.app.Activity;
 import android.app.ListFragment;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +27,12 @@ public class PourStatusFragment extends ListFragment {
 
   private static final String TAG = PourStatusFragment.class.getSimpleName();
 
+  private static final double VOLUME_COUNTER_INCREMENT = 0.1;
+  private static final long VOLUME_COUNTER_INCREMENT_DELAY_MILLIS = 20;
+
+  private double mTargetVolume = 0.0;
+  private double mCurrentVolume = 0.0;
+
   private ImageDownloader mImageDownloader;
 
   private final Tap mTap;
@@ -37,6 +43,32 @@ public class PourStatusFragment extends ListFragment {
   private TextView mPourBeerName;
   private TextView mStatusLine;
   private ImageView mBeerImage;
+
+  private Handler mHandler;
+
+  private final Runnable mCounterIncrementRunnable = new Runnable() {
+    @Override
+    public void run() {
+      if (mCurrentVolume >= mTargetVolume) {
+        return;
+      }
+
+      mCurrentVolume += VOLUME_COUNTER_INCREMENT;
+      final String volumeStr;
+      final String units = "ounces";
+      volumeStr = String.format("%.1f", Double.valueOf(mCurrentVolume));
+      if (mPourVolumeNumbers != null) {
+        mPourVolumeNumbers.setText(volumeStr);
+      }
+      if (mPourVolumeUnits != null) {
+        mPourVolumeUnits.setText(units);
+      }
+
+      if (mCurrentVolume < mTargetVolume) {
+        mHandler.postDelayed(mCounterIncrementRunnable, VOLUME_COUNTER_INCREMENT_DELAY_MILLIS);
+      }
+    }
+  };
 
   /**
    * After this much inactivity, the "pour automatically ends" dialog is shown.
@@ -68,6 +100,7 @@ public class PourStatusFragment extends ListFragment {
   public void onAttach(Activity activity) {
     super.onAttach(activity);
     mImageDownloader = ImageDownloader.getSingletonInstance(activity);
+    mHandler = new Handler();
   }
 
   @Override
@@ -115,21 +148,10 @@ public class PourStatusFragment extends ListFragment {
 
     // Set volume portion.
     final double ounces = Units.volumeMlToOunces(flow.getVolumeMl());
-
-    final String volumeStr;
-    final String units = "ounces";
-    if (ounces < 100) {
-      volumeStr = String.format("%.1f", Double.valueOf(ounces));
-    } else {
-      volumeStr = String.format("%d", Integer.valueOf((int) ounces));
-    }
-
-    // Set pour volume and units.
-    if (mPourVolumeNumbers != null) {
-      mPourVolumeNumbers.setText(volumeStr);
-    }
-    if (mPourVolumeUnits != null) {
-      mPourVolumeUnits.setText(units);
+    mTargetVolume = ounces;
+    if (mCurrentVolume < mTargetVolume) {
+      mHandler.removeCallbacks(mCounterIncrementRunnable);
+      mHandler.post(mCounterIncrementRunnable);
     }
 
     // Set drinker image.
