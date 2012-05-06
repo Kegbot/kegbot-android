@@ -25,10 +25,9 @@ public class UserAuthedReceiver extends BroadcastReceiver {
   @Override
   public void onReceive(Context context, Intent intent) {
     final String action = intent.getAction();
-    if (KegtapBroadcast.ACTION_AUTH_BEGIN.equals(action)
-        || KegtapBroadcast.ACTION_AUTH_FAIL.equals(action)) {
-      handleAuthBegin(context, intent);
-    } else if (KegtapBroadcast.ACTION_USER_AUTHED.equals(action)) {
+    handleAuthBegin(context, intent);
+
+    if (KegtapBroadcast.ACTION_USER_AUTHED.equals(action)) {
       handleUserAuthed(context, intent);
     }
   }

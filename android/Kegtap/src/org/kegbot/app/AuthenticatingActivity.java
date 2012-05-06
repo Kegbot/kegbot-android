@@ -57,10 +57,13 @@ public class AuthenticatingActivity extends Activity {
 
   private void handleIntent() {
     final Intent intent = getIntent();
-    if (KegtapBroadcast.ACTION_AUTH_FAIL.equals(intent.getAction())) {
+    final String action = intent.getAction();
+    if (KegtapBroadcast.ACTION_AUTH_FAIL.equals(action)) {
       setFail();
-    } else {
+    } else if (KegtapBroadcast.ACTION_AUTH_BEGIN.equals(action)) {
       setAuthenticating();
+    } else if (KegtapBroadcast.ACTION_USER_AUTHED.equals(action)) {
+      finish();
     }
   }
 
