@@ -88,6 +88,10 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
 
   private static final long CHECKIN_INTERVAL_MINUTES = TimeUnit.HOURS.toMinutes(12);
 
+  private long mLastPourStartUptimeMillis = 0;
+
+  private static final long SUPPRESS_POUR_START_MILLIS = 2000;
+
   private final Runnable mCheckinRunnable = new Runnable() {
     @Override
     public void run() {
@@ -274,6 +278,9 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
   private final FlowManager.Listener mFlowListener = new FlowManager.Listener() {
     @Override
     public void onFlowUpdate(final Flow flow) {
+      if (flow.isAuthenticated()) {
+        mHardwareService.setTapRelayEnabled(flow.getTap(), true);
+      }
       final Runnable r = new Runnable() {
         @Override
         public void run() {
@@ -287,19 +294,30 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
 
     @Override
     public void onFlowStart(final Flow flow) {
-      final Runnable r = new Runnable() {
-        @Override
-        public void run() {
-          Log.d(TAG, "Flow started: " + flow);
-          final Intent intent = KegtapBroadcast.getPourStartBroadcastIntent(flow);
-          sendOrderedBroadcast(intent, null);
-        }
-      };
-      mExecutorService.submit(r);
+      if (flow.isAuthenticated()) {
+        mHardwareService.setTapRelayEnabled(flow.getTap(), true);
+      }
+
+      final long now = SystemClock.uptimeMillis();
+      final long delta = now - mLastPourStartUptimeMillis;
+
+      if (delta > SUPPRESS_POUR_START_MILLIS) {
+        mLastPourStartUptimeMillis = now;
+        final Runnable r = new Runnable() {
+          @Override
+          public void run() {
+            Log.d(TAG, "Flow started: " + flow);
+            final Intent intent = KegtapBroadcast.getPourStartBroadcastIntent(flow);
+            sendOrderedBroadcast(intent, null);
+          }
+        };
+        mExecutorService.submit(r);
+      }
     }
 
     @Override
     public void onFlowEnd(final Flow flow) {
+      mHardwareService.setTapRelayEnabled(flow.getTap(), false);
       final Runnable r = new Runnable() {
         @Override
         public void run() {

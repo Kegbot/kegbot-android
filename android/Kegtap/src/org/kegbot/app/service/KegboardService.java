@@ -8,8 +8,13 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
+import org.apache.http.annotation.GuardedBy;
 import org.kegbot.kegboard.KegboardAuthTokenMessage;
 import org.kegbot.kegboard.KegboardHelloMessage;
 import org.kegbot.kegboard.KegboardMessage;
@@ -17,6 +22,7 @@ import org.kegbot.kegboard.KegboardMessageFactory;
 import org.kegbot.kegboard.KegboardMeterStatusMessage;
 import org.kegbot.kegboard.KegboardOnewirePresenceMessage;
 import org.kegbot.kegboard.KegboardOutputStatusMessage;
+import org.kegbot.kegboard.KegboardSetOutputCommand;
 import org.kegbot.kegboard.KegboardTemperatureReadingMessage;
 
 import android.app.PendingIntent;
@@ -29,8 +35,10 @@ import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.os.Binder;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.util.Log;
 
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
 import com.hoho.android.usbserial.driver.UsbSerialProber;
@@ -50,6 +58,10 @@ public class KegboardService extends Service {
 
   private static final boolean VERBOSE = false;
 
+  private static final long REFRESH_OUTPUT_PERIOD_MILLIS = TimeUnit.SECONDS.toMillis(5);
+
+  private static final long OUTPUT_MAX_AGE_MILLIS = TimeUnit.MINUTES.toMillis(5);
+
   /**
    * The system's USB service.
    */
@@ -62,10 +74,16 @@ public class KegboardService extends Service {
    */
   private UsbSerialDriver mSerialDevice;
 
-  private ExecutorService mExecutorService;
+  private ExecutorService mExecutorService = Executors.newSingleThreadExecutor();
 
-  private Thread mThread;
+  private final KegboardMessageFactory mFactory = new KegboardMessageFactory();
 
+  private final Map<Integer, Long> mEnabledOutputs = Maps.newLinkedHashMap();
+  private final Map<Integer, Long> mOutputRefreshTime = Maps.newLinkedHashMap();
+
+  final byte[] mKegboardReadBuffer = new byte[256];
+
+  @GuardedBy("this")
   private boolean mRunning = true;
 
   public interface Listener {
@@ -88,42 +106,84 @@ public class KegboardService extends Service {
 
   private final Collection<Listener> mListeners = Sets.newLinkedHashSet();
 
-  private Runnable mKegboardRunner = new Runnable() {
-    private final KegboardMessageFactory mFactory = new KegboardMessageFactory();
+  private Runnable mKegboardReaderRunner = new Runnable() {
 
     @Override
     public void run() {
-      Log.i(TAG, "Serial runner running. Thread=" + Thread.currentThread().getName());
+      try {
+        final int amtRead = mSerialDevice.read(mKegboardReadBuffer, 500);
+        if (amtRead < 0) {
+          Log.w(TAG, "Device closed.");
+          stopSelf();
+          return;
+        }
+        if (amtRead > 0) {
+          if (VERBOSE) {
+            Log.d(TAG, "Read " + amtRead + " bytes from kegboard");
+            Log.d(TAG, HexDump.dumpHexString(mKegboardReadBuffer, 0, amtRead));
+          }
 
-      final byte[] readBuffer = new byte[256];
-      while (mRunning) {
+          final List<KegboardMessage> newMessages = mFactory.addBytes(mKegboardReadBuffer, amtRead);
+          for (final KegboardMessage message : newMessages) {
+            Log.i(TAG, "Received message: " + message);
+            notifyListeners(message);
+          }
+
+          Arrays.fill(mKegboardReadBuffer, (byte) 0);
+        }
+      } catch (IOException e) {
+        Log.e(TAG, "IOException reading from serial.");
+        stopSelf();
+        return;
+      }
+
+      final long now = SystemClock.uptimeMillis();
+
+      Set<Integer> outputs = Sets.newLinkedHashSet();
+      synchronized (this) {
+        outputs.addAll(mEnabledOutputs.keySet());
+        outputs.addAll(mOutputRefreshTime.keySet());
+      }
+
+      // Post new messages
+      for (Integer outputId : outputs) {
+        boolean enable = true;
+        if (!mEnabledOutputs.containsKey(outputId)) {
+          enable = false;
+          mOutputRefreshTime.remove(outputId);
+        } else if (!mOutputRefreshTime.containsKey(outputId)) {
+          enable = true;
+          mOutputRefreshTime.put(outputId, Long.valueOf(now));
+        } else {
+          final long lastTime = mOutputRefreshTime.get(outputId).longValue();
+          final long age = (now - lastTime);
+          if (age < REFRESH_OUTPUT_PERIOD_MILLIS) {
+            continue;
+          } else if (age > OUTPUT_MAX_AGE_MILLIS) {
+            enable = false;
+            mEnabledOutputs.remove(outputId);
+            mOutputRefreshTime.remove(outputId);
+          } else {
+            enable = true;
+            mOutputRefreshTime.put(outputId, Long.valueOf(now));
+          }
+        }
+        KegboardSetOutputCommand enableCmd = new KegboardSetOutputCommand(outputId.intValue(), enable);
+        Log.d(TAG, "Setting relay=" + outputId + " enabled=" + enable);
+
+        final byte[] bytes = enableCmd.toBytes();
         try {
-          final int amtRead = mSerialDevice.read(readBuffer, 5000);
-          if (amtRead < 0) {
-            Log.w(TAG, "Device closed.");
-            break;
-          }
-          if (amtRead > 0) {
-            if (VERBOSE) {
-              Log.d(TAG, "Read " + amtRead + " bytes from kegboard");
-              Log.d(TAG, HexDump.dumpHexString(readBuffer, 0, amtRead));
-            }
-
-            final List<KegboardMessage> newMessages = mFactory.addBytes(readBuffer, amtRead);
-            for (final KegboardMessage message : newMessages) {
-              Log.i(TAG, "Received message: " + message);
-              notifyListeners(message);
-            }
-
-            Arrays.fill(readBuffer, (byte) 0);
-          }
+          mSerialDevice.write(bytes, 500);
         } catch (IOException e) {
-          Log.e(TAG, "IOException reading from serial.");
-          break;
+          Log.e(TAG, "Error writing enable command: " + e.toString(), e);
         }
       }
 
-      Log.i(TAG, "Serial runner exiting.");
+      synchronized (KegboardService.this) {
+        if (mRunning) {
+          mExecutorService.execute(mKegboardReaderRunner);
+        }
+      }
     }
   };
 
@@ -197,6 +257,23 @@ public class KegboardService extends Service {
     }
   }
 
+  public void enableOutput(int outputId, boolean enabled) {
+    if (outputId < 0 || outputId > 5) {
+      throw new IllegalArgumentException("Bad output number: " + outputId);
+    }
+    Log.d(TAG, "Setting output=" + outputId + " enabled=" + enabled);
+    final Integer key = Integer.valueOf(outputId);
+
+    synchronized (this) {
+      if (enabled) {
+        final Long now = Long.valueOf(SystemClock.uptimeMillis());
+        mEnabledOutputs.put(key, now);
+      } else {
+        mEnabledOutputs.remove(key);
+      }
+    }
+  }
+
   private void setUpUsbDevice(UsbDevice device) {
     Log.d(TAG, "Opening serial device");
     mUsbDevice = device;
@@ -207,12 +284,7 @@ public class KegboardService extends Service {
     } catch (IOException e) {
       Log.e(TAG, "Error opening.", e);
     }
-    /*
-     * mExecutorService = Executors.newSingleThreadExecutor();
-     * mExecutorService.submit(mKegboardRunner);
-     */
-    mThread = new Thread(mKegboardRunner);
-    mThread.start();
+    mExecutorService.execute(mKegboardReaderRunner);
   }
 
   private void removeUsbDevice() {
@@ -221,11 +293,11 @@ public class KegboardService extends Service {
 
   @Override
   public void onDestroy() {
-    unregisterReceiver(mUsbReceiver);
-    if (mThread != null) {
-      // mExecutorService.shutdown();
+    synchronized (this) {
       mRunning = false;
     }
+    mExecutorService.shutdownNow();
+    unregisterReceiver(mUsbReceiver);
     super.onDestroy();
   }
 

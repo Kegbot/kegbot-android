@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.kegbot.core.AuthenticationToken;
 import org.kegbot.core.FlowMeter;
+import org.kegbot.core.Tap;
 import org.kegbot.core.ThermoSensor;
 import org.kegbot.kegboard.KegboardAuthTokenMessage;
 import org.kegbot.kegboard.KegboardAuthTokenMessage.Status;
@@ -93,6 +94,8 @@ public class KegbotHardwareService extends Service {
    *
    */
   private String mBoardName = "kegboard";
+
+  private static String RELAY_NAME_PREFIX = "kegboard.relay";
 
   /**
    * Connection to the API service.
@@ -209,6 +212,28 @@ public class KegbotHardwareService extends Service {
   public IBinder onBind(Intent intent) {
     Log.v(TAG, "Bound");
     return mBinder;
+  }
+
+  public void setTapRelayEnabled(Tap tap, boolean enabled) {
+    Log.d(TAG, "setTapRelayEnabled tap=" + tap + " enabled=" + enabled);
+
+    if (tap == null) {
+      return;
+    }
+    final String relayName = tap.getRelayName();
+    if (Strings.isNullOrEmpty(relayName)) {
+      return;
+    }
+
+    if (relayName.startsWith(RELAY_NAME_PREFIX) && relayName.length() > RELAY_NAME_PREFIX.length()) {
+      int outputId;
+      try {
+        outputId = Integer.valueOf(relayName.substring(RELAY_NAME_PREFIX.length())).intValue();
+      } catch (NumberFormatException e) {
+        return;
+      }
+      mKegboardService.enableOutput(outputId, enabled);
+    }
   }
 
   private void handleThermoUpdate(String sensorName, double sensorValue) {
