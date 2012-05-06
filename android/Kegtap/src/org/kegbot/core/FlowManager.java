@@ -161,7 +161,9 @@ public class FlowManager {
   }
 
   public Flow getFlowForTap(final Tap tap) {
-    return mFlowsByTap.get(tap);
+    synchronized (mFlowsByTap) {
+      return mFlowsByTap.get(tap);
+    }
   }
 
   public Flow getFlowForMeterName(final String meterName) {
@@ -173,9 +175,11 @@ public class FlowManager {
   }
 
   public Flow getFlowForFlowId(final long flowId) {
-    for (final Flow flow : mFlowsByTap.values()) {
-      if (flow.getFlowId() == (int) flowId) {
-        return flow;
+    synchronized (mFlowsByTap) {
+      for (final Flow flow : mFlowsByTap.values()) {
+        if (flow.getFlowId() == (int) flowId) {
+          return flow;
+        }
       }
     }
     return null;
@@ -293,15 +297,21 @@ public class FlowManager {
    * @return
    */
   public Flow endFlow(final Flow flow) {
-    final Flow endedFlow = mFlowsByTap.remove(flow.getTap());
+    final Flow endedFlow;
+    synchronized (mFlowsByTap) {
+      endedFlow = mFlowsByTap.remove(flow.getTap());
+    }
     if (endedFlow == null) {
       Log.w(TAG, "No active flow for flow=" + flow + ", tap=" + flow.getTap());
       return endedFlow;
     }
     endedFlow.setState(State.COMPLETED);
     publishFlowEnd(endedFlow);
-    if (mFlowsByTap.isEmpty()) {
-      stopIdleChecker();
+
+    synchronized (mFlowsByTap) {
+      if (mFlowsByTap.isEmpty()) {
+        stopIdleChecker();
+      }
     }
     return endedFlow;
   }
