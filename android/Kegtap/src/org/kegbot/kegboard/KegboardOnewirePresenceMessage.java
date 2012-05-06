@@ -15,4 +15,9 @@ public class KegboardOnewirePresenceMessage extends KegboardMessage {
     super(wholeMessage);
   }
 
+  @Override
+  public short getMessageType() {
+    return MESSAGE_TYPE;
+  }
+
 }

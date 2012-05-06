@@ -15,4 +15,9 @@ public class KegboardHelloMessage extends KegboardMessage {
     super(wholeMessage);
   }
 
+  @Override
+  public short getMessageType() {
+    return MESSAGE_TYPE;
+  }
+
 }

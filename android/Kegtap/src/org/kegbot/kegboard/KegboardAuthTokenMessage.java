@@ -75,4 +75,9 @@ public class KegboardAuthTokenMessage extends KegboardMessage {
     return statusBytes[0] == 1 ? Status.PRESENT : Status.REMOVED;
   }
 
+  @Override
+  public short getMessageType() {
+    return MESSAGE_TYPE;
+  }
+
 }

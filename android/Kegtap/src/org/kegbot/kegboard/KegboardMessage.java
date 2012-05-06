@@ -7,17 +7,14 @@ import java.util.Arrays;
 import java.util.Map;
 
 import com.google.common.collect.Maps;
+import com.google.common.primitives.Bytes;
 import com.google.common.primitives.Shorts;
 
 /**
  *
  * @author mike
  */
-public class KegboardMessage {
-
-  private final byte[] mPayload;
-
-  private final int mMessageType;
+public abstract class KegboardMessage {
 
   private static final int KBSP_HEADER_LENGTH = 12;
 
@@ -25,6 +22,8 @@ public class KegboardMessage {
 
   private static final int KBSP_MIN_LENGTH = KBSP_HEADER_LENGTH
   + KBSP_TRAILER_LENGTH;
+
+  private static final byte[] KBSP_HEADER_BYTES = "KBSP v1:".getBytes();
 
   private static final byte[] KBSP_TRAILER_BYTES = {'\r', '\n'};
 
@@ -39,8 +38,6 @@ public class KegboardMessage {
   protected static Map<Integer, KegboardMessageTagFormatter> TAG_FORMATS = Maps.newLinkedHashMap();
 
   protected KegboardMessage() {
-    mPayload = null;
-    mMessageType = 0;
     assert (false);
   }
 
@@ -67,10 +64,11 @@ public class KegboardMessage {
           + ", actual=" + wholeMessage.length);
     }
 
+    final byte[] payload;
     if (payloadLength > 0) {
-      mPayload = Arrays.copyOfRange(wholeMessage, KBSP_HEADER_LENGTH, payloadEnd);
+      payload = Arrays.copyOfRange(wholeMessage, KBSP_HEADER_LENGTH, payloadEnd);
     } else {
-      mPayload = new byte[0];
+      payload = new byte[0];
     }
 
     final byte[] crcBytes = Arrays.copyOfRange(wholeMessage, payloadEnd, payloadEnd + 2);
@@ -89,27 +87,50 @@ public class KegboardMessage {
           + "computed=" + String.format("0x%04x ", Integer.valueOf(computedCrc)));
     }
 
-    mMessageType = Shorts.fromBytes(wholeMessage[9], wholeMessage[8]);
+    short messageType = Shorts.fromBytes(wholeMessage[9], wholeMessage[8]);
 
     // System.out.println(HexDump.dumpHexString(wholeMessage));
 
-    for (int i = 0; i <= (mPayload.length - 2);) {
-      final int tagNum = mPayload[i] & 0x00ff;
-      final int length = mPayload[i + 1] & 0x00ff;
+    for (int i = 0; i <= (payload.length - 2);) {
+      final int tagNum = payload[i] & 0x00ff;
+      final int length = payload[i + 1] & 0x00ff;
 
       i += 2;
 
-      if ((i + length) <= mPayload.length) {
+      if ((i + length) <= payload.length) {
         mTags.put(Integer.valueOf(tagNum),
-            Arrays.copyOfRange(mPayload, i, i + length));
+            Arrays.copyOfRange(payload, i, i + length));
       }
 
       i += length;
     }
   }
 
-  private static void computeCrc(byte[] messageBytes, int length) {
+  private static int getCrc(byte[] payload) {
+    byte[] message = Bytes.concat(KBSP_HEADER_BYTES, payload);
+    return KegboardCrc.crc16Ccitt(message, message.length);
+  }
 
+  public byte[] toBytes() {
+    byte[] payload = new byte[0];
+
+    for (Map.Entry<Integer, byte[]> entry : mTags.entrySet()) {
+      final byte[] tag = new byte[] {(byte) (entry.getKey().intValue() & 0x0ff)};
+      final byte[] value = entry.getValue();
+      final int len = value.length & 0x0ff;
+      final byte[] length = new byte[] {(byte) len};
+
+      payload = Bytes.concat(payload, tag, length, value);
+    }
+
+    byte[] messageType = new byte[] {(byte) (getMessageType() & 0x0ff), 00};
+    byte[] messageLength = new byte[] {(byte) (payload.length & 0x0ff), 00};
+
+    byte[] message = Bytes.concat(KBSP_HEADER_BYTES, messageType, messageLength, payload);
+
+    byte[] crc = Shorts.toByteArray((short) (getCrc(message) & 0x0ffff));
+    byte[] result = Bytes.concat(message, crc, KBSP_TRAILER_BYTES);
+    return result;
   }
 
   @Override
@@ -123,7 +144,7 @@ public class KegboardMessage {
 
     if (clazz == KegboardMessage.class) {
       builder.append("type=");
-      builder.append(String.format("0x%04x ", Integer.valueOf(mMessageType)));
+      builder.append(String.format("0x%04x ", Integer.valueOf(getMessageType())));
     }
     builder.append(getStringExtra());
     builder.append(">");
@@ -199,8 +220,10 @@ public class KegboardMessage {
     case KegboardAuthTokenMessage.MESSAGE_TYPE:
       return new KegboardAuthTokenMessage(bytes);
     default:
-      return new KegboardMessage(bytes);
+      throw new IllegalArgumentException("Unknown message type");
     }
   }
+
+  public abstract short getMessageType();
 
 }

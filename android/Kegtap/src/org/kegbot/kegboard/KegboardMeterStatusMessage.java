@@ -36,4 +36,9 @@ public class KegboardMeterStatusMessage extends KegboardMessage {
     return 0;
   }
 
+  @Override
+  public short getMessageType() {
+    return MESSAGE_TYPE;
+  }
+
 }

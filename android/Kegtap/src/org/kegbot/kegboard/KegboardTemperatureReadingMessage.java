@@ -36,4 +36,9 @@ public class KegboardTemperatureReadingMessage extends KegboardMessage {
     return rawValue.doubleValue() / 1e6;
   }
 
+  @Override
+  public short getMessageType() {
+    return MESSAGE_TYPE;
+  }
+
 }
