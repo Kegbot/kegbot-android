@@ -117,7 +117,7 @@ public class CameraFragment extends Fragment {
 
     switch (mState) {
       case INITIAL:
-        //mCamera.startPreview();
+        mCamera.startPreview();
         mPostButtons.setVisibility(View.GONE);
         mPictureButton.setVisibility(View.VISIBLE);
         mPictureButton.setClickable(true);
@@ -295,17 +295,18 @@ public class CameraFragment extends Fragment {
   @Override
   public void onResume() {
     super.onResume();
+    Log.d(TAG, "onResume()");
     mCamera = Camera.open(mDefaultCameraId);
     setCameraDisplayOrientation(getActivity(), mDefaultCameraId, mCamera);
     mPreview.setCamera(mCamera);
-    //mPreview.startCameraPreview();
     updateState(State.INITIAL);
-    schedulePicture();
   }
 
   @Override
   public void onPause() {
     super.onPause();
+    Log.d(TAG, "onPause()");
+
     if (mCamera != null) {
       mPreview.setCamera(null);
       mCamera.release();

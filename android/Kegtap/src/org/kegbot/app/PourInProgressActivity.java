@@ -12,7 +12,6 @@ import org.kegbot.core.Flow;
 import org.kegbot.core.FlowManager;
 import org.kegbot.core.Tap;
 import org.kegbot.core.TapManager;
-import org.kegbot.app.R;
 import org.kegbot.proto.Api.UserDetail;
 
 import android.app.ActionBar;
@@ -213,6 +212,8 @@ public class PourInProgressActivity extends CoreActivity {
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    Log.d(TAG, "onCreate()");
+
     final ActionBar actionBar = getActionBar();
     if (actionBar != null) {
       actionBar.hide();
@@ -361,6 +362,7 @@ public class PourInProgressActivity extends CoreActivity {
   @Override
   protected void onResume() {
     super.onResume();
+    Log.d(TAG, "onResume");
     final PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
 
     // TODO(mikey): Silly to set this on any random view. Better way?
@@ -377,7 +379,18 @@ public class PourInProgressActivity extends CoreActivity {
   }
 
   @Override
+  protected void onPostResume() {
+    super.onPostResume();
+    final Flow flow = getCurrentlyFocusedFlow();
+    if (flow != null && flow.getImages().isEmpty()) {
+      mCameraFragment.schedulePicture();
+    }
+  }
+
+  @Override
   protected void onPause() {
+    Log.d(TAG, "onPause");
+
     mWakeLock.release();
     mWakeLock = null;
     mHandler.removeCallbacks(FLOW_UPDATE_RUNNABLE);
@@ -495,8 +508,8 @@ public class PourInProgressActivity extends CoreActivity {
       cancelIdleWarning();
     }
 
+    mHandler.removeCallbacks(FINISH_ACTIVITY_RUNNABLE);
     if (!allFlows.isEmpty()) {
-      mHandler.removeCallbacks(FINISH_ACTIVITY_RUNNABLE);
       mHandler.postDelayed(FLOW_UPDATE_RUNNABLE, FLOW_UPDATE_MILLIS);
     } else {
       cancelIdleWarning();
@@ -532,9 +545,9 @@ public class PourInProgressActivity extends CoreActivity {
 
   public static Intent getStartIntent(Context context, final String tapName) {
     final Intent intent = new Intent(context, PourInProgressActivity.class);
-    intent.setAction(KegtapBroadcast.ACTION_POUR_START);
-    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
     intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+    intent.setAction(KegtapBroadcast.ACTION_POUR_START);
     intent.putExtra(KegtapBroadcast.POUR_UPDATE_EXTRA_TAP_NAME, tapName);
     return intent;
   }

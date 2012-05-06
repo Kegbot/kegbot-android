@@ -51,8 +51,16 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback {
     mCamera = camera;
     if (mCamera != null) {
       mSupportedPreviewSizes = mCamera.getParameters().getSupportedPreviewSizes();
+      if (mHolder != null) {
+        try {
+          mCamera.setPreviewDisplay(mHolder);
+        } catch (IOException e) {
+          Log.e(TAG, "Error in setCamera", e);
+        }
+      }
       requestLayout();
     }
+
   }
 
   private void init(Context context) {
@@ -135,6 +143,8 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback {
 
   @Override
   public void surfaceDestroyed(SurfaceHolder holder) {
+    Log.d(TAG, "surfaceDestroyed mCamera=" + mCamera);
+
     // Surface will be destroyed when we return, so stop the preview.
     if (mCamera != null) {
       mCamera.stopPreview();

@@ -65,7 +65,8 @@ public class KegtapBroadcast {
 
   public static Intent getPourStartBroadcastIntent(final Flow flow) {
     final Intent intent = new Intent(ACTION_POUR_START);
-    intent.putExtra(POUR_UPDATE_EXTRA_TAP_NAME, flow.getTap().getMeterName());
+    intent.addFlags(Intent.FLAG_RECEIVER_REPLACE_PENDING);
+    //intent.putExtra(POUR_UPDATE_EXTRA_TAP_NAME, flow.getTap().getMeterName());
     return intent;
   }
 
