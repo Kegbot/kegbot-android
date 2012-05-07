@@ -103,7 +103,8 @@ public class KegbotApiImpl implements KegbotApi {
 
     SchemeRegistry registry = new SchemeRegistry();
     registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
-    //registry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
+    // registry.register(new Scheme("https",
+    // SSLSocketFactory.getSocketFactory(), 443));
 
     mConnManager = new ThreadSafeClientConnManager(mHttpParams, registry);
     mHttpClient = new DefaultHttpClient(mConnManager, mHttpParams);
@@ -157,7 +158,7 @@ public class KegbotApiImpl implements KegbotApi {
       byte[] bytes = new byte[1024];
       int bytesRead;
       while ((bytesRead = is.read(bytes)) != -1) {
-          baos.write(bytes, 0, bytesRead);
+        baos.write(bytes, 0, bytesRead);
       }
       byte[] bytesReceived = baos.toByteArray();
       baos.close();
@@ -231,8 +232,8 @@ public class KegbotApiImpl implements KegbotApi {
       final HttpResponse response;
       debug("Requesting: " + request.getURI());
 
-      //HttpContext localContext = new BasicHttpContext();
-      //localContext.setAttribute(ClientContext.COOKIE_STORE, mCookieStore);
+      // HttpContext localContext = new BasicHttpContext();
+      // localContext.setAttribute(ClientContext.COOKIE_STORE, mCookieStore);
 
       response = mHttpClient.execute(request);
       debug("DONE: " + request.getURI());
@@ -276,7 +277,7 @@ public class KegbotApiImpl implements KegbotApi {
         noteApiFailure();
         request.abort();
       }
-      //client.close();
+      // client.close();
     }
   }
 
@@ -300,7 +301,8 @@ public class KegbotApiImpl implements KegbotApi {
     return ProtoEncoder.toProto(builder, getJson(path)).build();
   }
 
-  private Message getProto(String path, Builder builder, List<NameValuePair> params) throws KegbotApiException {
+  private Message getProto(String path, Builder builder, List<NameValuePair> params)
+      throws KegbotApiException {
     return ProtoEncoder.toProto(builder, getJson(path, params)).build();
   }
 
@@ -506,7 +508,6 @@ public class KegbotApiImpl implements KegbotApi {
       }
     }
 
-
     final int secondsAgo = request.getSecondsAgo();
     if (!haveDate & secondsAgo > 0) {
       params.put("seconds_ago", String.valueOf(secondsAgo));
@@ -583,7 +584,8 @@ public class KegbotApiImpl implements KegbotApi {
     StringBuffer requestBody = new StringBuffer();
 
     requestBody.append("--").append(BOUNDRY).append("\n");
-    requestBody.append("Content-Disposition: form-data; name=\"photo\"; filename=\"" + fileName + "\"\r\n");
+    requestBody.append("Content-Disposition: form-data; name=\"photo\"; filename=\"" + fileName
+        + "\"\r\n");
     requestBody.append("Content-Type: application/octet-stream\r\n");
     requestBody.append("\r\n");
     requestBody.append(new String(fileBytes));
@@ -634,6 +636,38 @@ public class KegbotApiImpl implements KegbotApi {
     final JsonNode responseJson = toJson(response);
     debug("UPLOAD RESPONSE: " + responseJson);
     return (Image) ProtoEncoder.toProto(Image.newBuilder(), responseJson.get("result")).build();
+  }
+
+  @Override
+  public UserDetail register(String username, String email, String password, String imagePath)
+      throws KegbotApiException {
+
+    final File imageFile = new File(imagePath);
+    final HttpPost httpost = new HttpPost(getRequestUrl("/new-user/"));
+    MultipartEntity entity = new MultipartEntity();
+
+    if (!Strings.isNullOrEmpty(imagePath)) {
+      entity.addPart("photo", new FileBody(imageFile));
+    }
+    try {
+      if (!Strings.isNullOrEmpty(apiKey)) {
+        entity.addPart("api_key", new StringBody(apiKey));
+      } else {
+        throw new KegbotApiException("Need an API key");
+      }
+      entity.addPart("username", new StringBody(username));
+      entity.addPart("email", new StringBody(email));
+      entity.addPart("password", new StringBody(password));
+    } catch (UnsupportedEncodingException e) {
+      throw new RuntimeException(e);
+    }
+    httpost.setEntity(entity);
+
+    final HttpResponse response = execute(httpost);
+    final JsonNode responseJson = toJson(response);
+    debug("UPLOAD RESPONSE: " + responseJson);
+    return (UserDetail) ProtoEncoder.toProto(UserDetail.newBuilder(), responseJson.get("result"))
+        .build();
   }
 
   private synchronized void debug(String message) {

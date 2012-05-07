@@ -430,10 +430,14 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
     intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
     final PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent,
         PendingIntent.FLAG_CANCEL_CURRENT);
-    final Notification.Builder builder = new Notification.Builder(this);
-    builder.setOngoing(true).setSmallIcon(R.drawable.icon).setWhen(SystemClock.uptimeMillis())
-        .setContentTitle("Kegbot Core is running").setContentIntent(pendingIntent);
-    return builder.getNotification();
+    final Notification notification = new Notification.Builder(this)
+        .setOngoing(true)
+        .setSmallIcon(R.drawable.icon)
+        .setWhen(System.currentTimeMillis())
+        .setContentTitle(getString(R.string.kegbot_core_running))
+        .setContentIntent(pendingIntent)
+        .getNotification();
+    return notification;
   }
 
   /**

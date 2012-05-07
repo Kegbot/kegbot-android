@@ -3,8 +3,8 @@
  */
 package org.kegbot.app;
 
-import org.kegbot.app.setup.SetupEmptyFragment;
 import org.kegbot.core.AuthenticationManager;
+import org.kegbot.proto.Api.UserDetail;
 
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
@@ -15,6 +15,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
+
+import com.google.common.base.Strings;
 
 /**
  *
@@ -27,6 +29,8 @@ public class DrinkerSelectActivity extends CoreActivity {
   private static final String EXTRA_USERNAME = "username";
 
   private String mSelectedUsername = "";
+
+  private AuthenticationManager mAuthManager;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -50,14 +54,16 @@ public class DrinkerSelectActivity extends CoreActivity {
 
     bar.addTab(bar.newTab()
         .setText("New Drinker")
-        .setTabListener(new TabListener<SetupEmptyFragment>(
-                this, "new", SetupEmptyFragment.class)));
+        .setTabListener(new TabListener<DrinkerRegisterFragment>(
+                this, "new", DrinkerRegisterFragment.class)));
 
     bar.setTitle("Select Drinker");
 
     if (savedInstanceState != null) {
         bar.setSelectedNavigationItem(savedInstanceState.getInt("tab", 0));
     }
+
+    mAuthManager = AuthenticationManager.getSingletonInstance(this);
   }
 
   @Override
@@ -83,6 +89,16 @@ public class DrinkerSelectActivity extends CoreActivity {
     data.putExtra(EXTRA_USERNAME, mSelectedUsername);
     setResult(RESULT_OK, data);
     super.onPause();
+  }
+
+  public void handlerUserSelected(UserDetail user) {
+    final String tapName = getIntent().getStringExtra(KegtapBroadcast.DRINKER_SELECT_EXTRA_TAP_NAME);
+    if (!Strings.isNullOrEmpty(tapName)) {
+      mAuthManager.noteUserAuthenticated(user, tapName);
+    } else {
+      mAuthManager.noteUserAuthenticated(user);
+    }
+    finish();
   }
 
   public static Intent getStartIntentForTap(final Context context, final String tapName) {

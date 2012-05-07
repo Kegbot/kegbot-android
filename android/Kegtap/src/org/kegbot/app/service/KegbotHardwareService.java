@@ -25,6 +25,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Binder;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.os.SystemClock;
 import android.util.Log;
@@ -45,6 +46,8 @@ public class KegbotHardwareService extends Service {
   private static final long THERMO_REPORT_PERIOD_MILLIS = TimeUnit.SECONDS.toMillis(30);
 
   private static final String ACTION_METER_UPDATE = "org.kegbot.action.METER_UPDATE";
+  private static final String ACTION_TOKEN_AUTHED = "org.kegbot.action.TOKEN_AUTHED";
+  private static final String ACTION_TOKEN_DEAUTHED = "org.kegbot.action.TOKEN_DEAUTHED";
 
   private static final String EXTRA_TICKS = "ticks";
   private static final String EXTRA_TAP_NAME = "tap";
@@ -70,11 +73,19 @@ public class KegbotHardwareService extends Service {
   private final Map<String, Long> mLastThermoReadingUptimeMillis =
     Maps.newLinkedHashMap();
 
-  private static final IntentFilter DEBUG_INTENT_FILTER = new IntentFilter(ACTION_METER_UPDATE);
+  private static final IntentFilter DEBUG_INTENT_FILTER = new IntentFilter();
+  static {
+    DEBUG_INTENT_FILTER.addAction(ACTION_METER_UPDATE);
+    DEBUG_INTENT_FILTER.addAction(ACTION_TOKEN_AUTHED);
+    DEBUG_INTENT_FILTER.addAction(ACTION_TOKEN_DEAUTHED);
+  }
+
   private final BroadcastReceiver mDebugReceiver = new BroadcastReceiver() {
     @Override
     public void onReceive(Context context, Intent intent) {
       final String action = intent.getAction();
+      Log.d(TAG, "Received action: " + action);
+
       if (ACTION_METER_UPDATE.equals(action)) {
         String tapName = intent.getStringExtra(EXTRA_TAP_NAME);
         if (Strings.isNullOrEmpty(tapName)) {
@@ -86,6 +97,17 @@ public class KegbotHardwareService extends Service {
           Log.d(TAG, "Got debug meter update: tap=" + tapName + " ticks=" + ticks);
           handleMeterUpdate(tapName, ticks);
         }
+      } else if (ACTION_TOKEN_AUTHED.equals(action) || ACTION_TOKEN_DEAUTHED.equals(action)) {
+        final Bundle extras = intent.getExtras();
+        if (extras == null) {
+          return;
+        }
+        final String tapName = extras.getString(EXTRA_TAP_NAME, "");
+        final String authDevice = extras.getString("auth_device", "core.rfid");
+        final String value = extras.getString("value", "");
+        final boolean added = ACTION_TOKEN_AUTHED.equals(action);
+        Log.d(TAG, "Sending token auth event: authDevice=" + authDevice + " value=" + value);
+        handleTokenAuthEvent(tapName, authDevice, value, added);
       }
     }
   };

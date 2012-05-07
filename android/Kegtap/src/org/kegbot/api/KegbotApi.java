@@ -187,4 +187,6 @@ public interface KegbotApi {
 
   public Image uploadDrinkImage(final String drinkId, final String imagePath) throws KegbotApiException;
 
+  public UserDetail register(final String username, final String email, final String password, final String imagePath) throws KegbotApiException;
+
 }

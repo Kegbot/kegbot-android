@@ -275,6 +275,10 @@ public class CameraFragment extends Fragment {
     return view;
   }
 
+  public String getLastFilename() {
+    return mLastFilename;
+  }
+
   private void discardLastPicture() {
     final Intent intent = KegtapBroadcast.getPictureDiscardedBroadcastIntent(mLastFilename);
     getActivity().sendBroadcast(intent);

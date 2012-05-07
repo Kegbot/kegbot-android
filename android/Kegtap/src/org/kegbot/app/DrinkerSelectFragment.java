@@ -3,14 +3,11 @@ package org.kegbot.app;
 import java.util.List;
 
 import org.kegbot.app.util.image.ImageDownloader;
-import org.kegbot.core.AuthenticationManager;
-import org.kegbot.app.R;
 import org.kegbot.proto.Api.UserDetail;
 
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.LoaderManager.LoaderCallbacks;
-import android.content.Intent;
 import android.content.Loader;
 import android.os.Bundle;
 import android.util.Log;
@@ -40,8 +37,6 @@ public class DrinkerSelectFragment extends Fragment implements LoaderCallbacks<L
 
   private GridView mGridView;
 
-  private AuthenticationManager mAuthManager;
-
   private ImageDownloader mImageDownloader;
 
   public static final String LOAD_SOURCE = "source";
@@ -57,7 +52,6 @@ public class DrinkerSelectFragment extends Fragment implements LoaderCallbacks<L
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     mView = inflater.inflate(R.layout.select_drinker_fragment_inner, null);
     mGridView = (GridView) mView.findViewById(R.id.drinkerGridView);
-    mAuthManager = AuthenticationManager.getSingletonInstance(getActivity());
     return mView;
   }
 
@@ -126,14 +120,7 @@ public class DrinkerSelectFragment extends Fragment implements LoaderCallbacks<L
           return;
         }
         Log.d(LOG_TAG, "Clicked on user: " + user);
-        final Intent srcIntent = getActivity().getIntent();
-        final String tapName = srcIntent.getStringExtra(KegtapBroadcast.DRINKER_SELECT_EXTRA_TAP_NAME);
-        if (!Strings.isNullOrEmpty(tapName)) {
-          mAuthManager.noteUserAuthenticated(user, tapName);
-        } else {
-          mAuthManager.noteUserAuthenticated(user);
-        }
-        getActivity().finish();
+        ((DrinkerSelectActivity) getActivity()).handlerUserSelected(user);
       }
     });
 

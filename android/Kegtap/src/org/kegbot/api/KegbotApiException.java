@@ -1,11 +1,20 @@
 package org.kegbot.api;
 
+import org.codehaus.jackson.JsonNode;
+
 /**
  * Base exception for {@link KegbotApi} methods.
  */
 public class KegbotApiException extends Exception {
 
+  private final JsonNode mErrors;
+
   public KegbotApiException() {
+    mErrors = null;
+  }
+
+  public KegbotApiException(JsonNode errors) {
+    mErrors = errors;
   }
 
   /**
@@ -13,6 +22,7 @@ public class KegbotApiException extends Exception {
    */
   public KegbotApiException(String detailMessage) {
     super(detailMessage);
+    mErrors = null;
   }
 
   /**
@@ -20,6 +30,7 @@ public class KegbotApiException extends Exception {
    */
   public KegbotApiException(Throwable throwable) {
     super(throwable);
+    mErrors = null;
   }
 
   /**
@@ -28,6 +39,11 @@ public class KegbotApiException extends Exception {
    */
   public KegbotApiException(String detailMessage, Throwable throwable) {
     super(detailMessage, throwable);
+    mErrors = null;
+  }
+
+  public JsonNode getErrors() {
+    return mErrors;
   }
 
 }
