@@ -237,7 +237,6 @@ public class PourInProgressActivity extends CoreActivity {
     mPouringTapAdapter = new PouringTapAdapter(getFragmentManager());
     mTapPager.setAdapter(mPouringTapAdapter);
     mTapPager.setOnPageChangeListener(mPageChangeListener);
-    scrollToMostActiveTap();
 
     mEndPourButton = (Button) findViewById(R.id.pourEndButton);
     mEndPourButton.setOnClickListener(new View.OnClickListener() {
@@ -301,6 +300,8 @@ public class PourInProgressActivity extends CoreActivity {
 
     mIdleDetectedDialog = builder.create();
     mPrefs = new PreferenceHelper(this);
+
+    scrollToMostActiveTap();
   }
 
   private Flow getCurrentlyFocusedFlow() {
@@ -349,6 +350,8 @@ public class PourInProgressActivity extends CoreActivity {
     } else {
       mPourDrinkerImage.setOnClickListener(null);
     }
+
+    mShoutText.setText(flow.getShout());
   }
 
   @Override

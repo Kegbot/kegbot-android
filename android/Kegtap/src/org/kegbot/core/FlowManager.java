@@ -256,8 +256,8 @@ public class FlowManager {
   /**
    * Handles a user arriving at a tap. If there is no flow in progress, a new
    * flow will be started and this user will be added to it. If there is already
-   * a Flow, this user will take it over if anonymous, or end it (and create a
-   * new one) otherwise.
+   * a Flow, this user will take it over if anonymous. A non-anonymous active
+   * flow is left untouched.
    *
    * @param tap
    * @param username
@@ -278,8 +278,11 @@ public class FlowManager {
       publishFlowUpdate(flow);
       return flow;
     } else if (flow != null && flow.isAuthenticated()) {
-      Log.d(TAG, "activateUserAtTap: existing flow is authenticated, ending it.");
-      endFlow(flow);
+      Log.d(TAG, "activateUserAtTap: existing flow is authenticated; ignoring auth event.");
+      // NOTE(mikey): In previous version of Kegbot, we let the new user take
+      // over the existing flow.  Testing has shown this to be surprise users,
+      // so just ignore the auth event rather than ending the flow.
+      return flow;
     }
 
     // New flow to replace previous or empty.
@@ -300,6 +303,9 @@ public class FlowManager {
     final Flow endedFlow;
     synchronized (mFlowsByTap) {
       endedFlow = mFlowsByTap.remove(flow.getTap());
+      if (mFlowsByTap.isEmpty()) {
+        stopIdleChecker();
+      }
     }
     if (endedFlow == null) {
       Log.w(TAG, "No active flow for flow=" + flow + ", tap=" + flow.getTap());
@@ -308,11 +314,6 @@ public class FlowManager {
     endedFlow.setState(State.COMPLETED);
     publishFlowEnd(endedFlow);
 
-    synchronized (mFlowsByTap) {
-      if (mFlowsByTap.isEmpty()) {
-        stopIdleChecker();
-      }
-    }
     return endedFlow;
   }
 
