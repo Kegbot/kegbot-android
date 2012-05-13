@@ -199,9 +199,9 @@ public abstract class KegboardMessage {
 
   public static KegboardMessage fromBytes(final byte[] bytes) throws KegboardMessageException {
     if (bytes.length < KBSP_MIN_LENGTH) {
-      throw new IllegalArgumentException("Too small: " + bytes.length);
+      throw new KegboardMessageException("Too small: " + bytes.length);
     } else if (bytes.length > KBSP_MAX_LENGTH) {
-      throw new IllegalArgumentException("Too large: " + bytes.length);
+      throw new KegboardMessageException("Too large: " + bytes.length);
     }
 
     final int messageType = extractType(bytes);
@@ -220,7 +220,7 @@ public abstract class KegboardMessage {
     case KegboardAuthTokenMessage.MESSAGE_TYPE:
       return new KegboardAuthTokenMessage(bytes);
     default:
-      throw new IllegalArgumentException("Unknown message type");
+      throw new KegboardMessageException("Unknown message type");
     }
   }
 

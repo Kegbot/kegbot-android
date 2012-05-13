@@ -29,9 +29,11 @@ public class UserDetailListLoader extends AsyncTaskLoader<List<UserDetail>> {
 
   private static final String TAG = UserDetailListLoader.class.getSimpleName();
 
-  private static final long MAX_LOAD_AGE_MILLIS = TimeUnit.SECONDS.toMillis(60);
   private KegbotApi mApi;
-  private List<UserDetail> mUsers;
+
+  private final List<UserDetail> mUsers = Lists.newArrayList();
+
+  private final long MAX_LOAD_AGE_MILLIS = TimeUnit.SECONDS.toMillis(15);
 
   private long mLastLoadMillis = 0;
 
@@ -54,12 +56,12 @@ public class UserDetailListLoader extends AsyncTaskLoader<List<UserDetail>> {
   @Override
   public List<UserDetail> loadInBackground() {
     Log.d(TAG, "loadInBackground");
-    mLastLoadMillis = SystemClock.uptimeMillis();
     try {
       final UserDetailSet apiResult = mApi.getUsers();
       final List<UserDetail> result = Lists.newArrayList(apiResult.getUsersList());
-      Collections.sort(result, USERS_ALPHABETIC);
-      mUsers = result;
+      mUsers.clear();
+      mUsers.addAll(result);
+      Collections.sort(mUsers, USERS_ALPHABETIC);
       return mUsers;
     } catch (KegbotApiException e) {
       // TODO(mikey): retry?
@@ -71,26 +73,31 @@ public class UserDetailListLoader extends AsyncTaskLoader<List<UserDetail>> {
   @Override
   protected void onStartLoading() {
     Log.d(TAG, "onStartLoading");
-    /*
-    if (mUsers != null) {
-      // TODO(mikey): figure out how to avoid duplicate load results.
+    final long now = SystemClock.uptimeMillis();
+    if ((now - mLastLoadMillis) > MAX_LOAD_AGE_MILLIS) {
+      Log.d(TAG, "Forcing load, mLastLoadMillis=" + mLastLoadMillis);
+      mLastLoadMillis = now;
+      forceLoad();
+    } else {
       Log.d(TAG, "delivering cached results");
       deliverResult(mUsers);
     }
-    if (mUsers == null || (SystemClock.uptimeMillis() - mLastLoadMillis) > MAX_LOAD_AGE_MILLIS) {
-      Log.d(TAG, "Forcing load, mLastLoadMillis=" + mLastLoadMillis);
-      forceLoad();
-    }
-    */
-    forceLoad();
-    super.onStartLoading();
   }
 
   @Override
   protected void onReset() {
     Log.d(TAG, "onReset");
-    mUsers = null;
     super.onReset();
+    onStopLoading();
+  }
+
+  /**
+   * Handles a request to stop the Loader.
+   */
+  @Override
+  protected void onStopLoading() {
+      // Attempt to cancel the current load task if possible.
+      cancelLoad();
   }
 
 }

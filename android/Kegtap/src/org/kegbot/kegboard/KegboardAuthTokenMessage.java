@@ -37,21 +37,19 @@ public class KegboardAuthTokenMessage extends KegboardMessage {
       tokenBytes = new byte[0];
     }
 
+    // Reverse byte order.
+    final byte[] reversedBytes = new byte[tokenBytes.length];
+    for (int i = 0; i < reversedBytes.length; i++) {
+      reversedBytes[tokenBytes.length - i - 1] = tokenBytes[i];
+    }
+    mComputedToken = HexDump.toHexString(reversedBytes).toLowerCase();
+
+    // Rename "onewire" -> "core.onewire"
     if ("onewire".equals(tagName)) {
-      final byte[] copyBytes = new byte[tokenBytes.length];
-      for (int i = 0; i < copyBytes.length; i++) {
-        copyBytes[tokenBytes.length - i - 1] = tokenBytes[i];
-      }
       mComputedName = CORE_ONEWIRE;
-      mComputedToken = HexDump.toHexString(copyBytes).toUpperCase();
-    } else if (CORE_ONEWIRE.equals(tagName)) {
-      mComputedName = CORE_ONEWIRE;
-      mComputedToken = HexDump.toHexString(tokenBytes).toUpperCase();
     } else {
       mComputedName = tagName;
-      mComputedToken = HexDump.toHexString(tokenBytes).toLowerCase();
     }
-
   }
 
   @Override
