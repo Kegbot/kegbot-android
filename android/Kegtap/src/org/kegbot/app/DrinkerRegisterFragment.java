@@ -6,7 +6,7 @@ import org.kegbot.api.KegbotApiImpl;
 import org.kegbot.app.camera.CameraFragment;
 import org.kegbot.app.setup.SetupAlertDialogFragment;
 import org.kegbot.app.setup.SetupProgressDialogFragment;
-import org.kegbot.proto.Api.UserDetail;
+import org.kegbot.proto.Models.User;
 
 import android.app.DialogFragment;
 import android.app.Fragment;
@@ -32,10 +32,10 @@ public class DrinkerRegisterFragment extends Fragment {
 
   private DialogFragment mDialog;
 
-  private class RegistrationTask extends AsyncTask<Void, Void, UserDetail> {
+  private class RegistrationTask extends AsyncTask<Void, Void, User> {
 
     @Override
-    protected UserDetail doInBackground(Void... params) {
+    protected User doInBackground(Void... params) {
       KegbotApi api = KegbotApiImpl.getSingletonInstance();
       Log.d(TAG, "Registering...");
       final String imagePath = mCameraFragment.getLastFilename();
@@ -49,7 +49,7 @@ public class DrinkerRegisterFragment extends Fragment {
     }
 
     @Override
-    protected void onPostExecute(UserDetail result) {
+    protected void onPostExecute(User result) {
       hideDialog();
       if (result != null) {
         ((DrinkerSelectActivity) getActivity()).handlerUserSelected(result);

@@ -12,7 +12,7 @@ import org.kegbot.core.Flow;
 import org.kegbot.core.FlowManager;
 import org.kegbot.core.Tap;
 import org.kegbot.core.TapManager;
-import org.kegbot.proto.Api.UserDetail;
+import org.kegbot.proto.Models.User;
 
 import android.app.ActionBar;
 import android.app.AlertDialog;
@@ -49,7 +49,7 @@ public class PourInProgressActivity extends CoreActivity {
 
   private static final long FLOW_UPDATE_MILLIS = 500;
 
-  private static final long FLOW_FINISH_DELAY_MILLIS = TimeUnit.SECONDS.toMillis(3);
+  private static final long FLOW_FINISH_DELAY_MILLIS = TimeUnit.SECONDS.toMillis(1);
 
   private static final long IDLE_SCROLL_TIMEOUT_MILLIS = TimeUnit.SECONDS.toMillis(3);
 
@@ -326,12 +326,12 @@ public class PourInProgressActivity extends CoreActivity {
     final String username = flow.getUsername();
     boolean imageSet = false;
     if (!Strings.isNullOrEmpty(username)) {
-      final UserDetail user = mAuthManager.getUserDetail(username);
-      if (user.getUser().hasImage()) {
+      final User user = mAuthManager.getUserDetail(username);
+      if (user.hasImage()) {
         // NOTE(mikey): Use the full-sized image rather than the thumbnail;
         // in many cases the former will already be in the cache from
         // DrinkerSelectActivity.
-        mImageDownloader.download(user.getUser().getImage().getUrl(), mPourDrinkerImage);
+        mImageDownloader.download(user.getImage().getThumbnailUrl(), mPourDrinkerImage);
         imageSet = true;
       }
     }

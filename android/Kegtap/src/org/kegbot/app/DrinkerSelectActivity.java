@@ -4,7 +4,7 @@
 package org.kegbot.app;
 
 import org.kegbot.core.AuthenticationManager;
-import org.kegbot.proto.Api.UserDetail;
+import org.kegbot.proto.Models.User;
 
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
@@ -91,7 +91,7 @@ public class DrinkerSelectActivity extends CoreActivity {
     super.onPause();
   }
 
-  public void handlerUserSelected(UserDetail user) {
+  public void handlerUserSelected(User user) {
     final String tapName = getIntent().getStringExtra(KegtapBroadcast.DRINKER_SELECT_EXTRA_TAP_NAME);
     if (!Strings.isNullOrEmpty(tapName)) {
       mAuthManager.noteUserAuthenticated(user, tapName);

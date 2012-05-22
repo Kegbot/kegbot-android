@@ -11,13 +11,12 @@ import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiImpl;
 import org.kegbot.api.KegbotApiNotFoundError;
 import org.kegbot.app.KegtapBroadcast;
-import org.kegbot.proto.Api.UserDetail;
+import org.kegbot.proto.Models.User;
 
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import com.google.common.base.Strings;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -39,27 +38,27 @@ public class AuthenticationManager {
 
   private final Context mContext;
 
-  private final LoadingCache<AuthenticationToken, UserDetail> mAuthTokenCache = CacheBuilder
+  private final LoadingCache<AuthenticationToken, User> mAuthTokenCache = CacheBuilder
       .newBuilder().expireAfterWrite(CACHE_EXPIRE_HOURS, TimeUnit.HOURS).build(
-          new CacheLoader<AuthenticationToken, UserDetail>() {
+          new CacheLoader<AuthenticationToken, User>() {
             @Override
-            public UserDetail load(AuthenticationToken token) throws Exception {
+            public User load(AuthenticationToken token) throws Exception {
               Log.d(TAG, "Loading token");
               org.kegbot.proto.Models.AuthenticationToken tok = mApi.getAuthToken(token
                   .getAuthDevice(), token.getTokenValue());
-              final String username = tok.getUsername();
-              if (!Strings.isNullOrEmpty(username)) {
-                return mApi.getUserDetail(username);
+              Log.d(TAG, "Got auth token: " + tok);
+              if (tok.hasUser()) {
+                return tok.getUser();
               }
               return null;
             }
           });
 
-  private final LoadingCache<String, UserDetail> mUserDetailCache = CacheBuilder.newBuilder()
+  private final LoadingCache<String, User> mUserDetailCache = CacheBuilder.newBuilder()
       .expireAfterWrite(CACHE_EXPIRE_HOURS, TimeUnit.HOURS).build(
-          new CacheLoader<String, UserDetail>() {
+          new CacheLoader<String, User>() {
             @Override
-            public UserDetail load(String username) throws Exception {
+            public User load(String username) throws Exception {
               Log.d(TAG, "Loading user: " + username);
               return mApi.getUserDetail(username);
             }
@@ -69,7 +68,7 @@ public class AuthenticationManager {
     mContext = context.getApplicationContext();
   }
 
-  public UserDetail authenticateToken(AuthenticationToken token) {
+  public User authenticateToken(AuthenticationToken token) {
     try {
       return mAuthTokenCache.get(token);
     } catch (ExecutionException e) {
@@ -84,7 +83,7 @@ public class AuthenticationManager {
     }
   }
 
-  public UserDetail authenticateUsername(String username, String pin) {
+  public User authenticateUsername(String username, String pin) {
     // TODO(mikey): use pin
     try {
       return mUserDetailCache.get(username);
@@ -94,26 +93,24 @@ public class AuthenticationManager {
     }
   }
 
-  public UserDetail getUserDetail(String username) {
+  public User getUserDetail(String username) {
     return mUserDetailCache.getIfPresent(username);
   }
 
-  public void noteUserAuthenticated(UserDetail userDetail) {
-    mUserDetailCache.put(userDetail.getUser().getUsername(), userDetail);
-    final Intent intent = KegtapBroadcast.getUserAuthedBroadcastIntent(userDetail.getUser()
-        .getUsername());
+  public void noteUserAuthenticated(User userDetail) {
+    mUserDetailCache.put(userDetail.getUsername(), userDetail);
+    final Intent intent = KegtapBroadcast.getUserAuthedBroadcastIntent(userDetail.getUsername());
     mContext.sendBroadcast(intent);
   }
 
-  public void noteUserAuthenticated(UserDetail userDetail, String tapName) {
-    mUserDetailCache.put(userDetail.getUser().getUsername(), userDetail);
-    final Intent intent = KegtapBroadcast.getUserAuthedBroadcastIntent(userDetail.getUser()
-        .getUsername());
+  public void noteUserAuthenticated(User userDetail, String tapName) {
+    mUserDetailCache.put(userDetail.getUsername(), userDetail);
+    final Intent intent = KegtapBroadcast.getUserAuthedBroadcastIntent(userDetail.getUsername());
     intent.putExtra(KegtapBroadcast.DRINKER_SELECT_EXTRA_TAP_NAME, tapName);
     mContext.sendBroadcast(intent);
   }
 
-  public Set<UserDetail> getAllRecent() {
+  public Set<User> getAllRecent() {
     return Sets.newLinkedHashSet(mUserDetailCache.asMap().values());
   }
 

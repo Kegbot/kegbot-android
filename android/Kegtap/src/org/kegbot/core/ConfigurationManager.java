@@ -5,7 +5,7 @@ package org.kegbot.core;
 
 import java.util.Map;
 
-import org.kegbot.proto.Api.TapDetail;
+import org.kegbot.proto.Models.KegTap;
 
 import com.google.common.collect.Maps;
 
@@ -15,19 +15,18 @@ import com.google.common.collect.Maps;
  */
 public class ConfigurationManager {
 
-
   private static ConfigurationManager sSingleton = null;
 
   /**
    * Maps tap names to TapDetail.
    */
-  private final Map<String, TapDetail> mTapConfig = Maps.newLinkedHashMap();
+  private final Map<String, KegTap> mTapConfig = Maps.newLinkedHashMap();
 
-  public TapDetail getTapDetail(final String tapName) {
+  public KegTap getTapDetail(final String tapName) {
     return mTapConfig.get(tapName);
   }
 
-  public void setTapDetail(final String tapName, final TapDetail tapDetail) {
+  public void setTapDetail(final String tapName, final KegTap tapDetail) {
     mTapConfig.put(tapName, tapDetail);
   }
 

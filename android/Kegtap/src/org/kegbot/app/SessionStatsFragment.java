@@ -7,8 +7,6 @@ import java.util.List;
 import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiException;
 import org.kegbot.api.KegbotApiImpl;
-import org.kegbot.app.R;
-import org.kegbot.proto.Api.SessionDetail;
 import org.kegbot.proto.Models.Session;
 import org.kegbot.proto.Models.Stats;
 import org.kegbot.proto.Models.Stats.DrinkerVolume;
@@ -45,20 +43,19 @@ public class SessionStatsFragment extends Fragment {
     return mView;
   }
 
-  private View updateSessionView(View view, SessionDetail sessionDetail) {
-    if (sessionDetail == null) {
+  private View updateSessionView(View view, Session session) {
+    if (session == null) {
       view.setVisibility(View.GONE);
       return view;
     }
     view.setVisibility(View.VISIBLE);
 
-    final Stats stats = sessionDetail.getStats();
-    final Session session = sessionDetail.getSession();
+    final Stats stats = session.getStats();
     final List<DrinkerVolume> volumeByDrinker = Lists.newArrayList(stats.getVolumeByDrinkerList());
     Collections.sort(volumeByDrinker, VOLUMES_DESCENDING);
 
     // Session name.
-    final String sessionName = sessionDetail.getSession().getName();
+    final String sessionName = session.getName();
     ((TextView) view.findViewById(R.id.sessionTitle)).setText(sessionName);
 
     // Number of drinkers.
@@ -108,12 +105,22 @@ public class SessionStatsFragment extends Fragment {
     new CurrentSessionDetailLoaderTask().execute();
   }
 
-  private class CurrentSessionDetailLoaderTask extends AsyncTask<Void, Void, SessionDetail> {
+  private class CurrentSessionDetailLoaderTask extends AsyncTask<Void, Void, Session> {
 
     @Override
-    protected SessionDetail doInBackground(Void... params) {
+    protected Session doInBackground(Void... params) {
       try {
-        return mApi.getCurrentSession();
+        final Session session = mApi.getCurrentSession();
+        if (session == null) {
+          return null;
+        }
+
+        if (session.hasStats()) {
+          return session;
+        }
+        final Stats stats = mApi.getSessionStats(session.getId());
+        Log.d(TAG, "Got stats: " + stats);
+        return Session.newBuilder(session).setStats(stats).build();
       } catch (KegbotApiException e) {
         return null;
       } catch (RuntimeException e) {
@@ -122,7 +129,7 @@ public class SessionStatsFragment extends Fragment {
     }
 
     @Override
-    protected void onPostExecute(SessionDetail result) {
+    protected void onPostExecute(Session result) {
       try {
         updateSessionView(mView, result);
       } catch (Throwable e) {

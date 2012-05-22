@@ -7,8 +7,9 @@ import org.kegbot.core.ConfigurationManager;
 import org.kegbot.core.Flow;
 import org.kegbot.core.Flow.State;
 import org.kegbot.core.Tap;
-import org.kegbot.proto.Api.TapDetail;
 import org.kegbot.proto.Models.BeerType;
+import org.kegbot.proto.Models.Keg;
+import org.kegbot.proto.Models.KegTap;
 
 import android.app.Activity;
 import android.app.ListFragment;
@@ -110,7 +111,7 @@ public class PourStatusFragment extends ListFragment {
   }
 
   private void applyTapDetail() {
-    final TapDetail tapDetail = ConfigurationManager.getSingletonInstance().getTapDetail(
+    final KegTap tapDetail = ConfigurationManager.getSingletonInstance().getTapDetail(
         getTap().getMeterName());
     if (tapDetail == null) {
       Log.wtf(TAG, "Tap detail is null.");
@@ -118,8 +119,10 @@ public class PourStatusFragment extends ListFragment {
     }
 
     mBeerImage.setBackgroundDrawable(getResources().getDrawable(R.drawable.kegbot_unknown_square_2));
-    if (tapDetail.hasBeerType()) {
-      final BeerType type = tapDetail.getBeerType();
+
+    if (tapDetail.hasCurrentKeg()) {
+      final Keg keg = tapDetail.getCurrentKeg();
+      final BeerType type = keg.getType();
       final String beerName = type.getName();
 
       // Set beer name.
@@ -128,8 +131,8 @@ public class PourStatusFragment extends ListFragment {
       }
 
       // Set beer image.
-      if (tapDetail.getBeerType().hasImage()) {
-        final String imageUrl = tapDetail.getBeerType().getImage().getUrl();
+      if (type.hasImage()) {
+        final String imageUrl = type.getImage().getUrl();
         mImageDownloader.download(imageUrl, mBeerImage);
       }
     }

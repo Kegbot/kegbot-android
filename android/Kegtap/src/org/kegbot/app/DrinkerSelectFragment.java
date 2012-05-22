@@ -3,7 +3,7 @@ package org.kegbot.app;
 import java.util.List;
 
 import org.kegbot.app.util.image.ImageDownloader;
-import org.kegbot.proto.Api.UserDetail;
+import org.kegbot.proto.Models.User;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -27,11 +27,11 @@ import android.widget.TextView;
 
 import com.google.common.base.Strings;
 
-public class DrinkerSelectFragment extends Fragment implements LoaderCallbacks<List<UserDetail>> {
+public class DrinkerSelectFragment extends Fragment implements LoaderCallbacks<List<User>> {
 
   private static final String LOG_TAG = DrinkerSelectFragment.class.getSimpleName();
 
-  private ArrayAdapter<UserDetail> mAdapter;
+  private ArrayAdapter<User> mAdapter;
 
   private View mView;
 
@@ -59,12 +59,12 @@ public class DrinkerSelectFragment extends Fragment implements LoaderCallbacks<L
   public void onActivityCreated(Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
     Log.d(LOG_TAG, "onActivityCreated");
-    mAdapter = new ArrayAdapter<UserDetail>(getActivity(), R.layout.selectable_drinker,
+    mAdapter = new ArrayAdapter<User>(getActivity(), R.layout.selectable_drinker,
         R.id.drinkerName) {
 
       @Override
       public View getView(int position, View convertView, ViewGroup parent) {
-        final UserDetail userDetail = getItem(position);
+        final User userDetail = getItem(position);
         final View view = super.getView(position, convertView, parent);
 
         try {
@@ -76,11 +76,18 @@ public class DrinkerSelectFragment extends Fragment implements LoaderCallbacks<L
         return view;
       }
 
-      private void applyUser(UserDetail userDetail, View view) {
+      private void applyUser(User userDetail, View view) {
         final ImageView icon = (ImageView) view.findViewById(R.id.drinkerIcon);
-        final String imageUrl = userDetail.getUser().getImage().getUrl();
         icon.setImageBitmap(null);
         icon.setBackgroundDrawable(null);
+
+        final String imageUrl;
+        if (userDetail.hasImage()) {
+          imageUrl = userDetail.getImage().getThumbnailUrl();
+        } else {
+          imageUrl = "";
+        }
+
         if (!Strings.isNullOrEmpty(imageUrl)) {
           mImageDownloader.download(imageUrl, icon);
         } else {
@@ -90,7 +97,7 @@ public class DrinkerSelectFragment extends Fragment implements LoaderCallbacks<L
         }
 
         final TextView userName = (TextView) view.findViewById(R.id.drinkerName);
-        final String userNameString = userDetail.getUser().getUsername();
+        final String userNameString = userDetail.getUsername();
         userName.setText(userNameString);
       }
 
@@ -114,7 +121,7 @@ public class DrinkerSelectFragment extends Fragment implements LoaderCallbacks<L
     mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
       @Override
       public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-        final UserDetail user = (UserDetail) mGridView.getItemAtPosition(position);
+        final User user = (User) mGridView.getItemAtPosition(position);
         if (user == null) {
           Log.wtf(LOG_TAG, "Null user selected.");
           return;
@@ -128,7 +135,7 @@ public class DrinkerSelectFragment extends Fragment implements LoaderCallbacks<L
   }
 
   @Override
-  public Loader<List<UserDetail>> onCreateLoader(int id, Bundle args) {
+  public Loader<List<User>> onCreateLoader(int id, Bundle args) {
     Log.d(LOG_TAG, "+++ onCreateLoader");
     final Bundle fragArgs = getArguments();
 
@@ -146,16 +153,16 @@ public class DrinkerSelectFragment extends Fragment implements LoaderCallbacks<L
   }
 
   @Override
-  public void onLoadFinished(Loader<List<UserDetail>> loader, List<UserDetail> userList) {
+  public void onLoadFinished(Loader<List<User>> loader, List<User> userList) {
     Log.d(LOG_TAG, "+++ onLoadFinished");
 
-    for (final UserDetail user : userList) {
+    for (final User user : userList) {
       mAdapter.add(user);
     }
   }
 
   @Override
-  public void onLoaderReset(Loader<List<UserDetail>> loader) {
+  public void onLoaderReset(Loader<List<User>> loader) {
     Log.d(LOG_TAG, "+++ onLoaderReset");
     mAdapter.clear();
   }

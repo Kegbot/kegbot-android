@@ -4,6 +4,7 @@
 package org.kegbot.app.service;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -25,11 +26,9 @@ import org.kegbot.core.FlowMeter;
 import org.kegbot.core.Tap;
 import org.kegbot.core.TapManager;
 import org.kegbot.core.ThermoSensor;
-import org.kegbot.proto.Api;
 import org.kegbot.proto.Api.RecordTemperatureRequest;
-import org.kegbot.proto.Api.TapDetailSet;
-import org.kegbot.proto.Api.UserDetail;
-import org.kegbot.proto.Models;
+import org.kegbot.proto.Models.KegTap;
+import org.kegbot.proto.Models.User;
 
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -224,13 +223,13 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
             Log.d(TAG, "onTokenAttached: running");
             final AuthenticationManager am =
                 AuthenticationManager.getSingletonInstance(KegbotCoreService.this);
-            UserDetail user = am.authenticateToken(token);
+            User user = am.authenticateToken(token);
             Log.d(TAG, "Authenticated user: " + user);
             if (user != null) {
               success = true;
               am.noteUserAuthenticated(user);
               for (final Tap tap : mTapManager.getTaps()) {
-                mFlowManager.activateUserAtTap(tap, user.getUser().getUsername());
+                mFlowManager.activateUserAtTap(tap, user.getUsername());
               }
             } else {
               message = getString(R.string.authenticating_no_access_token);
@@ -459,16 +458,15 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
     mApiService.setApiUrl(apiUrl.toString());
     mApiService.setApiKey(mPreferences.getApiKey());
 
-    final TapDetailSet taps = mApiService.getKegbotApi().getAllTaps();
+    final List<KegTap> taps = mApiService.getKegbotApi().getAllTaps();
 
-    Log.d(TAG, "Found " + taps.getTapsCount() + " tap(s).");
-    for (final Api.TapDetail tapDetail : taps.getTapsList()) {
-      Models.KegTap tapInfo = tapDetail.getTap();
+    Log.d(TAG, "Found " + taps.size() + " tap(s).");
+    for (final KegTap tapInfo : taps) {
       Log.d(TAG, "Adding tap: " + tapInfo.getMeterName());
       final Tap tap = new Tap(tapInfo.getDescription(), tapInfo.getMlPerTick(), tapInfo
           .getMeterName(), tapInfo.getRelayName());
       mTapManager.addTap(tap);
-      mConfigManager.setTapDetail(tap.getMeterName(), tapDetail);
+      mConfigManager.setTapDetail(tap.getMeterName(), tapInfo);
     }
   }
 

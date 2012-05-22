@@ -11,8 +11,7 @@ import java.util.concurrent.TimeUnit;
 import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiException;
 import org.kegbot.api.KegbotApiImpl;
-import org.kegbot.proto.Api.UserDetail;
-import org.kegbot.proto.Api.UserDetailSet;
+import org.kegbot.proto.Models.User;
 
 import android.content.AsyncTaskLoader;
 import android.content.Context;
@@ -25,23 +24,23 @@ import com.google.common.collect.Lists;
  *
  * @author mike wakerly (mike@wakerly.com)
  */
-public class UserDetailListLoader extends AsyncTaskLoader<List<UserDetail>> {
+public class UserDetailListLoader extends AsyncTaskLoader<List<User>> {
 
   private static final String TAG = UserDetailListLoader.class.getSimpleName();
 
   private KegbotApi mApi;
 
-  private final List<UserDetail> mUsers = Lists.newArrayList();
+  private final List<User> mUsers = Lists.newArrayList();
 
   private final long MAX_LOAD_AGE_MILLIS = TimeUnit.SECONDS.toMillis(15);
 
   private long mLastLoadMillis = 0;
 
-  private static Comparator<UserDetail> USERS_ALPHABETIC = new Comparator<UserDetail>() {
+  private static Comparator<User> USERS_ALPHABETIC = new Comparator<User>() {
     @Override
-    public int compare(UserDetail object1, UserDetail object2) {
-      return object1.getUser().getUsername().toLowerCase().compareTo(
-          object2.getUser().getUsername().toLowerCase());
+    public int compare(User object1, User object2) {
+      return object1.getUsername().toLowerCase().compareTo(
+          object2.getUsername().toLowerCase());
     }
   };
 
@@ -54,11 +53,10 @@ public class UserDetailListLoader extends AsyncTaskLoader<List<UserDetail>> {
   }
 
   @Override
-  public List<UserDetail> loadInBackground() {
+  public List<User> loadInBackground() {
     Log.d(TAG, "loadInBackground");
     try {
-      final UserDetailSet apiResult = mApi.getUsers();
-      final List<UserDetail> result = Lists.newArrayList(apiResult.getUsersList());
+      final List<User> result = mApi.getUsers();
       mUsers.clear();
       mUsers.addAll(result);
       Collections.sort(mUsers, USERS_ALPHABETIC);

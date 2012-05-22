@@ -13,11 +13,11 @@ import org.kegbot.app.util.PreferenceHelper;
 import org.kegbot.core.Flow;
 import org.kegbot.proto.Api.RecordDrinkRequest;
 import org.kegbot.proto.Api.RecordTemperatureRequest;
-import org.kegbot.proto.Api.UserDetail;
 import org.kegbot.proto.Internal.PendingPour;
 import org.kegbot.proto.Models.AuthenticationToken;
 import org.kegbot.proto.Models.Drink;
 import org.kegbot.proto.Models.ThermoLog;
+import org.kegbot.proto.Models.User;
 
 import android.content.ContentValues;
 import android.content.Intent;
@@ -329,7 +329,7 @@ public class KegbotApiService extends BackgroundService {
     mPendingRequests.add(request);
   }
 
-  public UserDetail authenticateUser(String authDevice, String tokenValue) throws KegbotApiException {
+  public User authenticateUser(String authDevice, String tokenValue) throws KegbotApiException {
     AuthenticationToken tok = mApi.getAuthToken(authDevice, tokenValue);
     final String username = tok.getUsername();
     if (!Strings.isNullOrEmpty(username)) {

@@ -11,9 +11,9 @@ public final class Models {
   public interface AuthenticationTokenOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
     
-    // required string id = 1;
+    // required uint32 id = 1;
     boolean hasId();
-    String getId();
+    int getId();
     
     // required string auth_device = 2;
     boolean hasAuthDevice();
@@ -46,6 +46,11 @@ public final class Models {
     // optional string pin = 9;
     boolean hasPin();
     String getPin();
+    
+    // optional .User user = 10;
+    boolean hasUser();
+    org.kegbot.proto.Models.User getUser();
+    org.kegbot.proto.Models.UserOrBuilder getUserOrBuilder();
   }
   public static final class AuthenticationToken extends
       com.google.protobuf.GeneratedMessage
@@ -76,36 +81,14 @@ public final class Models {
     }
     
     private int bitField0_;
-    // required string id = 1;
+    // required uint32 id = 1;
     public static final int ID_FIELD_NUMBER = 1;
-    private Object id_;
+    private int id_;
     public boolean hasId() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
-    public String getId() {
-      Object ref = id_;
-      if (ref instanceof String) {
-        return (String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
-          id_ = s;
-        }
-        return s;
-      }
-    }
-    private com.google.protobuf.ByteString getIdBytes() {
-      Object ref = id_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
-        id_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+    public int getId() {
+      return id_;
     }
     
     // required string auth_device = 2;
@@ -342,8 +325,21 @@ public final class Models {
       }
     }
     
+    // optional .User user = 10;
+    public static final int USER_FIELD_NUMBER = 10;
+    private org.kegbot.proto.Models.User user_;
+    public boolean hasUser() {
+      return ((bitField0_ & 0x00000200) == 0x00000200);
+    }
+    public org.kegbot.proto.Models.User getUser() {
+      return user_;
+    }
+    public org.kegbot.proto.Models.UserOrBuilder getUserOrBuilder() {
+      return user_;
+    }
+    
     private void initFields() {
-      id_ = "";
+      id_ = 0;
       authDevice_ = "";
       tokenValue_ = "";
       username_ = "";
@@ -352,6 +348,7 @@ public final class Models {
       createdTime_ = "";
       expireTime_ = "";
       pin_ = "";
+      user_ = org.kegbot.proto.Models.User.getDefaultInstance();
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -374,6 +371,12 @@ public final class Models {
         memoizedIsInitialized = 0;
         return false;
       }
+      if (hasUser()) {
+        if (!getUser().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
       memoizedIsInitialized = 1;
       return true;
     }
@@ -382,7 +385,7 @@ public final class Models {
                         throws java.io.IOException {
       getSerializedSize();
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeBytes(1, getIdBytes());
+        output.writeUInt32(1, id_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         output.writeBytes(2, getAuthDeviceBytes());
@@ -408,6 +411,9 @@ public final class Models {
       if (((bitField0_ & 0x00000100) == 0x00000100)) {
         output.writeBytes(9, getPinBytes());
       }
+      if (((bitField0_ & 0x00000200) == 0x00000200)) {
+        output.writeMessage(10, user_);
+      }
       getUnknownFields().writeTo(output);
     }
     
@@ -419,7 +425,7 @@ public final class Models {
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(1, getIdBytes());
+          .computeUInt32Size(1, id_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
@@ -452,6 +458,10 @@ public final class Models {
       if (((bitField0_ & 0x00000100) == 0x00000100)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(9, getPinBytes());
+      }
+      if (((bitField0_ & 0x00000200) == 0x00000200)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(10, user_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -567,6 +577,7 @@ public final class Models {
       }
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          getUserFieldBuilder();
         }
       }
       private static Builder create() {
@@ -575,7 +586,7 @@ public final class Models {
       
       public Builder clear() {
         super.clear();
-        id_ = "";
+        id_ = 0;
         bitField0_ = (bitField0_ & ~0x00000001);
         authDevice_ = "";
         bitField0_ = (bitField0_ & ~0x00000002);
@@ -593,6 +604,12 @@ public final class Models {
         bitField0_ = (bitField0_ & ~0x00000080);
         pin_ = "";
         bitField0_ = (bitField0_ & ~0x00000100);
+        if (userBuilder_ == null) {
+          user_ = org.kegbot.proto.Models.User.getDefaultInstance();
+        } else {
+          userBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000200);
         return this;
       }
       
@@ -667,6 +684,14 @@ public final class Models {
           to_bitField0_ |= 0x00000100;
         }
         result.pin_ = pin_;
+        if (((from_bitField0_ & 0x00000200) == 0x00000200)) {
+          to_bitField0_ |= 0x00000200;
+        }
+        if (userBuilder_ == null) {
+          result.user_ = user_;
+        } else {
+          result.user_ = userBuilder_.build();
+        }
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -710,6 +735,9 @@ public final class Models {
         if (other.hasPin()) {
           setPin(other.getPin());
         }
+        if (other.hasUser()) {
+          mergeUser(other.getUser());
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
@@ -730,6 +758,12 @@ public final class Models {
         if (!hasCreatedTime()) {
           
           return false;
+        }
+        if (hasUser()) {
+          if (!getUser().isInitialized()) {
+            
+            return false;
+          }
         }
         return true;
       }
@@ -757,9 +791,9 @@ public final class Models {
               }
               break;
             }
-            case 10: {
+            case 8: {
               bitField0_ |= 0x00000001;
-              id_ = input.readBytes();
+              id_ = input.readUInt32();
               break;
             }
             case 18: {
@@ -802,46 +836,40 @@ public final class Models {
               pin_ = input.readBytes();
               break;
             }
+            case 82: {
+              org.kegbot.proto.Models.User.Builder subBuilder = org.kegbot.proto.Models.User.newBuilder();
+              if (hasUser()) {
+                subBuilder.mergeFrom(getUser());
+              }
+              input.readMessage(subBuilder, extensionRegistry);
+              setUser(subBuilder.buildPartial());
+              break;
+            }
           }
         }
       }
       
       private int bitField0_;
       
-      // required string id = 1;
-      private Object id_ = "";
+      // required uint32 id = 1;
+      private int id_ ;
       public boolean hasId() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
-      public String getId() {
-        Object ref = id_;
-        if (!(ref instanceof String)) {
-          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
-          id_ = s;
-          return s;
-        } else {
-          return (String) ref;
-        }
+      public int getId() {
+        return id_;
       }
-      public Builder setId(String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
+      public Builder setId(int value) {
+        bitField0_ |= 0x00000001;
         id_ = value;
         onChanged();
         return this;
       }
       public Builder clearId() {
         bitField0_ = (bitField0_ & ~0x00000001);
-        id_ = getDefaultInstance().getId();
+        id_ = 0;
         onChanged();
         return this;
-      }
-      void setId(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000001;
-        id_ = value;
-        onChanged();
       }
       
       // required string auth_device = 2;
@@ -1117,6 +1145,96 @@ public final class Models {
         onChanged();
       }
       
+      // optional .User user = 10;
+      private org.kegbot.proto.Models.User user_ = org.kegbot.proto.Models.User.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          org.kegbot.proto.Models.User, org.kegbot.proto.Models.User.Builder, org.kegbot.proto.Models.UserOrBuilder> userBuilder_;
+      public boolean hasUser() {
+        return ((bitField0_ & 0x00000200) == 0x00000200);
+      }
+      public org.kegbot.proto.Models.User getUser() {
+        if (userBuilder_ == null) {
+          return user_;
+        } else {
+          return userBuilder_.getMessage();
+        }
+      }
+      public Builder setUser(org.kegbot.proto.Models.User value) {
+        if (userBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          user_ = value;
+          onChanged();
+        } else {
+          userBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000200;
+        return this;
+      }
+      public Builder setUser(
+          org.kegbot.proto.Models.User.Builder builderForValue) {
+        if (userBuilder_ == null) {
+          user_ = builderForValue.build();
+          onChanged();
+        } else {
+          userBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000200;
+        return this;
+      }
+      public Builder mergeUser(org.kegbot.proto.Models.User value) {
+        if (userBuilder_ == null) {
+          if (((bitField0_ & 0x00000200) == 0x00000200) &&
+              user_ != org.kegbot.proto.Models.User.getDefaultInstance()) {
+            user_ =
+              org.kegbot.proto.Models.User.newBuilder(user_).mergeFrom(value).buildPartial();
+          } else {
+            user_ = value;
+          }
+          onChanged();
+        } else {
+          userBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000200;
+        return this;
+      }
+      public Builder clearUser() {
+        if (userBuilder_ == null) {
+          user_ = org.kegbot.proto.Models.User.getDefaultInstance();
+          onChanged();
+        } else {
+          userBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000200);
+        return this;
+      }
+      public org.kegbot.proto.Models.User.Builder getUserBuilder() {
+        bitField0_ |= 0x00000200;
+        onChanged();
+        return getUserFieldBuilder().getBuilder();
+      }
+      public org.kegbot.proto.Models.UserOrBuilder getUserOrBuilder() {
+        if (userBuilder_ != null) {
+          return userBuilder_.getMessageOrBuilder();
+        } else {
+          return user_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          org.kegbot.proto.Models.User, org.kegbot.proto.Models.User.Builder, org.kegbot.proto.Models.UserOrBuilder> 
+          getUserFieldBuilder() {
+        if (userBuilder_ == null) {
+          userBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              org.kegbot.proto.Models.User, org.kegbot.proto.Models.User.Builder, org.kegbot.proto.Models.UserOrBuilder>(
+                  user_,
+                  getParentForChildren(),
+                  isClean());
+          user_ = null;
+        }
+        return userBuilder_;
+      }
+      
       // @@protoc_insertion_point(builder_scope:AuthenticationToken)
     }
     
@@ -1131,9 +1249,9 @@ public final class Models {
   public interface BeerStyleOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
     
-    // required string id = 1;
+    // required uint32 id = 1;
     boolean hasId();
-    String getId();
+    int getId();
     
     // required string name = 2;
     boolean hasName();
@@ -1168,36 +1286,14 @@ public final class Models {
     }
     
     private int bitField0_;
-    // required string id = 1;
+    // required uint32 id = 1;
     public static final int ID_FIELD_NUMBER = 1;
-    private Object id_;
+    private int id_;
     public boolean hasId() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
-    public String getId() {
-      Object ref = id_;
-      if (ref instanceof String) {
-        return (String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
-          id_ = s;
-        }
-        return s;
-      }
-    }
-    private com.google.protobuf.ByteString getIdBytes() {
-      Object ref = id_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
-        id_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+    public int getId() {
+      return id_;
     }
     
     // required string name = 2;
@@ -1233,7 +1329,7 @@ public final class Models {
     }
     
     private void initFields() {
-      id_ = "";
+      id_ = 0;
       name_ = "";
     }
     private byte memoizedIsInitialized = -1;
@@ -1257,7 +1353,7 @@ public final class Models {
                         throws java.io.IOException {
       getSerializedSize();
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeBytes(1, getIdBytes());
+        output.writeUInt32(1, id_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         output.writeBytes(2, getNameBytes());
@@ -1273,7 +1369,7 @@ public final class Models {
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(1, getIdBytes());
+          .computeUInt32Size(1, id_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
@@ -1401,7 +1497,7 @@ public final class Models {
       
       public Builder clear() {
         super.clear();
-        id_ = "";
+        id_ = 0;
         bitField0_ = (bitField0_ & ~0x00000001);
         name_ = "";
         bitField0_ = (bitField0_ & ~0x00000002);
@@ -1512,9 +1608,9 @@ public final class Models {
               }
               break;
             }
-            case 10: {
+            case 8: {
               bitField0_ |= 0x00000001;
-              id_ = input.readBytes();
+              id_ = input.readUInt32();
               break;
             }
             case 18: {
@@ -1528,40 +1624,25 @@ public final class Models {
       
       private int bitField0_;
       
-      // required string id = 1;
-      private Object id_ = "";
+      // required uint32 id = 1;
+      private int id_ ;
       public boolean hasId() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
-      public String getId() {
-        Object ref = id_;
-        if (!(ref instanceof String)) {
-          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
-          id_ = s;
-          return s;
-        } else {
-          return (String) ref;
-        }
+      public int getId() {
+        return id_;
       }
-      public Builder setId(String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
+      public Builder setId(int value) {
+        bitField0_ |= 0x00000001;
         id_ = value;
         onChanged();
         return this;
       }
       public Builder clearId() {
         bitField0_ = (bitField0_ & ~0x00000001);
-        id_ = getDefaultInstance().getId();
+        id_ = 0;
         onChanged();
         return this;
-      }
-      void setId(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000001;
-        id_ = value;
-        onChanged();
       }
       
       // required string name = 2;
@@ -4037,9 +4118,9 @@ public final class Models {
   public interface DrinkOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
     
-    // required string id = 1;
+    // required uint32 id = 1;
     boolean hasId();
-    String getId();
+    int getId();
     
     // required uint32 ticks = 2;
     boolean hasTicks();
@@ -4049,13 +4130,13 @@ public final class Models {
     boolean hasVolumeMl();
     float getVolumeMl();
     
-    // required string session_id = 4;
+    // required uint32 session_id = 4;
     boolean hasSessionId();
-    String getSessionId();
+    int getSessionId();
     
-    // required string pour_time = 5;
-    boolean hasPourTime();
-    String getPourTime();
+    // required string time = 5;
+    boolean hasTime();
+    String getTime();
     
     // optional uint32 duration = 6;
     boolean hasDuration();
@@ -4065,17 +4146,17 @@ public final class Models {
     boolean hasStatus();
     String getStatus();
     
-    // optional string keg_id = 8;
+    // optional uint32 keg_id = 8;
     boolean hasKegId();
-    String getKegId();
+    int getKegId();
     
     // optional string user_id = 9;
     boolean hasUserId();
     String getUserId();
     
-    // optional string auth_token_id = 10;
+    // optional uint32 auth_token_id = 10;
     boolean hasAuthTokenId();
-    String getAuthTokenId();
+    int getAuthTokenId();
     
     // optional string url = 11;
     boolean hasUrl();
@@ -4084,6 +4165,31 @@ public final class Models {
     // optional string shout = 12;
     boolean hasShout();
     String getShout();
+    
+    // optional .User user = 13;
+    boolean hasUser();
+    org.kegbot.proto.Models.User getUser();
+    org.kegbot.proto.Models.UserOrBuilder getUserOrBuilder();
+    
+    // optional .Keg keg = 14;
+    boolean hasKeg();
+    org.kegbot.proto.Models.Keg getKeg();
+    org.kegbot.proto.Models.KegOrBuilder getKegOrBuilder();
+    
+    // optional .Session session = 15;
+    boolean hasSession();
+    org.kegbot.proto.Models.Session getSession();
+    org.kegbot.proto.Models.SessionOrBuilder getSessionOrBuilder();
+    
+    // repeated .Image images = 16;
+    java.util.List<org.kegbot.proto.Models.Image> 
+        getImagesList();
+    org.kegbot.proto.Models.Image getImages(int index);
+    int getImagesCount();
+    java.util.List<? extends org.kegbot.proto.Models.ImageOrBuilder> 
+        getImagesOrBuilderList();
+    org.kegbot.proto.Models.ImageOrBuilder getImagesOrBuilder(
+        int index);
   }
   public static final class Drink extends
       com.google.protobuf.GeneratedMessage
@@ -4114,36 +4220,14 @@ public final class Models {
     }
     
     private int bitField0_;
-    // required string id = 1;
+    // required uint32 id = 1;
     public static final int ID_FIELD_NUMBER = 1;
-    private Object id_;
+    private int id_;
     public boolean hasId() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
-    public String getId() {
-      Object ref = id_;
-      if (ref instanceof String) {
-        return (String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
-          id_ = s;
-        }
-        return s;
-      }
-    }
-    private com.google.protobuf.ByteString getIdBytes() {
-      Object ref = id_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
-        id_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+    public int getId() {
+      return id_;
     }
     
     // required uint32 ticks = 2;
@@ -4166,46 +4250,24 @@ public final class Models {
       return volumeMl_;
     }
     
-    // required string session_id = 4;
+    // required uint32 session_id = 4;
     public static final int SESSION_ID_FIELD_NUMBER = 4;
-    private Object sessionId_;
+    private int sessionId_;
     public boolean hasSessionId() {
       return ((bitField0_ & 0x00000008) == 0x00000008);
     }
-    public String getSessionId() {
-      Object ref = sessionId_;
-      if (ref instanceof String) {
-        return (String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
-          sessionId_ = s;
-        }
-        return s;
-      }
-    }
-    private com.google.protobuf.ByteString getSessionIdBytes() {
-      Object ref = sessionId_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
-        sessionId_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+    public int getSessionId() {
+      return sessionId_;
     }
     
-    // required string pour_time = 5;
-    public static final int POUR_TIME_FIELD_NUMBER = 5;
-    private Object pourTime_;
-    public boolean hasPourTime() {
+    // required string time = 5;
+    public static final int TIME_FIELD_NUMBER = 5;
+    private Object time_;
+    public boolean hasTime() {
       return ((bitField0_ & 0x00000010) == 0x00000010);
     }
-    public String getPourTime() {
-      Object ref = pourTime_;
+    public String getTime() {
+      Object ref = time_;
       if (ref instanceof String) {
         return (String) ref;
       } else {
@@ -4213,17 +4275,17 @@ public final class Models {
             (com.google.protobuf.ByteString) ref;
         String s = bs.toStringUtf8();
         if (com.google.protobuf.Internal.isValidUtf8(bs)) {
-          pourTime_ = s;
+          time_ = s;
         }
         return s;
       }
     }
-    private com.google.protobuf.ByteString getPourTimeBytes() {
-      Object ref = pourTime_;
+    private com.google.protobuf.ByteString getTimeBytes() {
+      Object ref = time_;
       if (ref instanceof String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8((String) ref);
-        pourTime_ = b;
+        time_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
@@ -4272,36 +4334,14 @@ public final class Models {
       }
     }
     
-    // optional string keg_id = 8;
+    // optional uint32 keg_id = 8;
     public static final int KEG_ID_FIELD_NUMBER = 8;
-    private Object kegId_;
+    private int kegId_;
     public boolean hasKegId() {
       return ((bitField0_ & 0x00000080) == 0x00000080);
     }
-    public String getKegId() {
-      Object ref = kegId_;
-      if (ref instanceof String) {
-        return (String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
-          kegId_ = s;
-        }
-        return s;
-      }
-    }
-    private com.google.protobuf.ByteString getKegIdBytes() {
-      Object ref = kegId_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
-        kegId_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+    public int getKegId() {
+      return kegId_;
     }
     
     // optional string user_id = 9;
@@ -4336,36 +4376,14 @@ public final class Models {
       }
     }
     
-    // optional string auth_token_id = 10;
+    // optional uint32 auth_token_id = 10;
     public static final int AUTH_TOKEN_ID_FIELD_NUMBER = 10;
-    private Object authTokenId_;
+    private int authTokenId_;
     public boolean hasAuthTokenId() {
       return ((bitField0_ & 0x00000200) == 0x00000200);
     }
-    public String getAuthTokenId() {
-      Object ref = authTokenId_;
-      if (ref instanceof String) {
-        return (String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
-          authTokenId_ = s;
-        }
-        return s;
-      }
-    }
-    private com.google.protobuf.ByteString getAuthTokenIdBytes() {
-      Object ref = authTokenId_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
-        authTokenId_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+    public int getAuthTokenId() {
+      return authTokenId_;
     }
     
     // optional string url = 11;
@@ -4432,19 +4450,83 @@ public final class Models {
       }
     }
     
+    // optional .User user = 13;
+    public static final int USER_FIELD_NUMBER = 13;
+    private org.kegbot.proto.Models.User user_;
+    public boolean hasUser() {
+      return ((bitField0_ & 0x00001000) == 0x00001000);
+    }
+    public org.kegbot.proto.Models.User getUser() {
+      return user_;
+    }
+    public org.kegbot.proto.Models.UserOrBuilder getUserOrBuilder() {
+      return user_;
+    }
+    
+    // optional .Keg keg = 14;
+    public static final int KEG_FIELD_NUMBER = 14;
+    private org.kegbot.proto.Models.Keg keg_;
+    public boolean hasKeg() {
+      return ((bitField0_ & 0x00002000) == 0x00002000);
+    }
+    public org.kegbot.proto.Models.Keg getKeg() {
+      return keg_;
+    }
+    public org.kegbot.proto.Models.KegOrBuilder getKegOrBuilder() {
+      return keg_;
+    }
+    
+    // optional .Session session = 15;
+    public static final int SESSION_FIELD_NUMBER = 15;
+    private org.kegbot.proto.Models.Session session_;
+    public boolean hasSession() {
+      return ((bitField0_ & 0x00004000) == 0x00004000);
+    }
+    public org.kegbot.proto.Models.Session getSession() {
+      return session_;
+    }
+    public org.kegbot.proto.Models.SessionOrBuilder getSessionOrBuilder() {
+      return session_;
+    }
+    
+    // repeated .Image images = 16;
+    public static final int IMAGES_FIELD_NUMBER = 16;
+    private java.util.List<org.kegbot.proto.Models.Image> images_;
+    public java.util.List<org.kegbot.proto.Models.Image> getImagesList() {
+      return images_;
+    }
+    public java.util.List<? extends org.kegbot.proto.Models.ImageOrBuilder> 
+        getImagesOrBuilderList() {
+      return images_;
+    }
+    public int getImagesCount() {
+      return images_.size();
+    }
+    public org.kegbot.proto.Models.Image getImages(int index) {
+      return images_.get(index);
+    }
+    public org.kegbot.proto.Models.ImageOrBuilder getImagesOrBuilder(
+        int index) {
+      return images_.get(index);
+    }
+    
     private void initFields() {
-      id_ = "";
+      id_ = 0;
       ticks_ = 0;
       volumeMl_ = 0F;
-      sessionId_ = "";
-      pourTime_ = "";
+      sessionId_ = 0;
+      time_ = "";
       duration_ = 0;
       status_ = "";
-      kegId_ = "";
+      kegId_ = 0;
       userId_ = "";
-      authTokenId_ = "";
+      authTokenId_ = 0;
       url_ = "";
       shout_ = "";
+      user_ = org.kegbot.proto.Models.User.getDefaultInstance();
+      keg_ = org.kegbot.proto.Models.Keg.getDefaultInstance();
+      session_ = org.kegbot.proto.Models.Session.getDefaultInstance();
+      images_ = java.util.Collections.emptyList();
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -4467,13 +4549,37 @@ public final class Models {
         memoizedIsInitialized = 0;
         return false;
       }
-      if (!hasPourTime()) {
+      if (!hasTime()) {
         memoizedIsInitialized = 0;
         return false;
       }
       if (!hasStatus()) {
         memoizedIsInitialized = 0;
         return false;
+      }
+      if (hasUser()) {
+        if (!getUser().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      if (hasKeg()) {
+        if (!getKeg().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      if (hasSession()) {
+        if (!getSession().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      for (int i = 0; i < getImagesCount(); i++) {
+        if (!getImages(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
       }
       memoizedIsInitialized = 1;
       return true;
@@ -4483,7 +4589,7 @@ public final class Models {
                         throws java.io.IOException {
       getSerializedSize();
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeBytes(1, getIdBytes());
+        output.writeUInt32(1, id_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         output.writeUInt32(2, ticks_);
@@ -4492,10 +4598,10 @@ public final class Models {
         output.writeFloat(3, volumeMl_);
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
-        output.writeBytes(4, getSessionIdBytes());
+        output.writeUInt32(4, sessionId_);
       }
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
-        output.writeBytes(5, getPourTimeBytes());
+        output.writeBytes(5, getTimeBytes());
       }
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
         output.writeUInt32(6, duration_);
@@ -4504,19 +4610,31 @@ public final class Models {
         output.writeBytes(7, getStatusBytes());
       }
       if (((bitField0_ & 0x00000080) == 0x00000080)) {
-        output.writeBytes(8, getKegIdBytes());
+        output.writeUInt32(8, kegId_);
       }
       if (((bitField0_ & 0x00000100) == 0x00000100)) {
         output.writeBytes(9, getUserIdBytes());
       }
       if (((bitField0_ & 0x00000200) == 0x00000200)) {
-        output.writeBytes(10, getAuthTokenIdBytes());
+        output.writeUInt32(10, authTokenId_);
       }
       if (((bitField0_ & 0x00000400) == 0x00000400)) {
         output.writeBytes(11, getUrlBytes());
       }
       if (((bitField0_ & 0x00000800) == 0x00000800)) {
         output.writeBytes(12, getShoutBytes());
+      }
+      if (((bitField0_ & 0x00001000) == 0x00001000)) {
+        output.writeMessage(13, user_);
+      }
+      if (((bitField0_ & 0x00002000) == 0x00002000)) {
+        output.writeMessage(14, keg_);
+      }
+      if (((bitField0_ & 0x00004000) == 0x00004000)) {
+        output.writeMessage(15, session_);
+      }
+      for (int i = 0; i < images_.size(); i++) {
+        output.writeMessage(16, images_.get(i));
       }
       getUnknownFields().writeTo(output);
     }
@@ -4529,7 +4647,7 @@ public final class Models {
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(1, getIdBytes());
+          .computeUInt32Size(1, id_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
@@ -4541,11 +4659,11 @@ public final class Models {
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(4, getSessionIdBytes());
+          .computeUInt32Size(4, sessionId_);
       }
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(5, getPourTimeBytes());
+          .computeBytesSize(5, getTimeBytes());
       }
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
         size += com.google.protobuf.CodedOutputStream
@@ -4557,7 +4675,7 @@ public final class Models {
       }
       if (((bitField0_ & 0x00000080) == 0x00000080)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(8, getKegIdBytes());
+          .computeUInt32Size(8, kegId_);
       }
       if (((bitField0_ & 0x00000100) == 0x00000100)) {
         size += com.google.protobuf.CodedOutputStream
@@ -4565,7 +4683,7 @@ public final class Models {
       }
       if (((bitField0_ & 0x00000200) == 0x00000200)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(10, getAuthTokenIdBytes());
+          .computeUInt32Size(10, authTokenId_);
       }
       if (((bitField0_ & 0x00000400) == 0x00000400)) {
         size += com.google.protobuf.CodedOutputStream
@@ -4574,6 +4692,22 @@ public final class Models {
       if (((bitField0_ & 0x00000800) == 0x00000800)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(12, getShoutBytes());
+      }
+      if (((bitField0_ & 0x00001000) == 0x00001000)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(13, user_);
+      }
+      if (((bitField0_ & 0x00002000) == 0x00002000)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(14, keg_);
+      }
+      if (((bitField0_ & 0x00004000) == 0x00004000)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(15, session_);
+      }
+      for (int i = 0; i < images_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(16, images_.get(i));
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -4689,6 +4823,10 @@ public final class Models {
       }
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          getUserFieldBuilder();
+          getKegFieldBuilder();
+          getSessionFieldBuilder();
+          getImagesFieldBuilder();
         }
       }
       private static Builder create() {
@@ -4697,30 +4835,54 @@ public final class Models {
       
       public Builder clear() {
         super.clear();
-        id_ = "";
+        id_ = 0;
         bitField0_ = (bitField0_ & ~0x00000001);
         ticks_ = 0;
         bitField0_ = (bitField0_ & ~0x00000002);
         volumeMl_ = 0F;
         bitField0_ = (bitField0_ & ~0x00000004);
-        sessionId_ = "";
+        sessionId_ = 0;
         bitField0_ = (bitField0_ & ~0x00000008);
-        pourTime_ = "";
+        time_ = "";
         bitField0_ = (bitField0_ & ~0x00000010);
         duration_ = 0;
         bitField0_ = (bitField0_ & ~0x00000020);
         status_ = "";
         bitField0_ = (bitField0_ & ~0x00000040);
-        kegId_ = "";
+        kegId_ = 0;
         bitField0_ = (bitField0_ & ~0x00000080);
         userId_ = "";
         bitField0_ = (bitField0_ & ~0x00000100);
-        authTokenId_ = "";
+        authTokenId_ = 0;
         bitField0_ = (bitField0_ & ~0x00000200);
         url_ = "";
         bitField0_ = (bitField0_ & ~0x00000400);
         shout_ = "";
         bitField0_ = (bitField0_ & ~0x00000800);
+        if (userBuilder_ == null) {
+          user_ = org.kegbot.proto.Models.User.getDefaultInstance();
+        } else {
+          userBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00001000);
+        if (kegBuilder_ == null) {
+          keg_ = org.kegbot.proto.Models.Keg.getDefaultInstance();
+        } else {
+          kegBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00002000);
+        if (sessionBuilder_ == null) {
+          session_ = org.kegbot.proto.Models.Session.getDefaultInstance();
+        } else {
+          sessionBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00004000);
+        if (imagesBuilder_ == null) {
+          images_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00008000);
+        } else {
+          imagesBuilder_.clear();
+        }
         return this;
       }
       
@@ -4778,7 +4940,7 @@ public final class Models {
         if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
           to_bitField0_ |= 0x00000010;
         }
-        result.pourTime_ = pourTime_;
+        result.time_ = time_;
         if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
           to_bitField0_ |= 0x00000020;
         }
@@ -4807,6 +4969,39 @@ public final class Models {
           to_bitField0_ |= 0x00000800;
         }
         result.shout_ = shout_;
+        if (((from_bitField0_ & 0x00001000) == 0x00001000)) {
+          to_bitField0_ |= 0x00001000;
+        }
+        if (userBuilder_ == null) {
+          result.user_ = user_;
+        } else {
+          result.user_ = userBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00002000) == 0x00002000)) {
+          to_bitField0_ |= 0x00002000;
+        }
+        if (kegBuilder_ == null) {
+          result.keg_ = keg_;
+        } else {
+          result.keg_ = kegBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00004000) == 0x00004000)) {
+          to_bitField0_ |= 0x00004000;
+        }
+        if (sessionBuilder_ == null) {
+          result.session_ = session_;
+        } else {
+          result.session_ = sessionBuilder_.build();
+        }
+        if (imagesBuilder_ == null) {
+          if (((bitField0_ & 0x00008000) == 0x00008000)) {
+            images_ = java.util.Collections.unmodifiableList(images_);
+            bitField0_ = (bitField0_ & ~0x00008000);
+          }
+          result.images_ = images_;
+        } else {
+          result.images_ = imagesBuilder_.build();
+        }
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -4835,8 +5030,8 @@ public final class Models {
         if (other.hasSessionId()) {
           setSessionId(other.getSessionId());
         }
-        if (other.hasPourTime()) {
-          setPourTime(other.getPourTime());
+        if (other.hasTime()) {
+          setTime(other.getTime());
         }
         if (other.hasDuration()) {
           setDuration(other.getDuration());
@@ -4859,6 +5054,41 @@ public final class Models {
         if (other.hasShout()) {
           setShout(other.getShout());
         }
+        if (other.hasUser()) {
+          mergeUser(other.getUser());
+        }
+        if (other.hasKeg()) {
+          mergeKeg(other.getKeg());
+        }
+        if (other.hasSession()) {
+          mergeSession(other.getSession());
+        }
+        if (imagesBuilder_ == null) {
+          if (!other.images_.isEmpty()) {
+            if (images_.isEmpty()) {
+              images_ = other.images_;
+              bitField0_ = (bitField0_ & ~0x00008000);
+            } else {
+              ensureImagesIsMutable();
+              images_.addAll(other.images_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.images_.isEmpty()) {
+            if (imagesBuilder_.isEmpty()) {
+              imagesBuilder_.dispose();
+              imagesBuilder_ = null;
+              images_ = other.images_;
+              bitField0_ = (bitField0_ & ~0x00008000);
+              imagesBuilder_ = 
+                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                   getImagesFieldBuilder() : null;
+            } else {
+              imagesBuilder_.addAllMessages(other.images_);
+            }
+          }
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
@@ -4880,13 +5110,37 @@ public final class Models {
           
           return false;
         }
-        if (!hasPourTime()) {
+        if (!hasTime()) {
           
           return false;
         }
         if (!hasStatus()) {
           
           return false;
+        }
+        if (hasUser()) {
+          if (!getUser().isInitialized()) {
+            
+            return false;
+          }
+        }
+        if (hasKeg()) {
+          if (!getKeg().isInitialized()) {
+            
+            return false;
+          }
+        }
+        if (hasSession()) {
+          if (!getSession().isInitialized()) {
+            
+            return false;
+          }
+        }
+        for (int i = 0; i < getImagesCount(); i++) {
+          if (!getImages(i).isInitialized()) {
+            
+            return false;
+          }
         }
         return true;
       }
@@ -4914,9 +5168,9 @@ public final class Models {
               }
               break;
             }
-            case 10: {
+            case 8: {
               bitField0_ |= 0x00000001;
-              id_ = input.readBytes();
+              id_ = input.readUInt32();
               break;
             }
             case 16: {
@@ -4929,14 +5183,14 @@ public final class Models {
               volumeMl_ = input.readFloat();
               break;
             }
-            case 34: {
+            case 32: {
               bitField0_ |= 0x00000008;
-              sessionId_ = input.readBytes();
+              sessionId_ = input.readUInt32();
               break;
             }
             case 42: {
               bitField0_ |= 0x00000010;
-              pourTime_ = input.readBytes();
+              time_ = input.readBytes();
               break;
             }
             case 48: {
@@ -4949,9 +5203,9 @@ public final class Models {
               status_ = input.readBytes();
               break;
             }
-            case 66: {
+            case 64: {
               bitField0_ |= 0x00000080;
-              kegId_ = input.readBytes();
+              kegId_ = input.readUInt32();
               break;
             }
             case 74: {
@@ -4959,9 +5213,9 @@ public final class Models {
               userId_ = input.readBytes();
               break;
             }
-            case 82: {
+            case 80: {
               bitField0_ |= 0x00000200;
-              authTokenId_ = input.readBytes();
+              authTokenId_ = input.readUInt32();
               break;
             }
             case 90: {
@@ -4974,46 +5228,64 @@ public final class Models {
               shout_ = input.readBytes();
               break;
             }
+            case 106: {
+              org.kegbot.proto.Models.User.Builder subBuilder = org.kegbot.proto.Models.User.newBuilder();
+              if (hasUser()) {
+                subBuilder.mergeFrom(getUser());
+              }
+              input.readMessage(subBuilder, extensionRegistry);
+              setUser(subBuilder.buildPartial());
+              break;
+            }
+            case 114: {
+              org.kegbot.proto.Models.Keg.Builder subBuilder = org.kegbot.proto.Models.Keg.newBuilder();
+              if (hasKeg()) {
+                subBuilder.mergeFrom(getKeg());
+              }
+              input.readMessage(subBuilder, extensionRegistry);
+              setKeg(subBuilder.buildPartial());
+              break;
+            }
+            case 122: {
+              org.kegbot.proto.Models.Session.Builder subBuilder = org.kegbot.proto.Models.Session.newBuilder();
+              if (hasSession()) {
+                subBuilder.mergeFrom(getSession());
+              }
+              input.readMessage(subBuilder, extensionRegistry);
+              setSession(subBuilder.buildPartial());
+              break;
+            }
+            case 130: {
+              org.kegbot.proto.Models.Image.Builder subBuilder = org.kegbot.proto.Models.Image.newBuilder();
+              input.readMessage(subBuilder, extensionRegistry);
+              addImages(subBuilder.buildPartial());
+              break;
+            }
           }
         }
       }
       
       private int bitField0_;
       
-      // required string id = 1;
-      private Object id_ = "";
+      // required uint32 id = 1;
+      private int id_ ;
       public boolean hasId() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
-      public String getId() {
-        Object ref = id_;
-        if (!(ref instanceof String)) {
-          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
-          id_ = s;
-          return s;
-        } else {
-          return (String) ref;
-        }
+      public int getId() {
+        return id_;
       }
-      public Builder setId(String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
+      public Builder setId(int value) {
+        bitField0_ |= 0x00000001;
         id_ = value;
         onChanged();
         return this;
       }
       public Builder clearId() {
         bitField0_ = (bitField0_ & ~0x00000001);
-        id_ = getDefaultInstance().getId();
+        id_ = 0;
         onChanged();
         return this;
-      }
-      void setId(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000001;
-        id_ = value;
-        onChanged();
       }
       
       // required uint32 ticks = 2;
@@ -5058,75 +5330,60 @@ public final class Models {
         return this;
       }
       
-      // required string session_id = 4;
-      private Object sessionId_ = "";
+      // required uint32 session_id = 4;
+      private int sessionId_ ;
       public boolean hasSessionId() {
         return ((bitField0_ & 0x00000008) == 0x00000008);
       }
-      public String getSessionId() {
-        Object ref = sessionId_;
-        if (!(ref instanceof String)) {
-          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
-          sessionId_ = s;
-          return s;
-        } else {
-          return (String) ref;
-        }
+      public int getSessionId() {
+        return sessionId_;
       }
-      public Builder setSessionId(String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000008;
+      public Builder setSessionId(int value) {
+        bitField0_ |= 0x00000008;
         sessionId_ = value;
         onChanged();
         return this;
       }
       public Builder clearSessionId() {
         bitField0_ = (bitField0_ & ~0x00000008);
-        sessionId_ = getDefaultInstance().getSessionId();
+        sessionId_ = 0;
         onChanged();
         return this;
       }
-      void setSessionId(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000008;
-        sessionId_ = value;
-        onChanged();
-      }
       
-      // required string pour_time = 5;
-      private Object pourTime_ = "";
-      public boolean hasPourTime() {
+      // required string time = 5;
+      private Object time_ = "";
+      public boolean hasTime() {
         return ((bitField0_ & 0x00000010) == 0x00000010);
       }
-      public String getPourTime() {
-        Object ref = pourTime_;
+      public String getTime() {
+        Object ref = time_;
         if (!(ref instanceof String)) {
           String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
-          pourTime_ = s;
+          time_ = s;
           return s;
         } else {
           return (String) ref;
         }
       }
-      public Builder setPourTime(String value) {
+      public Builder setTime(String value) {
         if (value == null) {
     throw new NullPointerException();
   }
   bitField0_ |= 0x00000010;
-        pourTime_ = value;
+        time_ = value;
         onChanged();
         return this;
       }
-      public Builder clearPourTime() {
+      public Builder clearTime() {
         bitField0_ = (bitField0_ & ~0x00000010);
-        pourTime_ = getDefaultInstance().getPourTime();
+        time_ = getDefaultInstance().getTime();
         onChanged();
         return this;
       }
-      void setPourTime(com.google.protobuf.ByteString value) {
+      void setTime(com.google.protobuf.ByteString value) {
         bitField0_ |= 0x00000010;
-        pourTime_ = value;
+        time_ = value;
         onChanged();
       }
       
@@ -5187,40 +5444,25 @@ public final class Models {
         onChanged();
       }
       
-      // optional string keg_id = 8;
-      private Object kegId_ = "";
+      // optional uint32 keg_id = 8;
+      private int kegId_ ;
       public boolean hasKegId() {
         return ((bitField0_ & 0x00000080) == 0x00000080);
       }
-      public String getKegId() {
-        Object ref = kegId_;
-        if (!(ref instanceof String)) {
-          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
-          kegId_ = s;
-          return s;
-        } else {
-          return (String) ref;
-        }
+      public int getKegId() {
+        return kegId_;
       }
-      public Builder setKegId(String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000080;
+      public Builder setKegId(int value) {
+        bitField0_ |= 0x00000080;
         kegId_ = value;
         onChanged();
         return this;
       }
       public Builder clearKegId() {
         bitField0_ = (bitField0_ & ~0x00000080);
-        kegId_ = getDefaultInstance().getKegId();
+        kegId_ = 0;
         onChanged();
         return this;
-      }
-      void setKegId(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000080;
-        kegId_ = value;
-        onChanged();
       }
       
       // optional string user_id = 9;
@@ -5259,40 +5501,25 @@ public final class Models {
         onChanged();
       }
       
-      // optional string auth_token_id = 10;
-      private Object authTokenId_ = "";
+      // optional uint32 auth_token_id = 10;
+      private int authTokenId_ ;
       public boolean hasAuthTokenId() {
         return ((bitField0_ & 0x00000200) == 0x00000200);
       }
-      public String getAuthTokenId() {
-        Object ref = authTokenId_;
-        if (!(ref instanceof String)) {
-          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
-          authTokenId_ = s;
-          return s;
-        } else {
-          return (String) ref;
-        }
+      public int getAuthTokenId() {
+        return authTokenId_;
       }
-      public Builder setAuthTokenId(String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000200;
+      public Builder setAuthTokenId(int value) {
+        bitField0_ |= 0x00000200;
         authTokenId_ = value;
         onChanged();
         return this;
       }
       public Builder clearAuthTokenId() {
         bitField0_ = (bitField0_ & ~0x00000200);
-        authTokenId_ = getDefaultInstance().getAuthTokenId();
+        authTokenId_ = 0;
         onChanged();
         return this;
-      }
-      void setAuthTokenId(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000200;
-        authTokenId_ = value;
-        onChanged();
       }
       
       // optional string url = 11;
@@ -5367,6 +5594,462 @@ public final class Models {
         onChanged();
       }
       
+      // optional .User user = 13;
+      private org.kegbot.proto.Models.User user_ = org.kegbot.proto.Models.User.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          org.kegbot.proto.Models.User, org.kegbot.proto.Models.User.Builder, org.kegbot.proto.Models.UserOrBuilder> userBuilder_;
+      public boolean hasUser() {
+        return ((bitField0_ & 0x00001000) == 0x00001000);
+      }
+      public org.kegbot.proto.Models.User getUser() {
+        if (userBuilder_ == null) {
+          return user_;
+        } else {
+          return userBuilder_.getMessage();
+        }
+      }
+      public Builder setUser(org.kegbot.proto.Models.User value) {
+        if (userBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          user_ = value;
+          onChanged();
+        } else {
+          userBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00001000;
+        return this;
+      }
+      public Builder setUser(
+          org.kegbot.proto.Models.User.Builder builderForValue) {
+        if (userBuilder_ == null) {
+          user_ = builderForValue.build();
+          onChanged();
+        } else {
+          userBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00001000;
+        return this;
+      }
+      public Builder mergeUser(org.kegbot.proto.Models.User value) {
+        if (userBuilder_ == null) {
+          if (((bitField0_ & 0x00001000) == 0x00001000) &&
+              user_ != org.kegbot.proto.Models.User.getDefaultInstance()) {
+            user_ =
+              org.kegbot.proto.Models.User.newBuilder(user_).mergeFrom(value).buildPartial();
+          } else {
+            user_ = value;
+          }
+          onChanged();
+        } else {
+          userBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00001000;
+        return this;
+      }
+      public Builder clearUser() {
+        if (userBuilder_ == null) {
+          user_ = org.kegbot.proto.Models.User.getDefaultInstance();
+          onChanged();
+        } else {
+          userBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00001000);
+        return this;
+      }
+      public org.kegbot.proto.Models.User.Builder getUserBuilder() {
+        bitField0_ |= 0x00001000;
+        onChanged();
+        return getUserFieldBuilder().getBuilder();
+      }
+      public org.kegbot.proto.Models.UserOrBuilder getUserOrBuilder() {
+        if (userBuilder_ != null) {
+          return userBuilder_.getMessageOrBuilder();
+        } else {
+          return user_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          org.kegbot.proto.Models.User, org.kegbot.proto.Models.User.Builder, org.kegbot.proto.Models.UserOrBuilder> 
+          getUserFieldBuilder() {
+        if (userBuilder_ == null) {
+          userBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              org.kegbot.proto.Models.User, org.kegbot.proto.Models.User.Builder, org.kegbot.proto.Models.UserOrBuilder>(
+                  user_,
+                  getParentForChildren(),
+                  isClean());
+          user_ = null;
+        }
+        return userBuilder_;
+      }
+      
+      // optional .Keg keg = 14;
+      private org.kegbot.proto.Models.Keg keg_ = org.kegbot.proto.Models.Keg.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          org.kegbot.proto.Models.Keg, org.kegbot.proto.Models.Keg.Builder, org.kegbot.proto.Models.KegOrBuilder> kegBuilder_;
+      public boolean hasKeg() {
+        return ((bitField0_ & 0x00002000) == 0x00002000);
+      }
+      public org.kegbot.proto.Models.Keg getKeg() {
+        if (kegBuilder_ == null) {
+          return keg_;
+        } else {
+          return kegBuilder_.getMessage();
+        }
+      }
+      public Builder setKeg(org.kegbot.proto.Models.Keg value) {
+        if (kegBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          keg_ = value;
+          onChanged();
+        } else {
+          kegBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00002000;
+        return this;
+      }
+      public Builder setKeg(
+          org.kegbot.proto.Models.Keg.Builder builderForValue) {
+        if (kegBuilder_ == null) {
+          keg_ = builderForValue.build();
+          onChanged();
+        } else {
+          kegBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00002000;
+        return this;
+      }
+      public Builder mergeKeg(org.kegbot.proto.Models.Keg value) {
+        if (kegBuilder_ == null) {
+          if (((bitField0_ & 0x00002000) == 0x00002000) &&
+              keg_ != org.kegbot.proto.Models.Keg.getDefaultInstance()) {
+            keg_ =
+              org.kegbot.proto.Models.Keg.newBuilder(keg_).mergeFrom(value).buildPartial();
+          } else {
+            keg_ = value;
+          }
+          onChanged();
+        } else {
+          kegBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00002000;
+        return this;
+      }
+      public Builder clearKeg() {
+        if (kegBuilder_ == null) {
+          keg_ = org.kegbot.proto.Models.Keg.getDefaultInstance();
+          onChanged();
+        } else {
+          kegBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00002000);
+        return this;
+      }
+      public org.kegbot.proto.Models.Keg.Builder getKegBuilder() {
+        bitField0_ |= 0x00002000;
+        onChanged();
+        return getKegFieldBuilder().getBuilder();
+      }
+      public org.kegbot.proto.Models.KegOrBuilder getKegOrBuilder() {
+        if (kegBuilder_ != null) {
+          return kegBuilder_.getMessageOrBuilder();
+        } else {
+          return keg_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          org.kegbot.proto.Models.Keg, org.kegbot.proto.Models.Keg.Builder, org.kegbot.proto.Models.KegOrBuilder> 
+          getKegFieldBuilder() {
+        if (kegBuilder_ == null) {
+          kegBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              org.kegbot.proto.Models.Keg, org.kegbot.proto.Models.Keg.Builder, org.kegbot.proto.Models.KegOrBuilder>(
+                  keg_,
+                  getParentForChildren(),
+                  isClean());
+          keg_ = null;
+        }
+        return kegBuilder_;
+      }
+      
+      // optional .Session session = 15;
+      private org.kegbot.proto.Models.Session session_ = org.kegbot.proto.Models.Session.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          org.kegbot.proto.Models.Session, org.kegbot.proto.Models.Session.Builder, org.kegbot.proto.Models.SessionOrBuilder> sessionBuilder_;
+      public boolean hasSession() {
+        return ((bitField0_ & 0x00004000) == 0x00004000);
+      }
+      public org.kegbot.proto.Models.Session getSession() {
+        if (sessionBuilder_ == null) {
+          return session_;
+        } else {
+          return sessionBuilder_.getMessage();
+        }
+      }
+      public Builder setSession(org.kegbot.proto.Models.Session value) {
+        if (sessionBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          session_ = value;
+          onChanged();
+        } else {
+          sessionBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00004000;
+        return this;
+      }
+      public Builder setSession(
+          org.kegbot.proto.Models.Session.Builder builderForValue) {
+        if (sessionBuilder_ == null) {
+          session_ = builderForValue.build();
+          onChanged();
+        } else {
+          sessionBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00004000;
+        return this;
+      }
+      public Builder mergeSession(org.kegbot.proto.Models.Session value) {
+        if (sessionBuilder_ == null) {
+          if (((bitField0_ & 0x00004000) == 0x00004000) &&
+              session_ != org.kegbot.proto.Models.Session.getDefaultInstance()) {
+            session_ =
+              org.kegbot.proto.Models.Session.newBuilder(session_).mergeFrom(value).buildPartial();
+          } else {
+            session_ = value;
+          }
+          onChanged();
+        } else {
+          sessionBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00004000;
+        return this;
+      }
+      public Builder clearSession() {
+        if (sessionBuilder_ == null) {
+          session_ = org.kegbot.proto.Models.Session.getDefaultInstance();
+          onChanged();
+        } else {
+          sessionBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00004000);
+        return this;
+      }
+      public org.kegbot.proto.Models.Session.Builder getSessionBuilder() {
+        bitField0_ |= 0x00004000;
+        onChanged();
+        return getSessionFieldBuilder().getBuilder();
+      }
+      public org.kegbot.proto.Models.SessionOrBuilder getSessionOrBuilder() {
+        if (sessionBuilder_ != null) {
+          return sessionBuilder_.getMessageOrBuilder();
+        } else {
+          return session_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          org.kegbot.proto.Models.Session, org.kegbot.proto.Models.Session.Builder, org.kegbot.proto.Models.SessionOrBuilder> 
+          getSessionFieldBuilder() {
+        if (sessionBuilder_ == null) {
+          sessionBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              org.kegbot.proto.Models.Session, org.kegbot.proto.Models.Session.Builder, org.kegbot.proto.Models.SessionOrBuilder>(
+                  session_,
+                  getParentForChildren(),
+                  isClean());
+          session_ = null;
+        }
+        return sessionBuilder_;
+      }
+      
+      // repeated .Image images = 16;
+      private java.util.List<org.kegbot.proto.Models.Image> images_ =
+        java.util.Collections.emptyList();
+      private void ensureImagesIsMutable() {
+        if (!((bitField0_ & 0x00008000) == 0x00008000)) {
+          images_ = new java.util.ArrayList<org.kegbot.proto.Models.Image>(images_);
+          bitField0_ |= 0x00008000;
+         }
+      }
+      
+      private com.google.protobuf.RepeatedFieldBuilder<
+          org.kegbot.proto.Models.Image, org.kegbot.proto.Models.Image.Builder, org.kegbot.proto.Models.ImageOrBuilder> imagesBuilder_;
+      
+      public java.util.List<org.kegbot.proto.Models.Image> getImagesList() {
+        if (imagesBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(images_);
+        } else {
+          return imagesBuilder_.getMessageList();
+        }
+      }
+      public int getImagesCount() {
+        if (imagesBuilder_ == null) {
+          return images_.size();
+        } else {
+          return imagesBuilder_.getCount();
+        }
+      }
+      public org.kegbot.proto.Models.Image getImages(int index) {
+        if (imagesBuilder_ == null) {
+          return images_.get(index);
+        } else {
+          return imagesBuilder_.getMessage(index);
+        }
+      }
+      public Builder setImages(
+          int index, org.kegbot.proto.Models.Image value) {
+        if (imagesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureImagesIsMutable();
+          images_.set(index, value);
+          onChanged();
+        } else {
+          imagesBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      public Builder setImages(
+          int index, org.kegbot.proto.Models.Image.Builder builderForValue) {
+        if (imagesBuilder_ == null) {
+          ensureImagesIsMutable();
+          images_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          imagesBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addImages(org.kegbot.proto.Models.Image value) {
+        if (imagesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureImagesIsMutable();
+          images_.add(value);
+          onChanged();
+        } else {
+          imagesBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      public Builder addImages(
+          int index, org.kegbot.proto.Models.Image value) {
+        if (imagesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureImagesIsMutable();
+          images_.add(index, value);
+          onChanged();
+        } else {
+          imagesBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      public Builder addImages(
+          org.kegbot.proto.Models.Image.Builder builderForValue) {
+        if (imagesBuilder_ == null) {
+          ensureImagesIsMutable();
+          images_.add(builderForValue.build());
+          onChanged();
+        } else {
+          imagesBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addImages(
+          int index, org.kegbot.proto.Models.Image.Builder builderForValue) {
+        if (imagesBuilder_ == null) {
+          ensureImagesIsMutable();
+          images_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          imagesBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addAllImages(
+          java.lang.Iterable<? extends org.kegbot.proto.Models.Image> values) {
+        if (imagesBuilder_ == null) {
+          ensureImagesIsMutable();
+          super.addAll(values, images_);
+          onChanged();
+        } else {
+          imagesBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      public Builder clearImages() {
+        if (imagesBuilder_ == null) {
+          images_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00008000);
+          onChanged();
+        } else {
+          imagesBuilder_.clear();
+        }
+        return this;
+      }
+      public Builder removeImages(int index) {
+        if (imagesBuilder_ == null) {
+          ensureImagesIsMutable();
+          images_.remove(index);
+          onChanged();
+        } else {
+          imagesBuilder_.remove(index);
+        }
+        return this;
+      }
+      public org.kegbot.proto.Models.Image.Builder getImagesBuilder(
+          int index) {
+        return getImagesFieldBuilder().getBuilder(index);
+      }
+      public org.kegbot.proto.Models.ImageOrBuilder getImagesOrBuilder(
+          int index) {
+        if (imagesBuilder_ == null) {
+          return images_.get(index);  } else {
+          return imagesBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      public java.util.List<? extends org.kegbot.proto.Models.ImageOrBuilder> 
+           getImagesOrBuilderList() {
+        if (imagesBuilder_ != null) {
+          return imagesBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(images_);
+        }
+      }
+      public org.kegbot.proto.Models.Image.Builder addImagesBuilder() {
+        return getImagesFieldBuilder().addBuilder(
+            org.kegbot.proto.Models.Image.getDefaultInstance());
+      }
+      public org.kegbot.proto.Models.Image.Builder addImagesBuilder(
+          int index) {
+        return getImagesFieldBuilder().addBuilder(
+            index, org.kegbot.proto.Models.Image.getDefaultInstance());
+      }
+      public java.util.List<org.kegbot.proto.Models.Image.Builder> 
+           getImagesBuilderList() {
+        return getImagesFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilder<
+          org.kegbot.proto.Models.Image, org.kegbot.proto.Models.Image.Builder, org.kegbot.proto.Models.ImageOrBuilder> 
+          getImagesFieldBuilder() {
+        if (imagesBuilder_ == null) {
+          imagesBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+              org.kegbot.proto.Models.Image, org.kegbot.proto.Models.Image.Builder, org.kegbot.proto.Models.ImageOrBuilder>(
+                  images_,
+                  ((bitField0_ & 0x00008000) == 0x00008000),
+                  getParentForChildren(),
+                  isClean());
+          images_ = null;
+        }
+        return imagesBuilder_;
+      }
+      
       // @@protoc_insertion_point(builder_scope:Drink)
     }
     
@@ -5393,9 +6076,9 @@ public final class Models {
     boolean hasHeight();
     int getHeight();
     
-    // optional string created_date = 4;
-    boolean hasCreatedDate();
-    String getCreatedDate();
+    // optional string time = 4;
+    boolean hasTime();
+    String getTime();
     
     // optional string caption = 5;
     boolean hasCaption();
@@ -5405,17 +6088,17 @@ public final class Models {
     boolean hasUserId();
     String getUserId();
     
-    // optional string keg_id = 7;
+    // optional uint32 keg_id = 7;
     boolean hasKegId();
-    String getKegId();
+    int getKegId();
     
-    // optional string session_id = 8;
+    // optional uint32 session_id = 8;
     boolean hasSessionId();
-    String getSessionId();
+    int getSessionId();
     
-    // optional string drink_id = 9;
+    // optional uint32 drink_id = 9;
     boolean hasDrinkId();
-    String getDrinkId();
+    int getDrinkId();
     
     // optional string thumbnail_url = 10;
     boolean hasThumbnailUrl();
@@ -5424,6 +6107,10 @@ public final class Models {
     // optional string original_url = 11;
     boolean hasOriginalUrl();
     String getOriginalUrl();
+    
+    // optional string small_resized_url = 13;
+    boolean hasSmallResizedUrl();
+    String getSmallResizedUrl();
   }
   public static final class Image extends
       com.google.protobuf.GeneratedMessage
@@ -5506,14 +6193,14 @@ public final class Models {
       return height_;
     }
     
-    // optional string created_date = 4;
-    public static final int CREATED_DATE_FIELD_NUMBER = 4;
-    private Object createdDate_;
-    public boolean hasCreatedDate() {
+    // optional string time = 4;
+    public static final int TIME_FIELD_NUMBER = 4;
+    private Object time_;
+    public boolean hasTime() {
       return ((bitField0_ & 0x00000008) == 0x00000008);
     }
-    public String getCreatedDate() {
-      Object ref = createdDate_;
+    public String getTime() {
+      Object ref = time_;
       if (ref instanceof String) {
         return (String) ref;
       } else {
@@ -5521,17 +6208,17 @@ public final class Models {
             (com.google.protobuf.ByteString) ref;
         String s = bs.toStringUtf8();
         if (com.google.protobuf.Internal.isValidUtf8(bs)) {
-          createdDate_ = s;
+          time_ = s;
         }
         return s;
       }
     }
-    private com.google.protobuf.ByteString getCreatedDateBytes() {
-      Object ref = createdDate_;
+    private com.google.protobuf.ByteString getTimeBytes() {
+      Object ref = time_;
       if (ref instanceof String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8((String) ref);
-        createdDate_ = b;
+        time_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
@@ -5602,100 +6289,34 @@ public final class Models {
       }
     }
     
-    // optional string keg_id = 7;
+    // optional uint32 keg_id = 7;
     public static final int KEG_ID_FIELD_NUMBER = 7;
-    private Object kegId_;
+    private int kegId_;
     public boolean hasKegId() {
       return ((bitField0_ & 0x00000040) == 0x00000040);
     }
-    public String getKegId() {
-      Object ref = kegId_;
-      if (ref instanceof String) {
-        return (String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
-          kegId_ = s;
-        }
-        return s;
-      }
-    }
-    private com.google.protobuf.ByteString getKegIdBytes() {
-      Object ref = kegId_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
-        kegId_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+    public int getKegId() {
+      return kegId_;
     }
     
-    // optional string session_id = 8;
+    // optional uint32 session_id = 8;
     public static final int SESSION_ID_FIELD_NUMBER = 8;
-    private Object sessionId_;
+    private int sessionId_;
     public boolean hasSessionId() {
       return ((bitField0_ & 0x00000080) == 0x00000080);
     }
-    public String getSessionId() {
-      Object ref = sessionId_;
-      if (ref instanceof String) {
-        return (String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
-          sessionId_ = s;
-        }
-        return s;
-      }
-    }
-    private com.google.protobuf.ByteString getSessionIdBytes() {
-      Object ref = sessionId_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
-        sessionId_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+    public int getSessionId() {
+      return sessionId_;
     }
     
-    // optional string drink_id = 9;
+    // optional uint32 drink_id = 9;
     public static final int DRINK_ID_FIELD_NUMBER = 9;
-    private Object drinkId_;
+    private int drinkId_;
     public boolean hasDrinkId() {
       return ((bitField0_ & 0x00000100) == 0x00000100);
     }
-    public String getDrinkId() {
-      Object ref = drinkId_;
-      if (ref instanceof String) {
-        return (String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
-          drinkId_ = s;
-        }
-        return s;
-      }
-    }
-    private com.google.protobuf.ByteString getDrinkIdBytes() {
-      Object ref = drinkId_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
-        drinkId_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+    public int getDrinkId() {
+      return drinkId_;
     }
     
     // optional string thumbnail_url = 10;
@@ -5762,18 +6383,51 @@ public final class Models {
       }
     }
     
+    // optional string small_resized_url = 13;
+    public static final int SMALL_RESIZED_URL_FIELD_NUMBER = 13;
+    private Object smallResizedUrl_;
+    public boolean hasSmallResizedUrl() {
+      return ((bitField0_ & 0x00000800) == 0x00000800);
+    }
+    public String getSmallResizedUrl() {
+      Object ref = smallResizedUrl_;
+      if (ref instanceof String) {
+        return (String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        String s = bs.toStringUtf8();
+        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+          smallResizedUrl_ = s;
+        }
+        return s;
+      }
+    }
+    private com.google.protobuf.ByteString getSmallResizedUrlBytes() {
+      Object ref = smallResizedUrl_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+        smallResizedUrl_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    
     private void initFields() {
       url_ = "";
       width_ = 0;
       height_ = 0;
-      createdDate_ = "";
+      time_ = "";
       caption_ = "";
       userId_ = "";
-      kegId_ = "";
-      sessionId_ = "";
-      drinkId_ = "";
+      kegId_ = 0;
+      sessionId_ = 0;
+      drinkId_ = 0;
       thumbnailUrl_ = "";
       originalUrl_ = "";
+      smallResizedUrl_ = "";
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -5801,7 +6455,7 @@ public final class Models {
         output.writeUInt32(3, height_);
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
-        output.writeBytes(4, getCreatedDateBytes());
+        output.writeBytes(4, getTimeBytes());
       }
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         output.writeBytes(5, getCaptionBytes());
@@ -5810,19 +6464,22 @@ public final class Models {
         output.writeBytes(6, getUserIdBytes());
       }
       if (((bitField0_ & 0x00000040) == 0x00000040)) {
-        output.writeBytes(7, getKegIdBytes());
+        output.writeUInt32(7, kegId_);
       }
       if (((bitField0_ & 0x00000080) == 0x00000080)) {
-        output.writeBytes(8, getSessionIdBytes());
+        output.writeUInt32(8, sessionId_);
       }
       if (((bitField0_ & 0x00000100) == 0x00000100)) {
-        output.writeBytes(9, getDrinkIdBytes());
+        output.writeUInt32(9, drinkId_);
       }
       if (((bitField0_ & 0x00000200) == 0x00000200)) {
         output.writeBytes(10, getThumbnailUrlBytes());
       }
       if (((bitField0_ & 0x00000400) == 0x00000400)) {
         output.writeBytes(11, getOriginalUrlBytes());
+      }
+      if (((bitField0_ & 0x00000800) == 0x00000800)) {
+        output.writeBytes(13, getSmallResizedUrlBytes());
       }
       getUnknownFields().writeTo(output);
     }
@@ -5847,7 +6504,7 @@ public final class Models {
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(4, getCreatedDateBytes());
+          .computeBytesSize(4, getTimeBytes());
       }
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         size += com.google.protobuf.CodedOutputStream
@@ -5859,15 +6516,15 @@ public final class Models {
       }
       if (((bitField0_ & 0x00000040) == 0x00000040)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(7, getKegIdBytes());
+          .computeUInt32Size(7, kegId_);
       }
       if (((bitField0_ & 0x00000080) == 0x00000080)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(8, getSessionIdBytes());
+          .computeUInt32Size(8, sessionId_);
       }
       if (((bitField0_ & 0x00000100) == 0x00000100)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(9, getDrinkIdBytes());
+          .computeUInt32Size(9, drinkId_);
       }
       if (((bitField0_ & 0x00000200) == 0x00000200)) {
         size += com.google.protobuf.CodedOutputStream
@@ -5876,6 +6533,10 @@ public final class Models {
       if (((bitField0_ & 0x00000400) == 0x00000400)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(11, getOriginalUrlBytes());
+      }
+      if (((bitField0_ & 0x00000800) == 0x00000800)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(13, getSmallResizedUrlBytes());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -6005,22 +6666,24 @@ public final class Models {
         bitField0_ = (bitField0_ & ~0x00000002);
         height_ = 0;
         bitField0_ = (bitField0_ & ~0x00000004);
-        createdDate_ = "";
+        time_ = "";
         bitField0_ = (bitField0_ & ~0x00000008);
         caption_ = "";
         bitField0_ = (bitField0_ & ~0x00000010);
         userId_ = "";
         bitField0_ = (bitField0_ & ~0x00000020);
-        kegId_ = "";
+        kegId_ = 0;
         bitField0_ = (bitField0_ & ~0x00000040);
-        sessionId_ = "";
+        sessionId_ = 0;
         bitField0_ = (bitField0_ & ~0x00000080);
-        drinkId_ = "";
+        drinkId_ = 0;
         bitField0_ = (bitField0_ & ~0x00000100);
         thumbnailUrl_ = "";
         bitField0_ = (bitField0_ & ~0x00000200);
         originalUrl_ = "";
         bitField0_ = (bitField0_ & ~0x00000400);
+        smallResizedUrl_ = "";
+        bitField0_ = (bitField0_ & ~0x00000800);
         return this;
       }
       
@@ -6074,7 +6737,7 @@ public final class Models {
         if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
           to_bitField0_ |= 0x00000008;
         }
-        result.createdDate_ = createdDate_;
+        result.time_ = time_;
         if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
           to_bitField0_ |= 0x00000010;
         }
@@ -6103,6 +6766,10 @@ public final class Models {
           to_bitField0_ |= 0x00000400;
         }
         result.originalUrl_ = originalUrl_;
+        if (((from_bitField0_ & 0x00000800) == 0x00000800)) {
+          to_bitField0_ |= 0x00000800;
+        }
+        result.smallResizedUrl_ = smallResizedUrl_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -6128,8 +6795,8 @@ public final class Models {
         if (other.hasHeight()) {
           setHeight(other.getHeight());
         }
-        if (other.hasCreatedDate()) {
-          setCreatedDate(other.getCreatedDate());
+        if (other.hasTime()) {
+          setTime(other.getTime());
         }
         if (other.hasCaption()) {
           setCaption(other.getCaption());
@@ -6151,6 +6818,9 @@ public final class Models {
         }
         if (other.hasOriginalUrl()) {
           setOriginalUrl(other.getOriginalUrl());
+        }
+        if (other.hasSmallResizedUrl()) {
+          setSmallResizedUrl(other.getSmallResizedUrl());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -6204,7 +6874,7 @@ public final class Models {
             }
             case 34: {
               bitField0_ |= 0x00000008;
-              createdDate_ = input.readBytes();
+              time_ = input.readBytes();
               break;
             }
             case 42: {
@@ -6217,19 +6887,19 @@ public final class Models {
               userId_ = input.readBytes();
               break;
             }
-            case 58: {
+            case 56: {
               bitField0_ |= 0x00000040;
-              kegId_ = input.readBytes();
+              kegId_ = input.readUInt32();
               break;
             }
-            case 66: {
+            case 64: {
               bitField0_ |= 0x00000080;
-              sessionId_ = input.readBytes();
+              sessionId_ = input.readUInt32();
               break;
             }
-            case 74: {
+            case 72: {
               bitField0_ |= 0x00000100;
-              drinkId_ = input.readBytes();
+              drinkId_ = input.readUInt32();
               break;
             }
             case 82: {
@@ -6240,6 +6910,11 @@ public final class Models {
             case 90: {
               bitField0_ |= 0x00000400;
               originalUrl_ = input.readBytes();
+              break;
+            }
+            case 106: {
+              bitField0_ |= 0x00000800;
+              smallResizedUrl_ = input.readBytes();
               break;
             }
           }
@@ -6326,39 +7001,39 @@ public final class Models {
         return this;
       }
       
-      // optional string created_date = 4;
-      private Object createdDate_ = "";
-      public boolean hasCreatedDate() {
+      // optional string time = 4;
+      private Object time_ = "";
+      public boolean hasTime() {
         return ((bitField0_ & 0x00000008) == 0x00000008);
       }
-      public String getCreatedDate() {
-        Object ref = createdDate_;
+      public String getTime() {
+        Object ref = time_;
         if (!(ref instanceof String)) {
           String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
-          createdDate_ = s;
+          time_ = s;
           return s;
         } else {
           return (String) ref;
         }
       }
-      public Builder setCreatedDate(String value) {
+      public Builder setTime(String value) {
         if (value == null) {
     throw new NullPointerException();
   }
   bitField0_ |= 0x00000008;
-        createdDate_ = value;
+        time_ = value;
         onChanged();
         return this;
       }
-      public Builder clearCreatedDate() {
+      public Builder clearTime() {
         bitField0_ = (bitField0_ & ~0x00000008);
-        createdDate_ = getDefaultInstance().getCreatedDate();
+        time_ = getDefaultInstance().getTime();
         onChanged();
         return this;
       }
-      void setCreatedDate(com.google.protobuf.ByteString value) {
+      void setTime(com.google.protobuf.ByteString value) {
         bitField0_ |= 0x00000008;
-        createdDate_ = value;
+        time_ = value;
         onChanged();
       }
       
@@ -6434,112 +7109,67 @@ public final class Models {
         onChanged();
       }
       
-      // optional string keg_id = 7;
-      private Object kegId_ = "";
+      // optional uint32 keg_id = 7;
+      private int kegId_ ;
       public boolean hasKegId() {
         return ((bitField0_ & 0x00000040) == 0x00000040);
       }
-      public String getKegId() {
-        Object ref = kegId_;
-        if (!(ref instanceof String)) {
-          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
-          kegId_ = s;
-          return s;
-        } else {
-          return (String) ref;
-        }
+      public int getKegId() {
+        return kegId_;
       }
-      public Builder setKegId(String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000040;
+      public Builder setKegId(int value) {
+        bitField0_ |= 0x00000040;
         kegId_ = value;
         onChanged();
         return this;
       }
       public Builder clearKegId() {
         bitField0_ = (bitField0_ & ~0x00000040);
-        kegId_ = getDefaultInstance().getKegId();
+        kegId_ = 0;
         onChanged();
         return this;
       }
-      void setKegId(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000040;
-        kegId_ = value;
-        onChanged();
-      }
       
-      // optional string session_id = 8;
-      private Object sessionId_ = "";
+      // optional uint32 session_id = 8;
+      private int sessionId_ ;
       public boolean hasSessionId() {
         return ((bitField0_ & 0x00000080) == 0x00000080);
       }
-      public String getSessionId() {
-        Object ref = sessionId_;
-        if (!(ref instanceof String)) {
-          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
-          sessionId_ = s;
-          return s;
-        } else {
-          return (String) ref;
-        }
+      public int getSessionId() {
+        return sessionId_;
       }
-      public Builder setSessionId(String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000080;
+      public Builder setSessionId(int value) {
+        bitField0_ |= 0x00000080;
         sessionId_ = value;
         onChanged();
         return this;
       }
       public Builder clearSessionId() {
         bitField0_ = (bitField0_ & ~0x00000080);
-        sessionId_ = getDefaultInstance().getSessionId();
+        sessionId_ = 0;
         onChanged();
         return this;
       }
-      void setSessionId(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000080;
-        sessionId_ = value;
-        onChanged();
-      }
       
-      // optional string drink_id = 9;
-      private Object drinkId_ = "";
+      // optional uint32 drink_id = 9;
+      private int drinkId_ ;
       public boolean hasDrinkId() {
         return ((bitField0_ & 0x00000100) == 0x00000100);
       }
-      public String getDrinkId() {
-        Object ref = drinkId_;
-        if (!(ref instanceof String)) {
-          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
-          drinkId_ = s;
-          return s;
-        } else {
-          return (String) ref;
-        }
+      public int getDrinkId() {
+        return drinkId_;
       }
-      public Builder setDrinkId(String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000100;
+      public Builder setDrinkId(int value) {
+        bitField0_ |= 0x00000100;
         drinkId_ = value;
         onChanged();
         return this;
       }
       public Builder clearDrinkId() {
         bitField0_ = (bitField0_ & ~0x00000100);
-        drinkId_ = getDefaultInstance().getDrinkId();
+        drinkId_ = 0;
         onChanged();
         return this;
-      }
-      void setDrinkId(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000100;
-        drinkId_ = value;
-        onChanged();
       }
       
       // optional string thumbnail_url = 10;
@@ -6614,6 +7244,42 @@ public final class Models {
         onChanged();
       }
       
+      // optional string small_resized_url = 13;
+      private Object smallResizedUrl_ = "";
+      public boolean hasSmallResizedUrl() {
+        return ((bitField0_ & 0x00000800) == 0x00000800);
+      }
+      public String getSmallResizedUrl() {
+        Object ref = smallResizedUrl_;
+        if (!(ref instanceof String)) {
+          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+          smallResizedUrl_ = s;
+          return s;
+        } else {
+          return (String) ref;
+        }
+      }
+      public Builder setSmallResizedUrl(String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000800;
+        smallResizedUrl_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearSmallResizedUrl() {
+        bitField0_ = (bitField0_ & ~0x00000800);
+        smallResizedUrl_ = getDefaultInstance().getSmallResizedUrl();
+        onChanged();
+        return this;
+      }
+      void setSmallResizedUrl(com.google.protobuf.ByteString value) {
+        bitField0_ |= 0x00000800;
+        smallResizedUrl_ = value;
+        onChanged();
+      }
+      
       // @@protoc_insertion_point(builder_scope:Image)
     }
     
@@ -6628,25 +7294,13 @@ public final class Models {
   public interface KegOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
     
-    // required string id = 1;
+    // required uint32 id = 1;
     boolean hasId();
-    String getId();
+    int getId();
     
     // required string type_id = 2;
     boolean hasTypeId();
     String getTypeId();
-    
-    // required string size_id = 3;
-    boolean hasSizeId();
-    String getSizeId();
-    
-    // optional string size_name = 4;
-    boolean hasSizeName();
-    String getSizeName();
-    
-    // optional float size_volume_ml = 5;
-    boolean hasSizeVolumeMl();
-    float getSizeVolumeMl();
     
     // required float volume_ml_remain = 6;
     boolean hasVolumeMlRemain();
@@ -6656,13 +7310,13 @@ public final class Models {
     boolean hasPercentFull();
     float getPercentFull();
     
-    // required string started_time = 8;
-    boolean hasStartedTime();
-    String getStartedTime();
+    // required string start_time = 8;
+    boolean hasStartTime();
+    String getStartTime();
     
-    // required string finished_time = 9;
-    boolean hasFinishedTime();
-    String getFinishedTime();
+    // required string end_time = 9;
+    boolean hasEndTime();
+    String getEndTime();
     
     // required string status = 10;
     boolean hasStatus();
@@ -6679,6 +7333,28 @@ public final class Models {
     // optional string url = 13;
     boolean hasUrl();
     String getUrl();
+    
+    // optional .BeerType type = 15;
+    boolean hasType();
+    org.kegbot.proto.Models.BeerType getType();
+    org.kegbot.proto.Models.BeerTypeOrBuilder getTypeOrBuilder();
+    
+    // optional uint32 size_id = 16;
+    boolean hasSizeId();
+    int getSizeId();
+    
+    // optional .KegSize size = 17;
+    boolean hasSize();
+    org.kegbot.proto.Models.KegSize getSize();
+    org.kegbot.proto.Models.KegSizeOrBuilder getSizeOrBuilder();
+    
+    // optional string size_name = 18;
+    boolean hasSizeName();
+    String getSizeName();
+    
+    // optional float size_volume_ml = 19;
+    boolean hasSizeVolumeMl();
+    float getSizeVolumeMl();
   }
   public static final class Keg extends
       com.google.protobuf.GeneratedMessage
@@ -6709,36 +7385,14 @@ public final class Models {
     }
     
     private int bitField0_;
-    // required string id = 1;
+    // required uint32 id = 1;
     public static final int ID_FIELD_NUMBER = 1;
-    private Object id_;
+    private int id_;
     public boolean hasId() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
-    public String getId() {
-      Object ref = id_;
-      if (ref instanceof String) {
-        return (String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
-          id_ = s;
-        }
-        return s;
-      }
-    }
-    private com.google.protobuf.ByteString getIdBytes() {
-      Object ref = id_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
-        id_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+    public int getId() {
+      return id_;
     }
     
     // required string type_id = 2;
@@ -6773,85 +7427,11 @@ public final class Models {
       }
     }
     
-    // required string size_id = 3;
-    public static final int SIZE_ID_FIELD_NUMBER = 3;
-    private Object sizeId_;
-    public boolean hasSizeId() {
-      return ((bitField0_ & 0x00000004) == 0x00000004);
-    }
-    public String getSizeId() {
-      Object ref = sizeId_;
-      if (ref instanceof String) {
-        return (String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
-          sizeId_ = s;
-        }
-        return s;
-      }
-    }
-    private com.google.protobuf.ByteString getSizeIdBytes() {
-      Object ref = sizeId_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
-        sizeId_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-    
-    // optional string size_name = 4;
-    public static final int SIZE_NAME_FIELD_NUMBER = 4;
-    private Object sizeName_;
-    public boolean hasSizeName() {
-      return ((bitField0_ & 0x00000008) == 0x00000008);
-    }
-    public String getSizeName() {
-      Object ref = sizeName_;
-      if (ref instanceof String) {
-        return (String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
-          sizeName_ = s;
-        }
-        return s;
-      }
-    }
-    private com.google.protobuf.ByteString getSizeNameBytes() {
-      Object ref = sizeName_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
-        sizeName_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-    
-    // optional float size_volume_ml = 5;
-    public static final int SIZE_VOLUME_ML_FIELD_NUMBER = 5;
-    private float sizeVolumeMl_;
-    public boolean hasSizeVolumeMl() {
-      return ((bitField0_ & 0x00000010) == 0x00000010);
-    }
-    public float getSizeVolumeMl() {
-      return sizeVolumeMl_;
-    }
-    
     // required float volume_ml_remain = 6;
     public static final int VOLUME_ML_REMAIN_FIELD_NUMBER = 6;
     private float volumeMlRemain_;
     public boolean hasVolumeMlRemain() {
-      return ((bitField0_ & 0x00000020) == 0x00000020);
+      return ((bitField0_ & 0x00000004) == 0x00000004);
     }
     public float getVolumeMlRemain() {
       return volumeMlRemain_;
@@ -6861,20 +7441,20 @@ public final class Models {
     public static final int PERCENT_FULL_FIELD_NUMBER = 7;
     private float percentFull_;
     public boolean hasPercentFull() {
-      return ((bitField0_ & 0x00000040) == 0x00000040);
+      return ((bitField0_ & 0x00000008) == 0x00000008);
     }
     public float getPercentFull() {
       return percentFull_;
     }
     
-    // required string started_time = 8;
-    public static final int STARTED_TIME_FIELD_NUMBER = 8;
-    private Object startedTime_;
-    public boolean hasStartedTime() {
-      return ((bitField0_ & 0x00000080) == 0x00000080);
+    // required string start_time = 8;
+    public static final int START_TIME_FIELD_NUMBER = 8;
+    private Object startTime_;
+    public boolean hasStartTime() {
+      return ((bitField0_ & 0x00000010) == 0x00000010);
     }
-    public String getStartedTime() {
-      Object ref = startedTime_;
+    public String getStartTime() {
+      Object ref = startTime_;
       if (ref instanceof String) {
         return (String) ref;
       } else {
@@ -6882,31 +7462,31 @@ public final class Models {
             (com.google.protobuf.ByteString) ref;
         String s = bs.toStringUtf8();
         if (com.google.protobuf.Internal.isValidUtf8(bs)) {
-          startedTime_ = s;
+          startTime_ = s;
         }
         return s;
       }
     }
-    private com.google.protobuf.ByteString getStartedTimeBytes() {
-      Object ref = startedTime_;
+    private com.google.protobuf.ByteString getStartTimeBytes() {
+      Object ref = startTime_;
       if (ref instanceof String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8((String) ref);
-        startedTime_ = b;
+        startTime_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
       }
     }
     
-    // required string finished_time = 9;
-    public static final int FINISHED_TIME_FIELD_NUMBER = 9;
-    private Object finishedTime_;
-    public boolean hasFinishedTime() {
-      return ((bitField0_ & 0x00000100) == 0x00000100);
+    // required string end_time = 9;
+    public static final int END_TIME_FIELD_NUMBER = 9;
+    private Object endTime_;
+    public boolean hasEndTime() {
+      return ((bitField0_ & 0x00000020) == 0x00000020);
     }
-    public String getFinishedTime() {
-      Object ref = finishedTime_;
+    public String getEndTime() {
+      Object ref = endTime_;
       if (ref instanceof String) {
         return (String) ref;
       } else {
@@ -6914,17 +7494,17 @@ public final class Models {
             (com.google.protobuf.ByteString) ref;
         String s = bs.toStringUtf8();
         if (com.google.protobuf.Internal.isValidUtf8(bs)) {
-          finishedTime_ = s;
+          endTime_ = s;
         }
         return s;
       }
     }
-    private com.google.protobuf.ByteString getFinishedTimeBytes() {
-      Object ref = finishedTime_;
+    private com.google.protobuf.ByteString getEndTimeBytes() {
+      Object ref = endTime_;
       if (ref instanceof String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8((String) ref);
-        finishedTime_ = b;
+        endTime_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
@@ -6935,7 +7515,7 @@ public final class Models {
     public static final int STATUS_FIELD_NUMBER = 10;
     private Object status_;
     public boolean hasStatus() {
-      return ((bitField0_ & 0x00000200) == 0x00000200);
+      return ((bitField0_ & 0x00000040) == 0x00000040);
     }
     public String getStatus() {
       Object ref = status_;
@@ -6967,7 +7547,7 @@ public final class Models {
     public static final int DESCRIPTION_FIELD_NUMBER = 11;
     private Object description_;
     public boolean hasDescription() {
-      return ((bitField0_ & 0x00000400) == 0x00000400);
+      return ((bitField0_ & 0x00000080) == 0x00000080);
     }
     public String getDescription() {
       Object ref = description_;
@@ -6999,7 +7579,7 @@ public final class Models {
     public static final int SPILLED_ML_FIELD_NUMBER = 12;
     private float spilledMl_;
     public boolean hasSpilledMl() {
-      return ((bitField0_ & 0x00000800) == 0x00000800);
+      return ((bitField0_ & 0x00000100) == 0x00000100);
     }
     public float getSpilledMl() {
       return spilledMl_;
@@ -7009,7 +7589,7 @@ public final class Models {
     public static final int URL_FIELD_NUMBER = 13;
     private Object url_;
     public boolean hasUrl() {
-      return ((bitField0_ & 0x00001000) == 0x00001000);
+      return ((bitField0_ & 0x00000200) == 0x00000200);
     }
     public String getUrl() {
       Object ref = url_;
@@ -7037,20 +7617,100 @@ public final class Models {
       }
     }
     
+    // optional .BeerType type = 15;
+    public static final int TYPE_FIELD_NUMBER = 15;
+    private org.kegbot.proto.Models.BeerType type_;
+    public boolean hasType() {
+      return ((bitField0_ & 0x00000400) == 0x00000400);
+    }
+    public org.kegbot.proto.Models.BeerType getType() {
+      return type_;
+    }
+    public org.kegbot.proto.Models.BeerTypeOrBuilder getTypeOrBuilder() {
+      return type_;
+    }
+    
+    // optional uint32 size_id = 16;
+    public static final int SIZE_ID_FIELD_NUMBER = 16;
+    private int sizeId_;
+    public boolean hasSizeId() {
+      return ((bitField0_ & 0x00000800) == 0x00000800);
+    }
+    public int getSizeId() {
+      return sizeId_;
+    }
+    
+    // optional .KegSize size = 17;
+    public static final int SIZE_FIELD_NUMBER = 17;
+    private org.kegbot.proto.Models.KegSize size_;
+    public boolean hasSize() {
+      return ((bitField0_ & 0x00001000) == 0x00001000);
+    }
+    public org.kegbot.proto.Models.KegSize getSize() {
+      return size_;
+    }
+    public org.kegbot.proto.Models.KegSizeOrBuilder getSizeOrBuilder() {
+      return size_;
+    }
+    
+    // optional string size_name = 18;
+    public static final int SIZE_NAME_FIELD_NUMBER = 18;
+    private Object sizeName_;
+    public boolean hasSizeName() {
+      return ((bitField0_ & 0x00002000) == 0x00002000);
+    }
+    public String getSizeName() {
+      Object ref = sizeName_;
+      if (ref instanceof String) {
+        return (String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        String s = bs.toStringUtf8();
+        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+          sizeName_ = s;
+        }
+        return s;
+      }
+    }
+    private com.google.protobuf.ByteString getSizeNameBytes() {
+      Object ref = sizeName_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+        sizeName_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    
+    // optional float size_volume_ml = 19;
+    public static final int SIZE_VOLUME_ML_FIELD_NUMBER = 19;
+    private float sizeVolumeMl_;
+    public boolean hasSizeVolumeMl() {
+      return ((bitField0_ & 0x00004000) == 0x00004000);
+    }
+    public float getSizeVolumeMl() {
+      return sizeVolumeMl_;
+    }
+    
     private void initFields() {
-      id_ = "";
+      id_ = 0;
       typeId_ = "";
-      sizeId_ = "";
-      sizeName_ = "";
-      sizeVolumeMl_ = 0F;
       volumeMlRemain_ = 0F;
       percentFull_ = 0F;
-      startedTime_ = "";
-      finishedTime_ = "";
+      startTime_ = "";
+      endTime_ = "";
       status_ = "";
       description_ = "";
       spilledMl_ = 0F;
       url_ = "";
+      type_ = org.kegbot.proto.Models.BeerType.getDefaultInstance();
+      sizeId_ = 0;
+      size_ = org.kegbot.proto.Models.KegSize.getDefaultInstance();
+      sizeName_ = "";
+      sizeVolumeMl_ = 0F;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -7065,10 +7725,6 @@ public final class Models {
         memoizedIsInitialized = 0;
         return false;
       }
-      if (!hasSizeId()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
       if (!hasVolumeMlRemain()) {
         memoizedIsInitialized = 0;
         return false;
@@ -7077,17 +7733,29 @@ public final class Models {
         memoizedIsInitialized = 0;
         return false;
       }
-      if (!hasStartedTime()) {
+      if (!hasStartTime()) {
         memoizedIsInitialized = 0;
         return false;
       }
-      if (!hasFinishedTime()) {
+      if (!hasEndTime()) {
         memoizedIsInitialized = 0;
         return false;
       }
       if (!hasStatus()) {
         memoizedIsInitialized = 0;
         return false;
+      }
+      if (hasType()) {
+        if (!getType().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      if (hasSize()) {
+        if (!getSize().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
       }
       memoizedIsInitialized = 1;
       return true;
@@ -7097,43 +7765,49 @@ public final class Models {
                         throws java.io.IOException {
       getSerializedSize();
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeBytes(1, getIdBytes());
+        output.writeUInt32(1, id_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         output.writeBytes(2, getTypeIdBytes());
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        output.writeBytes(3, getSizeIdBytes());
-      }
-      if (((bitField0_ & 0x00000008) == 0x00000008)) {
-        output.writeBytes(4, getSizeNameBytes());
-      }
-      if (((bitField0_ & 0x00000010) == 0x00000010)) {
-        output.writeFloat(5, sizeVolumeMl_);
-      }
-      if (((bitField0_ & 0x00000020) == 0x00000020)) {
         output.writeFloat(6, volumeMlRemain_);
       }
-      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
         output.writeFloat(7, percentFull_);
       }
-      if (((bitField0_ & 0x00000080) == 0x00000080)) {
-        output.writeBytes(8, getStartedTimeBytes());
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        output.writeBytes(8, getStartTimeBytes());
       }
-      if (((bitField0_ & 0x00000100) == 0x00000100)) {
-        output.writeBytes(9, getFinishedTimeBytes());
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        output.writeBytes(9, getEndTimeBytes());
       }
-      if (((bitField0_ & 0x00000200) == 0x00000200)) {
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
         output.writeBytes(10, getStatusBytes());
       }
-      if (((bitField0_ & 0x00000400) == 0x00000400)) {
+      if (((bitField0_ & 0x00000080) == 0x00000080)) {
         output.writeBytes(11, getDescriptionBytes());
       }
-      if (((bitField0_ & 0x00000800) == 0x00000800)) {
+      if (((bitField0_ & 0x00000100) == 0x00000100)) {
         output.writeFloat(12, spilledMl_);
       }
-      if (((bitField0_ & 0x00001000) == 0x00001000)) {
+      if (((bitField0_ & 0x00000200) == 0x00000200)) {
         output.writeBytes(13, getUrlBytes());
+      }
+      if (((bitField0_ & 0x00000400) == 0x00000400)) {
+        output.writeMessage(15, type_);
+      }
+      if (((bitField0_ & 0x00000800) == 0x00000800)) {
+        output.writeUInt32(16, sizeId_);
+      }
+      if (((bitField0_ & 0x00001000) == 0x00001000)) {
+        output.writeMessage(17, size_);
+      }
+      if (((bitField0_ & 0x00002000) == 0x00002000)) {
+        output.writeBytes(18, getSizeNameBytes());
+      }
+      if (((bitField0_ & 0x00004000) == 0x00004000)) {
+        output.writeFloat(19, sizeVolumeMl_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -7146,7 +7820,7 @@ public final class Models {
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(1, getIdBytes());
+          .computeUInt32Size(1, id_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
@@ -7154,47 +7828,55 @@ public final class Models {
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(3, getSizeIdBytes());
+          .computeFloatSize(6, volumeMlRemain_);
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(4, getSizeNameBytes());
+          .computeFloatSize(7, percentFull_);
       }
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeFloatSize(5, sizeVolumeMl_);
+          .computeBytesSize(8, getStartTimeBytes());
       }
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeFloatSize(6, volumeMlRemain_);
+          .computeBytesSize(9, getEndTimeBytes());
       }
       if (((bitField0_ & 0x00000040) == 0x00000040)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeFloatSize(7, percentFull_);
+          .computeBytesSize(10, getStatusBytes());
       }
       if (((bitField0_ & 0x00000080) == 0x00000080)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(8, getStartedTimeBytes());
+          .computeBytesSize(11, getDescriptionBytes());
       }
       if (((bitField0_ & 0x00000100) == 0x00000100)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(9, getFinishedTimeBytes());
+          .computeFloatSize(12, spilledMl_);
       }
       if (((bitField0_ & 0x00000200) == 0x00000200)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(10, getStatusBytes());
+          .computeBytesSize(13, getUrlBytes());
       }
       if (((bitField0_ & 0x00000400) == 0x00000400)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(11, getDescriptionBytes());
+          .computeMessageSize(15, type_);
       }
       if (((bitField0_ & 0x00000800) == 0x00000800)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeFloatSize(12, spilledMl_);
+          .computeUInt32Size(16, sizeId_);
       }
       if (((bitField0_ & 0x00001000) == 0x00001000)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(13, getUrlBytes());
+          .computeMessageSize(17, size_);
+      }
+      if (((bitField0_ & 0x00002000) == 0x00002000)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(18, getSizeNameBytes());
+      }
+      if (((bitField0_ & 0x00004000) == 0x00004000)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeFloatSize(19, sizeVolumeMl_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -7310,6 +7992,8 @@ public final class Models {
       }
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          getTypeFieldBuilder();
+          getSizeFieldBuilder();
         }
       }
       private static Builder create() {
@@ -7318,32 +8002,44 @@ public final class Models {
       
       public Builder clear() {
         super.clear();
-        id_ = "";
+        id_ = 0;
         bitField0_ = (bitField0_ & ~0x00000001);
         typeId_ = "";
         bitField0_ = (bitField0_ & ~0x00000002);
-        sizeId_ = "";
-        bitField0_ = (bitField0_ & ~0x00000004);
-        sizeName_ = "";
-        bitField0_ = (bitField0_ & ~0x00000008);
-        sizeVolumeMl_ = 0F;
-        bitField0_ = (bitField0_ & ~0x00000010);
         volumeMlRemain_ = 0F;
-        bitField0_ = (bitField0_ & ~0x00000020);
+        bitField0_ = (bitField0_ & ~0x00000004);
         percentFull_ = 0F;
-        bitField0_ = (bitField0_ & ~0x00000040);
-        startedTime_ = "";
-        bitField0_ = (bitField0_ & ~0x00000080);
-        finishedTime_ = "";
-        bitField0_ = (bitField0_ & ~0x00000100);
+        bitField0_ = (bitField0_ & ~0x00000008);
+        startTime_ = "";
+        bitField0_ = (bitField0_ & ~0x00000010);
+        endTime_ = "";
+        bitField0_ = (bitField0_ & ~0x00000020);
         status_ = "";
-        bitField0_ = (bitField0_ & ~0x00000200);
+        bitField0_ = (bitField0_ & ~0x00000040);
         description_ = "";
-        bitField0_ = (bitField0_ & ~0x00000400);
+        bitField0_ = (bitField0_ & ~0x00000080);
         spilledMl_ = 0F;
-        bitField0_ = (bitField0_ & ~0x00000800);
+        bitField0_ = (bitField0_ & ~0x00000100);
         url_ = "";
+        bitField0_ = (bitField0_ & ~0x00000200);
+        if (typeBuilder_ == null) {
+          type_ = org.kegbot.proto.Models.BeerType.getDefaultInstance();
+        } else {
+          typeBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000400);
+        sizeId_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000800);
+        if (sizeBuilder_ == null) {
+          size_ = org.kegbot.proto.Models.KegSize.getDefaultInstance();
+        } else {
+          sizeBuilder_.clear();
+        }
         bitField0_ = (bitField0_ & ~0x00001000);
+        sizeName_ = "";
+        bitField0_ = (bitField0_ & ~0x00002000);
+        sizeVolumeMl_ = 0F;
+        bitField0_ = (bitField0_ & ~0x00004000);
         return this;
       }
       
@@ -7393,47 +8089,63 @@ public final class Models {
         if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
           to_bitField0_ |= 0x00000004;
         }
-        result.sizeId_ = sizeId_;
+        result.volumeMlRemain_ = volumeMlRemain_;
         if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
           to_bitField0_ |= 0x00000008;
         }
-        result.sizeName_ = sizeName_;
+        result.percentFull_ = percentFull_;
         if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
           to_bitField0_ |= 0x00000010;
         }
-        result.sizeVolumeMl_ = sizeVolumeMl_;
+        result.startTime_ = startTime_;
         if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
           to_bitField0_ |= 0x00000020;
         }
-        result.volumeMlRemain_ = volumeMlRemain_;
+        result.endTime_ = endTime_;
         if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
           to_bitField0_ |= 0x00000040;
         }
-        result.percentFull_ = percentFull_;
+        result.status_ = status_;
         if (((from_bitField0_ & 0x00000080) == 0x00000080)) {
           to_bitField0_ |= 0x00000080;
         }
-        result.startedTime_ = startedTime_;
+        result.description_ = description_;
         if (((from_bitField0_ & 0x00000100) == 0x00000100)) {
           to_bitField0_ |= 0x00000100;
         }
-        result.finishedTime_ = finishedTime_;
+        result.spilledMl_ = spilledMl_;
         if (((from_bitField0_ & 0x00000200) == 0x00000200)) {
           to_bitField0_ |= 0x00000200;
         }
-        result.status_ = status_;
+        result.url_ = url_;
         if (((from_bitField0_ & 0x00000400) == 0x00000400)) {
           to_bitField0_ |= 0x00000400;
         }
-        result.description_ = description_;
+        if (typeBuilder_ == null) {
+          result.type_ = type_;
+        } else {
+          result.type_ = typeBuilder_.build();
+        }
         if (((from_bitField0_ & 0x00000800) == 0x00000800)) {
           to_bitField0_ |= 0x00000800;
         }
-        result.spilledMl_ = spilledMl_;
+        result.sizeId_ = sizeId_;
         if (((from_bitField0_ & 0x00001000) == 0x00001000)) {
           to_bitField0_ |= 0x00001000;
         }
-        result.url_ = url_;
+        if (sizeBuilder_ == null) {
+          result.size_ = size_;
+        } else {
+          result.size_ = sizeBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00002000) == 0x00002000)) {
+          to_bitField0_ |= 0x00002000;
+        }
+        result.sizeName_ = sizeName_;
+        if (((from_bitField0_ & 0x00004000) == 0x00004000)) {
+          to_bitField0_ |= 0x00004000;
+        }
+        result.sizeVolumeMl_ = sizeVolumeMl_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -7456,26 +8168,17 @@ public final class Models {
         if (other.hasTypeId()) {
           setTypeId(other.getTypeId());
         }
-        if (other.hasSizeId()) {
-          setSizeId(other.getSizeId());
-        }
-        if (other.hasSizeName()) {
-          setSizeName(other.getSizeName());
-        }
-        if (other.hasSizeVolumeMl()) {
-          setSizeVolumeMl(other.getSizeVolumeMl());
-        }
         if (other.hasVolumeMlRemain()) {
           setVolumeMlRemain(other.getVolumeMlRemain());
         }
         if (other.hasPercentFull()) {
           setPercentFull(other.getPercentFull());
         }
-        if (other.hasStartedTime()) {
-          setStartedTime(other.getStartedTime());
+        if (other.hasStartTime()) {
+          setStartTime(other.getStartTime());
         }
-        if (other.hasFinishedTime()) {
-          setFinishedTime(other.getFinishedTime());
+        if (other.hasEndTime()) {
+          setEndTime(other.getEndTime());
         }
         if (other.hasStatus()) {
           setStatus(other.getStatus());
@@ -7488,6 +8191,21 @@ public final class Models {
         }
         if (other.hasUrl()) {
           setUrl(other.getUrl());
+        }
+        if (other.hasType()) {
+          mergeType(other.getType());
+        }
+        if (other.hasSizeId()) {
+          setSizeId(other.getSizeId());
+        }
+        if (other.hasSize()) {
+          mergeSize(other.getSize());
+        }
+        if (other.hasSizeName()) {
+          setSizeName(other.getSizeName());
+        }
+        if (other.hasSizeVolumeMl()) {
+          setSizeVolumeMl(other.getSizeVolumeMl());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -7502,10 +8220,6 @@ public final class Models {
           
           return false;
         }
-        if (!hasSizeId()) {
-          
-          return false;
-        }
         if (!hasVolumeMlRemain()) {
           
           return false;
@@ -7514,17 +8228,29 @@ public final class Models {
           
           return false;
         }
-        if (!hasStartedTime()) {
+        if (!hasStartTime()) {
           
           return false;
         }
-        if (!hasFinishedTime()) {
+        if (!hasEndTime()) {
           
           return false;
         }
         if (!hasStatus()) {
           
           return false;
+        }
+        if (hasType()) {
+          if (!getType().isInitialized()) {
+            
+            return false;
+          }
+        }
+        if (hasSize()) {
+          if (!getSize().isInitialized()) {
+            
+            return false;
+          }
         }
         return true;
       }
@@ -7552,9 +8278,9 @@ public final class Models {
               }
               break;
             }
-            case 10: {
+            case 8: {
               bitField0_ |= 0x00000001;
-              id_ = input.readBytes();
+              id_ = input.readUInt32();
               break;
             }
             case 18: {
@@ -7562,59 +8288,77 @@ public final class Models {
               typeId_ = input.readBytes();
               break;
             }
-            case 26: {
-              bitField0_ |= 0x00000004;
-              sizeId_ = input.readBytes();
-              break;
-            }
-            case 34: {
-              bitField0_ |= 0x00000008;
-              sizeName_ = input.readBytes();
-              break;
-            }
-            case 45: {
-              bitField0_ |= 0x00000010;
-              sizeVolumeMl_ = input.readFloat();
-              break;
-            }
             case 53: {
-              bitField0_ |= 0x00000020;
+              bitField0_ |= 0x00000004;
               volumeMlRemain_ = input.readFloat();
               break;
             }
             case 61: {
-              bitField0_ |= 0x00000040;
+              bitField0_ |= 0x00000008;
               percentFull_ = input.readFloat();
               break;
             }
             case 66: {
-              bitField0_ |= 0x00000080;
-              startedTime_ = input.readBytes();
+              bitField0_ |= 0x00000010;
+              startTime_ = input.readBytes();
               break;
             }
             case 74: {
-              bitField0_ |= 0x00000100;
-              finishedTime_ = input.readBytes();
+              bitField0_ |= 0x00000020;
+              endTime_ = input.readBytes();
               break;
             }
             case 82: {
-              bitField0_ |= 0x00000200;
+              bitField0_ |= 0x00000040;
               status_ = input.readBytes();
               break;
             }
             case 90: {
-              bitField0_ |= 0x00000400;
+              bitField0_ |= 0x00000080;
               description_ = input.readBytes();
               break;
             }
             case 101: {
-              bitField0_ |= 0x00000800;
+              bitField0_ |= 0x00000100;
               spilledMl_ = input.readFloat();
               break;
             }
             case 106: {
-              bitField0_ |= 0x00001000;
+              bitField0_ |= 0x00000200;
               url_ = input.readBytes();
+              break;
+            }
+            case 122: {
+              org.kegbot.proto.Models.BeerType.Builder subBuilder = org.kegbot.proto.Models.BeerType.newBuilder();
+              if (hasType()) {
+                subBuilder.mergeFrom(getType());
+              }
+              input.readMessage(subBuilder, extensionRegistry);
+              setType(subBuilder.buildPartial());
+              break;
+            }
+            case 128: {
+              bitField0_ |= 0x00000800;
+              sizeId_ = input.readUInt32();
+              break;
+            }
+            case 138: {
+              org.kegbot.proto.Models.KegSize.Builder subBuilder = org.kegbot.proto.Models.KegSize.newBuilder();
+              if (hasSize()) {
+                subBuilder.mergeFrom(getSize());
+              }
+              input.readMessage(subBuilder, extensionRegistry);
+              setSize(subBuilder.buildPartial());
+              break;
+            }
+            case 146: {
+              bitField0_ |= 0x00002000;
+              sizeName_ = input.readBytes();
+              break;
+            }
+            case 157: {
+              bitField0_ |= 0x00004000;
+              sizeVolumeMl_ = input.readFloat();
               break;
             }
           }
@@ -7623,40 +8367,25 @@ public final class Models {
       
       private int bitField0_;
       
-      // required string id = 1;
-      private Object id_ = "";
+      // required uint32 id = 1;
+      private int id_ ;
       public boolean hasId() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
-      public String getId() {
-        Object ref = id_;
-        if (!(ref instanceof String)) {
-          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
-          id_ = s;
-          return s;
-        } else {
-          return (String) ref;
-        }
+      public int getId() {
+        return id_;
       }
-      public Builder setId(String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
+      public Builder setId(int value) {
+        bitField0_ |= 0x00000001;
         id_ = value;
         onChanged();
         return this;
       }
       public Builder clearId() {
         bitField0_ = (bitField0_ & ~0x00000001);
-        id_ = getDefaultInstance().getId();
+        id_ = 0;
         onChanged();
         return this;
-      }
-      void setId(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000001;
-        id_ = value;
-        onChanged();
       }
       
       // required string type_id = 2;
@@ -7695,115 +8424,22 @@ public final class Models {
         onChanged();
       }
       
-      // required string size_id = 3;
-      private Object sizeId_ = "";
-      public boolean hasSizeId() {
-        return ((bitField0_ & 0x00000004) == 0x00000004);
-      }
-      public String getSizeId() {
-        Object ref = sizeId_;
-        if (!(ref instanceof String)) {
-          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
-          sizeId_ = s;
-          return s;
-        } else {
-          return (String) ref;
-        }
-      }
-      public Builder setSizeId(String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000004;
-        sizeId_ = value;
-        onChanged();
-        return this;
-      }
-      public Builder clearSizeId() {
-        bitField0_ = (bitField0_ & ~0x00000004);
-        sizeId_ = getDefaultInstance().getSizeId();
-        onChanged();
-        return this;
-      }
-      void setSizeId(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000004;
-        sizeId_ = value;
-        onChanged();
-      }
-      
-      // optional string size_name = 4;
-      private Object sizeName_ = "";
-      public boolean hasSizeName() {
-        return ((bitField0_ & 0x00000008) == 0x00000008);
-      }
-      public String getSizeName() {
-        Object ref = sizeName_;
-        if (!(ref instanceof String)) {
-          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
-          sizeName_ = s;
-          return s;
-        } else {
-          return (String) ref;
-        }
-      }
-      public Builder setSizeName(String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000008;
-        sizeName_ = value;
-        onChanged();
-        return this;
-      }
-      public Builder clearSizeName() {
-        bitField0_ = (bitField0_ & ~0x00000008);
-        sizeName_ = getDefaultInstance().getSizeName();
-        onChanged();
-        return this;
-      }
-      void setSizeName(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000008;
-        sizeName_ = value;
-        onChanged();
-      }
-      
-      // optional float size_volume_ml = 5;
-      private float sizeVolumeMl_ ;
-      public boolean hasSizeVolumeMl() {
-        return ((bitField0_ & 0x00000010) == 0x00000010);
-      }
-      public float getSizeVolumeMl() {
-        return sizeVolumeMl_;
-      }
-      public Builder setSizeVolumeMl(float value) {
-        bitField0_ |= 0x00000010;
-        sizeVolumeMl_ = value;
-        onChanged();
-        return this;
-      }
-      public Builder clearSizeVolumeMl() {
-        bitField0_ = (bitField0_ & ~0x00000010);
-        sizeVolumeMl_ = 0F;
-        onChanged();
-        return this;
-      }
-      
       // required float volume_ml_remain = 6;
       private float volumeMlRemain_ ;
       public boolean hasVolumeMlRemain() {
-        return ((bitField0_ & 0x00000020) == 0x00000020);
+        return ((bitField0_ & 0x00000004) == 0x00000004);
       }
       public float getVolumeMlRemain() {
         return volumeMlRemain_;
       }
       public Builder setVolumeMlRemain(float value) {
-        bitField0_ |= 0x00000020;
+        bitField0_ |= 0x00000004;
         volumeMlRemain_ = value;
         onChanged();
         return this;
       }
       public Builder clearVolumeMlRemain() {
-        bitField0_ = (bitField0_ & ~0x00000020);
+        bitField0_ = (bitField0_ & ~0x00000004);
         volumeMlRemain_ = 0F;
         onChanged();
         return this;
@@ -7812,100 +8448,100 @@ public final class Models {
       // required float percent_full = 7;
       private float percentFull_ ;
       public boolean hasPercentFull() {
-        return ((bitField0_ & 0x00000040) == 0x00000040);
+        return ((bitField0_ & 0x00000008) == 0x00000008);
       }
       public float getPercentFull() {
         return percentFull_;
       }
       public Builder setPercentFull(float value) {
-        bitField0_ |= 0x00000040;
+        bitField0_ |= 0x00000008;
         percentFull_ = value;
         onChanged();
         return this;
       }
       public Builder clearPercentFull() {
-        bitField0_ = (bitField0_ & ~0x00000040);
+        bitField0_ = (bitField0_ & ~0x00000008);
         percentFull_ = 0F;
         onChanged();
         return this;
       }
       
-      // required string started_time = 8;
-      private Object startedTime_ = "";
-      public boolean hasStartedTime() {
-        return ((bitField0_ & 0x00000080) == 0x00000080);
+      // required string start_time = 8;
+      private Object startTime_ = "";
+      public boolean hasStartTime() {
+        return ((bitField0_ & 0x00000010) == 0x00000010);
       }
-      public String getStartedTime() {
-        Object ref = startedTime_;
+      public String getStartTime() {
+        Object ref = startTime_;
         if (!(ref instanceof String)) {
           String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
-          startedTime_ = s;
+          startTime_ = s;
           return s;
         } else {
           return (String) ref;
         }
       }
-      public Builder setStartedTime(String value) {
+      public Builder setStartTime(String value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000080;
-        startedTime_ = value;
+  bitField0_ |= 0x00000010;
+        startTime_ = value;
         onChanged();
         return this;
       }
-      public Builder clearStartedTime() {
-        bitField0_ = (bitField0_ & ~0x00000080);
-        startedTime_ = getDefaultInstance().getStartedTime();
+      public Builder clearStartTime() {
+        bitField0_ = (bitField0_ & ~0x00000010);
+        startTime_ = getDefaultInstance().getStartTime();
         onChanged();
         return this;
       }
-      void setStartedTime(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000080;
-        startedTime_ = value;
+      void setStartTime(com.google.protobuf.ByteString value) {
+        bitField0_ |= 0x00000010;
+        startTime_ = value;
         onChanged();
       }
       
-      // required string finished_time = 9;
-      private Object finishedTime_ = "";
-      public boolean hasFinishedTime() {
-        return ((bitField0_ & 0x00000100) == 0x00000100);
+      // required string end_time = 9;
+      private Object endTime_ = "";
+      public boolean hasEndTime() {
+        return ((bitField0_ & 0x00000020) == 0x00000020);
       }
-      public String getFinishedTime() {
-        Object ref = finishedTime_;
+      public String getEndTime() {
+        Object ref = endTime_;
         if (!(ref instanceof String)) {
           String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
-          finishedTime_ = s;
+          endTime_ = s;
           return s;
         } else {
           return (String) ref;
         }
       }
-      public Builder setFinishedTime(String value) {
+      public Builder setEndTime(String value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000100;
-        finishedTime_ = value;
+  bitField0_ |= 0x00000020;
+        endTime_ = value;
         onChanged();
         return this;
       }
-      public Builder clearFinishedTime() {
-        bitField0_ = (bitField0_ & ~0x00000100);
-        finishedTime_ = getDefaultInstance().getFinishedTime();
+      public Builder clearEndTime() {
+        bitField0_ = (bitField0_ & ~0x00000020);
+        endTime_ = getDefaultInstance().getEndTime();
         onChanged();
         return this;
       }
-      void setFinishedTime(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000100;
-        finishedTime_ = value;
+      void setEndTime(com.google.protobuf.ByteString value) {
+        bitField0_ |= 0x00000020;
+        endTime_ = value;
         onChanged();
       }
       
       // required string status = 10;
       private Object status_ = "";
       public boolean hasStatus() {
-        return ((bitField0_ & 0x00000200) == 0x00000200);
+        return ((bitField0_ & 0x00000040) == 0x00000040);
       }
       public String getStatus() {
         Object ref = status_;
@@ -7921,19 +8557,19 @@ public final class Models {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000200;
+  bitField0_ |= 0x00000040;
         status_ = value;
         onChanged();
         return this;
       }
       public Builder clearStatus() {
-        bitField0_ = (bitField0_ & ~0x00000200);
+        bitField0_ = (bitField0_ & ~0x00000040);
         status_ = getDefaultInstance().getStatus();
         onChanged();
         return this;
       }
       void setStatus(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000200;
+        bitField0_ |= 0x00000040;
         status_ = value;
         onChanged();
       }
@@ -7941,7 +8577,7 @@ public final class Models {
       // optional string description = 11;
       private Object description_ = "";
       public boolean hasDescription() {
-        return ((bitField0_ & 0x00000400) == 0x00000400);
+        return ((bitField0_ & 0x00000080) == 0x00000080);
       }
       public String getDescription() {
         Object ref = description_;
@@ -7957,19 +8593,19 @@ public final class Models {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000400;
+  bitField0_ |= 0x00000080;
         description_ = value;
         onChanged();
         return this;
       }
       public Builder clearDescription() {
-        bitField0_ = (bitField0_ & ~0x00000400);
+        bitField0_ = (bitField0_ & ~0x00000080);
         description_ = getDefaultInstance().getDescription();
         onChanged();
         return this;
       }
       void setDescription(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000400;
+        bitField0_ |= 0x00000080;
         description_ = value;
         onChanged();
       }
@@ -7977,19 +8613,19 @@ public final class Models {
       // optional float spilled_ml = 12;
       private float spilledMl_ ;
       public boolean hasSpilledMl() {
-        return ((bitField0_ & 0x00000800) == 0x00000800);
+        return ((bitField0_ & 0x00000100) == 0x00000100);
       }
       public float getSpilledMl() {
         return spilledMl_;
       }
       public Builder setSpilledMl(float value) {
-        bitField0_ |= 0x00000800;
+        bitField0_ |= 0x00000100;
         spilledMl_ = value;
         onChanged();
         return this;
       }
       public Builder clearSpilledMl() {
-        bitField0_ = (bitField0_ & ~0x00000800);
+        bitField0_ = (bitField0_ & ~0x00000100);
         spilledMl_ = 0F;
         onChanged();
         return this;
@@ -7998,7 +8634,7 @@ public final class Models {
       // optional string url = 13;
       private Object url_ = "";
       public boolean hasUrl() {
-        return ((bitField0_ & 0x00001000) == 0x00001000);
+        return ((bitField0_ & 0x00000200) == 0x00000200);
       }
       public String getUrl() {
         Object ref = url_;
@@ -8014,21 +8650,279 @@ public final class Models {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00001000;
+  bitField0_ |= 0x00000200;
         url_ = value;
         onChanged();
         return this;
       }
       public Builder clearUrl() {
-        bitField0_ = (bitField0_ & ~0x00001000);
+        bitField0_ = (bitField0_ & ~0x00000200);
         url_ = getDefaultInstance().getUrl();
         onChanged();
         return this;
       }
       void setUrl(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00001000;
+        bitField0_ |= 0x00000200;
         url_ = value;
         onChanged();
+      }
+      
+      // optional .BeerType type = 15;
+      private org.kegbot.proto.Models.BeerType type_ = org.kegbot.proto.Models.BeerType.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          org.kegbot.proto.Models.BeerType, org.kegbot.proto.Models.BeerType.Builder, org.kegbot.proto.Models.BeerTypeOrBuilder> typeBuilder_;
+      public boolean hasType() {
+        return ((bitField0_ & 0x00000400) == 0x00000400);
+      }
+      public org.kegbot.proto.Models.BeerType getType() {
+        if (typeBuilder_ == null) {
+          return type_;
+        } else {
+          return typeBuilder_.getMessage();
+        }
+      }
+      public Builder setType(org.kegbot.proto.Models.BeerType value) {
+        if (typeBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          type_ = value;
+          onChanged();
+        } else {
+          typeBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000400;
+        return this;
+      }
+      public Builder setType(
+          org.kegbot.proto.Models.BeerType.Builder builderForValue) {
+        if (typeBuilder_ == null) {
+          type_ = builderForValue.build();
+          onChanged();
+        } else {
+          typeBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000400;
+        return this;
+      }
+      public Builder mergeType(org.kegbot.proto.Models.BeerType value) {
+        if (typeBuilder_ == null) {
+          if (((bitField0_ & 0x00000400) == 0x00000400) &&
+              type_ != org.kegbot.proto.Models.BeerType.getDefaultInstance()) {
+            type_ =
+              org.kegbot.proto.Models.BeerType.newBuilder(type_).mergeFrom(value).buildPartial();
+          } else {
+            type_ = value;
+          }
+          onChanged();
+        } else {
+          typeBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000400;
+        return this;
+      }
+      public Builder clearType() {
+        if (typeBuilder_ == null) {
+          type_ = org.kegbot.proto.Models.BeerType.getDefaultInstance();
+          onChanged();
+        } else {
+          typeBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000400);
+        return this;
+      }
+      public org.kegbot.proto.Models.BeerType.Builder getTypeBuilder() {
+        bitField0_ |= 0x00000400;
+        onChanged();
+        return getTypeFieldBuilder().getBuilder();
+      }
+      public org.kegbot.proto.Models.BeerTypeOrBuilder getTypeOrBuilder() {
+        if (typeBuilder_ != null) {
+          return typeBuilder_.getMessageOrBuilder();
+        } else {
+          return type_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          org.kegbot.proto.Models.BeerType, org.kegbot.proto.Models.BeerType.Builder, org.kegbot.proto.Models.BeerTypeOrBuilder> 
+          getTypeFieldBuilder() {
+        if (typeBuilder_ == null) {
+          typeBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              org.kegbot.proto.Models.BeerType, org.kegbot.proto.Models.BeerType.Builder, org.kegbot.proto.Models.BeerTypeOrBuilder>(
+                  type_,
+                  getParentForChildren(),
+                  isClean());
+          type_ = null;
+        }
+        return typeBuilder_;
+      }
+      
+      // optional uint32 size_id = 16;
+      private int sizeId_ ;
+      public boolean hasSizeId() {
+        return ((bitField0_ & 0x00000800) == 0x00000800);
+      }
+      public int getSizeId() {
+        return sizeId_;
+      }
+      public Builder setSizeId(int value) {
+        bitField0_ |= 0x00000800;
+        sizeId_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearSizeId() {
+        bitField0_ = (bitField0_ & ~0x00000800);
+        sizeId_ = 0;
+        onChanged();
+        return this;
+      }
+      
+      // optional .KegSize size = 17;
+      private org.kegbot.proto.Models.KegSize size_ = org.kegbot.proto.Models.KegSize.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          org.kegbot.proto.Models.KegSize, org.kegbot.proto.Models.KegSize.Builder, org.kegbot.proto.Models.KegSizeOrBuilder> sizeBuilder_;
+      public boolean hasSize() {
+        return ((bitField0_ & 0x00001000) == 0x00001000);
+      }
+      public org.kegbot.proto.Models.KegSize getSize() {
+        if (sizeBuilder_ == null) {
+          return size_;
+        } else {
+          return sizeBuilder_.getMessage();
+        }
+      }
+      public Builder setSize(org.kegbot.proto.Models.KegSize value) {
+        if (sizeBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          size_ = value;
+          onChanged();
+        } else {
+          sizeBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00001000;
+        return this;
+      }
+      public Builder setSize(
+          org.kegbot.proto.Models.KegSize.Builder builderForValue) {
+        if (sizeBuilder_ == null) {
+          size_ = builderForValue.build();
+          onChanged();
+        } else {
+          sizeBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00001000;
+        return this;
+      }
+      public Builder mergeSize(org.kegbot.proto.Models.KegSize value) {
+        if (sizeBuilder_ == null) {
+          if (((bitField0_ & 0x00001000) == 0x00001000) &&
+              size_ != org.kegbot.proto.Models.KegSize.getDefaultInstance()) {
+            size_ =
+              org.kegbot.proto.Models.KegSize.newBuilder(size_).mergeFrom(value).buildPartial();
+          } else {
+            size_ = value;
+          }
+          onChanged();
+        } else {
+          sizeBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00001000;
+        return this;
+      }
+      public Builder clearSize() {
+        if (sizeBuilder_ == null) {
+          size_ = org.kegbot.proto.Models.KegSize.getDefaultInstance();
+          onChanged();
+        } else {
+          sizeBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00001000);
+        return this;
+      }
+      public org.kegbot.proto.Models.KegSize.Builder getSizeBuilder() {
+        bitField0_ |= 0x00001000;
+        onChanged();
+        return getSizeFieldBuilder().getBuilder();
+      }
+      public org.kegbot.proto.Models.KegSizeOrBuilder getSizeOrBuilder() {
+        if (sizeBuilder_ != null) {
+          return sizeBuilder_.getMessageOrBuilder();
+        } else {
+          return size_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          org.kegbot.proto.Models.KegSize, org.kegbot.proto.Models.KegSize.Builder, org.kegbot.proto.Models.KegSizeOrBuilder> 
+          getSizeFieldBuilder() {
+        if (sizeBuilder_ == null) {
+          sizeBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              org.kegbot.proto.Models.KegSize, org.kegbot.proto.Models.KegSize.Builder, org.kegbot.proto.Models.KegSizeOrBuilder>(
+                  size_,
+                  getParentForChildren(),
+                  isClean());
+          size_ = null;
+        }
+        return sizeBuilder_;
+      }
+      
+      // optional string size_name = 18;
+      private Object sizeName_ = "";
+      public boolean hasSizeName() {
+        return ((bitField0_ & 0x00002000) == 0x00002000);
+      }
+      public String getSizeName() {
+        Object ref = sizeName_;
+        if (!(ref instanceof String)) {
+          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+          sizeName_ = s;
+          return s;
+        } else {
+          return (String) ref;
+        }
+      }
+      public Builder setSizeName(String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00002000;
+        sizeName_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearSizeName() {
+        bitField0_ = (bitField0_ & ~0x00002000);
+        sizeName_ = getDefaultInstance().getSizeName();
+        onChanged();
+        return this;
+      }
+      void setSizeName(com.google.protobuf.ByteString value) {
+        bitField0_ |= 0x00002000;
+        sizeName_ = value;
+        onChanged();
+      }
+      
+      // optional float size_volume_ml = 19;
+      private float sizeVolumeMl_ ;
+      public boolean hasSizeVolumeMl() {
+        return ((bitField0_ & 0x00004000) == 0x00004000);
+      }
+      public float getSizeVolumeMl() {
+        return sizeVolumeMl_;
+      }
+      public Builder setSizeVolumeMl(float value) {
+        bitField0_ |= 0x00004000;
+        sizeVolumeMl_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearSizeVolumeMl() {
+        bitField0_ = (bitField0_ & ~0x00004000);
+        sizeVolumeMl_ = 0F;
+        onChanged();
+        return this;
       }
       
       // @@protoc_insertion_point(builder_scope:Keg)
@@ -8045,9 +8939,9 @@ public final class Models {
   public interface KegSizeOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
     
-    // required string id = 1;
+    // required uint32 id = 1;
     boolean hasId();
-    String getId();
+    int getId();
     
     // required string name = 2;
     boolean hasName();
@@ -8086,36 +8980,14 @@ public final class Models {
     }
     
     private int bitField0_;
-    // required string id = 1;
+    // required uint32 id = 1;
     public static final int ID_FIELD_NUMBER = 1;
-    private Object id_;
+    private int id_;
     public boolean hasId() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
-    public String getId() {
-      Object ref = id_;
-      if (ref instanceof String) {
-        return (String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
-          id_ = s;
-        }
-        return s;
-      }
-    }
-    private com.google.protobuf.ByteString getIdBytes() {
-      Object ref = id_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
-        id_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+    public int getId() {
+      return id_;
     }
     
     // required string name = 2;
@@ -8161,7 +9033,7 @@ public final class Models {
     }
     
     private void initFields() {
-      id_ = "";
+      id_ = 0;
       name_ = "";
       volumeMl_ = 0F;
     }
@@ -8190,7 +9062,7 @@ public final class Models {
                         throws java.io.IOException {
       getSerializedSize();
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeBytes(1, getIdBytes());
+        output.writeUInt32(1, id_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         output.writeBytes(2, getNameBytes());
@@ -8209,7 +9081,7 @@ public final class Models {
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(1, getIdBytes());
+          .computeUInt32Size(1, id_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
@@ -8341,7 +9213,7 @@ public final class Models {
       
       public Builder clear() {
         super.clear();
-        id_ = "";
+        id_ = 0;
         bitField0_ = (bitField0_ & ~0x00000001);
         name_ = "";
         bitField0_ = (bitField0_ & ~0x00000002);
@@ -8465,9 +9337,9 @@ public final class Models {
               }
               break;
             }
-            case 10: {
+            case 8: {
               bitField0_ |= 0x00000001;
-              id_ = input.readBytes();
+              id_ = input.readUInt32();
               break;
             }
             case 18: {
@@ -8486,40 +9358,25 @@ public final class Models {
       
       private int bitField0_;
       
-      // required string id = 1;
-      private Object id_ = "";
+      // required uint32 id = 1;
+      private int id_ ;
       public boolean hasId() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
-      public String getId() {
-        Object ref = id_;
-        if (!(ref instanceof String)) {
-          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
-          id_ = s;
-          return s;
-        } else {
-          return (String) ref;
-        }
+      public int getId() {
+        return id_;
       }
-      public Builder setId(String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
+      public Builder setId(int value) {
+        bitField0_ |= 0x00000001;
         id_ = value;
         onChanged();
         return this;
       }
       public Builder clearId() {
         bitField0_ = (bitField0_ & ~0x00000001);
-        id_ = getDefaultInstance().getId();
+        id_ = 0;
         onChanged();
         return this;
-      }
-      void setId(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000001;
-        id_ = value;
-        onChanged();
       }
       
       // required string name = 2;
@@ -8593,9 +9450,9 @@ public final class Models {
   public interface KegTapOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
     
-    // required string id = 1;
+    // required uint32 id = 1;
     boolean hasId();
-    String getId();
+    int getId();
     
     // required string name = 2;
     boolean hasName();
@@ -8617,18 +9474,23 @@ public final class Models {
     boolean hasDescription();
     String getDescription();
     
-    // optional string current_keg_id = 7;
-    boolean hasCurrentKegId();
-    String getCurrentKegId();
-    
-    // optional string thermo_sensor_id = 8;
+    // optional uint32 thermo_sensor_id = 8;
     boolean hasThermoSensorId();
-    String getThermoSensorId();
+    int getThermoSensorId();
     
     // optional .ThermoLog last_temperature = 9;
     boolean hasLastTemperature();
     org.kegbot.proto.Models.ThermoLog getLastTemperature();
     org.kegbot.proto.Models.ThermoLogOrBuilder getLastTemperatureOrBuilder();
+    
+    // optional uint32 current_keg_id = 10;
+    boolean hasCurrentKegId();
+    int getCurrentKegId();
+    
+    // optional .Keg current_keg = 11;
+    boolean hasCurrentKeg();
+    org.kegbot.proto.Models.Keg getCurrentKeg();
+    org.kegbot.proto.Models.KegOrBuilder getCurrentKegOrBuilder();
   }
   public static final class KegTap extends
       com.google.protobuf.GeneratedMessage
@@ -8659,36 +9521,14 @@ public final class Models {
     }
     
     private int bitField0_;
-    // required string id = 1;
+    // required uint32 id = 1;
     public static final int ID_FIELD_NUMBER = 1;
-    private Object id_;
+    private int id_;
     public boolean hasId() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
-    public String getId() {
-      Object ref = id_;
-      if (ref instanceof String) {
-        return (String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
-          id_ = s;
-        }
-        return s;
-      }
-    }
-    private com.google.protobuf.ByteString getIdBytes() {
-      Object ref = id_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
-        id_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+    public int getId() {
+      return id_;
     }
     
     // required string name = 2;
@@ -8829,75 +9669,21 @@ public final class Models {
       }
     }
     
-    // optional string current_keg_id = 7;
-    public static final int CURRENT_KEG_ID_FIELD_NUMBER = 7;
-    private Object currentKegId_;
-    public boolean hasCurrentKegId() {
+    // optional uint32 thermo_sensor_id = 8;
+    public static final int THERMO_SENSOR_ID_FIELD_NUMBER = 8;
+    private int thermoSensorId_;
+    public boolean hasThermoSensorId() {
       return ((bitField0_ & 0x00000040) == 0x00000040);
     }
-    public String getCurrentKegId() {
-      Object ref = currentKegId_;
-      if (ref instanceof String) {
-        return (String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
-          currentKegId_ = s;
-        }
-        return s;
-      }
-    }
-    private com.google.protobuf.ByteString getCurrentKegIdBytes() {
-      Object ref = currentKegId_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
-        currentKegId_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-    
-    // optional string thermo_sensor_id = 8;
-    public static final int THERMO_SENSOR_ID_FIELD_NUMBER = 8;
-    private Object thermoSensorId_;
-    public boolean hasThermoSensorId() {
-      return ((bitField0_ & 0x00000080) == 0x00000080);
-    }
-    public String getThermoSensorId() {
-      Object ref = thermoSensorId_;
-      if (ref instanceof String) {
-        return (String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
-          thermoSensorId_ = s;
-        }
-        return s;
-      }
-    }
-    private com.google.protobuf.ByteString getThermoSensorIdBytes() {
-      Object ref = thermoSensorId_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
-        thermoSensorId_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+    public int getThermoSensorId() {
+      return thermoSensorId_;
     }
     
     // optional .ThermoLog last_temperature = 9;
     public static final int LAST_TEMPERATURE_FIELD_NUMBER = 9;
     private org.kegbot.proto.Models.ThermoLog lastTemperature_;
     public boolean hasLastTemperature() {
-      return ((bitField0_ & 0x00000100) == 0x00000100);
+      return ((bitField0_ & 0x00000080) == 0x00000080);
     }
     public org.kegbot.proto.Models.ThermoLog getLastTemperature() {
       return lastTemperature_;
@@ -8906,16 +9692,40 @@ public final class Models {
       return lastTemperature_;
     }
     
+    // optional uint32 current_keg_id = 10;
+    public static final int CURRENT_KEG_ID_FIELD_NUMBER = 10;
+    private int currentKegId_;
+    public boolean hasCurrentKegId() {
+      return ((bitField0_ & 0x00000100) == 0x00000100);
+    }
+    public int getCurrentKegId() {
+      return currentKegId_;
+    }
+    
+    // optional .Keg current_keg = 11;
+    public static final int CURRENT_KEG_FIELD_NUMBER = 11;
+    private org.kegbot.proto.Models.Keg currentKeg_;
+    public boolean hasCurrentKeg() {
+      return ((bitField0_ & 0x00000200) == 0x00000200);
+    }
+    public org.kegbot.proto.Models.Keg getCurrentKeg() {
+      return currentKeg_;
+    }
+    public org.kegbot.proto.Models.KegOrBuilder getCurrentKegOrBuilder() {
+      return currentKeg_;
+    }
+    
     private void initFields() {
-      id_ = "";
+      id_ = 0;
       name_ = "";
       meterName_ = "";
       relayName_ = "";
       mlPerTick_ = 0F;
       description_ = "";
-      currentKegId_ = "";
-      thermoSensorId_ = "";
+      thermoSensorId_ = 0;
       lastTemperature_ = org.kegbot.proto.Models.ThermoLog.getDefaultInstance();
+      currentKegId_ = 0;
+      currentKeg_ = org.kegbot.proto.Models.Keg.getDefaultInstance();
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -8944,6 +9754,12 @@ public final class Models {
           return false;
         }
       }
+      if (hasCurrentKeg()) {
+        if (!getCurrentKeg().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
       memoizedIsInitialized = 1;
       return true;
     }
@@ -8952,7 +9768,7 @@ public final class Models {
                         throws java.io.IOException {
       getSerializedSize();
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeBytes(1, getIdBytes());
+        output.writeUInt32(1, id_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         output.writeBytes(2, getNameBytes());
@@ -8970,13 +9786,16 @@ public final class Models {
         output.writeBytes(6, getDescriptionBytes());
       }
       if (((bitField0_ & 0x00000040) == 0x00000040)) {
-        output.writeBytes(7, getCurrentKegIdBytes());
+        output.writeUInt32(8, thermoSensorId_);
       }
       if (((bitField0_ & 0x00000080) == 0x00000080)) {
-        output.writeBytes(8, getThermoSensorIdBytes());
+        output.writeMessage(9, lastTemperature_);
       }
       if (((bitField0_ & 0x00000100) == 0x00000100)) {
-        output.writeMessage(9, lastTemperature_);
+        output.writeUInt32(10, currentKegId_);
+      }
+      if (((bitField0_ & 0x00000200) == 0x00000200)) {
+        output.writeMessage(11, currentKeg_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -8989,7 +9808,7 @@ public final class Models {
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(1, getIdBytes());
+          .computeUInt32Size(1, id_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
@@ -9013,15 +9832,19 @@ public final class Models {
       }
       if (((bitField0_ & 0x00000040) == 0x00000040)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(7, getCurrentKegIdBytes());
+          .computeUInt32Size(8, thermoSensorId_);
       }
       if (((bitField0_ & 0x00000080) == 0x00000080)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(8, getThermoSensorIdBytes());
+          .computeMessageSize(9, lastTemperature_);
       }
       if (((bitField0_ & 0x00000100) == 0x00000100)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(9, lastTemperature_);
+          .computeUInt32Size(10, currentKegId_);
+      }
+      if (((bitField0_ & 0x00000200) == 0x00000200)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(11, currentKeg_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -9138,6 +9961,7 @@ public final class Models {
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
           getLastTemperatureFieldBuilder();
+          getCurrentKegFieldBuilder();
         }
       }
       private static Builder create() {
@@ -9146,7 +9970,7 @@ public final class Models {
       
       public Builder clear() {
         super.clear();
-        id_ = "";
+        id_ = 0;
         bitField0_ = (bitField0_ & ~0x00000001);
         name_ = "";
         bitField0_ = (bitField0_ & ~0x00000002);
@@ -9158,16 +9982,22 @@ public final class Models {
         bitField0_ = (bitField0_ & ~0x00000010);
         description_ = "";
         bitField0_ = (bitField0_ & ~0x00000020);
-        currentKegId_ = "";
+        thermoSensorId_ = 0;
         bitField0_ = (bitField0_ & ~0x00000040);
-        thermoSensorId_ = "";
-        bitField0_ = (bitField0_ & ~0x00000080);
         if (lastTemperatureBuilder_ == null) {
           lastTemperature_ = org.kegbot.proto.Models.ThermoLog.getDefaultInstance();
         } else {
           lastTemperatureBuilder_.clear();
         }
+        bitField0_ = (bitField0_ & ~0x00000080);
+        currentKegId_ = 0;
         bitField0_ = (bitField0_ & ~0x00000100);
+        if (currentKegBuilder_ == null) {
+          currentKeg_ = org.kegbot.proto.Models.Keg.getDefaultInstance();
+        } else {
+          currentKegBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000200);
         return this;
       }
       
@@ -9233,18 +10063,26 @@ public final class Models {
         if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
           to_bitField0_ |= 0x00000040;
         }
-        result.currentKegId_ = currentKegId_;
+        result.thermoSensorId_ = thermoSensorId_;
         if (((from_bitField0_ & 0x00000080) == 0x00000080)) {
           to_bitField0_ |= 0x00000080;
-        }
-        result.thermoSensorId_ = thermoSensorId_;
-        if (((from_bitField0_ & 0x00000100) == 0x00000100)) {
-          to_bitField0_ |= 0x00000100;
         }
         if (lastTemperatureBuilder_ == null) {
           result.lastTemperature_ = lastTemperature_;
         } else {
           result.lastTemperature_ = lastTemperatureBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00000100) == 0x00000100)) {
+          to_bitField0_ |= 0x00000100;
+        }
+        result.currentKegId_ = currentKegId_;
+        if (((from_bitField0_ & 0x00000200) == 0x00000200)) {
+          to_bitField0_ |= 0x00000200;
+        }
+        if (currentKegBuilder_ == null) {
+          result.currentKeg_ = currentKeg_;
+        } else {
+          result.currentKeg_ = currentKegBuilder_.build();
         }
         result.bitField0_ = to_bitField0_;
         onBuilt();
@@ -9280,14 +10118,17 @@ public final class Models {
         if (other.hasDescription()) {
           setDescription(other.getDescription());
         }
-        if (other.hasCurrentKegId()) {
-          setCurrentKegId(other.getCurrentKegId());
-        }
         if (other.hasThermoSensorId()) {
           setThermoSensorId(other.getThermoSensorId());
         }
         if (other.hasLastTemperature()) {
           mergeLastTemperature(other.getLastTemperature());
+        }
+        if (other.hasCurrentKegId()) {
+          setCurrentKegId(other.getCurrentKegId());
+        }
+        if (other.hasCurrentKeg()) {
+          mergeCurrentKeg(other.getCurrentKeg());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -9312,6 +10153,12 @@ public final class Models {
         }
         if (hasLastTemperature()) {
           if (!getLastTemperature().isInitialized()) {
+            
+            return false;
+          }
+        }
+        if (hasCurrentKeg()) {
+          if (!getCurrentKeg().isInitialized()) {
             
             return false;
           }
@@ -9342,9 +10189,9 @@ public final class Models {
               }
               break;
             }
-            case 10: {
+            case 8: {
               bitField0_ |= 0x00000001;
-              id_ = input.readBytes();
+              id_ = input.readUInt32();
               break;
             }
             case 18: {
@@ -9372,14 +10219,9 @@ public final class Models {
               description_ = input.readBytes();
               break;
             }
-            case 58: {
+            case 64: {
               bitField0_ |= 0x00000040;
-              currentKegId_ = input.readBytes();
-              break;
-            }
-            case 66: {
-              bitField0_ |= 0x00000080;
-              thermoSensorId_ = input.readBytes();
+              thermoSensorId_ = input.readUInt32();
               break;
             }
             case 74: {
@@ -9391,46 +10233,45 @@ public final class Models {
               setLastTemperature(subBuilder.buildPartial());
               break;
             }
+            case 80: {
+              bitField0_ |= 0x00000100;
+              currentKegId_ = input.readUInt32();
+              break;
+            }
+            case 90: {
+              org.kegbot.proto.Models.Keg.Builder subBuilder = org.kegbot.proto.Models.Keg.newBuilder();
+              if (hasCurrentKeg()) {
+                subBuilder.mergeFrom(getCurrentKeg());
+              }
+              input.readMessage(subBuilder, extensionRegistry);
+              setCurrentKeg(subBuilder.buildPartial());
+              break;
+            }
           }
         }
       }
       
       private int bitField0_;
       
-      // required string id = 1;
-      private Object id_ = "";
+      // required uint32 id = 1;
+      private int id_ ;
       public boolean hasId() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
-      public String getId() {
-        Object ref = id_;
-        if (!(ref instanceof String)) {
-          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
-          id_ = s;
-          return s;
-        } else {
-          return (String) ref;
-        }
+      public int getId() {
+        return id_;
       }
-      public Builder setId(String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
+      public Builder setId(int value) {
+        bitField0_ |= 0x00000001;
         id_ = value;
         onChanged();
         return this;
       }
       public Builder clearId() {
         bitField0_ = (bitField0_ & ~0x00000001);
-        id_ = getDefaultInstance().getId();
+        id_ = 0;
         onChanged();
         return this;
-      }
-      void setId(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000001;
-        id_ = value;
-        onChanged();
       }
       
       // required string name = 2;
@@ -9598,76 +10439,25 @@ public final class Models {
         onChanged();
       }
       
-      // optional string current_keg_id = 7;
-      private Object currentKegId_ = "";
-      public boolean hasCurrentKegId() {
+      // optional uint32 thermo_sensor_id = 8;
+      private int thermoSensorId_ ;
+      public boolean hasThermoSensorId() {
         return ((bitField0_ & 0x00000040) == 0x00000040);
       }
-      public String getCurrentKegId() {
-        Object ref = currentKegId_;
-        if (!(ref instanceof String)) {
-          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
-          currentKegId_ = s;
-          return s;
-        } else {
-          return (String) ref;
-        }
+      public int getThermoSensorId() {
+        return thermoSensorId_;
       }
-      public Builder setCurrentKegId(String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000040;
-        currentKegId_ = value;
-        onChanged();
-        return this;
-      }
-      public Builder clearCurrentKegId() {
-        bitField0_ = (bitField0_ & ~0x00000040);
-        currentKegId_ = getDefaultInstance().getCurrentKegId();
-        onChanged();
-        return this;
-      }
-      void setCurrentKegId(com.google.protobuf.ByteString value) {
+      public Builder setThermoSensorId(int value) {
         bitField0_ |= 0x00000040;
-        currentKegId_ = value;
-        onChanged();
-      }
-      
-      // optional string thermo_sensor_id = 8;
-      private Object thermoSensorId_ = "";
-      public boolean hasThermoSensorId() {
-        return ((bitField0_ & 0x00000080) == 0x00000080);
-      }
-      public String getThermoSensorId() {
-        Object ref = thermoSensorId_;
-        if (!(ref instanceof String)) {
-          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
-          thermoSensorId_ = s;
-          return s;
-        } else {
-          return (String) ref;
-        }
-      }
-      public Builder setThermoSensorId(String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000080;
         thermoSensorId_ = value;
         onChanged();
         return this;
       }
       public Builder clearThermoSensorId() {
-        bitField0_ = (bitField0_ & ~0x00000080);
-        thermoSensorId_ = getDefaultInstance().getThermoSensorId();
+        bitField0_ = (bitField0_ & ~0x00000040);
+        thermoSensorId_ = 0;
         onChanged();
         return this;
-      }
-      void setThermoSensorId(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000080;
-        thermoSensorId_ = value;
-        onChanged();
       }
       
       // optional .ThermoLog last_temperature = 9;
@@ -9675,7 +10465,7 @@ public final class Models {
       private com.google.protobuf.SingleFieldBuilder<
           org.kegbot.proto.Models.ThermoLog, org.kegbot.proto.Models.ThermoLog.Builder, org.kegbot.proto.Models.ThermoLogOrBuilder> lastTemperatureBuilder_;
       public boolean hasLastTemperature() {
-        return ((bitField0_ & 0x00000100) == 0x00000100);
+        return ((bitField0_ & 0x00000080) == 0x00000080);
       }
       public org.kegbot.proto.Models.ThermoLog getLastTemperature() {
         if (lastTemperatureBuilder_ == null) {
@@ -9694,7 +10484,7 @@ public final class Models {
         } else {
           lastTemperatureBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00000100;
+        bitField0_ |= 0x00000080;
         return this;
       }
       public Builder setLastTemperature(
@@ -9705,12 +10495,12 @@ public final class Models {
         } else {
           lastTemperatureBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00000100;
+        bitField0_ |= 0x00000080;
         return this;
       }
       public Builder mergeLastTemperature(org.kegbot.proto.Models.ThermoLog value) {
         if (lastTemperatureBuilder_ == null) {
-          if (((bitField0_ & 0x00000100) == 0x00000100) &&
+          if (((bitField0_ & 0x00000080) == 0x00000080) &&
               lastTemperature_ != org.kegbot.proto.Models.ThermoLog.getDefaultInstance()) {
             lastTemperature_ =
               org.kegbot.proto.Models.ThermoLog.newBuilder(lastTemperature_).mergeFrom(value).buildPartial();
@@ -9721,7 +10511,7 @@ public final class Models {
         } else {
           lastTemperatureBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00000100;
+        bitField0_ |= 0x00000080;
         return this;
       }
       public Builder clearLastTemperature() {
@@ -9731,11 +10521,11 @@ public final class Models {
         } else {
           lastTemperatureBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000100);
+        bitField0_ = (bitField0_ & ~0x00000080);
         return this;
       }
       public org.kegbot.proto.Models.ThermoLog.Builder getLastTemperatureBuilder() {
-        bitField0_ |= 0x00000100;
+        bitField0_ |= 0x00000080;
         onChanged();
         return getLastTemperatureFieldBuilder().getBuilder();
       }
@@ -9760,6 +10550,117 @@ public final class Models {
         return lastTemperatureBuilder_;
       }
       
+      // optional uint32 current_keg_id = 10;
+      private int currentKegId_ ;
+      public boolean hasCurrentKegId() {
+        return ((bitField0_ & 0x00000100) == 0x00000100);
+      }
+      public int getCurrentKegId() {
+        return currentKegId_;
+      }
+      public Builder setCurrentKegId(int value) {
+        bitField0_ |= 0x00000100;
+        currentKegId_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearCurrentKegId() {
+        bitField0_ = (bitField0_ & ~0x00000100);
+        currentKegId_ = 0;
+        onChanged();
+        return this;
+      }
+      
+      // optional .Keg current_keg = 11;
+      private org.kegbot.proto.Models.Keg currentKeg_ = org.kegbot.proto.Models.Keg.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          org.kegbot.proto.Models.Keg, org.kegbot.proto.Models.Keg.Builder, org.kegbot.proto.Models.KegOrBuilder> currentKegBuilder_;
+      public boolean hasCurrentKeg() {
+        return ((bitField0_ & 0x00000200) == 0x00000200);
+      }
+      public org.kegbot.proto.Models.Keg getCurrentKeg() {
+        if (currentKegBuilder_ == null) {
+          return currentKeg_;
+        } else {
+          return currentKegBuilder_.getMessage();
+        }
+      }
+      public Builder setCurrentKeg(org.kegbot.proto.Models.Keg value) {
+        if (currentKegBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          currentKeg_ = value;
+          onChanged();
+        } else {
+          currentKegBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000200;
+        return this;
+      }
+      public Builder setCurrentKeg(
+          org.kegbot.proto.Models.Keg.Builder builderForValue) {
+        if (currentKegBuilder_ == null) {
+          currentKeg_ = builderForValue.build();
+          onChanged();
+        } else {
+          currentKegBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000200;
+        return this;
+      }
+      public Builder mergeCurrentKeg(org.kegbot.proto.Models.Keg value) {
+        if (currentKegBuilder_ == null) {
+          if (((bitField0_ & 0x00000200) == 0x00000200) &&
+              currentKeg_ != org.kegbot.proto.Models.Keg.getDefaultInstance()) {
+            currentKeg_ =
+              org.kegbot.proto.Models.Keg.newBuilder(currentKeg_).mergeFrom(value).buildPartial();
+          } else {
+            currentKeg_ = value;
+          }
+          onChanged();
+        } else {
+          currentKegBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000200;
+        return this;
+      }
+      public Builder clearCurrentKeg() {
+        if (currentKegBuilder_ == null) {
+          currentKeg_ = org.kegbot.proto.Models.Keg.getDefaultInstance();
+          onChanged();
+        } else {
+          currentKegBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000200);
+        return this;
+      }
+      public org.kegbot.proto.Models.Keg.Builder getCurrentKegBuilder() {
+        bitField0_ |= 0x00000200;
+        onChanged();
+        return getCurrentKegFieldBuilder().getBuilder();
+      }
+      public org.kegbot.proto.Models.KegOrBuilder getCurrentKegOrBuilder() {
+        if (currentKegBuilder_ != null) {
+          return currentKegBuilder_.getMessageOrBuilder();
+        } else {
+          return currentKeg_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          org.kegbot.proto.Models.Keg, org.kegbot.proto.Models.Keg.Builder, org.kegbot.proto.Models.KegOrBuilder> 
+          getCurrentKegFieldBuilder() {
+        if (currentKegBuilder_ == null) {
+          currentKegBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              org.kegbot.proto.Models.Keg, org.kegbot.proto.Models.Keg.Builder, org.kegbot.proto.Models.KegOrBuilder>(
+                  currentKeg_,
+                  getParentForChildren(),
+                  isClean());
+          currentKeg_ = null;
+        }
+        return currentKegBuilder_;
+      }
+      
       // @@protoc_insertion_point(builder_scope:KegTap)
     }
     
@@ -9774,9 +10675,9 @@ public final class Models {
   public interface SessionOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
     
-    // required string id = 1;
+    // required uint32 id = 1;
     boolean hasId();
-    String getId();
+    int getId();
     
     // required string start_time = 2;
     boolean hasStartTime();
@@ -9801,6 +10702,15 @@ public final class Models {
     // optional string url = 7;
     boolean hasUrl();
     String getUrl();
+    
+    // optional bool is_active = 8;
+    boolean hasIsActive();
+    boolean getIsActive();
+    
+    // optional .Stats stats = 9;
+    boolean hasStats();
+    org.kegbot.proto.Models.Stats getStats();
+    org.kegbot.proto.Models.StatsOrBuilder getStatsOrBuilder();
   }
   public static final class Session extends
       com.google.protobuf.GeneratedMessage
@@ -9831,36 +10741,14 @@ public final class Models {
     }
     
     private int bitField0_;
-    // required string id = 1;
+    // required uint32 id = 1;
     public static final int ID_FIELD_NUMBER = 1;
-    private Object id_;
+    private int id_;
     public boolean hasId() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
-    public String getId() {
-      Object ref = id_;
-      if (ref instanceof String) {
-        return (String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
-          id_ = s;
-        }
-        return s;
-      }
-    }
-    private com.google.protobuf.ByteString getIdBytes() {
-      Object ref = id_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
-        id_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+    public int getId() {
+      return id_;
     }
     
     // required string start_time = 2;
@@ -10033,14 +10921,39 @@ public final class Models {
       }
     }
     
+    // optional bool is_active = 8;
+    public static final int IS_ACTIVE_FIELD_NUMBER = 8;
+    private boolean isActive_;
+    public boolean hasIsActive() {
+      return ((bitField0_ & 0x00000080) == 0x00000080);
+    }
+    public boolean getIsActive() {
+      return isActive_;
+    }
+    
+    // optional .Stats stats = 9;
+    public static final int STATS_FIELD_NUMBER = 9;
+    private org.kegbot.proto.Models.Stats stats_;
+    public boolean hasStats() {
+      return ((bitField0_ & 0x00000100) == 0x00000100);
+    }
+    public org.kegbot.proto.Models.Stats getStats() {
+      return stats_;
+    }
+    public org.kegbot.proto.Models.StatsOrBuilder getStatsOrBuilder() {
+      return stats_;
+    }
+    
     private void initFields() {
-      id_ = "";
+      id_ = 0;
       startTime_ = "";
       endTime_ = "";
       volumeMl_ = 0F;
       name_ = "";
       slug_ = "";
       url_ = "";
+      isActive_ = false;
+      stats_ = org.kegbot.proto.Models.Stats.getDefaultInstance();
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -10063,6 +10976,12 @@ public final class Models {
         memoizedIsInitialized = 0;
         return false;
       }
+      if (hasStats()) {
+        if (!getStats().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
       memoizedIsInitialized = 1;
       return true;
     }
@@ -10071,7 +10990,7 @@ public final class Models {
                         throws java.io.IOException {
       getSerializedSize();
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeBytes(1, getIdBytes());
+        output.writeUInt32(1, id_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         output.writeBytes(2, getStartTimeBytes());
@@ -10091,6 +11010,12 @@ public final class Models {
       if (((bitField0_ & 0x00000040) == 0x00000040)) {
         output.writeBytes(7, getUrlBytes());
       }
+      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+        output.writeBool(8, isActive_);
+      }
+      if (((bitField0_ & 0x00000100) == 0x00000100)) {
+        output.writeMessage(9, stats_);
+      }
       getUnknownFields().writeTo(output);
     }
     
@@ -10102,7 +11027,7 @@ public final class Models {
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(1, getIdBytes());
+          .computeUInt32Size(1, id_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
@@ -10127,6 +11052,14 @@ public final class Models {
       if (((bitField0_ & 0x00000040) == 0x00000040)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(7, getUrlBytes());
+      }
+      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(8, isActive_);
+      }
+      if (((bitField0_ & 0x00000100) == 0x00000100)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(9, stats_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -10242,6 +11175,7 @@ public final class Models {
       }
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          getStatsFieldBuilder();
         }
       }
       private static Builder create() {
@@ -10250,7 +11184,7 @@ public final class Models {
       
       public Builder clear() {
         super.clear();
-        id_ = "";
+        id_ = 0;
         bitField0_ = (bitField0_ & ~0x00000001);
         startTime_ = "";
         bitField0_ = (bitField0_ & ~0x00000002);
@@ -10264,6 +11198,14 @@ public final class Models {
         bitField0_ = (bitField0_ & ~0x00000020);
         url_ = "";
         bitField0_ = (bitField0_ & ~0x00000040);
+        isActive_ = false;
+        bitField0_ = (bitField0_ & ~0x00000080);
+        if (statsBuilder_ == null) {
+          stats_ = org.kegbot.proto.Models.Stats.getDefaultInstance();
+        } else {
+          statsBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000100);
         return this;
       }
       
@@ -10330,6 +11272,18 @@ public final class Models {
           to_bitField0_ |= 0x00000040;
         }
         result.url_ = url_;
+        if (((from_bitField0_ & 0x00000080) == 0x00000080)) {
+          to_bitField0_ |= 0x00000080;
+        }
+        result.isActive_ = isActive_;
+        if (((from_bitField0_ & 0x00000100) == 0x00000100)) {
+          to_bitField0_ |= 0x00000100;
+        }
+        if (statsBuilder_ == null) {
+          result.stats_ = stats_;
+        } else {
+          result.stats_ = statsBuilder_.build();
+        }
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -10367,6 +11321,12 @@ public final class Models {
         if (other.hasUrl()) {
           setUrl(other.getUrl());
         }
+        if (other.hasIsActive()) {
+          setIsActive(other.getIsActive());
+        }
+        if (other.hasStats()) {
+          mergeStats(other.getStats());
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
@@ -10387,6 +11347,12 @@ public final class Models {
         if (!hasVolumeMl()) {
           
           return false;
+        }
+        if (hasStats()) {
+          if (!getStats().isInitialized()) {
+            
+            return false;
+          }
         }
         return true;
       }
@@ -10414,9 +11380,9 @@ public final class Models {
               }
               break;
             }
-            case 10: {
+            case 8: {
               bitField0_ |= 0x00000001;
-              id_ = input.readBytes();
+              id_ = input.readUInt32();
               break;
             }
             case 18: {
@@ -10449,46 +11415,45 @@ public final class Models {
               url_ = input.readBytes();
               break;
             }
+            case 64: {
+              bitField0_ |= 0x00000080;
+              isActive_ = input.readBool();
+              break;
+            }
+            case 74: {
+              org.kegbot.proto.Models.Stats.Builder subBuilder = org.kegbot.proto.Models.Stats.newBuilder();
+              if (hasStats()) {
+                subBuilder.mergeFrom(getStats());
+              }
+              input.readMessage(subBuilder, extensionRegistry);
+              setStats(subBuilder.buildPartial());
+              break;
+            }
           }
         }
       }
       
       private int bitField0_;
       
-      // required string id = 1;
-      private Object id_ = "";
+      // required uint32 id = 1;
+      private int id_ ;
       public boolean hasId() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
-      public String getId() {
-        Object ref = id_;
-        if (!(ref instanceof String)) {
-          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
-          id_ = s;
-          return s;
-        } else {
-          return (String) ref;
-        }
+      public int getId() {
+        return id_;
       }
-      public Builder setId(String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
+      public Builder setId(int value) {
+        bitField0_ |= 0x00000001;
         id_ = value;
         onChanged();
         return this;
       }
       public Builder clearId() {
         bitField0_ = (bitField0_ & ~0x00000001);
-        id_ = getDefaultInstance().getId();
+        id_ = 0;
         onChanged();
         return this;
-      }
-      void setId(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000001;
-        id_ = value;
-        onChanged();
       }
       
       // required string start_time = 2;
@@ -10692,6 +11657,117 @@ public final class Models {
         onChanged();
       }
       
+      // optional bool is_active = 8;
+      private boolean isActive_ ;
+      public boolean hasIsActive() {
+        return ((bitField0_ & 0x00000080) == 0x00000080);
+      }
+      public boolean getIsActive() {
+        return isActive_;
+      }
+      public Builder setIsActive(boolean value) {
+        bitField0_ |= 0x00000080;
+        isActive_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearIsActive() {
+        bitField0_ = (bitField0_ & ~0x00000080);
+        isActive_ = false;
+        onChanged();
+        return this;
+      }
+      
+      // optional .Stats stats = 9;
+      private org.kegbot.proto.Models.Stats stats_ = org.kegbot.proto.Models.Stats.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          org.kegbot.proto.Models.Stats, org.kegbot.proto.Models.Stats.Builder, org.kegbot.proto.Models.StatsOrBuilder> statsBuilder_;
+      public boolean hasStats() {
+        return ((bitField0_ & 0x00000100) == 0x00000100);
+      }
+      public org.kegbot.proto.Models.Stats getStats() {
+        if (statsBuilder_ == null) {
+          return stats_;
+        } else {
+          return statsBuilder_.getMessage();
+        }
+      }
+      public Builder setStats(org.kegbot.proto.Models.Stats value) {
+        if (statsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          stats_ = value;
+          onChanged();
+        } else {
+          statsBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000100;
+        return this;
+      }
+      public Builder setStats(
+          org.kegbot.proto.Models.Stats.Builder builderForValue) {
+        if (statsBuilder_ == null) {
+          stats_ = builderForValue.build();
+          onChanged();
+        } else {
+          statsBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000100;
+        return this;
+      }
+      public Builder mergeStats(org.kegbot.proto.Models.Stats value) {
+        if (statsBuilder_ == null) {
+          if (((bitField0_ & 0x00000100) == 0x00000100) &&
+              stats_ != org.kegbot.proto.Models.Stats.getDefaultInstance()) {
+            stats_ =
+              org.kegbot.proto.Models.Stats.newBuilder(stats_).mergeFrom(value).buildPartial();
+          } else {
+            stats_ = value;
+          }
+          onChanged();
+        } else {
+          statsBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000100;
+        return this;
+      }
+      public Builder clearStats() {
+        if (statsBuilder_ == null) {
+          stats_ = org.kegbot.proto.Models.Stats.getDefaultInstance();
+          onChanged();
+        } else {
+          statsBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000100);
+        return this;
+      }
+      public org.kegbot.proto.Models.Stats.Builder getStatsBuilder() {
+        bitField0_ |= 0x00000100;
+        onChanged();
+        return getStatsFieldBuilder().getBuilder();
+      }
+      public org.kegbot.proto.Models.StatsOrBuilder getStatsOrBuilder() {
+        if (statsBuilder_ != null) {
+          return statsBuilder_.getMessageOrBuilder();
+        } else {
+          return stats_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          org.kegbot.proto.Models.Stats, org.kegbot.proto.Models.Stats.Builder, org.kegbot.proto.Models.StatsOrBuilder> 
+          getStatsFieldBuilder() {
+        if (statsBuilder_ == null) {
+          statsBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              org.kegbot.proto.Models.Stats, org.kegbot.proto.Models.Stats.Builder, org.kegbot.proto.Models.StatsOrBuilder>(
+                  stats_,
+                  getParentForChildren(),
+                  isClean());
+          stats_ = null;
+        }
+        return statsBuilder_;
+      }
+      
       // @@protoc_insertion_point(builder_scope:Session)
     }
     
@@ -10706,21 +11782,21 @@ public final class Models {
   public interface ThermoLogOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
     
-    // required string id = 1;
+    // required uint32 id = 1;
     boolean hasId();
-    String getId();
+    int getId();
     
-    // required string sensor_id = 2;
+    // required uint32 sensor_id = 2;
     boolean hasSensorId();
-    String getSensorId();
+    int getSensorId();
     
     // required float temperature_c = 3;
     boolean hasTemperatureC();
     float getTemperatureC();
     
-    // required string record_time = 4;
-    boolean hasRecordTime();
-    String getRecordTime();
+    // required string time = 4;
+    boolean hasTime();
+    String getTime();
   }
   public static final class ThermoLog extends
       com.google.protobuf.GeneratedMessage
@@ -10751,68 +11827,24 @@ public final class Models {
     }
     
     private int bitField0_;
-    // required string id = 1;
+    // required uint32 id = 1;
     public static final int ID_FIELD_NUMBER = 1;
-    private Object id_;
+    private int id_;
     public boolean hasId() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
-    public String getId() {
-      Object ref = id_;
-      if (ref instanceof String) {
-        return (String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
-          id_ = s;
-        }
-        return s;
-      }
-    }
-    private com.google.protobuf.ByteString getIdBytes() {
-      Object ref = id_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
-        id_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+    public int getId() {
+      return id_;
     }
     
-    // required string sensor_id = 2;
+    // required uint32 sensor_id = 2;
     public static final int SENSOR_ID_FIELD_NUMBER = 2;
-    private Object sensorId_;
+    private int sensorId_;
     public boolean hasSensorId() {
       return ((bitField0_ & 0x00000002) == 0x00000002);
     }
-    public String getSensorId() {
-      Object ref = sensorId_;
-      if (ref instanceof String) {
-        return (String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
-          sensorId_ = s;
-        }
-        return s;
-      }
-    }
-    private com.google.protobuf.ByteString getSensorIdBytes() {
-      Object ref = sensorId_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
-        sensorId_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+    public int getSensorId() {
+      return sensorId_;
     }
     
     // required float temperature_c = 3;
@@ -10825,14 +11857,14 @@ public final class Models {
       return temperatureC_;
     }
     
-    // required string record_time = 4;
-    public static final int RECORD_TIME_FIELD_NUMBER = 4;
-    private Object recordTime_;
-    public boolean hasRecordTime() {
+    // required string time = 4;
+    public static final int TIME_FIELD_NUMBER = 4;
+    private Object time_;
+    public boolean hasTime() {
       return ((bitField0_ & 0x00000008) == 0x00000008);
     }
-    public String getRecordTime() {
-      Object ref = recordTime_;
+    public String getTime() {
+      Object ref = time_;
       if (ref instanceof String) {
         return (String) ref;
       } else {
@@ -10840,17 +11872,17 @@ public final class Models {
             (com.google.protobuf.ByteString) ref;
         String s = bs.toStringUtf8();
         if (com.google.protobuf.Internal.isValidUtf8(bs)) {
-          recordTime_ = s;
+          time_ = s;
         }
         return s;
       }
     }
-    private com.google.protobuf.ByteString getRecordTimeBytes() {
-      Object ref = recordTime_;
+    private com.google.protobuf.ByteString getTimeBytes() {
+      Object ref = time_;
       if (ref instanceof String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8((String) ref);
-        recordTime_ = b;
+        time_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
@@ -10858,10 +11890,10 @@ public final class Models {
     }
     
     private void initFields() {
-      id_ = "";
-      sensorId_ = "";
+      id_ = 0;
+      sensorId_ = 0;
       temperatureC_ = 0F;
-      recordTime_ = "";
+      time_ = "";
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -10880,7 +11912,7 @@ public final class Models {
         memoizedIsInitialized = 0;
         return false;
       }
-      if (!hasRecordTime()) {
+      if (!hasTime()) {
         memoizedIsInitialized = 0;
         return false;
       }
@@ -10892,16 +11924,16 @@ public final class Models {
                         throws java.io.IOException {
       getSerializedSize();
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeBytes(1, getIdBytes());
+        output.writeUInt32(1, id_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        output.writeBytes(2, getSensorIdBytes());
+        output.writeUInt32(2, sensorId_);
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         output.writeFloat(3, temperatureC_);
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
-        output.writeBytes(4, getRecordTimeBytes());
+        output.writeBytes(4, getTimeBytes());
       }
       getUnknownFields().writeTo(output);
     }
@@ -10914,11 +11946,11 @@ public final class Models {
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(1, getIdBytes());
+          .computeUInt32Size(1, id_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(2, getSensorIdBytes());
+          .computeUInt32Size(2, sensorId_);
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         size += com.google.protobuf.CodedOutputStream
@@ -10926,7 +11958,7 @@ public final class Models {
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(4, getRecordTimeBytes());
+          .computeBytesSize(4, getTimeBytes());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -11050,13 +12082,13 @@ public final class Models {
       
       public Builder clear() {
         super.clear();
-        id_ = "";
+        id_ = 0;
         bitField0_ = (bitField0_ & ~0x00000001);
-        sensorId_ = "";
+        sensorId_ = 0;
         bitField0_ = (bitField0_ & ~0x00000002);
         temperatureC_ = 0F;
         bitField0_ = (bitField0_ & ~0x00000004);
-        recordTime_ = "";
+        time_ = "";
         bitField0_ = (bitField0_ & ~0x00000008);
         return this;
       }
@@ -11111,7 +12143,7 @@ public final class Models {
         if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
           to_bitField0_ |= 0x00000008;
         }
-        result.recordTime_ = recordTime_;
+        result.time_ = time_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -11137,8 +12169,8 @@ public final class Models {
         if (other.hasTemperatureC()) {
           setTemperatureC(other.getTemperatureC());
         }
-        if (other.hasRecordTime()) {
-          setRecordTime(other.getRecordTime());
+        if (other.hasTime()) {
+          setTime(other.getTime());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -11157,7 +12189,7 @@ public final class Models {
           
           return false;
         }
-        if (!hasRecordTime()) {
+        if (!hasTime()) {
           
           return false;
         }
@@ -11187,14 +12219,14 @@ public final class Models {
               }
               break;
             }
-            case 10: {
+            case 8: {
               bitField0_ |= 0x00000001;
-              id_ = input.readBytes();
+              id_ = input.readUInt32();
               break;
             }
-            case 18: {
+            case 16: {
               bitField0_ |= 0x00000002;
-              sensorId_ = input.readBytes();
+              sensorId_ = input.readUInt32();
               break;
             }
             case 29: {
@@ -11204,7 +12236,7 @@ public final class Models {
             }
             case 34: {
               bitField0_ |= 0x00000008;
-              recordTime_ = input.readBytes();
+              time_ = input.readBytes();
               break;
             }
           }
@@ -11213,76 +12245,46 @@ public final class Models {
       
       private int bitField0_;
       
-      // required string id = 1;
-      private Object id_ = "";
+      // required uint32 id = 1;
+      private int id_ ;
       public boolean hasId() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
-      public String getId() {
-        Object ref = id_;
-        if (!(ref instanceof String)) {
-          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
-          id_ = s;
-          return s;
-        } else {
-          return (String) ref;
-        }
+      public int getId() {
+        return id_;
       }
-      public Builder setId(String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
+      public Builder setId(int value) {
+        bitField0_ |= 0x00000001;
         id_ = value;
         onChanged();
         return this;
       }
       public Builder clearId() {
         bitField0_ = (bitField0_ & ~0x00000001);
-        id_ = getDefaultInstance().getId();
+        id_ = 0;
         onChanged();
         return this;
       }
-      void setId(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000001;
-        id_ = value;
-        onChanged();
-      }
       
-      // required string sensor_id = 2;
-      private Object sensorId_ = "";
+      // required uint32 sensor_id = 2;
+      private int sensorId_ ;
       public boolean hasSensorId() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
       }
-      public String getSensorId() {
-        Object ref = sensorId_;
-        if (!(ref instanceof String)) {
-          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
-          sensorId_ = s;
-          return s;
-        } else {
-          return (String) ref;
-        }
+      public int getSensorId() {
+        return sensorId_;
       }
-      public Builder setSensorId(String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000002;
+      public Builder setSensorId(int value) {
+        bitField0_ |= 0x00000002;
         sensorId_ = value;
         onChanged();
         return this;
       }
       public Builder clearSensorId() {
         bitField0_ = (bitField0_ & ~0x00000002);
-        sensorId_ = getDefaultInstance().getSensorId();
+        sensorId_ = 0;
         onChanged();
         return this;
-      }
-      void setSensorId(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000002;
-        sensorId_ = value;
-        onChanged();
       }
       
       // required float temperature_c = 3;
@@ -11306,39 +12308,39 @@ public final class Models {
         return this;
       }
       
-      // required string record_time = 4;
-      private Object recordTime_ = "";
-      public boolean hasRecordTime() {
+      // required string time = 4;
+      private Object time_ = "";
+      public boolean hasTime() {
         return ((bitField0_ & 0x00000008) == 0x00000008);
       }
-      public String getRecordTime() {
-        Object ref = recordTime_;
+      public String getTime() {
+        Object ref = time_;
         if (!(ref instanceof String)) {
           String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
-          recordTime_ = s;
+          time_ = s;
           return s;
         } else {
           return (String) ref;
         }
       }
-      public Builder setRecordTime(String value) {
+      public Builder setTime(String value) {
         if (value == null) {
     throw new NullPointerException();
   }
   bitField0_ |= 0x00000008;
-        recordTime_ = value;
+        time_ = value;
         onChanged();
         return this;
       }
-      public Builder clearRecordTime() {
+      public Builder clearTime() {
         bitField0_ = (bitField0_ & ~0x00000008);
-        recordTime_ = getDefaultInstance().getRecordTime();
+        time_ = getDefaultInstance().getTime();
         onChanged();
         return this;
       }
-      void setRecordTime(com.google.protobuf.ByteString value) {
+      void setTime(com.google.protobuf.ByteString value) {
         bitField0_ |= 0x00000008;
-        recordTime_ = value;
+        time_ = value;
         onChanged();
       }
       
@@ -11356,9 +12358,9 @@ public final class Models {
   public interface ThermoSensorOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
     
-    // required string id = 1;
+    // required uint32 id = 1;
     boolean hasId();
-    String getId();
+    int getId();
     
     // required string sensor_name = 2;
     boolean hasSensorName();
@@ -11367,6 +12369,14 @@ public final class Models {
     // optional string nice_name = 3;
     boolean hasNiceName();
     String getNiceName();
+    
+    // optional float last_temp = 4;
+    boolean hasLastTemp();
+    float getLastTemp();
+    
+    // optional string last_time = 5;
+    boolean hasLastTime();
+    String getLastTime();
   }
   public static final class ThermoSensor extends
       com.google.protobuf.GeneratedMessage
@@ -11397,36 +12407,14 @@ public final class Models {
     }
     
     private int bitField0_;
-    // required string id = 1;
+    // required uint32 id = 1;
     public static final int ID_FIELD_NUMBER = 1;
-    private Object id_;
+    private int id_;
     public boolean hasId() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
-    public String getId() {
-      Object ref = id_;
-      if (ref instanceof String) {
-        return (String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
-          id_ = s;
-        }
-        return s;
-      }
-    }
-    private com.google.protobuf.ByteString getIdBytes() {
-      Object ref = id_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
-        id_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+    public int getId() {
+      return id_;
     }
     
     // required string sensor_name = 2;
@@ -11493,10 +12481,54 @@ public final class Models {
       }
     }
     
+    // optional float last_temp = 4;
+    public static final int LAST_TEMP_FIELD_NUMBER = 4;
+    private float lastTemp_;
+    public boolean hasLastTemp() {
+      return ((bitField0_ & 0x00000008) == 0x00000008);
+    }
+    public float getLastTemp() {
+      return lastTemp_;
+    }
+    
+    // optional string last_time = 5;
+    public static final int LAST_TIME_FIELD_NUMBER = 5;
+    private Object lastTime_;
+    public boolean hasLastTime() {
+      return ((bitField0_ & 0x00000010) == 0x00000010);
+    }
+    public String getLastTime() {
+      Object ref = lastTime_;
+      if (ref instanceof String) {
+        return (String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        String s = bs.toStringUtf8();
+        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+          lastTime_ = s;
+        }
+        return s;
+      }
+    }
+    private com.google.protobuf.ByteString getLastTimeBytes() {
+      Object ref = lastTime_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+        lastTime_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    
     private void initFields() {
-      id_ = "";
+      id_ = 0;
       sensorName_ = "";
       niceName_ = "";
+      lastTemp_ = 0F;
+      lastTime_ = "";
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -11519,13 +12551,19 @@ public final class Models {
                         throws java.io.IOException {
       getSerializedSize();
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeBytes(1, getIdBytes());
+        output.writeUInt32(1, id_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         output.writeBytes(2, getSensorNameBytes());
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         output.writeBytes(3, getNiceNameBytes());
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        output.writeFloat(4, lastTemp_);
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        output.writeBytes(5, getLastTimeBytes());
       }
       getUnknownFields().writeTo(output);
     }
@@ -11538,7 +12576,7 @@ public final class Models {
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(1, getIdBytes());
+          .computeUInt32Size(1, id_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
@@ -11547,6 +12585,14 @@ public final class Models {
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(3, getNiceNameBytes());
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeFloatSize(4, lastTemp_);
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(5, getLastTimeBytes());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -11670,12 +12716,16 @@ public final class Models {
       
       public Builder clear() {
         super.clear();
-        id_ = "";
+        id_ = 0;
         bitField0_ = (bitField0_ & ~0x00000001);
         sensorName_ = "";
         bitField0_ = (bitField0_ & ~0x00000002);
         niceName_ = "";
         bitField0_ = (bitField0_ & ~0x00000004);
+        lastTemp_ = 0F;
+        bitField0_ = (bitField0_ & ~0x00000008);
+        lastTime_ = "";
+        bitField0_ = (bitField0_ & ~0x00000010);
         return this;
       }
       
@@ -11726,6 +12776,14 @@ public final class Models {
           to_bitField0_ |= 0x00000004;
         }
         result.niceName_ = niceName_;
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000008;
+        }
+        result.lastTemp_ = lastTemp_;
+        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+          to_bitField0_ |= 0x00000010;
+        }
+        result.lastTime_ = lastTime_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -11750,6 +12808,12 @@ public final class Models {
         }
         if (other.hasNiceName()) {
           setNiceName(other.getNiceName());
+        }
+        if (other.hasLastTemp()) {
+          setLastTemp(other.getLastTemp());
+        }
+        if (other.hasLastTime()) {
+          setLastTime(other.getLastTime());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -11790,9 +12854,9 @@ public final class Models {
               }
               break;
             }
-            case 10: {
+            case 8: {
               bitField0_ |= 0x00000001;
-              id_ = input.readBytes();
+              id_ = input.readUInt32();
               break;
             }
             case 18: {
@@ -11805,46 +12869,41 @@ public final class Models {
               niceName_ = input.readBytes();
               break;
             }
+            case 37: {
+              bitField0_ |= 0x00000008;
+              lastTemp_ = input.readFloat();
+              break;
+            }
+            case 42: {
+              bitField0_ |= 0x00000010;
+              lastTime_ = input.readBytes();
+              break;
+            }
           }
         }
       }
       
       private int bitField0_;
       
-      // required string id = 1;
-      private Object id_ = "";
+      // required uint32 id = 1;
+      private int id_ ;
       public boolean hasId() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
-      public String getId() {
-        Object ref = id_;
-        if (!(ref instanceof String)) {
-          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
-          id_ = s;
-          return s;
-        } else {
-          return (String) ref;
-        }
+      public int getId() {
+        return id_;
       }
-      public Builder setId(String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
+      public Builder setId(int value) {
+        bitField0_ |= 0x00000001;
         id_ = value;
         onChanged();
         return this;
       }
       public Builder clearId() {
         bitField0_ = (bitField0_ & ~0x00000001);
-        id_ = getDefaultInstance().getId();
+        id_ = 0;
         onChanged();
         return this;
-      }
-      void setId(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000001;
-        id_ = value;
-        onChanged();
       }
       
       // required string sensor_name = 2;
@@ -11919,6 +12978,63 @@ public final class Models {
         onChanged();
       }
       
+      // optional float last_temp = 4;
+      private float lastTemp_ ;
+      public boolean hasLastTemp() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      public float getLastTemp() {
+        return lastTemp_;
+      }
+      public Builder setLastTemp(float value) {
+        bitField0_ |= 0x00000008;
+        lastTemp_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearLastTemp() {
+        bitField0_ = (bitField0_ & ~0x00000008);
+        lastTemp_ = 0F;
+        onChanged();
+        return this;
+      }
+      
+      // optional string last_time = 5;
+      private Object lastTime_ = "";
+      public boolean hasLastTime() {
+        return ((bitField0_ & 0x00000010) == 0x00000010);
+      }
+      public String getLastTime() {
+        Object ref = lastTime_;
+        if (!(ref instanceof String)) {
+          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+          lastTime_ = s;
+          return s;
+        } else {
+          return (String) ref;
+        }
+      }
+      public Builder setLastTime(String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000010;
+        lastTime_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearLastTime() {
+        bitField0_ = (bitField0_ & ~0x00000010);
+        lastTime_ = getDefaultInstance().getLastTime();
+        onChanged();
+        return this;
+      }
+      void setLastTime(com.google.protobuf.ByteString value) {
+        bitField0_ |= 0x00000010;
+        lastTime_ = value;
+        onChanged();
+      }
+      
       // @@protoc_insertion_point(builder_scope:ThermoSensor)
     }
     
@@ -11933,17 +13049,17 @@ public final class Models {
   public interface ThermoSummaryLogOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
     
-    // required string id = 1;
+    // required uint32 id = 1;
     boolean hasId();
-    String getId();
+    int getId();
     
-    // required string sensor_id = 2;
+    // required uint32 sensor_id = 2;
     boolean hasSensorId();
-    String getSensorId();
+    int getSensorId();
     
-    // required string date = 3;
-    boolean hasDate();
-    String getDate();
+    // required string time = 3;
+    boolean hasTime();
+    String getTime();
     
     // required string period = 4;
     boolean hasPeriod();
@@ -11994,78 +13110,34 @@ public final class Models {
     }
     
     private int bitField0_;
-    // required string id = 1;
+    // required uint32 id = 1;
     public static final int ID_FIELD_NUMBER = 1;
-    private Object id_;
+    private int id_;
     public boolean hasId() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
-    public String getId() {
-      Object ref = id_;
-      if (ref instanceof String) {
-        return (String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
-          id_ = s;
-        }
-        return s;
-      }
-    }
-    private com.google.protobuf.ByteString getIdBytes() {
-      Object ref = id_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
-        id_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+    public int getId() {
+      return id_;
     }
     
-    // required string sensor_id = 2;
+    // required uint32 sensor_id = 2;
     public static final int SENSOR_ID_FIELD_NUMBER = 2;
-    private Object sensorId_;
+    private int sensorId_;
     public boolean hasSensorId() {
       return ((bitField0_ & 0x00000002) == 0x00000002);
     }
-    public String getSensorId() {
-      Object ref = sensorId_;
-      if (ref instanceof String) {
-        return (String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
-          sensorId_ = s;
-        }
-        return s;
-      }
-    }
-    private com.google.protobuf.ByteString getSensorIdBytes() {
-      Object ref = sensorId_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
-        sensorId_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+    public int getSensorId() {
+      return sensorId_;
     }
     
-    // required string date = 3;
-    public static final int DATE_FIELD_NUMBER = 3;
-    private Object date_;
-    public boolean hasDate() {
+    // required string time = 3;
+    public static final int TIME_FIELD_NUMBER = 3;
+    private Object time_;
+    public boolean hasTime() {
       return ((bitField0_ & 0x00000004) == 0x00000004);
     }
-    public String getDate() {
-      Object ref = date_;
+    public String getTime() {
+      Object ref = time_;
       if (ref instanceof String) {
         return (String) ref;
       } else {
@@ -12073,17 +13145,17 @@ public final class Models {
             (com.google.protobuf.ByteString) ref;
         String s = bs.toStringUtf8();
         if (com.google.protobuf.Internal.isValidUtf8(bs)) {
-          date_ = s;
+          time_ = s;
         }
         return s;
       }
     }
-    private com.google.protobuf.ByteString getDateBytes() {
-      Object ref = date_;
+    private com.google.protobuf.ByteString getTimeBytes() {
+      Object ref = time_;
       if (ref instanceof String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8((String) ref);
-        date_ = b;
+        time_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
@@ -12163,9 +13235,9 @@ public final class Models {
     }
     
     private void initFields() {
-      id_ = "";
-      sensorId_ = "";
-      date_ = "";
+      id_ = 0;
+      sensorId_ = 0;
+      time_ = "";
       period_ = "";
       numReadings_ = 0;
       minTemp_ = 0F;
@@ -12185,7 +13257,7 @@ public final class Models {
         memoizedIsInitialized = 0;
         return false;
       }
-      if (!hasDate()) {
+      if (!hasTime()) {
         memoizedIsInitialized = 0;
         return false;
       }
@@ -12217,13 +13289,13 @@ public final class Models {
                         throws java.io.IOException {
       getSerializedSize();
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeBytes(1, getIdBytes());
+        output.writeUInt32(1, id_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        output.writeBytes(2, getSensorIdBytes());
+        output.writeUInt32(2, sensorId_);
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        output.writeBytes(3, getDateBytes());
+        output.writeBytes(3, getTimeBytes());
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         output.writeBytes(4, getPeriodBytes());
@@ -12251,15 +13323,15 @@ public final class Models {
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(1, getIdBytes());
+          .computeUInt32Size(1, id_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(2, getSensorIdBytes());
+          .computeUInt32Size(2, sensorId_);
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(3, getDateBytes());
+          .computeBytesSize(3, getTimeBytes());
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
@@ -12403,11 +13475,11 @@ public final class Models {
       
       public Builder clear() {
         super.clear();
-        id_ = "";
+        id_ = 0;
         bitField0_ = (bitField0_ & ~0x00000001);
-        sensorId_ = "";
+        sensorId_ = 0;
         bitField0_ = (bitField0_ & ~0x00000002);
-        date_ = "";
+        time_ = "";
         bitField0_ = (bitField0_ & ~0x00000004);
         period_ = "";
         bitField0_ = (bitField0_ & ~0x00000008);
@@ -12468,7 +13540,7 @@ public final class Models {
         if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
           to_bitField0_ |= 0x00000004;
         }
-        result.date_ = date_;
+        result.time_ = time_;
         if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
           to_bitField0_ |= 0x00000008;
         }
@@ -12511,8 +13583,8 @@ public final class Models {
         if (other.hasSensorId()) {
           setSensorId(other.getSensorId());
         }
-        if (other.hasDate()) {
-          setDate(other.getDate());
+        if (other.hasTime()) {
+          setTime(other.getTime());
         }
         if (other.hasPeriod()) {
           setPeriod(other.getPeriod());
@@ -12542,7 +13614,7 @@ public final class Models {
           
           return false;
         }
-        if (!hasDate()) {
+        if (!hasTime()) {
           
           return false;
         }
@@ -12592,19 +13664,19 @@ public final class Models {
               }
               break;
             }
-            case 10: {
+            case 8: {
               bitField0_ |= 0x00000001;
-              id_ = input.readBytes();
+              id_ = input.readUInt32();
               break;
             }
-            case 18: {
+            case 16: {
               bitField0_ |= 0x00000002;
-              sensorId_ = input.readBytes();
+              sensorId_ = input.readUInt32();
               break;
             }
             case 26: {
               bitField0_ |= 0x00000004;
-              date_ = input.readBytes();
+              time_ = input.readBytes();
               break;
             }
             case 34: {
@@ -12638,111 +13710,81 @@ public final class Models {
       
       private int bitField0_;
       
-      // required string id = 1;
-      private Object id_ = "";
+      // required uint32 id = 1;
+      private int id_ ;
       public boolean hasId() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
-      public String getId() {
-        Object ref = id_;
-        if (!(ref instanceof String)) {
-          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
-          id_ = s;
-          return s;
-        } else {
-          return (String) ref;
-        }
+      public int getId() {
+        return id_;
       }
-      public Builder setId(String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
+      public Builder setId(int value) {
+        bitField0_ |= 0x00000001;
         id_ = value;
         onChanged();
         return this;
       }
       public Builder clearId() {
         bitField0_ = (bitField0_ & ~0x00000001);
-        id_ = getDefaultInstance().getId();
+        id_ = 0;
         onChanged();
         return this;
       }
-      void setId(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000001;
-        id_ = value;
-        onChanged();
-      }
       
-      // required string sensor_id = 2;
-      private Object sensorId_ = "";
+      // required uint32 sensor_id = 2;
+      private int sensorId_ ;
       public boolean hasSensorId() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
       }
-      public String getSensorId() {
-        Object ref = sensorId_;
-        if (!(ref instanceof String)) {
-          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
-          sensorId_ = s;
-          return s;
-        } else {
-          return (String) ref;
-        }
+      public int getSensorId() {
+        return sensorId_;
       }
-      public Builder setSensorId(String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000002;
+      public Builder setSensorId(int value) {
+        bitField0_ |= 0x00000002;
         sensorId_ = value;
         onChanged();
         return this;
       }
       public Builder clearSensorId() {
         bitField0_ = (bitField0_ & ~0x00000002);
-        sensorId_ = getDefaultInstance().getSensorId();
+        sensorId_ = 0;
         onChanged();
         return this;
       }
-      void setSensorId(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000002;
-        sensorId_ = value;
-        onChanged();
-      }
       
-      // required string date = 3;
-      private Object date_ = "";
-      public boolean hasDate() {
+      // required string time = 3;
+      private Object time_ = "";
+      public boolean hasTime() {
         return ((bitField0_ & 0x00000004) == 0x00000004);
       }
-      public String getDate() {
-        Object ref = date_;
+      public String getTime() {
+        Object ref = time_;
         if (!(ref instanceof String)) {
           String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
-          date_ = s;
+          time_ = s;
           return s;
         } else {
           return (String) ref;
         }
       }
-      public Builder setDate(String value) {
+      public Builder setTime(String value) {
         if (value == null) {
     throw new NullPointerException();
   }
   bitField0_ |= 0x00000004;
-        date_ = value;
+        time_ = value;
         onChanged();
         return this;
       }
-      public Builder clearDate() {
+      public Builder clearTime() {
         bitField0_ = (bitField0_ & ~0x00000004);
-        date_ = getDefaultInstance().getDate();
+        time_ = getDefaultInstance().getTime();
         onChanged();
         return this;
       }
-      void setDate(com.google.protobuf.ByteString value) {
+      void setTime(com.google.protobuf.ByteString value) {
         bitField0_ |= 0x00000004;
-        date_ = value;
+        time_ = value;
         onChanged();
       }
       
@@ -14785,21 +15827,21 @@ public final class Models {
   public interface SessionChunkOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
     
-    // required string id = 1;
+    // required uint32 id = 1;
     boolean hasId();
-    String getId();
+    int getId();
     
-    // required string session_id = 2;
+    // required uint32 session_id = 2;
     boolean hasSessionId();
-    String getSessionId();
+    int getSessionId();
     
     // required string username = 3;
     boolean hasUsername();
     String getUsername();
     
-    // required string keg_id = 4;
+    // required uint32 keg_id = 4;
     boolean hasKegId();
-    String getKegId();
+    int getKegId();
     
     // required string start_time = 5;
     boolean hasStartTime();
@@ -14842,68 +15884,24 @@ public final class Models {
     }
     
     private int bitField0_;
-    // required string id = 1;
+    // required uint32 id = 1;
     public static final int ID_FIELD_NUMBER = 1;
-    private Object id_;
+    private int id_;
     public boolean hasId() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
-    public String getId() {
-      Object ref = id_;
-      if (ref instanceof String) {
-        return (String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
-          id_ = s;
-        }
-        return s;
-      }
-    }
-    private com.google.protobuf.ByteString getIdBytes() {
-      Object ref = id_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
-        id_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+    public int getId() {
+      return id_;
     }
     
-    // required string session_id = 2;
+    // required uint32 session_id = 2;
     public static final int SESSION_ID_FIELD_NUMBER = 2;
-    private Object sessionId_;
+    private int sessionId_;
     public boolean hasSessionId() {
       return ((bitField0_ & 0x00000002) == 0x00000002);
     }
-    public String getSessionId() {
-      Object ref = sessionId_;
-      if (ref instanceof String) {
-        return (String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
-          sessionId_ = s;
-        }
-        return s;
-      }
-    }
-    private com.google.protobuf.ByteString getSessionIdBytes() {
-      Object ref = sessionId_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
-        sessionId_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+    public int getSessionId() {
+      return sessionId_;
     }
     
     // required string username = 3;
@@ -14938,36 +15936,14 @@ public final class Models {
       }
     }
     
-    // required string keg_id = 4;
+    // required uint32 keg_id = 4;
     public static final int KEG_ID_FIELD_NUMBER = 4;
-    private Object kegId_;
+    private int kegId_;
     public boolean hasKegId() {
       return ((bitField0_ & 0x00000008) == 0x00000008);
     }
-    public String getKegId() {
-      Object ref = kegId_;
-      if (ref instanceof String) {
-        return (String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
-          kegId_ = s;
-        }
-        return s;
-      }
-    }
-    private com.google.protobuf.ByteString getKegIdBytes() {
-      Object ref = kegId_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
-        kegId_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+    public int getKegId() {
+      return kegId_;
     }
     
     // required string start_time = 5;
@@ -15045,10 +16021,10 @@ public final class Models {
     }
     
     private void initFields() {
-      id_ = "";
-      sessionId_ = "";
+      id_ = 0;
+      sessionId_ = 0;
       username_ = "";
-      kegId_ = "";
+      kegId_ = 0;
       startTime_ = "";
       endTime_ = "";
       volumeMl_ = 0F;
@@ -15094,16 +16070,16 @@ public final class Models {
                         throws java.io.IOException {
       getSerializedSize();
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeBytes(1, getIdBytes());
+        output.writeUInt32(1, id_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        output.writeBytes(2, getSessionIdBytes());
+        output.writeUInt32(2, sessionId_);
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         output.writeBytes(3, getUsernameBytes());
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
-        output.writeBytes(4, getKegIdBytes());
+        output.writeUInt32(4, kegId_);
       }
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         output.writeBytes(5, getStartTimeBytes());
@@ -15125,11 +16101,11 @@ public final class Models {
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(1, getIdBytes());
+          .computeUInt32Size(1, id_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(2, getSessionIdBytes());
+          .computeUInt32Size(2, sessionId_);
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         size += com.google.protobuf.CodedOutputStream
@@ -15137,7 +16113,7 @@ public final class Models {
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(4, getKegIdBytes());
+          .computeUInt32Size(4, kegId_);
       }
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         size += com.google.protobuf.CodedOutputStream
@@ -15273,13 +16249,13 @@ public final class Models {
       
       public Builder clear() {
         super.clear();
-        id_ = "";
+        id_ = 0;
         bitField0_ = (bitField0_ & ~0x00000001);
-        sessionId_ = "";
+        sessionId_ = 0;
         bitField0_ = (bitField0_ & ~0x00000002);
         username_ = "";
         bitField0_ = (bitField0_ & ~0x00000004);
-        kegId_ = "";
+        kegId_ = 0;
         bitField0_ = (bitField0_ & ~0x00000008);
         startTime_ = "";
         bitField0_ = (bitField0_ & ~0x00000010);
@@ -15449,14 +16425,14 @@ public final class Models {
               }
               break;
             }
-            case 10: {
+            case 8: {
               bitField0_ |= 0x00000001;
-              id_ = input.readBytes();
+              id_ = input.readUInt32();
               break;
             }
-            case 18: {
+            case 16: {
               bitField0_ |= 0x00000002;
-              sessionId_ = input.readBytes();
+              sessionId_ = input.readUInt32();
               break;
             }
             case 26: {
@@ -15464,9 +16440,9 @@ public final class Models {
               username_ = input.readBytes();
               break;
             }
-            case 34: {
+            case 32: {
               bitField0_ |= 0x00000008;
-              kegId_ = input.readBytes();
+              kegId_ = input.readUInt32();
               break;
             }
             case 42: {
@@ -15490,76 +16466,46 @@ public final class Models {
       
       private int bitField0_;
       
-      // required string id = 1;
-      private Object id_ = "";
+      // required uint32 id = 1;
+      private int id_ ;
       public boolean hasId() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
-      public String getId() {
-        Object ref = id_;
-        if (!(ref instanceof String)) {
-          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
-          id_ = s;
-          return s;
-        } else {
-          return (String) ref;
-        }
+      public int getId() {
+        return id_;
       }
-      public Builder setId(String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
+      public Builder setId(int value) {
+        bitField0_ |= 0x00000001;
         id_ = value;
         onChanged();
         return this;
       }
       public Builder clearId() {
         bitField0_ = (bitField0_ & ~0x00000001);
-        id_ = getDefaultInstance().getId();
+        id_ = 0;
         onChanged();
         return this;
       }
-      void setId(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000001;
-        id_ = value;
-        onChanged();
-      }
       
-      // required string session_id = 2;
-      private Object sessionId_ = "";
+      // required uint32 session_id = 2;
+      private int sessionId_ ;
       public boolean hasSessionId() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
       }
-      public String getSessionId() {
-        Object ref = sessionId_;
-        if (!(ref instanceof String)) {
-          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
-          sessionId_ = s;
-          return s;
-        } else {
-          return (String) ref;
-        }
+      public int getSessionId() {
+        return sessionId_;
       }
-      public Builder setSessionId(String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000002;
+      public Builder setSessionId(int value) {
+        bitField0_ |= 0x00000002;
         sessionId_ = value;
         onChanged();
         return this;
       }
       public Builder clearSessionId() {
         bitField0_ = (bitField0_ & ~0x00000002);
-        sessionId_ = getDefaultInstance().getSessionId();
+        sessionId_ = 0;
         onChanged();
         return this;
-      }
-      void setSessionId(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000002;
-        sessionId_ = value;
-        onChanged();
       }
       
       // required string username = 3;
@@ -15598,40 +16544,25 @@ public final class Models {
         onChanged();
       }
       
-      // required string keg_id = 4;
-      private Object kegId_ = "";
+      // required uint32 keg_id = 4;
+      private int kegId_ ;
       public boolean hasKegId() {
         return ((bitField0_ & 0x00000008) == 0x00000008);
       }
-      public String getKegId() {
-        Object ref = kegId_;
-        if (!(ref instanceof String)) {
-          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
-          kegId_ = s;
-          return s;
-        } else {
-          return (String) ref;
-        }
+      public int getKegId() {
+        return kegId_;
       }
-      public Builder setKegId(String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000008;
+      public Builder setKegId(int value) {
+        bitField0_ |= 0x00000008;
         kegId_ = value;
         onChanged();
         return this;
       }
       public Builder clearKegId() {
         bitField0_ = (bitField0_ & ~0x00000008);
-        kegId_ = getDefaultInstance().getKegId();
+        kegId_ = 0;
         onChanged();
         return this;
-      }
-      void setKegId(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000008;
-        kegId_ = value;
-        onChanged();
       }
       
       // required string start_time = 5;
@@ -15741,9 +16672,9 @@ public final class Models {
   public interface SystemEventOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
     
-    // required string id = 1;
+    // required uint32 id = 1;
     boolean hasId();
-    String getId();
+    int getId();
     
     // required string kind = 2;
     boolean hasKind();
@@ -15753,21 +16684,46 @@ public final class Models {
     boolean hasTime();
     String getTime();
     
-    // optional string drink_id = 4;
+    // optional uint32 drink_id = 4;
     boolean hasDrinkId();
-    String getDrinkId();
+    int getDrinkId();
     
-    // optional string keg_id = 5;
+    // optional uint32 keg_id = 5;
     boolean hasKegId();
-    String getKegId();
+    int getKegId();
     
-    // optional string session_id = 6;
+    // optional uint32 session_id = 6;
     boolean hasSessionId();
-    String getSessionId();
+    int getSessionId();
     
     // optional string user_id = 7;
     boolean hasUserId();
     String getUserId();
+    
+    // optional .Image image = 8;
+    boolean hasImage();
+    org.kegbot.proto.Models.Image getImage();
+    org.kegbot.proto.Models.ImageOrBuilder getImageOrBuilder();
+    
+    // optional .User user = 9;
+    boolean hasUser();
+    org.kegbot.proto.Models.User getUser();
+    org.kegbot.proto.Models.UserOrBuilder getUserOrBuilder();
+    
+    // optional .Drink drink = 10;
+    boolean hasDrink();
+    org.kegbot.proto.Models.Drink getDrink();
+    org.kegbot.proto.Models.DrinkOrBuilder getDrinkOrBuilder();
+    
+    // optional .Keg keg = 11;
+    boolean hasKeg();
+    org.kegbot.proto.Models.Keg getKeg();
+    org.kegbot.proto.Models.KegOrBuilder getKegOrBuilder();
+    
+    // optional .Session session = 12;
+    boolean hasSession();
+    org.kegbot.proto.Models.Session getSession();
+    org.kegbot.proto.Models.SessionOrBuilder getSessionOrBuilder();
   }
   public static final class SystemEvent extends
       com.google.protobuf.GeneratedMessage
@@ -15798,36 +16754,14 @@ public final class Models {
     }
     
     private int bitField0_;
-    // required string id = 1;
+    // required uint32 id = 1;
     public static final int ID_FIELD_NUMBER = 1;
-    private Object id_;
+    private int id_;
     public boolean hasId() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
-    public String getId() {
-      Object ref = id_;
-      if (ref instanceof String) {
-        return (String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
-          id_ = s;
-        }
-        return s;
-      }
-    }
-    private com.google.protobuf.ByteString getIdBytes() {
-      Object ref = id_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
-        id_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+    public int getId() {
+      return id_;
     }
     
     // required string kind = 2;
@@ -15894,100 +16828,34 @@ public final class Models {
       }
     }
     
-    // optional string drink_id = 4;
+    // optional uint32 drink_id = 4;
     public static final int DRINK_ID_FIELD_NUMBER = 4;
-    private Object drinkId_;
+    private int drinkId_;
     public boolean hasDrinkId() {
       return ((bitField0_ & 0x00000008) == 0x00000008);
     }
-    public String getDrinkId() {
-      Object ref = drinkId_;
-      if (ref instanceof String) {
-        return (String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
-          drinkId_ = s;
-        }
-        return s;
-      }
-    }
-    private com.google.protobuf.ByteString getDrinkIdBytes() {
-      Object ref = drinkId_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
-        drinkId_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+    public int getDrinkId() {
+      return drinkId_;
     }
     
-    // optional string keg_id = 5;
+    // optional uint32 keg_id = 5;
     public static final int KEG_ID_FIELD_NUMBER = 5;
-    private Object kegId_;
+    private int kegId_;
     public boolean hasKegId() {
       return ((bitField0_ & 0x00000010) == 0x00000010);
     }
-    public String getKegId() {
-      Object ref = kegId_;
-      if (ref instanceof String) {
-        return (String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
-          kegId_ = s;
-        }
-        return s;
-      }
-    }
-    private com.google.protobuf.ByteString getKegIdBytes() {
-      Object ref = kegId_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
-        kegId_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+    public int getKegId() {
+      return kegId_;
     }
     
-    // optional string session_id = 6;
+    // optional uint32 session_id = 6;
     public static final int SESSION_ID_FIELD_NUMBER = 6;
-    private Object sessionId_;
+    private int sessionId_;
     public boolean hasSessionId() {
       return ((bitField0_ & 0x00000020) == 0x00000020);
     }
-    public String getSessionId() {
-      Object ref = sessionId_;
-      if (ref instanceof String) {
-        return (String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
-          sessionId_ = s;
-        }
-        return s;
-      }
-    }
-    private com.google.protobuf.ByteString getSessionIdBytes() {
-      Object ref = sessionId_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
-        sessionId_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+    public int getSessionId() {
+      return sessionId_;
     }
     
     // optional string user_id = 7;
@@ -16022,14 +16890,84 @@ public final class Models {
       }
     }
     
+    // optional .Image image = 8;
+    public static final int IMAGE_FIELD_NUMBER = 8;
+    private org.kegbot.proto.Models.Image image_;
+    public boolean hasImage() {
+      return ((bitField0_ & 0x00000080) == 0x00000080);
+    }
+    public org.kegbot.proto.Models.Image getImage() {
+      return image_;
+    }
+    public org.kegbot.proto.Models.ImageOrBuilder getImageOrBuilder() {
+      return image_;
+    }
+    
+    // optional .User user = 9;
+    public static final int USER_FIELD_NUMBER = 9;
+    private org.kegbot.proto.Models.User user_;
+    public boolean hasUser() {
+      return ((bitField0_ & 0x00000100) == 0x00000100);
+    }
+    public org.kegbot.proto.Models.User getUser() {
+      return user_;
+    }
+    public org.kegbot.proto.Models.UserOrBuilder getUserOrBuilder() {
+      return user_;
+    }
+    
+    // optional .Drink drink = 10;
+    public static final int DRINK_FIELD_NUMBER = 10;
+    private org.kegbot.proto.Models.Drink drink_;
+    public boolean hasDrink() {
+      return ((bitField0_ & 0x00000200) == 0x00000200);
+    }
+    public org.kegbot.proto.Models.Drink getDrink() {
+      return drink_;
+    }
+    public org.kegbot.proto.Models.DrinkOrBuilder getDrinkOrBuilder() {
+      return drink_;
+    }
+    
+    // optional .Keg keg = 11;
+    public static final int KEG_FIELD_NUMBER = 11;
+    private org.kegbot.proto.Models.Keg keg_;
+    public boolean hasKeg() {
+      return ((bitField0_ & 0x00000400) == 0x00000400);
+    }
+    public org.kegbot.proto.Models.Keg getKeg() {
+      return keg_;
+    }
+    public org.kegbot.proto.Models.KegOrBuilder getKegOrBuilder() {
+      return keg_;
+    }
+    
+    // optional .Session session = 12;
+    public static final int SESSION_FIELD_NUMBER = 12;
+    private org.kegbot.proto.Models.Session session_;
+    public boolean hasSession() {
+      return ((bitField0_ & 0x00000800) == 0x00000800);
+    }
+    public org.kegbot.proto.Models.Session getSession() {
+      return session_;
+    }
+    public org.kegbot.proto.Models.SessionOrBuilder getSessionOrBuilder() {
+      return session_;
+    }
+    
     private void initFields() {
-      id_ = "";
+      id_ = 0;
       kind_ = "";
       time_ = "";
-      drinkId_ = "";
-      kegId_ = "";
-      sessionId_ = "";
+      drinkId_ = 0;
+      kegId_ = 0;
+      sessionId_ = 0;
       userId_ = "";
+      image_ = org.kegbot.proto.Models.Image.getDefaultInstance();
+      user_ = org.kegbot.proto.Models.User.getDefaultInstance();
+      drink_ = org.kegbot.proto.Models.Drink.getDefaultInstance();
+      keg_ = org.kegbot.proto.Models.Keg.getDefaultInstance();
+      session_ = org.kegbot.proto.Models.Session.getDefaultInstance();
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -16048,6 +16986,36 @@ public final class Models {
         memoizedIsInitialized = 0;
         return false;
       }
+      if (hasImage()) {
+        if (!getImage().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      if (hasUser()) {
+        if (!getUser().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      if (hasDrink()) {
+        if (!getDrink().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      if (hasKeg()) {
+        if (!getKeg().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      if (hasSession()) {
+        if (!getSession().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
       memoizedIsInitialized = 1;
       return true;
     }
@@ -16056,7 +17024,7 @@ public final class Models {
                         throws java.io.IOException {
       getSerializedSize();
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeBytes(1, getIdBytes());
+        output.writeUInt32(1, id_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         output.writeBytes(2, getKindBytes());
@@ -16065,16 +17033,31 @@ public final class Models {
         output.writeBytes(3, getTimeBytes());
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
-        output.writeBytes(4, getDrinkIdBytes());
+        output.writeUInt32(4, drinkId_);
       }
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
-        output.writeBytes(5, getKegIdBytes());
+        output.writeUInt32(5, kegId_);
       }
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
-        output.writeBytes(6, getSessionIdBytes());
+        output.writeUInt32(6, sessionId_);
       }
       if (((bitField0_ & 0x00000040) == 0x00000040)) {
         output.writeBytes(7, getUserIdBytes());
+      }
+      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+        output.writeMessage(8, image_);
+      }
+      if (((bitField0_ & 0x00000100) == 0x00000100)) {
+        output.writeMessage(9, user_);
+      }
+      if (((bitField0_ & 0x00000200) == 0x00000200)) {
+        output.writeMessage(10, drink_);
+      }
+      if (((bitField0_ & 0x00000400) == 0x00000400)) {
+        output.writeMessage(11, keg_);
+      }
+      if (((bitField0_ & 0x00000800) == 0x00000800)) {
+        output.writeMessage(12, session_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -16087,7 +17070,7 @@ public final class Models {
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(1, getIdBytes());
+          .computeUInt32Size(1, id_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
@@ -16099,19 +17082,39 @@ public final class Models {
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(4, getDrinkIdBytes());
+          .computeUInt32Size(4, drinkId_);
       }
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(5, getKegIdBytes());
+          .computeUInt32Size(5, kegId_);
       }
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(6, getSessionIdBytes());
+          .computeUInt32Size(6, sessionId_);
       }
       if (((bitField0_ & 0x00000040) == 0x00000040)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(7, getUserIdBytes());
+      }
+      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(8, image_);
+      }
+      if (((bitField0_ & 0x00000100) == 0x00000100)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(9, user_);
+      }
+      if (((bitField0_ & 0x00000200) == 0x00000200)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(10, drink_);
+      }
+      if (((bitField0_ & 0x00000400) == 0x00000400)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(11, keg_);
+      }
+      if (((bitField0_ & 0x00000800) == 0x00000800)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(12, session_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -16227,6 +17230,11 @@ public final class Models {
       }
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          getImageFieldBuilder();
+          getUserFieldBuilder();
+          getDrinkFieldBuilder();
+          getKegFieldBuilder();
+          getSessionFieldBuilder();
         }
       }
       private static Builder create() {
@@ -16235,20 +17243,50 @@ public final class Models {
       
       public Builder clear() {
         super.clear();
-        id_ = "";
+        id_ = 0;
         bitField0_ = (bitField0_ & ~0x00000001);
         kind_ = "";
         bitField0_ = (bitField0_ & ~0x00000002);
         time_ = "";
         bitField0_ = (bitField0_ & ~0x00000004);
-        drinkId_ = "";
+        drinkId_ = 0;
         bitField0_ = (bitField0_ & ~0x00000008);
-        kegId_ = "";
+        kegId_ = 0;
         bitField0_ = (bitField0_ & ~0x00000010);
-        sessionId_ = "";
+        sessionId_ = 0;
         bitField0_ = (bitField0_ & ~0x00000020);
         userId_ = "";
         bitField0_ = (bitField0_ & ~0x00000040);
+        if (imageBuilder_ == null) {
+          image_ = org.kegbot.proto.Models.Image.getDefaultInstance();
+        } else {
+          imageBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000080);
+        if (userBuilder_ == null) {
+          user_ = org.kegbot.proto.Models.User.getDefaultInstance();
+        } else {
+          userBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000100);
+        if (drinkBuilder_ == null) {
+          drink_ = org.kegbot.proto.Models.Drink.getDefaultInstance();
+        } else {
+          drinkBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000200);
+        if (kegBuilder_ == null) {
+          keg_ = org.kegbot.proto.Models.Keg.getDefaultInstance();
+        } else {
+          kegBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000400);
+        if (sessionBuilder_ == null) {
+          session_ = org.kegbot.proto.Models.Session.getDefaultInstance();
+        } else {
+          sessionBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000800);
         return this;
       }
       
@@ -16315,6 +17353,46 @@ public final class Models {
           to_bitField0_ |= 0x00000040;
         }
         result.userId_ = userId_;
+        if (((from_bitField0_ & 0x00000080) == 0x00000080)) {
+          to_bitField0_ |= 0x00000080;
+        }
+        if (imageBuilder_ == null) {
+          result.image_ = image_;
+        } else {
+          result.image_ = imageBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00000100) == 0x00000100)) {
+          to_bitField0_ |= 0x00000100;
+        }
+        if (userBuilder_ == null) {
+          result.user_ = user_;
+        } else {
+          result.user_ = userBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00000200) == 0x00000200)) {
+          to_bitField0_ |= 0x00000200;
+        }
+        if (drinkBuilder_ == null) {
+          result.drink_ = drink_;
+        } else {
+          result.drink_ = drinkBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00000400) == 0x00000400)) {
+          to_bitField0_ |= 0x00000400;
+        }
+        if (kegBuilder_ == null) {
+          result.keg_ = keg_;
+        } else {
+          result.keg_ = kegBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00000800) == 0x00000800)) {
+          to_bitField0_ |= 0x00000800;
+        }
+        if (sessionBuilder_ == null) {
+          result.session_ = session_;
+        } else {
+          result.session_ = sessionBuilder_.build();
+        }
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -16352,6 +17430,21 @@ public final class Models {
         if (other.hasUserId()) {
           setUserId(other.getUserId());
         }
+        if (other.hasImage()) {
+          mergeImage(other.getImage());
+        }
+        if (other.hasUser()) {
+          mergeUser(other.getUser());
+        }
+        if (other.hasDrink()) {
+          mergeDrink(other.getDrink());
+        }
+        if (other.hasKeg()) {
+          mergeKeg(other.getKeg());
+        }
+        if (other.hasSession()) {
+          mergeSession(other.getSession());
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
@@ -16368,6 +17461,36 @@ public final class Models {
         if (!hasTime()) {
           
           return false;
+        }
+        if (hasImage()) {
+          if (!getImage().isInitialized()) {
+            
+            return false;
+          }
+        }
+        if (hasUser()) {
+          if (!getUser().isInitialized()) {
+            
+            return false;
+          }
+        }
+        if (hasDrink()) {
+          if (!getDrink().isInitialized()) {
+            
+            return false;
+          }
+        }
+        if (hasKeg()) {
+          if (!getKeg().isInitialized()) {
+            
+            return false;
+          }
+        }
+        if (hasSession()) {
+          if (!getSession().isInitialized()) {
+            
+            return false;
+          }
         }
         return true;
       }
@@ -16395,9 +17518,9 @@ public final class Models {
               }
               break;
             }
-            case 10: {
+            case 8: {
               bitField0_ |= 0x00000001;
-              id_ = input.readBytes();
+              id_ = input.readUInt32();
               break;
             }
             case 18: {
@@ -16410,24 +17533,69 @@ public final class Models {
               time_ = input.readBytes();
               break;
             }
-            case 34: {
+            case 32: {
               bitField0_ |= 0x00000008;
-              drinkId_ = input.readBytes();
+              drinkId_ = input.readUInt32();
               break;
             }
-            case 42: {
+            case 40: {
               bitField0_ |= 0x00000010;
-              kegId_ = input.readBytes();
+              kegId_ = input.readUInt32();
               break;
             }
-            case 50: {
+            case 48: {
               bitField0_ |= 0x00000020;
-              sessionId_ = input.readBytes();
+              sessionId_ = input.readUInt32();
               break;
             }
             case 58: {
               bitField0_ |= 0x00000040;
               userId_ = input.readBytes();
+              break;
+            }
+            case 66: {
+              org.kegbot.proto.Models.Image.Builder subBuilder = org.kegbot.proto.Models.Image.newBuilder();
+              if (hasImage()) {
+                subBuilder.mergeFrom(getImage());
+              }
+              input.readMessage(subBuilder, extensionRegistry);
+              setImage(subBuilder.buildPartial());
+              break;
+            }
+            case 74: {
+              org.kegbot.proto.Models.User.Builder subBuilder = org.kegbot.proto.Models.User.newBuilder();
+              if (hasUser()) {
+                subBuilder.mergeFrom(getUser());
+              }
+              input.readMessage(subBuilder, extensionRegistry);
+              setUser(subBuilder.buildPartial());
+              break;
+            }
+            case 82: {
+              org.kegbot.proto.Models.Drink.Builder subBuilder = org.kegbot.proto.Models.Drink.newBuilder();
+              if (hasDrink()) {
+                subBuilder.mergeFrom(getDrink());
+              }
+              input.readMessage(subBuilder, extensionRegistry);
+              setDrink(subBuilder.buildPartial());
+              break;
+            }
+            case 90: {
+              org.kegbot.proto.Models.Keg.Builder subBuilder = org.kegbot.proto.Models.Keg.newBuilder();
+              if (hasKeg()) {
+                subBuilder.mergeFrom(getKeg());
+              }
+              input.readMessage(subBuilder, extensionRegistry);
+              setKeg(subBuilder.buildPartial());
+              break;
+            }
+            case 98: {
+              org.kegbot.proto.Models.Session.Builder subBuilder = org.kegbot.proto.Models.Session.newBuilder();
+              if (hasSession()) {
+                subBuilder.mergeFrom(getSession());
+              }
+              input.readMessage(subBuilder, extensionRegistry);
+              setSession(subBuilder.buildPartial());
               break;
             }
           }
@@ -16436,40 +17604,25 @@ public final class Models {
       
       private int bitField0_;
       
-      // required string id = 1;
-      private Object id_ = "";
+      // required uint32 id = 1;
+      private int id_ ;
       public boolean hasId() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
-      public String getId() {
-        Object ref = id_;
-        if (!(ref instanceof String)) {
-          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
-          id_ = s;
-          return s;
-        } else {
-          return (String) ref;
-        }
+      public int getId() {
+        return id_;
       }
-      public Builder setId(String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
+      public Builder setId(int value) {
+        bitField0_ |= 0x00000001;
         id_ = value;
         onChanged();
         return this;
       }
       public Builder clearId() {
         bitField0_ = (bitField0_ & ~0x00000001);
-        id_ = getDefaultInstance().getId();
+        id_ = 0;
         onChanged();
         return this;
-      }
-      void setId(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000001;
-        id_ = value;
-        onChanged();
       }
       
       // required string kind = 2;
@@ -16544,112 +17697,67 @@ public final class Models {
         onChanged();
       }
       
-      // optional string drink_id = 4;
-      private Object drinkId_ = "";
+      // optional uint32 drink_id = 4;
+      private int drinkId_ ;
       public boolean hasDrinkId() {
         return ((bitField0_ & 0x00000008) == 0x00000008);
       }
-      public String getDrinkId() {
-        Object ref = drinkId_;
-        if (!(ref instanceof String)) {
-          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
-          drinkId_ = s;
-          return s;
-        } else {
-          return (String) ref;
-        }
+      public int getDrinkId() {
+        return drinkId_;
       }
-      public Builder setDrinkId(String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000008;
+      public Builder setDrinkId(int value) {
+        bitField0_ |= 0x00000008;
         drinkId_ = value;
         onChanged();
         return this;
       }
       public Builder clearDrinkId() {
         bitField0_ = (bitField0_ & ~0x00000008);
-        drinkId_ = getDefaultInstance().getDrinkId();
+        drinkId_ = 0;
         onChanged();
         return this;
       }
-      void setDrinkId(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000008;
-        drinkId_ = value;
-        onChanged();
-      }
       
-      // optional string keg_id = 5;
-      private Object kegId_ = "";
+      // optional uint32 keg_id = 5;
+      private int kegId_ ;
       public boolean hasKegId() {
         return ((bitField0_ & 0x00000010) == 0x00000010);
       }
-      public String getKegId() {
-        Object ref = kegId_;
-        if (!(ref instanceof String)) {
-          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
-          kegId_ = s;
-          return s;
-        } else {
-          return (String) ref;
-        }
+      public int getKegId() {
+        return kegId_;
       }
-      public Builder setKegId(String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000010;
+      public Builder setKegId(int value) {
+        bitField0_ |= 0x00000010;
         kegId_ = value;
         onChanged();
         return this;
       }
       public Builder clearKegId() {
         bitField0_ = (bitField0_ & ~0x00000010);
-        kegId_ = getDefaultInstance().getKegId();
+        kegId_ = 0;
         onChanged();
         return this;
       }
-      void setKegId(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000010;
-        kegId_ = value;
-        onChanged();
-      }
       
-      // optional string session_id = 6;
-      private Object sessionId_ = "";
+      // optional uint32 session_id = 6;
+      private int sessionId_ ;
       public boolean hasSessionId() {
         return ((bitField0_ & 0x00000020) == 0x00000020);
       }
-      public String getSessionId() {
-        Object ref = sessionId_;
-        if (!(ref instanceof String)) {
-          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
-          sessionId_ = s;
-          return s;
-        } else {
-          return (String) ref;
-        }
+      public int getSessionId() {
+        return sessionId_;
       }
-      public Builder setSessionId(String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000020;
+      public Builder setSessionId(int value) {
+        bitField0_ |= 0x00000020;
         sessionId_ = value;
         onChanged();
         return this;
       }
       public Builder clearSessionId() {
         bitField0_ = (bitField0_ & ~0x00000020);
-        sessionId_ = getDefaultInstance().getSessionId();
+        sessionId_ = 0;
         onChanged();
         return this;
-      }
-      void setSessionId(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000020;
-        sessionId_ = value;
-        onChanged();
       }
       
       // optional string user_id = 7;
@@ -16686,6 +17794,456 @@ public final class Models {
         bitField0_ |= 0x00000040;
         userId_ = value;
         onChanged();
+      }
+      
+      // optional .Image image = 8;
+      private org.kegbot.proto.Models.Image image_ = org.kegbot.proto.Models.Image.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          org.kegbot.proto.Models.Image, org.kegbot.proto.Models.Image.Builder, org.kegbot.proto.Models.ImageOrBuilder> imageBuilder_;
+      public boolean hasImage() {
+        return ((bitField0_ & 0x00000080) == 0x00000080);
+      }
+      public org.kegbot.proto.Models.Image getImage() {
+        if (imageBuilder_ == null) {
+          return image_;
+        } else {
+          return imageBuilder_.getMessage();
+        }
+      }
+      public Builder setImage(org.kegbot.proto.Models.Image value) {
+        if (imageBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          image_ = value;
+          onChanged();
+        } else {
+          imageBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000080;
+        return this;
+      }
+      public Builder setImage(
+          org.kegbot.proto.Models.Image.Builder builderForValue) {
+        if (imageBuilder_ == null) {
+          image_ = builderForValue.build();
+          onChanged();
+        } else {
+          imageBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000080;
+        return this;
+      }
+      public Builder mergeImage(org.kegbot.proto.Models.Image value) {
+        if (imageBuilder_ == null) {
+          if (((bitField0_ & 0x00000080) == 0x00000080) &&
+              image_ != org.kegbot.proto.Models.Image.getDefaultInstance()) {
+            image_ =
+              org.kegbot.proto.Models.Image.newBuilder(image_).mergeFrom(value).buildPartial();
+          } else {
+            image_ = value;
+          }
+          onChanged();
+        } else {
+          imageBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000080;
+        return this;
+      }
+      public Builder clearImage() {
+        if (imageBuilder_ == null) {
+          image_ = org.kegbot.proto.Models.Image.getDefaultInstance();
+          onChanged();
+        } else {
+          imageBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000080);
+        return this;
+      }
+      public org.kegbot.proto.Models.Image.Builder getImageBuilder() {
+        bitField0_ |= 0x00000080;
+        onChanged();
+        return getImageFieldBuilder().getBuilder();
+      }
+      public org.kegbot.proto.Models.ImageOrBuilder getImageOrBuilder() {
+        if (imageBuilder_ != null) {
+          return imageBuilder_.getMessageOrBuilder();
+        } else {
+          return image_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          org.kegbot.proto.Models.Image, org.kegbot.proto.Models.Image.Builder, org.kegbot.proto.Models.ImageOrBuilder> 
+          getImageFieldBuilder() {
+        if (imageBuilder_ == null) {
+          imageBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              org.kegbot.proto.Models.Image, org.kegbot.proto.Models.Image.Builder, org.kegbot.proto.Models.ImageOrBuilder>(
+                  image_,
+                  getParentForChildren(),
+                  isClean());
+          image_ = null;
+        }
+        return imageBuilder_;
+      }
+      
+      // optional .User user = 9;
+      private org.kegbot.proto.Models.User user_ = org.kegbot.proto.Models.User.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          org.kegbot.proto.Models.User, org.kegbot.proto.Models.User.Builder, org.kegbot.proto.Models.UserOrBuilder> userBuilder_;
+      public boolean hasUser() {
+        return ((bitField0_ & 0x00000100) == 0x00000100);
+      }
+      public org.kegbot.proto.Models.User getUser() {
+        if (userBuilder_ == null) {
+          return user_;
+        } else {
+          return userBuilder_.getMessage();
+        }
+      }
+      public Builder setUser(org.kegbot.proto.Models.User value) {
+        if (userBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          user_ = value;
+          onChanged();
+        } else {
+          userBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000100;
+        return this;
+      }
+      public Builder setUser(
+          org.kegbot.proto.Models.User.Builder builderForValue) {
+        if (userBuilder_ == null) {
+          user_ = builderForValue.build();
+          onChanged();
+        } else {
+          userBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000100;
+        return this;
+      }
+      public Builder mergeUser(org.kegbot.proto.Models.User value) {
+        if (userBuilder_ == null) {
+          if (((bitField0_ & 0x00000100) == 0x00000100) &&
+              user_ != org.kegbot.proto.Models.User.getDefaultInstance()) {
+            user_ =
+              org.kegbot.proto.Models.User.newBuilder(user_).mergeFrom(value).buildPartial();
+          } else {
+            user_ = value;
+          }
+          onChanged();
+        } else {
+          userBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000100;
+        return this;
+      }
+      public Builder clearUser() {
+        if (userBuilder_ == null) {
+          user_ = org.kegbot.proto.Models.User.getDefaultInstance();
+          onChanged();
+        } else {
+          userBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000100);
+        return this;
+      }
+      public org.kegbot.proto.Models.User.Builder getUserBuilder() {
+        bitField0_ |= 0x00000100;
+        onChanged();
+        return getUserFieldBuilder().getBuilder();
+      }
+      public org.kegbot.proto.Models.UserOrBuilder getUserOrBuilder() {
+        if (userBuilder_ != null) {
+          return userBuilder_.getMessageOrBuilder();
+        } else {
+          return user_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          org.kegbot.proto.Models.User, org.kegbot.proto.Models.User.Builder, org.kegbot.proto.Models.UserOrBuilder> 
+          getUserFieldBuilder() {
+        if (userBuilder_ == null) {
+          userBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              org.kegbot.proto.Models.User, org.kegbot.proto.Models.User.Builder, org.kegbot.proto.Models.UserOrBuilder>(
+                  user_,
+                  getParentForChildren(),
+                  isClean());
+          user_ = null;
+        }
+        return userBuilder_;
+      }
+      
+      // optional .Drink drink = 10;
+      private org.kegbot.proto.Models.Drink drink_ = org.kegbot.proto.Models.Drink.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          org.kegbot.proto.Models.Drink, org.kegbot.proto.Models.Drink.Builder, org.kegbot.proto.Models.DrinkOrBuilder> drinkBuilder_;
+      public boolean hasDrink() {
+        return ((bitField0_ & 0x00000200) == 0x00000200);
+      }
+      public org.kegbot.proto.Models.Drink getDrink() {
+        if (drinkBuilder_ == null) {
+          return drink_;
+        } else {
+          return drinkBuilder_.getMessage();
+        }
+      }
+      public Builder setDrink(org.kegbot.proto.Models.Drink value) {
+        if (drinkBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          drink_ = value;
+          onChanged();
+        } else {
+          drinkBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000200;
+        return this;
+      }
+      public Builder setDrink(
+          org.kegbot.proto.Models.Drink.Builder builderForValue) {
+        if (drinkBuilder_ == null) {
+          drink_ = builderForValue.build();
+          onChanged();
+        } else {
+          drinkBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000200;
+        return this;
+      }
+      public Builder mergeDrink(org.kegbot.proto.Models.Drink value) {
+        if (drinkBuilder_ == null) {
+          if (((bitField0_ & 0x00000200) == 0x00000200) &&
+              drink_ != org.kegbot.proto.Models.Drink.getDefaultInstance()) {
+            drink_ =
+              org.kegbot.proto.Models.Drink.newBuilder(drink_).mergeFrom(value).buildPartial();
+          } else {
+            drink_ = value;
+          }
+          onChanged();
+        } else {
+          drinkBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000200;
+        return this;
+      }
+      public Builder clearDrink() {
+        if (drinkBuilder_ == null) {
+          drink_ = org.kegbot.proto.Models.Drink.getDefaultInstance();
+          onChanged();
+        } else {
+          drinkBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000200);
+        return this;
+      }
+      public org.kegbot.proto.Models.Drink.Builder getDrinkBuilder() {
+        bitField0_ |= 0x00000200;
+        onChanged();
+        return getDrinkFieldBuilder().getBuilder();
+      }
+      public org.kegbot.proto.Models.DrinkOrBuilder getDrinkOrBuilder() {
+        if (drinkBuilder_ != null) {
+          return drinkBuilder_.getMessageOrBuilder();
+        } else {
+          return drink_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          org.kegbot.proto.Models.Drink, org.kegbot.proto.Models.Drink.Builder, org.kegbot.proto.Models.DrinkOrBuilder> 
+          getDrinkFieldBuilder() {
+        if (drinkBuilder_ == null) {
+          drinkBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              org.kegbot.proto.Models.Drink, org.kegbot.proto.Models.Drink.Builder, org.kegbot.proto.Models.DrinkOrBuilder>(
+                  drink_,
+                  getParentForChildren(),
+                  isClean());
+          drink_ = null;
+        }
+        return drinkBuilder_;
+      }
+      
+      // optional .Keg keg = 11;
+      private org.kegbot.proto.Models.Keg keg_ = org.kegbot.proto.Models.Keg.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          org.kegbot.proto.Models.Keg, org.kegbot.proto.Models.Keg.Builder, org.kegbot.proto.Models.KegOrBuilder> kegBuilder_;
+      public boolean hasKeg() {
+        return ((bitField0_ & 0x00000400) == 0x00000400);
+      }
+      public org.kegbot.proto.Models.Keg getKeg() {
+        if (kegBuilder_ == null) {
+          return keg_;
+        } else {
+          return kegBuilder_.getMessage();
+        }
+      }
+      public Builder setKeg(org.kegbot.proto.Models.Keg value) {
+        if (kegBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          keg_ = value;
+          onChanged();
+        } else {
+          kegBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000400;
+        return this;
+      }
+      public Builder setKeg(
+          org.kegbot.proto.Models.Keg.Builder builderForValue) {
+        if (kegBuilder_ == null) {
+          keg_ = builderForValue.build();
+          onChanged();
+        } else {
+          kegBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000400;
+        return this;
+      }
+      public Builder mergeKeg(org.kegbot.proto.Models.Keg value) {
+        if (kegBuilder_ == null) {
+          if (((bitField0_ & 0x00000400) == 0x00000400) &&
+              keg_ != org.kegbot.proto.Models.Keg.getDefaultInstance()) {
+            keg_ =
+              org.kegbot.proto.Models.Keg.newBuilder(keg_).mergeFrom(value).buildPartial();
+          } else {
+            keg_ = value;
+          }
+          onChanged();
+        } else {
+          kegBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000400;
+        return this;
+      }
+      public Builder clearKeg() {
+        if (kegBuilder_ == null) {
+          keg_ = org.kegbot.proto.Models.Keg.getDefaultInstance();
+          onChanged();
+        } else {
+          kegBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000400);
+        return this;
+      }
+      public org.kegbot.proto.Models.Keg.Builder getKegBuilder() {
+        bitField0_ |= 0x00000400;
+        onChanged();
+        return getKegFieldBuilder().getBuilder();
+      }
+      public org.kegbot.proto.Models.KegOrBuilder getKegOrBuilder() {
+        if (kegBuilder_ != null) {
+          return kegBuilder_.getMessageOrBuilder();
+        } else {
+          return keg_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          org.kegbot.proto.Models.Keg, org.kegbot.proto.Models.Keg.Builder, org.kegbot.proto.Models.KegOrBuilder> 
+          getKegFieldBuilder() {
+        if (kegBuilder_ == null) {
+          kegBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              org.kegbot.proto.Models.Keg, org.kegbot.proto.Models.Keg.Builder, org.kegbot.proto.Models.KegOrBuilder>(
+                  keg_,
+                  getParentForChildren(),
+                  isClean());
+          keg_ = null;
+        }
+        return kegBuilder_;
+      }
+      
+      // optional .Session session = 12;
+      private org.kegbot.proto.Models.Session session_ = org.kegbot.proto.Models.Session.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          org.kegbot.proto.Models.Session, org.kegbot.proto.Models.Session.Builder, org.kegbot.proto.Models.SessionOrBuilder> sessionBuilder_;
+      public boolean hasSession() {
+        return ((bitField0_ & 0x00000800) == 0x00000800);
+      }
+      public org.kegbot.proto.Models.Session getSession() {
+        if (sessionBuilder_ == null) {
+          return session_;
+        } else {
+          return sessionBuilder_.getMessage();
+        }
+      }
+      public Builder setSession(org.kegbot.proto.Models.Session value) {
+        if (sessionBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          session_ = value;
+          onChanged();
+        } else {
+          sessionBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000800;
+        return this;
+      }
+      public Builder setSession(
+          org.kegbot.proto.Models.Session.Builder builderForValue) {
+        if (sessionBuilder_ == null) {
+          session_ = builderForValue.build();
+          onChanged();
+        } else {
+          sessionBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000800;
+        return this;
+      }
+      public Builder mergeSession(org.kegbot.proto.Models.Session value) {
+        if (sessionBuilder_ == null) {
+          if (((bitField0_ & 0x00000800) == 0x00000800) &&
+              session_ != org.kegbot.proto.Models.Session.getDefaultInstance()) {
+            session_ =
+              org.kegbot.proto.Models.Session.newBuilder(session_).mergeFrom(value).buildPartial();
+          } else {
+            session_ = value;
+          }
+          onChanged();
+        } else {
+          sessionBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000800;
+        return this;
+      }
+      public Builder clearSession() {
+        if (sessionBuilder_ == null) {
+          session_ = org.kegbot.proto.Models.Session.getDefaultInstance();
+          onChanged();
+        } else {
+          sessionBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000800);
+        return this;
+      }
+      public org.kegbot.proto.Models.Session.Builder getSessionBuilder() {
+        bitField0_ |= 0x00000800;
+        onChanged();
+        return getSessionFieldBuilder().getBuilder();
+      }
+      public org.kegbot.proto.Models.SessionOrBuilder getSessionOrBuilder() {
+        if (sessionBuilder_ != null) {
+          return sessionBuilder_.getMessageOrBuilder();
+        } else {
+          return session_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          org.kegbot.proto.Models.Session, org.kegbot.proto.Models.Session.Builder, org.kegbot.proto.Models.SessionOrBuilder> 
+          getSessionFieldBuilder() {
+        if (sessionBuilder_ == null) {
+          sessionBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              org.kegbot.proto.Models.Session, org.kegbot.proto.Models.Session.Builder, org.kegbot.proto.Models.SessionOrBuilder>(
+                  session_,
+                  getParentForChildren(),
+                  isClean());
+          session_ = null;
+        }
+        return sessionBuilder_;
       }
       
       // @@protoc_insertion_point(builder_scope:SystemEvent)
@@ -17373,9 +18931,9 @@ public final class Models {
   public interface StatsOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
     
-    // optional string last_drink_id = 1;
+    // optional uint32 last_drink_id = 1;
     boolean hasLastDrinkId();
-    String getLastDrinkId();
+    int getLastDrinkId();
     
     // optional float total_volume_ml = 2;
     boolean hasTotalVolumeMl();
@@ -17393,9 +18951,9 @@ public final class Models {
     boolean hasGreatestVolumeMl();
     float getGreatestVolumeMl();
     
-    // optional string greatest_volume_id = 6;
+    // optional uint32 greatest_volume_id = 6;
     boolean hasGreatestVolumeId();
-    String getGreatestVolumeId();
+    int getGreatestVolumeId();
     
     // repeated .Stats.WeekdayVolume volume_by_day_of_week = 7;
     java.util.List<org.kegbot.proto.Models.Stats.WeekdayVolume> 
@@ -19226,36 +20784,14 @@ public final class Models {
     }
     
     private int bitField0_;
-    // optional string last_drink_id = 1;
+    // optional uint32 last_drink_id = 1;
     public static final int LAST_DRINK_ID_FIELD_NUMBER = 1;
-    private Object lastDrinkId_;
+    private int lastDrinkId_;
     public boolean hasLastDrinkId() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
-    public String getLastDrinkId() {
-      Object ref = lastDrinkId_;
-      if (ref instanceof String) {
-        return (String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
-          lastDrinkId_ = s;
-        }
-        return s;
-      }
-    }
-    private com.google.protobuf.ByteString getLastDrinkIdBytes() {
-      Object ref = lastDrinkId_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
-        lastDrinkId_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+    public int getLastDrinkId() {
+      return lastDrinkId_;
     }
     
     // optional float total_volume_ml = 2;
@@ -19298,36 +20834,14 @@ public final class Models {
       return greatestVolumeMl_;
     }
     
-    // optional string greatest_volume_id = 6;
+    // optional uint32 greatest_volume_id = 6;
     public static final int GREATEST_VOLUME_ID_FIELD_NUMBER = 6;
-    private Object greatestVolumeId_;
+    private int greatestVolumeId_;
     public boolean hasGreatestVolumeId() {
       return ((bitField0_ & 0x00000020) == 0x00000020);
     }
-    public String getGreatestVolumeId() {
-      Object ref = greatestVolumeId_;
-      if (ref instanceof String) {
-        return (String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
-          greatestVolumeId_ = s;
-        }
-        return s;
-      }
-    }
-    private com.google.protobuf.ByteString getGreatestVolumeIdBytes() {
-      Object ref = greatestVolumeId_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
-        greatestVolumeId_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+    public int getGreatestVolumeId() {
+      return greatestVolumeId_;
     }
     
     // repeated .Stats.WeekdayVolume volume_by_day_of_week = 7;
@@ -19449,12 +20963,12 @@ public final class Models {
     }
     
     private void initFields() {
-      lastDrinkId_ = "";
+      lastDrinkId_ = 0;
       totalVolumeMl_ = 0F;
       totalPours_ = 0;
       averageVolumeMl_ = 0F;
       greatestVolumeMl_ = 0F;
-      greatestVolumeId_ = "";
+      greatestVolumeId_ = 0;
       volumeByDayOfWeek_ = java.util.Collections.emptyList();
       volumeByDrinker_ = java.util.Collections.emptyList();
       registeredDrinkers_ = com.google.protobuf.LazyStringArrayList.EMPTY;
@@ -19500,7 +21014,7 @@ public final class Models {
                         throws java.io.IOException {
       getSerializedSize();
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeBytes(1, getLastDrinkIdBytes());
+        output.writeUInt32(1, lastDrinkId_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         output.writeFloat(2, totalVolumeMl_);
@@ -19515,7 +21029,7 @@ public final class Models {
         output.writeFloat(5, greatestVolumeMl_);
       }
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
-        output.writeBytes(6, getGreatestVolumeIdBytes());
+        output.writeUInt32(6, greatestVolumeId_);
       }
       for (int i = 0; i < volumeByDayOfWeek_.size(); i++) {
         output.writeMessage(7, volumeByDayOfWeek_.get(i));
@@ -19549,7 +21063,7 @@ public final class Models {
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(1, getLastDrinkIdBytes());
+          .computeUInt32Size(1, lastDrinkId_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
@@ -19569,7 +21083,7 @@ public final class Models {
       }
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(6, getGreatestVolumeIdBytes());
+          .computeUInt32Size(6, greatestVolumeId_);
       }
       for (int i = 0; i < volumeByDayOfWeek_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
@@ -19730,7 +21244,7 @@ public final class Models {
       
       public Builder clear() {
         super.clear();
-        lastDrinkId_ = "";
+        lastDrinkId_ = 0;
         bitField0_ = (bitField0_ & ~0x00000001);
         totalVolumeMl_ = 0F;
         bitField0_ = (bitField0_ & ~0x00000002);
@@ -19740,7 +21254,7 @@ public final class Models {
         bitField0_ = (bitField0_ & ~0x00000008);
         greatestVolumeMl_ = 0F;
         bitField0_ = (bitField0_ & ~0x00000010);
-        greatestVolumeId_ = "";
+        greatestVolumeId_ = 0;
         bitField0_ = (bitField0_ & ~0x00000020);
         if (volumeByDayOfWeekBuilder_ == null) {
           volumeByDayOfWeek_ = java.util.Collections.emptyList();
@@ -20093,9 +21607,9 @@ public final class Models {
               }
               break;
             }
-            case 10: {
+            case 8: {
               bitField0_ |= 0x00000001;
-              lastDrinkId_ = input.readBytes();
+              lastDrinkId_ = input.readUInt32();
               break;
             }
             case 21: {
@@ -20118,9 +21632,9 @@ public final class Models {
               greatestVolumeMl_ = input.readFloat();
               break;
             }
-            case 50: {
+            case 48: {
               bitField0_ |= 0x00000020;
-              greatestVolumeId_ = input.readBytes();
+              greatestVolumeId_ = input.readUInt32();
               break;
             }
             case 58: {
@@ -20168,40 +21682,25 @@ public final class Models {
       
       private int bitField0_;
       
-      // optional string last_drink_id = 1;
-      private Object lastDrinkId_ = "";
+      // optional uint32 last_drink_id = 1;
+      private int lastDrinkId_ ;
       public boolean hasLastDrinkId() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
-      public String getLastDrinkId() {
-        Object ref = lastDrinkId_;
-        if (!(ref instanceof String)) {
-          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
-          lastDrinkId_ = s;
-          return s;
-        } else {
-          return (String) ref;
-        }
+      public int getLastDrinkId() {
+        return lastDrinkId_;
       }
-      public Builder setLastDrinkId(String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
+      public Builder setLastDrinkId(int value) {
+        bitField0_ |= 0x00000001;
         lastDrinkId_ = value;
         onChanged();
         return this;
       }
       public Builder clearLastDrinkId() {
         bitField0_ = (bitField0_ & ~0x00000001);
-        lastDrinkId_ = getDefaultInstance().getLastDrinkId();
+        lastDrinkId_ = 0;
         onChanged();
         return this;
-      }
-      void setLastDrinkId(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000001;
-        lastDrinkId_ = value;
-        onChanged();
       }
       
       // optional float total_volume_ml = 2;
@@ -20288,40 +21787,25 @@ public final class Models {
         return this;
       }
       
-      // optional string greatest_volume_id = 6;
-      private Object greatestVolumeId_ = "";
+      // optional uint32 greatest_volume_id = 6;
+      private int greatestVolumeId_ ;
       public boolean hasGreatestVolumeId() {
         return ((bitField0_ & 0x00000020) == 0x00000020);
       }
-      public String getGreatestVolumeId() {
-        Object ref = greatestVolumeId_;
-        if (!(ref instanceof String)) {
-          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
-          greatestVolumeId_ = s;
-          return s;
-        } else {
-          return (String) ref;
-        }
+      public int getGreatestVolumeId() {
+        return greatestVolumeId_;
       }
-      public Builder setGreatestVolumeId(String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000020;
+      public Builder setGreatestVolumeId(int value) {
+        bitField0_ |= 0x00000020;
         greatestVolumeId_ = value;
         onChanged();
         return this;
       }
       public Builder clearGreatestVolumeId() {
         bitField0_ = (bitField0_ & ~0x00000020);
-        greatestVolumeId_ = getDefaultInstance().getGreatestVolumeId();
+        greatestVolumeId_ = 0;
         onChanged();
         return this;
-      }
-      void setGreatestVolumeId(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000020;
-        greatestVolumeId_ = value;
-        onChanged();
       }
       
       // repeated .Stats.WeekdayVolume volume_by_day_of_week = 7;
@@ -21301,91 +22785,100 @@ public final class Models {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\014models.proto\"\271\001\n\023AuthenticationToken\022\n" +
-      "\n\002id\030\001 \002(\t\022\023\n\013auth_device\030\002 \002(\t\022\023\n\013token" +
+      "\n\014models.proto\"\316\001\n\023AuthenticationToken\022\n" +
+      "\n\002id\030\001 \002(\r\022\023\n\013auth_device\030\002 \002(\t\022\023\n\013token" +
       "_value\030\003 \002(\t\022\020\n\010username\030\004 \001(\t\022\021\n\tnice_n" +
       "ame\030\005 \001(\t\022\017\n\007enabled\030\006 \001(\010\022\024\n\014created_ti" +
       "me\030\007 \002(\t\022\023\n\013expire_time\030\010 \001(\t\022\013\n\003pin\030\t \001" +
-      "(\t\"%\n\tBeerStyle\022\n\n\002id\030\001 \002(\t\022\014\n\004name\030\002 \002(" +
-      "\t\"\331\001\n\010BeerType\022\n\n\002id\030\001 \002(\t\022\014\n\004name\030\002 \002(\t" +
-      "\022\021\n\tbrewer_id\030\003 \002(\t\022\020\n\010style_id\030\004 \002(\t\022\017\n" +
-      "\007edition\030\006 \001(\t\022\013\n\003abv\030\007 \001(\002\022\023\n\013calories_" +
-      "oz\030\010 \001(\002\022\020\n\010carbs_oz\030\t \001(\002\022\030\n\020specific_g",
-      "ravity\030\n \001(\002\022\030\n\020original_gravity\030\013 \001(\002\022\025" +
-      "\n\005image\030\014 \001(\0132\006.Image\"\267\001\n\006Brewer\022\n\n\002id\030\001" +
-      " \002(\t\022\014\n\004name\030\002 \002(\t\022\021\n\007country\030\003 \001(\t:\000\022\026\n" +
-      "\014origin_state\030\004 \001(\t:\000\022\025\n\013origin_city\030\005 \001" +
-      "(\t:\000\022\024\n\nproduction\030\006 \001(\t:\000\022\r\n\003url\030\007 \001(\t:" +
-      "\000\022\025\n\013description\030\010 \001(\t:\000\022\025\n\005image\030\t \001(\0132" +
-      "\006.Image\"\322\001\n\005Drink\022\n\n\002id\030\001 \002(\t\022\r\n\005ticks\030\002" +
-      " \002(\r\022\021\n\tvolume_ml\030\003 \002(\002\022\022\n\nsession_id\030\004 " +
-      "\002(\t\022\021\n\tpour_time\030\005 \002(\t\022\020\n\010duration\030\006 \001(\r" +
-      "\022\016\n\006status\030\007 \002(\t\022\016\n\006keg_id\030\010 \001(\t\022\017\n\007user",
-      "_id\030\t \001(\t\022\025\n\rauth_token_id\030\n \001(\t\022\013\n\003url\030" +
-      "\013 \001(\t\022\r\n\005shout\030\014 \001(\t\"\316\001\n\005Image\022\013\n\003url\030\001 " +
-      "\002(\t\022\r\n\005width\030\002 \001(\r\022\016\n\006height\030\003 \001(\r\022\024\n\014cr" +
-      "eated_date\030\004 \001(\t\022\017\n\007caption\030\005 \001(\t\022\017\n\007use" +
-      "r_id\030\006 \001(\t\022\016\n\006keg_id\030\007 \001(\t\022\022\n\nsession_id" +
-      "\030\010 \001(\t\022\020\n\010drink_id\030\t \001(\t\022\025\n\rthumbnail_ur" +
-      "l\030\n \001(\t\022\024\n\014original_url\030\013 \001(\t\"\201\002\n\003Keg\022\n\n" +
-      "\002id\030\001 \002(\t\022\017\n\007type_id\030\002 \002(\t\022\017\n\007size_id\030\003 " +
-      "\002(\t\022\021\n\tsize_name\030\004 \001(\t\022\026\n\016size_volume_ml" +
-      "\030\005 \001(\002\022\030\n\020volume_ml_remain\030\006 \002(\002\022\024\n\014perc",
-      "ent_full\030\007 \002(\002\022\024\n\014started_time\030\010 \002(\t\022\025\n\r" +
-      "finished_time\030\t \002(\t\022\016\n\006status\030\n \002(\t\022\023\n\013d" +
-      "escription\030\013 \001(\t\022\022\n\nspilled_ml\030\014 \001(\002\022\013\n\003" +
-      "url\030\r \001(\t\"6\n\007KegSize\022\n\n\002id\030\001 \002(\t\022\014\n\004name" +
-      "\030\002 \002(\t\022\021\n\tvolume_ml\030\003 \002(\002\"\314\001\n\006KegTap\022\n\n\002" +
-      "id\030\001 \002(\t\022\014\n\004name\030\002 \002(\t\022\022\n\nmeter_name\030\003 \002" +
-      "(\t\022\022\n\nrelay_name\030\004 \001(\t\022\023\n\013ml_per_tick\030\005 " +
-      "\002(\002\022\023\n\013description\030\006 \001(\t\022\026\n\016current_keg_" +
-      "id\030\007 \001(\t\022\030\n\020thermo_sensor_id\030\010 \001(\t\022$\n\020la" +
-      "st_temperature\030\t \001(\0132\n.ThermoLog\"w\n\007Sess",
-      "ion\022\n\n\002id\030\001 \002(\t\022\022\n\nstart_time\030\002 \002(\t\022\020\n\010e" +
-      "nd_time\030\003 \002(\t\022\021\n\tvolume_ml\030\004 \002(\002\022\014\n\004name" +
-      "\030\005 \001(\t\022\014\n\004slug\030\006 \001(\t\022\013\n\003url\030\007 \001(\t\"V\n\tThe" +
-      "rmoLog\022\n\n\002id\030\001 \002(\t\022\021\n\tsensor_id\030\002 \002(\t\022\025\n" +
-      "\rtemperature_c\030\003 \002(\002\022\023\n\013record_time\030\004 \002(" +
-      "\t\"B\n\014ThermoSensor\022\n\n\002id\030\001 \002(\t\022\023\n\013sensor_" +
-      "name\030\002 \002(\t\022\021\n\tnice_name\030\003 \001(\t\"\234\001\n\020Thermo" +
-      "SummaryLog\022\n\n\002id\030\001 \002(\t\022\021\n\tsensor_id\030\002 \002(" +
-      "\t\022\014\n\004date\030\003 \002(\t\022\016\n\006period\030\004 \002(\t\022\024\n\014num_r" +
-      "eadings\030\005 \002(\r\022\020\n\010min_temp\030\006 \002(\002\022\020\n\010max_t",
-      "emp\030\007 \002(\002\022\021\n\tmean_temp\030\010 \002(\002\"\356\001\n\004User\022\020\n" +
-      "\010username\030\001 \002(\t\022\025\n\005image\030\002 \001(\0132\006.Image\022\027" +
-      "\n\tis_active\030\003 \002(\010:\004true\022\022\n\nfirst_name\030\004 " +
-      "\001(\t\022\021\n\tlast_name\030\005 \001(\t\022\r\n\005email\030\006 \001(\t\022\020\n" +
-      "\010password\030\007 \001(\t\022\020\n\010is_staff\030\010 \001(\010\022\024\n\014is_" +
-      "superuser\030\t \001(\010\022\022\n\nlast_login\030\n \001(\t\022\023\n\013d" +
-      "ate_joined\030\013 \001(\t\022\013\n\003url\030\014 \001(\t\"?\n\013UserPro" +
-      "file\022\020\n\010username\030\001 \002(\t\022\016\n\006gender\030\002 \001(\t\022\016" +
-      "\n\006weight\030\003 \001(\002\"\211\001\n\014SessionChunk\022\n\n\002id\030\001 " +
-      "\002(\t\022\022\n\nsession_id\030\002 \002(\t\022\020\n\010username\030\003 \002(",
-      "\t\022\016\n\006keg_id\030\004 \002(\t\022\022\n\nstart_time\030\005 \002(\t\022\020\n" +
-      "\010end_time\030\006 \002(\t\022\021\n\tvolume_ml\030\007 \002(\002\"|\n\013Sy" +
-      "stemEvent\022\n\n\002id\030\001 \002(\t\022\014\n\004kind\030\002 \002(\t\022\014\n\004t" +
-      "ime\030\003 \002(\t\022\020\n\010drink_id\030\004 \001(\t\022\016\n\006keg_id\030\005 " +
-      "\001(\t\022\022\n\nsession_id\030\006 \001(\t\022\017\n\007user_id\030\007 \001(\t" +
-      "\"Z\n\nSoundEvent\022\022\n\nevent_name\030\001 \002(\t\022\027\n\017ev" +
-      "ent_predicate\030\002 \001(\t\022\021\n\tsound_url\030\003 \002(\t\022\014" +
-      "\n\004user\030\004 \001(\t\"\221\005\n\005Stats\022\025\n\rlast_drink_id\030" +
-      "\001 \001(\t\022\027\n\017total_volume_ml\030\002 \001(\002\022\023\n\013total_" +
-      "pours\030\003 \001(\r\022\031\n\021average_volume_ml\030\004 \001(\002\022\032",
-      "\n\022greatest_volume_ml\030\005 \001(\002\022\032\n\022greatest_v" +
-      "olume_id\030\006 \001(\t\0223\n\025volume_by_day_of_week\030" +
-      "\007 \003(\0132\024.Stats.WeekdayVolume\022/\n\021volume_by" +
-      "_drinker\030\010 \003(\0132\024.Stats.DrinkerVolume\022\033\n\023" +
-      "registered_drinkers\030\t \003(\t\022\026\n\016has_guest_p" +
-      "our\030\n \001(\010\022\026\n\016sessions_count\030\013 \001(\r\022+\n\016vol" +
-      "ume_by_year\030\014 \003(\0132\023.Stats.YearlyVolume\0220" +
-      "\n\017peer_affinities\030\r \003(\0132\027.Stats.PeerSess" +
-      "ionCount\0323\n\rWeekdayVolume\022\017\n\007weekday\030\001 \002" +
-      "(\t\022\021\n\tvolume_ml\030\002 \002(\002\0324\n\rDrinkerVolume\022\020",
-      "\n\010username\030\001 \002(\t\022\021\n\tvolume_ml\030\002 \002(\002\032/\n\014Y" +
-      "earlyVolume\022\014\n\004year\030\001 \002(\r\022\021\n\tvolume_ml\030\002" +
-      " \002(\002\032B\n\020PeerSessionCount\022\021\n\tpeer_name\030\001 " +
-      "\002(\t\022\033\n\023joint_session_count\030\002 \002(\rB\022\n\020org." +
-      "kegbot.proto"
+      "(\t\022\023\n\004user\030\n \001(\0132\005.User\"%\n\tBeerStyle\022\n\n\002" +
+      "id\030\001 \002(\r\022\014\n\004name\030\002 \002(\t\"\331\001\n\010BeerType\022\n\n\002i" +
+      "d\030\001 \002(\t\022\014\n\004name\030\002 \002(\t\022\021\n\tbrewer_id\030\003 \002(\t" +
+      "\022\020\n\010style_id\030\004 \002(\t\022\017\n\007edition\030\006 \001(\t\022\013\n\003a" +
+      "bv\030\007 \001(\002\022\023\n\013calories_oz\030\010 \001(\002\022\020\n\010carbs_o",
+      "z\030\t \001(\002\022\030\n\020specific_gravity\030\n \001(\002\022\030\n\020ori" +
+      "ginal_gravity\030\013 \001(\002\022\025\n\005image\030\014 \001(\0132\006.Ima" +
+      "ge\"\267\001\n\006Brewer\022\n\n\002id\030\001 \002(\t\022\014\n\004name\030\002 \002(\t\022" +
+      "\021\n\007country\030\003 \001(\t:\000\022\026\n\014origin_state\030\004 \001(\t" +
+      ":\000\022\025\n\013origin_city\030\005 \001(\t:\000\022\024\n\nproduction\030" +
+      "\006 \001(\t:\000\022\r\n\003url\030\007 \001(\t:\000\022\025\n\013description\030\010 " +
+      "\001(\t:\000\022\025\n\005image\030\t \001(\0132\006.Image\"\250\002\n\005Drink\022\n" +
+      "\n\002id\030\001 \002(\r\022\r\n\005ticks\030\002 \002(\r\022\021\n\tvolume_ml\030\003" +
+      " \002(\002\022\022\n\nsession_id\030\004 \002(\r\022\014\n\004time\030\005 \002(\t\022\020" +
+      "\n\010duration\030\006 \001(\r\022\016\n\006status\030\007 \002(\t\022\016\n\006keg_",
+      "id\030\010 \001(\r\022\017\n\007user_id\030\t \001(\t\022\025\n\rauth_token_" +
+      "id\030\n \001(\r\022\013\n\003url\030\013 \001(\t\022\r\n\005shout\030\014 \001(\t\022\023\n\004" +
+      "user\030\r \001(\0132\005.User\022\021\n\003keg\030\016 \001(\0132\004.Keg\022\031\n\007" +
+      "session\030\017 \001(\0132\010.Session\022\026\n\006images\030\020 \003(\0132" +
+      "\006.Image\"\341\001\n\005Image\022\013\n\003url\030\001 \002(\t\022\r\n\005width\030" +
+      "\002 \001(\r\022\016\n\006height\030\003 \001(\r\022\014\n\004time\030\004 \001(\t\022\017\n\007c" +
+      "aption\030\005 \001(\t\022\017\n\007user_id\030\006 \001(\t\022\016\n\006keg_id\030" +
+      "\007 \001(\r\022\022\n\nsession_id\030\010 \001(\r\022\020\n\010drink_id\030\t " +
+      "\001(\r\022\025\n\rthumbnail_url\030\n \001(\t\022\024\n\014original_u" +
+      "rl\030\013 \001(\t\022\031\n\021small_resized_url\030\r \001(\t\"\253\002\n\003",
+      "Keg\022\n\n\002id\030\001 \002(\r\022\017\n\007type_id\030\002 \002(\t\022\030\n\020volu" +
+      "me_ml_remain\030\006 \002(\002\022\024\n\014percent_full\030\007 \002(\002" +
+      "\022\022\n\nstart_time\030\010 \002(\t\022\020\n\010end_time\030\t \002(\t\022\016" +
+      "\n\006status\030\n \002(\t\022\023\n\013description\030\013 \001(\t\022\022\n\ns" +
+      "pilled_ml\030\014 \001(\002\022\013\n\003url\030\r \001(\t\022\027\n\004type\030\017 \001" +
+      "(\0132\t.BeerType\022\017\n\007size_id\030\020 \001(\r\022\026\n\004size\030\021" +
+      " \001(\0132\010.KegSize\022\021\n\tsize_name\030\022 \001(\t\022\026\n\016siz" +
+      "e_volume_ml\030\023 \001(\002\"6\n\007KegSize\022\n\n\002id\030\001 \002(\r" +
+      "\022\014\n\004name\030\002 \002(\t\022\021\n\tvolume_ml\030\003 \002(\002\"\347\001\n\006Ke" +
+      "gTap\022\n\n\002id\030\001 \002(\r\022\014\n\004name\030\002 \002(\t\022\022\n\nmeter_",
+      "name\030\003 \002(\t\022\022\n\nrelay_name\030\004 \001(\t\022\023\n\013ml_per" +
+      "_tick\030\005 \002(\002\022\023\n\013description\030\006 \001(\t\022\030\n\020ther" +
+      "mo_sensor_id\030\010 \001(\r\022$\n\020last_temperature\030\t" +
+      " \001(\0132\n.ThermoLog\022\026\n\016current_keg_id\030\n \001(\r" +
+      "\022\031\n\013current_keg\030\013 \001(\0132\004.Keg\"\241\001\n\007Session\022" +
+      "\n\n\002id\030\001 \002(\r\022\022\n\nstart_time\030\002 \002(\t\022\020\n\010end_t" +
+      "ime\030\003 \002(\t\022\021\n\tvolume_ml\030\004 \002(\002\022\014\n\004name\030\005 \001" +
+      "(\t\022\014\n\004slug\030\006 \001(\t\022\013\n\003url\030\007 \001(\t\022\021\n\tis_acti" +
+      "ve\030\010 \001(\010\022\025\n\005stats\030\t \001(\0132\006.Stats\"O\n\tTherm" +
+      "oLog\022\n\n\002id\030\001 \002(\r\022\021\n\tsensor_id\030\002 \002(\r\022\025\n\rt",
+      "emperature_c\030\003 \002(\002\022\014\n\004time\030\004 \002(\t\"h\n\014Ther" +
+      "moSensor\022\n\n\002id\030\001 \002(\r\022\023\n\013sensor_name\030\002 \002(" +
+      "\t\022\021\n\tnice_name\030\003 \001(\t\022\021\n\tlast_temp\030\004 \001(\002\022" +
+      "\021\n\tlast_time\030\005 \001(\t\"\234\001\n\020ThermoSummaryLog\022" +
+      "\n\n\002id\030\001 \002(\r\022\021\n\tsensor_id\030\002 \002(\r\022\014\n\004time\030\003" +
+      " \002(\t\022\016\n\006period\030\004 \002(\t\022\024\n\014num_readings\030\005 \002" +
+      "(\r\022\020\n\010min_temp\030\006 \002(\002\022\020\n\010max_temp\030\007 \002(\002\022\021" +
+      "\n\tmean_temp\030\010 \002(\002\"\356\001\n\004User\022\020\n\010username\030\001" +
+      " \002(\t\022\025\n\005image\030\002 \001(\0132\006.Image\022\027\n\tis_active" +
+      "\030\003 \002(\010:\004true\022\022\n\nfirst_name\030\004 \001(\t\022\021\n\tlast",
+      "_name\030\005 \001(\t\022\r\n\005email\030\006 \001(\t\022\020\n\010password\030\007" +
+      " \001(\t\022\020\n\010is_staff\030\010 \001(\010\022\024\n\014is_superuser\030\t" +
+      " \001(\010\022\022\n\nlast_login\030\n \001(\t\022\023\n\013date_joined\030" +
+      "\013 \001(\t\022\013\n\003url\030\014 \001(\t\"?\n\013UserProfile\022\020\n\010use" +
+      "rname\030\001 \002(\t\022\016\n\006gender\030\002 \001(\t\022\016\n\006weight\030\003 " +
+      "\001(\002\"\211\001\n\014SessionChunk\022\n\n\002id\030\001 \002(\r\022\022\n\nsess" +
+      "ion_id\030\002 \002(\r\022\020\n\010username\030\003 \002(\t\022\016\n\006keg_id" +
+      "\030\004 \002(\r\022\022\n\nstart_time\030\005 \002(\t\022\020\n\010end_time\030\006" +
+      " \002(\t\022\021\n\tvolume_ml\030\007 \002(\002\"\355\001\n\013SystemEvent\022" +
+      "\n\n\002id\030\001 \002(\r\022\014\n\004kind\030\002 \002(\t\022\014\n\004time\030\003 \002(\t\022",
+      "\020\n\010drink_id\030\004 \001(\r\022\016\n\006keg_id\030\005 \001(\r\022\022\n\nses" +
+      "sion_id\030\006 \001(\r\022\017\n\007user_id\030\007 \001(\t\022\025\n\005image\030" +
+      "\010 \001(\0132\006.Image\022\023\n\004user\030\t \001(\0132\005.User\022\025\n\005dr" +
+      "ink\030\n \001(\0132\006.Drink\022\021\n\003keg\030\013 \001(\0132\004.Keg\022\031\n\007" +
+      "session\030\014 \001(\0132\010.Session\"Z\n\nSoundEvent\022\022\n" +
+      "\nevent_name\030\001 \002(\t\022\027\n\017event_predicate\030\002 \001" +
+      "(\t\022\021\n\tsound_url\030\003 \002(\t\022\014\n\004user\030\004 \001(\t\"\221\005\n\005" +
+      "Stats\022\025\n\rlast_drink_id\030\001 \001(\r\022\027\n\017total_vo" +
+      "lume_ml\030\002 \001(\002\022\023\n\013total_pours\030\003 \001(\r\022\031\n\021av" +
+      "erage_volume_ml\030\004 \001(\002\022\032\n\022greatest_volume",
+      "_ml\030\005 \001(\002\022\032\n\022greatest_volume_id\030\006 \001(\r\0223\n" +
+      "\025volume_by_day_of_week\030\007 \003(\0132\024.Stats.Wee" +
+      "kdayVolume\022/\n\021volume_by_drinker\030\010 \003(\0132\024." +
+      "Stats.DrinkerVolume\022\033\n\023registered_drinke" +
+      "rs\030\t \003(\t\022\026\n\016has_guest_pour\030\n \001(\010\022\026\n\016sess" +
+      "ions_count\030\013 \001(\r\022+\n\016volume_by_year\030\014 \003(\013" +
+      "2\023.Stats.YearlyVolume\0220\n\017peer_affinities" +
+      "\030\r \003(\0132\027.Stats.PeerSessionCount\0323\n\rWeekd" +
+      "ayVolume\022\017\n\007weekday\030\001 \002(\t\022\021\n\tvolume_ml\030\002" +
+      " \002(\002\0324\n\rDrinkerVolume\022\020\n\010username\030\001 \002(\t\022",
+      "\021\n\tvolume_ml\030\002 \002(\002\032/\n\014YearlyVolume\022\014\n\004ye" +
+      "ar\030\001 \002(\r\022\021\n\tvolume_ml\030\002 \002(\002\032B\n\020PeerSessi" +
+      "onCount\022\021\n\tpeer_name\030\001 \002(\t\022\033\n\023joint_sess" +
+      "ion_count\030\002 \002(\rB\022\n\020org.kegbot.proto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -21397,7 +22890,7 @@ public final class Models {
           internal_static_AuthenticationToken_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_AuthenticationToken_descriptor,
-              new java.lang.String[] { "Id", "AuthDevice", "TokenValue", "Username", "NiceName", "Enabled", "CreatedTime", "ExpireTime", "Pin", },
+              new java.lang.String[] { "Id", "AuthDevice", "TokenValue", "Username", "NiceName", "Enabled", "CreatedTime", "ExpireTime", "Pin", "User", },
               org.kegbot.proto.Models.AuthenticationToken.class,
               org.kegbot.proto.Models.AuthenticationToken.Builder.class);
           internal_static_BeerStyle_descriptor =
@@ -21429,7 +22922,7 @@ public final class Models {
           internal_static_Drink_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_Drink_descriptor,
-              new java.lang.String[] { "Id", "Ticks", "VolumeMl", "SessionId", "PourTime", "Duration", "Status", "KegId", "UserId", "AuthTokenId", "Url", "Shout", },
+              new java.lang.String[] { "Id", "Ticks", "VolumeMl", "SessionId", "Time", "Duration", "Status", "KegId", "UserId", "AuthTokenId", "Url", "Shout", "User", "Keg", "Session", "Images", },
               org.kegbot.proto.Models.Drink.class,
               org.kegbot.proto.Models.Drink.Builder.class);
           internal_static_Image_descriptor =
@@ -21437,7 +22930,7 @@ public final class Models {
           internal_static_Image_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_Image_descriptor,
-              new java.lang.String[] { "Url", "Width", "Height", "CreatedDate", "Caption", "UserId", "KegId", "SessionId", "DrinkId", "ThumbnailUrl", "OriginalUrl", },
+              new java.lang.String[] { "Url", "Width", "Height", "Time", "Caption", "UserId", "KegId", "SessionId", "DrinkId", "ThumbnailUrl", "OriginalUrl", "SmallResizedUrl", },
               org.kegbot.proto.Models.Image.class,
               org.kegbot.proto.Models.Image.Builder.class);
           internal_static_Keg_descriptor =
@@ -21445,7 +22938,7 @@ public final class Models {
           internal_static_Keg_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_Keg_descriptor,
-              new java.lang.String[] { "Id", "TypeId", "SizeId", "SizeName", "SizeVolumeMl", "VolumeMlRemain", "PercentFull", "StartedTime", "FinishedTime", "Status", "Description", "SpilledMl", "Url", },
+              new java.lang.String[] { "Id", "TypeId", "VolumeMlRemain", "PercentFull", "StartTime", "EndTime", "Status", "Description", "SpilledMl", "Url", "Type", "SizeId", "Size", "SizeName", "SizeVolumeMl", },
               org.kegbot.proto.Models.Keg.class,
               org.kegbot.proto.Models.Keg.Builder.class);
           internal_static_KegSize_descriptor =
@@ -21461,7 +22954,7 @@ public final class Models {
           internal_static_KegTap_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_KegTap_descriptor,
-              new java.lang.String[] { "Id", "Name", "MeterName", "RelayName", "MlPerTick", "Description", "CurrentKegId", "ThermoSensorId", "LastTemperature", },
+              new java.lang.String[] { "Id", "Name", "MeterName", "RelayName", "MlPerTick", "Description", "ThermoSensorId", "LastTemperature", "CurrentKegId", "CurrentKeg", },
               org.kegbot.proto.Models.KegTap.class,
               org.kegbot.proto.Models.KegTap.Builder.class);
           internal_static_Session_descriptor =
@@ -21469,7 +22962,7 @@ public final class Models {
           internal_static_Session_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_Session_descriptor,
-              new java.lang.String[] { "Id", "StartTime", "EndTime", "VolumeMl", "Name", "Slug", "Url", },
+              new java.lang.String[] { "Id", "StartTime", "EndTime", "VolumeMl", "Name", "Slug", "Url", "IsActive", "Stats", },
               org.kegbot.proto.Models.Session.class,
               org.kegbot.proto.Models.Session.Builder.class);
           internal_static_ThermoLog_descriptor =
@@ -21477,7 +22970,7 @@ public final class Models {
           internal_static_ThermoLog_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ThermoLog_descriptor,
-              new java.lang.String[] { "Id", "SensorId", "TemperatureC", "RecordTime", },
+              new java.lang.String[] { "Id", "SensorId", "TemperatureC", "Time", },
               org.kegbot.proto.Models.ThermoLog.class,
               org.kegbot.proto.Models.ThermoLog.Builder.class);
           internal_static_ThermoSensor_descriptor =
@@ -21485,7 +22978,7 @@ public final class Models {
           internal_static_ThermoSensor_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ThermoSensor_descriptor,
-              new java.lang.String[] { "Id", "SensorName", "NiceName", },
+              new java.lang.String[] { "Id", "SensorName", "NiceName", "LastTemp", "LastTime", },
               org.kegbot.proto.Models.ThermoSensor.class,
               org.kegbot.proto.Models.ThermoSensor.Builder.class);
           internal_static_ThermoSummaryLog_descriptor =
@@ -21493,7 +22986,7 @@ public final class Models {
           internal_static_ThermoSummaryLog_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ThermoSummaryLog_descriptor,
-              new java.lang.String[] { "Id", "SensorId", "Date", "Period", "NumReadings", "MinTemp", "MaxTemp", "MeanTemp", },
+              new java.lang.String[] { "Id", "SensorId", "Time", "Period", "NumReadings", "MinTemp", "MaxTemp", "MeanTemp", },
               org.kegbot.proto.Models.ThermoSummaryLog.class,
               org.kegbot.proto.Models.ThermoSummaryLog.Builder.class);
           internal_static_User_descriptor =
@@ -21525,7 +23018,7 @@ public final class Models {
           internal_static_SystemEvent_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_SystemEvent_descriptor,
-              new java.lang.String[] { "Id", "Kind", "Time", "DrinkId", "KegId", "SessionId", "UserId", },
+              new java.lang.String[] { "Id", "Kind", "Time", "DrinkId", "KegId", "SessionId", "UserId", "Image", "User", "Drink", "Keg", "Session", },
               org.kegbot.proto.Models.SystemEvent.class,
               org.kegbot.proto.Models.SystemEvent.Builder.class);
           internal_static_SoundEvent_descriptor =

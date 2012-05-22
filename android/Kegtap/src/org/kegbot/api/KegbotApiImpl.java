@@ -1,15 +1,11 @@
 package org.kegbot.api;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.ProtocolException;
-import java.net.URL;
 import java.text.ParseException;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -41,46 +37,36 @@ import org.apache.http.protocol.HTTP;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.kegbot.app.Utils;
-import org.kegbot.proto.Api.DrinkDetail;
-import org.kegbot.proto.Api.DrinkSet;
-import org.kegbot.proto.Api.KegDetail;
-import org.kegbot.proto.Api.KegDetailSet;
 import org.kegbot.proto.Api.RecordDrinkRequest;
 import org.kegbot.proto.Api.RecordTemperatureRequest;
-import org.kegbot.proto.Api.SessionDetail;
-import org.kegbot.proto.Api.SessionSet;
-import org.kegbot.proto.Api.SoundEventSet;
-import org.kegbot.proto.Api.SystemEventDetailSet;
-import org.kegbot.proto.Api.TapDetail;
-import org.kegbot.proto.Api.TapDetailSet;
-import org.kegbot.proto.Api.ThermoLogSet;
-import org.kegbot.proto.Api.ThermoSensorSet;
-import org.kegbot.proto.Api.UserDetail;
-import org.kegbot.proto.Api.UserDetailSet;
 import org.kegbot.proto.Models.AuthenticationToken;
 import org.kegbot.proto.Models.Drink;
 import org.kegbot.proto.Models.Image;
+import org.kegbot.proto.Models.Keg;
+import org.kegbot.proto.Models.KegTap;
+import org.kegbot.proto.Models.Session;
+import org.kegbot.proto.Models.SoundEvent;
+import org.kegbot.proto.Models.Stats;
+import org.kegbot.proto.Models.SystemEvent;
 import org.kegbot.proto.Models.ThermoLog;
-
-import android.os.SystemClock;
+import org.kegbot.proto.Models.ThermoSensor;
+import org.kegbot.proto.Models.User;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.protobuf.Message;
+import com.google.protobuf.GeneratedMessage;
 import com.google.protobuf.Message.Builder;
 
 public class KegbotApiImpl implements KegbotApi {
 
   private static KegbotApiImpl sSingleton = null;
 
+  private static final String CONTENT_TYPE_JSON = "application/json";
+
   private String mBaseUrl;
 
   private String apiKey = null;
-
-  private long mLastApiAttemptUptimeMillis = -1;
-  private long mLastApiSuccessUptimeMillis = -1;
-  private long mLastApiFailureUptimeMillis = -1;
 
   private ClientConnectionManager mConnManager;
   private HttpParams mHttpParams;
@@ -114,25 +100,14 @@ public class KegbotApiImpl implements KegbotApi {
     mListener = listener;
   }
 
-  private void noteApiAttempt() {
-    mLastApiAttemptUptimeMillis = SystemClock.uptimeMillis();
-  }
-
-  private void noteApiSuccess() {
-    mLastApiSuccessUptimeMillis = SystemClock.uptimeMillis();
-  }
-
-  private void noteApiFailure() {
-    mLastApiFailureUptimeMillis = SystemClock.uptimeMillis();
-  }
-
   private JsonNode toJson(HttpResponse response) throws KegbotApiException {
     final Header header = response.getFirstHeader("Content-type");
     if (header == null) {
       throw new KegbotApiServerError("No content-type header.");
     }
     final String contentType = header.getValue();
-    if (!"application/json".equals(contentType)) {
+    if (Strings.isNullOrEmpty(contentType)
+        || (!CONTENT_TYPE_JSON.equals(contentType) && !contentType.startsWith(CONTENT_TYPE_JSON))) {
       throw new KegbotApiServerError("Unknown content-type: " + contentType);
     }
     try {
@@ -144,43 +119,8 @@ public class KegbotApiImpl implements KegbotApi {
     }
   }
 
-  private JsonNode readResponse(HttpURLConnection conn) throws KegbotApiException {
-    try {
-      int responseCode = conn.getResponseCode();
-
-      String contentType = conn.getContentType();
-      if (!"application/json".equals(contentType)) {
-        throw new KegbotApiServerError("Unknown content-type: " + contentType);
-      }
-
-      InputStream is = conn.getInputStream();
-      ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      byte[] bytes = new byte[1024];
-      int bytesRead;
-      while ((bytesRead = is.read(bytes)) != -1) {
-        baos.write(bytes, 0, bytesRead);
-      }
-      byte[] bytesReceived = baos.toByteArray();
-      baos.close();
-      is.close();
-      String response = new String(bytesReceived);
-
-      final ObjectMapper mapper = new ObjectMapper();
-      final JsonNode rootNode = mapper.readValue(response, JsonNode.class);
-      return rootNode;
-    } catch (IOException e) {
-      throw new KegbotApiServerError("IOException during response: " + e.toString(), e);
-    } finally {
-      conn.disconnect();
-    }
-  }
-
   private String getRequestUrl(String path) {
     return mBaseUrl + path;
-  }
-
-  private JsonNode doGet(String path) throws KegbotApiException {
-    return doGet(path, null);
   }
 
   private JsonNode doGet(String path, List<NameValuePair> params) throws KegbotApiException {
@@ -226,7 +166,6 @@ public class KegbotApiImpl implements KegbotApi {
   }
 
   private HttpResponse execute(HttpUriRequest request) throws KegbotApiException {
-    noteApiAttempt();
     boolean success = false;
     try {
       final HttpResponse response;
@@ -270,53 +209,72 @@ public class KegbotApiImpl implements KegbotApi {
     } catch (IOException e) {
       throw new KegbotApiException(e);
     } finally {
-      if (success) {
-        noteApiSuccess();
-      } else {
+      if (!success) {
         debug("Method failed, aborting request.");
-        noteApiFailure();
         request.abort();
       }
       // client.close();
     }
   }
 
-  private JsonNode getJson(String path) throws KegbotApiException {
-    JsonNode root = doGet(path);
-    if (!root.has("result")) {
-      throw new KegbotApiServerError("No result from server!");
-    }
-    return root.get("result");
-  }
-
   private JsonNode getJson(String path, List<NameValuePair> params) throws KegbotApiException {
     JsonNode root = doGet(path, params);
-    if (!root.has("result")) {
-      throw new KegbotApiServerError("No result from server!");
+    if (!root.has("meta")) {
+      throw new KegbotApiServerError("Server result missing 'meta' object.");
     }
-    return root.get("result");
+    return root;
   }
 
-  private Message getProto(String path, Builder builder) throws KegbotApiException {
-    return ProtoEncoder.toProto(builder, getJson(path)).build();
+  private <T extends GeneratedMessage> List<T> getProto(String path, Builder builder) throws KegbotApiException {
+    return getProto(path, builder, null);
   }
 
-  private Message getProto(String path, Builder builder, List<NameValuePair> params)
-      throws KegbotApiException {
-    return ProtoEncoder.toProto(builder, getJson(path, params)).build();
+  private <T extends GeneratedMessage> List<T> getProto(String path, Builder builder, List<NameValuePair> params) throws KegbotApiException {
+    JsonNode result = getJson(path, params);
+    if (result.has("object")) {
+      final T resultMessage = getSingleProto(builder, result.get("object"));
+      return Collections.singletonList(resultMessage);
+    } else {
+      final List<T> results = Lists.newArrayList();
+      final JsonNode objects = result.get("objects");
+      final Iterator<JsonNode> iter = objects.getElements();
+      while (iter.hasNext()) {
+        @SuppressWarnings("unchecked")
+        final T res = (T) getSingleProto(builder, iter.next());
+        results.add(res);
+      }
+      return results;
+    }
+  }
+
+  private <T extends GeneratedMessage> T getSingleProto(String path, Builder builder) throws KegbotApiException {
+    return getSingleProto(path, builder, null);
+  }
+
+  private <T extends GeneratedMessage> T getSingleProto(String path, Builder builder, List<NameValuePair> params) throws KegbotApiException {
+    JsonNode result = getJson(path, params);
+    return getSingleProto(builder, result.get("object"));
+  }
+
+  private <T extends GeneratedMessage> T getSingleProto(Builder builder, JsonNode root) {
+    builder.clear();
+    @SuppressWarnings("unchecked")
+    final T result = (T) ProtoEncoder.toProto(builder, root).build();
+    return result;
   }
 
   private JsonNode postJson(String path, Map<String, String> params) throws KegbotApiException {
     JsonNode root = doPost(path, params);
-    if (!root.has("result")) {
+    if (!root.has("meta")) {
       throw new KegbotApiServerError("No result from server!");
     }
-    return root.get("result");
+    return root;
   }
 
-  private Message postProto(String path, Builder builder, Map<String, String> params)
+  private <T extends GeneratedMessage> T postProto(String path, Builder builder, Map<String, String> params)
       throws KegbotApiException {
-    return ProtoEncoder.toProto(builder, postJson(path, params)).build();
+    JsonNode result = postJson(path, params);
+    return getSingleProto(builder, result.get("object"));
   }
 
   @Override
@@ -341,7 +299,7 @@ public class KegbotApiImpl implements KegbotApi {
 
   @Override
   public String getApiKey() throws KegbotApiException {
-    JsonNode result = getJson("/get-api-key/");
+    JsonNode result = getJson("/get-api-key/", null);
     final JsonNode keyNode = result.get("api_key");
     if (keyNode != null) {
       debug("Got api key:" + keyNode.getValueAsText());
@@ -351,122 +309,135 @@ public class KegbotApiImpl implements KegbotApi {
   }
 
   @Override
-  public KegDetailSet getAllKegs() throws KegbotApiException {
-    return (KegDetailSet) getProto("/kegs/", KegDetailSet.newBuilder());
+  public List<Keg> getAllKegs() throws KegbotApiException {
+    return getProto("/kegs/", Keg.newBuilder());
   }
 
   @Override
-  public SoundEventSet getAllSoundEvents() throws KegbotApiException {
-    return (SoundEventSet) getProto("/sound-events/", SoundEventSet.newBuilder());
+  public List<SoundEvent> getAllSoundEvents() throws KegbotApiException {
+    return getProto("/sound-events/", SoundEvent.newBuilder());
   }
 
   @Override
-  public TapDetailSet getAllTaps() throws KegbotApiException {
-    return (TapDetailSet) getProto("/taps/", TapDetailSet.newBuilder());
+  public List<KegTap> getAllTaps() throws KegbotApiException {
+    return getProto("/taps/", KegTap.newBuilder());
   }
 
   @Override
   public AuthenticationToken getAuthToken(String authDevice, String tokenValue)
       throws KegbotApiException {
-    return (AuthenticationToken) getProto("/auth-tokens/" + authDevice + "." + tokenValue + "/",
+    return getSingleProto("/auth-tokens/" + authDevice + "/" + tokenValue + "/",
         AuthenticationToken.newBuilder());
   }
 
   @Override
-  public DrinkDetail getDrinkDetail(String id) throws KegbotApiException {
-    return (DrinkDetail) getProto("/drinks/" + id, DrinkDetail.newBuilder());
+  public Drink getDrinkDetail(String id) throws KegbotApiException {
+    return getSingleProto("/drinks/" + id, Drink.newBuilder());
   }
 
   @Override
-  public KegDetail getKegDetail(String id) throws KegbotApiException {
-    return (KegDetail) getProto("/kegs/" + id, KegDetail.newBuilder());
+  public Keg getKegDetail(String id) throws KegbotApiException {
+    return getSingleProto("/kegs/" + id, Keg.newBuilder());
   }
 
   @Override
-  public DrinkSet getKegDrinks(String kegId) throws KegbotApiException {
-    return (DrinkSet) getProto("/kegs/" + kegId + "/drinks/", DrinkSet.newBuilder());
+  public List<Drink> getKegDrinks(String kegId) throws KegbotApiException {
+    return getProto("/kegs/" + kegId + "/drinks/", Drink.newBuilder());
   }
 
   @Override
-  public SystemEventDetailSet getKegEvents(String kegId) throws KegbotApiException {
-    return (SystemEventDetailSet) getProto("/keg/" + kegId + "/events/", SystemEventDetailSet
-        .newBuilder());
+  public List<SystemEvent> getKegEvents(String kegId) throws KegbotApiException {
+    return getProto("/keg/" + kegId + "/events/", SystemEvent.newBuilder());
   }
 
   @Override
-  public SessionSet getKegSessions(String kegId) throws KegbotApiException {
-    return (SessionSet) getProto("/kegs/" + kegId + "/sessions/", SessionSet.newBuilder());
+  public List<Session> getKegSessions(String kegId) throws KegbotApiException {
+    return getProto("/kegs/" + kegId + "/sessions/", Session.newBuilder());
   }
 
   @Override
   public String getLastDrinkId() throws KegbotApiException {
-    JsonNode root = getJson("/last-drink-id/");
+    JsonNode root = getJson("/last-drink-id/", null);
     return root.get("id").getTextValue();
   }
 
   @Override
-  public DrinkSet getRecentDrinks() throws KegbotApiException {
-    return (DrinkSet) getProto("/last-drinks/", DrinkSet.newBuilder());
+  public List<Drink> getRecentDrinks() throws KegbotApiException {
+    return getProto("/last-drinks/", Drink.newBuilder());
   }
 
   @Override
-  public SystemEventDetailSet getRecentEvents() throws KegbotApiException {
-    return (SystemEventDetailSet) getProto("/events/", SystemEventDetailSet.newBuilder());
+  public List<SystemEvent> getRecentEvents() throws KegbotApiException {
+    return getProto("/events/", SystemEvent.newBuilder());
   }
 
   @Override
-  public SystemEventDetailSet getRecentEvents(final long sinceEventId) throws KegbotApiException {
+  public List<SystemEvent> getRecentEvents(final long sinceEventId) throws KegbotApiException {
     final List<NameValuePair> params = Lists.newArrayList();
     params.add(new BasicNameValuePair("since", String.valueOf(sinceEventId)));
-    return (SystemEventDetailSet) getProto("/events/", SystemEventDetailSet.newBuilder(), params);
+    return getProto("/events/", SystemEvent.newBuilder(), params);
   }
 
   @Override
-  public SessionDetail getSessionDetail(String id) throws KegbotApiException {
-    return (SessionDetail) getProto("/sessions/" + id, SessionDetail.newBuilder());
+  public Session getSessionDetail(String id) throws KegbotApiException {
+    return getSingleProto("/sessions/" + id, Session.newBuilder());
   }
 
   @Override
-  public TapDetail getTapDetail(String tapName) throws KegbotApiException {
-    return (TapDetail) getProto("/taps/" + tapName, TapDetail.newBuilder());
+  public Stats getSessionStats(int sessionId) throws KegbotApiException {
+    return getSingleProto("/sessions/" + sessionId + "/stats/", Stats.newBuilder());
   }
 
   @Override
-  public ThermoLogSet getThermoSensorLogs(String sensorId) throws KegbotApiException {
-    return (ThermoLogSet) getProto("/thermo-sensors/" + sensorId + "/logs/", ThermoLogSet
+  public KegTap getTapDetail(String tapName) throws KegbotApiException {
+    return getSingleProto("/taps/" + tapName, KegTap.newBuilder());
+  }
+
+  @Override
+  public List<ThermoLog> getThermoSensorLogs(String sensorId) throws KegbotApiException {
+    return getProto("/thermo-sensors/" + sensorId + "/logs/", ThermoLog.newBuilder());
+  }
+
+  @Override
+  public List<ThermoSensor> getThermoSensors() throws KegbotApiException {
+    return getProto("/thermo-sensors/", ThermoSensor.newBuilder());
+  }
+
+  @Override
+  public User getUserDetail(String username) throws KegbotApiException {
+    return getSingleProto("/users/" + username, User.newBuilder());
+  }
+
+  @Override
+  public List<Drink> getUserDrinks(String username) throws KegbotApiException {
+    return getProto("/users/" + username + "/drinks/", Drink.newBuilder());
+  }
+
+  @Override
+  public List<SystemEvent> getUserEvents(String username) throws KegbotApiException {
+    return getProto("/users/" + username + "/events/", SystemEvent
         .newBuilder());
   }
 
   @Override
-  public ThermoSensorSet getThermoSensors() throws KegbotApiException {
-    return (ThermoSensorSet) getProto("/thermo-sensors/", ThermoSensorSet.newBuilder());
+  public List<User> getUsers() throws KegbotApiException {
+    return getProto("/users/", User.newBuilder());
   }
 
   @Override
-  public UserDetail getUserDetail(String username) throws KegbotApiException {
-    return (UserDetail) getProto("/users/" + username, UserDetail.newBuilder());
-  }
-
-  @Override
-  public DrinkSet getUserDrinks(String username) throws KegbotApiException {
-    return (DrinkSet) getProto("/users/" + username + "/drinks/", DrinkSet.newBuilder());
-  }
-
-  @Override
-  public SystemEventDetailSet getUserEvents(String username) throws KegbotApiException {
-    return (SystemEventDetailSet) getProto("/users/" + username + "/events/", SystemEventDetailSet
-        .newBuilder());
-  }
-
-  @Override
-  public UserDetailSet getUsers() throws KegbotApiException {
-    return (UserDetailSet) getProto("/users/", UserDetailSet.newBuilder());
-  }
-
-  @Override
-  public SessionDetail getCurrentSession() throws KegbotApiException {
+  public Session getCurrentSession() throws KegbotApiException {
     try {
-      return (SessionDetail) getProto("/sessions/current/", SessionDetail.newBuilder());
+      final List<NameValuePair> params = Lists.newArrayList();
+      params.add(new BasicNameValuePair("limit", "1"));
+      final List<Session> sessions = getProto("/sessions/", Session.newBuilder(), params);
+      if (sessions.isEmpty()) {
+        return null;
+      }
+      final Session sess = sessions.get(0);
+      if (sess.getIsActive()) {
+        return sess;
+      }
+      return null;
     } catch (KegbotApiNotFoundError e) {
       return null;
     }
@@ -546,78 +517,8 @@ public class KegbotApiImpl implements KegbotApi {
     return (ThermoLog) postProto("/thermo-sensors/" + sensorName, ThermoLog.newBuilder(), params);
   }
 
-  private HttpURLConnection newConnection(String urlString) throws IOException {
-    final URL url = new URL(urlString);
-    final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-    return conn;
-  }
-
-  private Image uploadDrinkImageALT(String drinkId, String imagePath) throws KegbotApiException {
-    HttpURLConnection conn;
-    try {
-      conn = newConnection(getRequestUrl("/drinks/" + drinkId + "/add-photo/"));
-    } catch (IOException e) {
-      throw new KegbotApiException("Error connecting to URL: " + e.toString(), e);
-    }
-
-    byte[] fileBytes;
-    try {
-      fileBytes = Utils.readFile(imagePath);
-    } catch (IOException e1) {
-      throw new KegbotApiException("Error reading image file: " + e1.toString(), e1);
-    }
-
-    final String BOUNDRY = "############apiboundary############";
-
-    conn.setDoOutput(true);
-    conn.setDoInput(true);
-    conn.setUseCaches(false);
-    try {
-      conn.setRequestMethod("POST");
-    } catch (ProtocolException e1) {
-      throw new IllegalStateException("Request method unsupported", e1);
-    }
-    conn.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + BOUNDRY);
-
-    String fileName = new File(imagePath).getName();
-
-    StringBuffer requestBody = new StringBuffer();
-
-    requestBody.append("--").append(BOUNDRY).append("\n");
-    requestBody.append("Content-Disposition: form-data; name=\"photo\"; filename=\"" + fileName
-        + "\"\r\n");
-    requestBody.append("Content-Type: application/octet-stream\r\n");
-    requestBody.append("\r\n");
-    requestBody.append(new String(fileBytes));
-    requestBody.append("\r\n");
-
-    requestBody.append("--").append(BOUNDRY).append("\r\n");
-    requestBody.append("Content-Disposition: form-data; name=\"api_key\"\r\n");
-    requestBody.append("\r\n");
-    requestBody.append(apiKey);
-    requestBody.append("\r\n");
-
-    requestBody.append("--").append(BOUNDRY).append("--").append("\r\n");
-
-    DataOutputStream outputStream;
-    try {
-      outputStream = new DataOutputStream(conn.getOutputStream());
-      outputStream.writeBytes(requestBody.toString());
-      outputStream.flush();
-      outputStream.close();
-    } catch (IOException e1) {
-      throw new KegbotApiException(e1);
-    }
-
-    debug("api_key=" + apiKey);
-
-    final JsonNode responseJson = readResponse(conn);
-    debug("UPLOAD RESPONSE: " + responseJson);
-    return (Image) ProtoEncoder.toProto(Image.newBuilder(), responseJson.get("result")).build();
-  }
-
   @Override
-  public Image uploadDrinkImage(String drinkId, String imagePath) throws KegbotApiException {
+  public Image uploadDrinkImage(int drinkId, String imagePath) throws KegbotApiException {
 
     final File imageFile = new File(imagePath);
     final HttpPost httpost = new HttpPost(getRequestUrl("/drinks/" + drinkId + "/add-photo/"));
@@ -635,11 +536,11 @@ public class KegbotApiImpl implements KegbotApi {
     final HttpResponse response = execute(httpost);
     final JsonNode responseJson = toJson(response);
     debug("UPLOAD RESPONSE: " + responseJson);
-    return (Image) ProtoEncoder.toProto(Image.newBuilder(), responseJson.get("result")).build();
+    return (Image) ProtoEncoder.toProto(Image.newBuilder(), responseJson.get("object")).build();
   }
 
   @Override
-  public UserDetail register(String username, String email, String password, String imagePath)
+  public User register(String username, String email, String password, String imagePath)
       throws KegbotApiException {
 
     final File imageFile = new File(imagePath);
@@ -666,8 +567,7 @@ public class KegbotApiImpl implements KegbotApi {
     final HttpResponse response = execute(httpost);
     final JsonNode responseJson = toJson(response);
     debug("UPLOAD RESPONSE: " + responseJson);
-    return (UserDetail) ProtoEncoder.toProto(UserDetail.newBuilder(), responseJson.get("result"))
-        .build();
+    return getSingleProto(User.newBuilder(), responseJson.get("object"));
   }
 
   private synchronized void debug(String message) {

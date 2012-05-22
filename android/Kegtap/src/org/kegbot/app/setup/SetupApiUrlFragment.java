@@ -1,13 +1,14 @@
 package org.kegbot.app.setup;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiException;
 import org.kegbot.api.KegbotApiImpl;
-import org.kegbot.app.util.PreferenceHelper;
 import org.kegbot.app.R;
-import org.kegbot.proto.Api.SystemEventDetailSet;
+import org.kegbot.app.util.PreferenceHelper;
+import org.kegbot.proto.Models.SystemEvent;
 
 import android.net.Uri;
 import android.os.Bundle;
@@ -73,7 +74,7 @@ public class SetupApiUrlFragment extends SetupFragment {
     api.setApiUrl(apiUrl);
 
     try {
-      SystemEventDetailSet events = api.getRecentEvents();
+      final List<SystemEvent> events = api.getRecentEvents();
       Log.d(TAG, "Success: " + events);
     } catch (KegbotApiException e) {
       Log.d(TAG, "Error: " + e.toString(), e);

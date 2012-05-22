@@ -7,9 +7,7 @@ import org.kegbot.api.KegbotApiException;
 import org.kegbot.api.KegbotApiImpl;
 import org.kegbot.app.service.KegboardService;
 import org.kegbot.app.util.PreferenceHelper;
-import org.kegbot.app.R;
-import org.kegbot.proto.Api.TapDetail;
-import org.kegbot.proto.Api.TapDetailSet;
+import org.kegbot.proto.Models.KegTap;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -38,7 +36,7 @@ public class KegtapActivity extends CoreActivity {
 
   private MyAdapter mTapStatusAdapter;
   private ViewPager mTapStatusPager;
-  private List<TapDetail> mTapDetails = Lists.newArrayList();
+  private List<KegTap> mTapDetails = Lists.newArrayList();
   private SessionStatsFragment mSession;
   private PreferenceHelper mPrefsHelper;
   private final Handler mHandler = new Handler();
@@ -172,10 +170,10 @@ public class KegtapActivity extends CoreActivity {
 
   }
 
-  private class TapLoaderTask extends AsyncTask<Void, Void, TapDetailSet> {
+  private class TapLoaderTask extends AsyncTask<Void, Void, List<KegTap>> {
 
     @Override
-    protected TapDetailSet doInBackground(Void... params) {
+    protected List<KegTap> doInBackground(Void... params) {
       try {
         return mApi.getAllTaps();
       } catch (KegbotApiException e) {
@@ -185,13 +183,13 @@ public class KegtapActivity extends CoreActivity {
     }
 
     @Override
-    protected void onPostExecute(TapDetailSet result) {
+    protected void onPostExecute(List<KegTap> result) {
       if (result == null) {
         return;
       }
       try {
         mTapDetails.clear();
-        mTapDetails.addAll(result.getTapsList());
+        mTapDetails.addAll(result);
         Log.d(LOG_TAG, "Updating adapter, taps: " + mTapDetails.size());
         mTapStatusPager.setAdapter(mTapStatusAdapter);
       } catch (Throwable e) {

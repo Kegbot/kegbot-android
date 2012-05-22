@@ -7,9 +7,10 @@ import javax.measure.units.SI;
 
 import org.jscience.physics.measures.Measure;
 import org.kegbot.app.util.image.ImageDownloader;
-import org.kegbot.app.R;
-import org.kegbot.proto.Api.TapDetail;
+import org.kegbot.proto.Models.BeerType;
 import org.kegbot.proto.Models.Image;
+import org.kegbot.proto.Models.Keg;
+import org.kegbot.proto.Models.KegTap;
 
 import android.app.Activity;
 import android.app.ListFragment;
@@ -28,7 +29,7 @@ public class TapListFragment extends ListFragment {
 
   private final String TAG = TapListFragment.class.getSimpleName();
 
-  private TapDetail mTapDetail;
+  private KegTap mTapDetail;
   private ImageDownloader mImageDownloader;
 
   @Override
@@ -46,15 +47,18 @@ public class TapListFragment extends ListFragment {
     return view;
   }
 
-  private View buildTapView(View view, TapDetail tap) {
+  private View buildTapView(View view, KegTap tap) {
     final TextView title = (TextView) view.findViewById(R.id.tapTitle);
     if (tap == null) {
       Log.w(TAG, "Called with empty tap detail.");
       return view;
     }
-    title.setText(tap.getBeerType().getName());
+    final Keg keg = tap.getCurrentKeg();
+    final BeerType type = keg.getType();
 
-    final String tapName = tap.getTap().getName();
+    title.setText(type.getName());
+
+    final String tapName = tap.getName();
     if (!Strings.isNullOrEmpty(tapName)) {
       TextView subtitle = (TextView) view.findViewById(R.id.tapSubtitle);
       subtitle.setText(tapName);
@@ -62,7 +66,7 @@ public class TapListFragment extends ListFragment {
 
     CharSequence relTime;
     try {
-      long tapDate = Utils.dateFromIso8601String(tap.getKeg().getStartedTime());
+      long tapDate = Utils.dateFromIso8601String(tap.getCurrentKeg().getStartTime());
       relTime = DateUtils.getRelativeTimeSpanString(tapDate);
     } catch (ParseException e) {
       relTime = null;
@@ -76,19 +80,19 @@ public class TapListFragment extends ListFragment {
     }
 
     ImageView tapImage = (ImageView) view.findViewById(R.id.tapImage);
-    if (tapImage != null && tap.getBeerType().hasImage()) {
-      final Image image = tap.getBeerType().getImage();
+    if (tapImage != null && type.hasImage()) {
+      final Image image = type.getImage();
       final String imageUrl = image.getUrl();
       tapImage.setBackgroundResource(0);
       mImageDownloader.download(imageUrl, tapImage);
     }
 
-    float percentFull = tap.getKeg().getPercentFull();
+    float percentFull = tap.getCurrentKeg().getPercentFull();
     TextView kegStatusText = (TextView) view.findViewById(R.id.tapKeg);
     kegStatusText.setText(String.format("%.1f%% full", Float.valueOf(percentFull)));
 
-    if (tap.getTap().hasLastTemperature()) {
-      float lastTemperature = tap.getTap().getLastTemperature().getTemperatureC();
+    if (tap.hasLastTemperature()) {
+      float lastTemperature = tap.getLastTemperature().getTemperatureC();
       TextView tapTemperature = (TextView) view.findViewById(R.id.tapTemperature);
       double lastTempF = Measure.valueOf(lastTemperature, SI.CELSIUS).doubleValue(NonSI.FAHRENHEIT);
       tapTemperature.setText(String.format("%.2f¡C / %.2f¡F", Float.valueOf(lastTemperature),
@@ -100,11 +104,11 @@ public class TapListFragment extends ListFragment {
     return view;
   }
 
-  public void setTapDetail(TapDetail tapDetail) {
+  public void setTapDetail(KegTap tapDetail) {
     mTapDetail = tapDetail;
   }
 
-  public TapDetail getTapDetail() {
+  public KegTap getTapDetail() {
     return mTapDetail;
   }
 

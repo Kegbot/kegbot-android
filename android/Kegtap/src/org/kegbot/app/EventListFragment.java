@@ -8,8 +8,6 @@ import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiException;
 import org.kegbot.api.KegbotApiImpl;
 import org.kegbot.app.util.image.ImageDownloader;
-import org.kegbot.proto.Api.SystemEventDetail;
-import org.kegbot.proto.Api.SystemEventDetailSet;
 import org.kegbot.proto.Models.Drink;
 import org.kegbot.proto.Models.SystemEvent;
 
@@ -41,18 +39,18 @@ public class EventListFragment extends ListFragment {
 
   private static final String LOG_TAG = EventListFragment.class.getSimpleName();
 
-  private ArrayAdapter<SystemEventDetail> mAdapter;
+  private ArrayAdapter<SystemEvent> mAdapter;
   private final KegbotApi mApi = KegbotApiImpl.getSingletonInstance();
   private ImageDownloader mImageDownloader;
 
-  private long mLastEventId = -1;
+  private int mLastEventId = -1;
 
-  private static Comparator<SystemEventDetail> EVENTS_DESCENDING = new Comparator<SystemEventDetail>() {
+  private static Comparator<SystemEvent> EVENTS_DESCENDING = new Comparator<SystemEvent>() {
     @Override
-    public int compare(SystemEventDetail object1, SystemEventDetail object2) {
+    public int compare(SystemEvent object1, SystemEvent object2) {
       try {
-        final long time1 = Utils.dateFromIso8601String(object1.getEvent().getTime());
-        final long time2 = Utils.dateFromIso8601String(object2.getEvent().getTime());
+        final long time1 = Utils.dateFromIso8601String(object1.getTime());
+        final long time2 = Utils.dateFromIso8601String(object2.getTime());
         return Long.valueOf(time2).compareTo(Long.valueOf(time1));
       } catch (ParseException e) {
         Log.wtf(LOG_TAG, "Error parsing times", e);
@@ -71,12 +69,12 @@ public class EventListFragment extends ListFragment {
   public void onActivityCreated(Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
 
-    mAdapter = new ArrayAdapter<SystemEventDetail>(getActivity(), R.layout.event_list_item,
+    mAdapter = new ArrayAdapter<SystemEvent>(getActivity(), R.layout.event_list_item,
         R.id.eventTitle) {
 
       @Override
       public View getView(int position, View convertView, ViewGroup parent) {
-        final SystemEventDetail eventDetail = getItem(position);
+        final SystemEvent eventDetail = getItem(position);
         final View view = super.getView(position, convertView, parent);
         try {
           formatEvent(eventDetail, view);
@@ -86,25 +84,25 @@ public class EventListFragment extends ListFragment {
         return view;
       }
 
-      private void formatEvent(SystemEventDetail eventDetail, View view) {
-        final SystemEvent event = eventDetail.getEvent();
+      private void formatEvent(SystemEvent event, View view) {
         // Common: image.
         final ImageView icon = (ImageView) view.findViewById(R.id.eventIcon);
-        final String imageUrl = eventDetail.getImage().getUrl();
-        if (!Strings.isNullOrEmpty(imageUrl)) {
-          icon.setVisibility(View.VISIBLE);
-          icon.setImageBitmap(null);
+        icon.setVisibility(View.GONE);
+        if (event.hasImage()) {
+          final String imageUrl = event.getImage().getThumbnailUrl();
+          if (!Strings.isNullOrEmpty(imageUrl)) {
+            icon.setVisibility(View.VISIBLE);
+            icon.setImageBitmap(null);
 
-          // Default to unknown drinker, may be immediately replaced by downloader.
-          icon.setBackgroundResource(R.drawable.unknown_drinker);
-          mImageDownloader.download(imageUrl, icon);
-        } else {
-          icon.setVisibility(View.GONE);
+            // Default to unknown drinker, may be immediately replaced by downloader.
+            icon.setBackgroundResource(R.drawable.unknown_drinker);
+            mImageDownloader.download(imageUrl, icon);
+          }
         }
 
         // Common: user portion.
         final TextView userName = (TextView) view.findViewById(R.id.eventUserName);
-        final String userNameString = getUsernameForEvent(eventDetail);
+        final String userNameString = getUsernameForEvent(event);
         if (userNameString != null) {
           userName.setText(userNameString);
           userName.setVisibility(View.VISIBLE);
@@ -114,7 +112,7 @@ public class EventListFragment extends ListFragment {
 
         // Event body.
         final TextView title = (TextView) view.findViewById(R.id.eventTitle);
-        title.setText(getTitle(eventDetail));
+        title.setText(getTitle(event));
 
         // Date and time.
         TextView dateView = (TextView) view.findViewById(R.id.eventDate);
@@ -132,8 +130,8 @@ public class EventListFragment extends ListFragment {
 
       }
 
-      private String getTitle(SystemEventDetail eventDetail) {
-        final String kind = eventDetail.getEvent().getKind();
+      private String getTitle(SystemEvent eventDetail) {
+        final String kind = eventDetail.getKind();
         final Drink drink = eventDetail.getDrink();
         String result;
 
@@ -154,24 +152,25 @@ public class EventListFragment extends ListFragment {
         return result;
       }
 
-      private String getUsernameForEvent(SystemEventDetail eventDetail) {
-        final SystemEvent event = eventDetail.getEvent();
-        String userName = event.getUserId();
-        if (Strings.isNullOrEmpty(userName)) {
+      private String getUsernameForEvent(SystemEvent eventDetail) {
+        final String userName;
+        if (!eventDetail.hasUser()) {
           userName = "a guest";
+        } else {
+          userName = eventDetail.getUser().getUsername();
         }
 
-        final String kind = eventDetail.getEvent().getKind();
+        final String kind = eventDetail.getKind();
         if ("drink_poured".equals(kind)) {
           return userName;
         } else if ("session_joined".equals(kind)) {
           return userName;
         } else if ("session_started".equals(kind)) {
           return userName;
-        } else if ("keg_ended".equals(kind)) {
-          return "Keg " + event.getKegId();
-        } else if ("keg_tapped".equals(kind)) {
-          return "Keg " + event.getKegId();
+        } else if ("keg_ended".equals(kind) || "keg_tapped".equals(kind)) {
+          if (eventDetail.hasKeg()) {
+            return "Keg " + eventDetail.getKeg().getId();
+          }
         }
 
         return null;
@@ -199,10 +198,10 @@ public class EventListFragment extends ListFragment {
     new EventLoaderTask().execute();
   }
 
-  private class EventLoaderTask extends AsyncTask<Void, Void, SystemEventDetailSet> {
+  private class EventLoaderTask extends AsyncTask<Void, Void, List<SystemEvent>> {
 
     @Override
-    protected SystemEventDetailSet doInBackground(Void... params) {
+    protected List<SystemEvent> doInBackground(Void... params) {
       try {
         if (mLastEventId <= 0) {
           return mApi.getRecentEvents();
@@ -216,13 +215,12 @@ public class EventListFragment extends ListFragment {
     }
 
     @Override
-    protected void onPostExecute(SystemEventDetailSet result) {
-      long greatestEventId = mLastEventId;
-      if (result != null) {
-        final List<SystemEventDetail> events = result.getEventsList();
-        for (final SystemEventDetail event : events) {
+    protected void onPostExecute(List<SystemEvent> events) {
+      int greatestEventId = mLastEventId;
+      if (events != null) {
+        for (final SystemEvent event : events) {
           mAdapter.add(event);
-          final long eventId = Long.valueOf(event.getEvent().getId()).longValue();
+          final int eventId = event.getId();
           if (eventId > greatestEventId) {
             greatestEventId = eventId;
           }

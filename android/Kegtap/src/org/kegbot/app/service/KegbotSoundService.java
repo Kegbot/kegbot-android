@@ -26,7 +26,6 @@ import org.kegbot.app.util.Downloader;
 import org.kegbot.core.Flow;
 import org.kegbot.core.Flow.State;
 import org.kegbot.core.FlowManager;
-import org.kegbot.proto.Api.SoundEventSet;
 import org.kegbot.proto.Models.SoundEvent;
 
 import android.content.BroadcastReceiver;
@@ -173,10 +172,10 @@ public class KegbotSoundService extends BackgroundService {
   protected void runInBackground() {
     Log.d(TAG, "Running in background.");
     try {
-      SoundEventSet allEvents = mApi.getAllSoundEvents();
+      final List<SoundEvent> allEvents = mApi.getAllSoundEvents();
       Log.d(TAG, "Sound events: " + allEvents);
       mSoundEvents.clear();
-      mSoundEvents.addAll(allEvents.getEventsList());
+      mSoundEvents.addAll(allEvents);
       downloadAll();
     } catch (KegbotApiException e) {
       // Pass.

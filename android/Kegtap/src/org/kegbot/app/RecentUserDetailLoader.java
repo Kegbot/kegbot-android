@@ -8,7 +8,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.kegbot.core.AuthenticationManager;
-import org.kegbot.proto.Api.UserDetail;
+import org.kegbot.proto.Models.User;
 
 import android.content.Context;
 import android.content.Loader;
@@ -20,7 +20,7 @@ import com.google.common.collect.Lists;
  *
  * @author mike wakerly (mike@wakerly.com)
  */
-public class RecentUserDetailLoader extends Loader<List<UserDetail>> {
+public class RecentUserDetailLoader extends Loader<List<User>> {
 
   private static final String TAG = RecentUserDetailLoader.class.getSimpleName();
 
@@ -33,11 +33,11 @@ public class RecentUserDetailLoader extends Loader<List<UserDetail>> {
     super(context);
   }
 
-  private static Comparator<UserDetail> USERS_ALPHABETIC = new Comparator<UserDetail>() {
+  private static Comparator<User> USERS_ALPHABETIC = new Comparator<User>() {
     @Override
-    public int compare(UserDetail object1, UserDetail object2) {
-      return object1.getUser().getUsername().toLowerCase().compareTo(
-          object2.getUser().getUsername().toLowerCase());
+    public int compare(User object1, User object2) {
+      return object1.getUsername().toLowerCase().compareTo(
+          object2.getUsername().toLowerCase());
     }
   };
 
@@ -48,7 +48,7 @@ public class RecentUserDetailLoader extends Loader<List<UserDetail>> {
         + " isAbandoned=" + isAbandoned());
     if (!mReported) {
       final AuthenticationManager am = AuthenticationManager.getSingletonInstance(getContext());
-      final List<UserDetail> result = Lists.newArrayList(am.getAllRecent());
+      final List<User> result = Lists.newArrayList(am.getAllRecent());
       Log.d(TAG, "Load result size: " + result.size());
       Collections.sort(result, USERS_ALPHABETIC);
       deliverResult(result);

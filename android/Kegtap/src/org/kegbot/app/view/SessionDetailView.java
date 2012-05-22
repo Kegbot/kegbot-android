@@ -4,7 +4,7 @@
 package org.kegbot.app.view;
 
 import org.kegbot.app.R;
-import org.kegbot.proto.Api.SessionDetail;
+import org.kegbot.proto.Models.Session;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -19,7 +19,7 @@ import android.widget.TextView;
  */
 public class SessionDetailView extends LinearLayout {
 
-  private SessionDetail mSessionDetail = null;
+  private Session mSessionDetail = null;
 
   private TextView mSessionSubtitle;
   private TextView mSessionTitle;
@@ -47,7 +47,7 @@ public class SessionDetailView extends LinearLayout {
     mSessionSubtitle = (TextView) findViewById(R.id.sessionSubtitle);
   }
 
-  public void setSessionDetail(SessionDetail detail) {
+  public void setSessionDetail(Session detail) {
     if (mSessionDetail == detail) {
       return;
     } else if (detail == null && mSessionDetail != null) {

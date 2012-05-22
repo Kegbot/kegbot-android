@@ -1,25 +1,20 @@
 package org.kegbot.api;
 
-import org.kegbot.proto.Api.DrinkDetail;
-import org.kegbot.proto.Api.DrinkSet;
-import org.kegbot.proto.Api.KegDetail;
-import org.kegbot.proto.Api.KegDetailSet;
+import java.util.List;
+
 import org.kegbot.proto.Api.RecordDrinkRequest;
 import org.kegbot.proto.Api.RecordTemperatureRequest;
-import org.kegbot.proto.Api.SessionDetail;
-import org.kegbot.proto.Api.SessionSet;
-import org.kegbot.proto.Api.SoundEventSet;
-import org.kegbot.proto.Api.SystemEventDetailSet;
-import org.kegbot.proto.Api.TapDetail;
-import org.kegbot.proto.Api.TapDetailSet;
-import org.kegbot.proto.Api.ThermoLogSet;
-import org.kegbot.proto.Api.ThermoSensorSet;
-import org.kegbot.proto.Api.UserDetail;
-import org.kegbot.proto.Api.UserDetailSet;
 import org.kegbot.proto.Models.AuthenticationToken;
 import org.kegbot.proto.Models.Drink;
 import org.kegbot.proto.Models.Image;
+import org.kegbot.proto.Models.Keg;
+import org.kegbot.proto.Models.KegTap;
+import org.kegbot.proto.Models.Session;
+import org.kegbot.proto.Models.SoundEvent;
+import org.kegbot.proto.Models.Stats;
+import org.kegbot.proto.Models.SystemEvent;
 import org.kegbot.proto.Models.ThermoLog;
+import org.kegbot.proto.Models.ThermoSensor;
 import org.kegbot.proto.Models.User;
 
 /**
@@ -41,19 +36,19 @@ public interface KegbotApi {
    * @return all kegs
    * @throws KegbotApiException
    */
-  public KegDetailSet getAllKegs() throws KegbotApiException;
+  public List<Keg> getAllKegs() throws KegbotApiException;
 
   /**
    * @return
    * @throws KegbotApiException
    */
-  public SoundEventSet getAllSoundEvents() throws KegbotApiException;
+  public List<SoundEvent> getAllSoundEvents() throws KegbotApiException;
 
   /**
    * @return
    * @throws KegbotApiException
    */
-  public TapDetailSet getAllTaps() throws KegbotApiException;
+  public List<KegTap> getAllTaps() throws KegbotApiException;
 
   /**
    * @param authDevice
@@ -72,35 +67,35 @@ public interface KegbotApi {
    * @return the {@link DrinkDetail}
    * @throws KegbotApiException
    */
-  public DrinkDetail getDrinkDetail(String id) throws KegbotApiException;
+  public Drink getDrinkDetail(String id) throws KegbotApiException;
 
   /**
    * @param id
    * @return
    * @throws KegbotApiException
    */
-  public KegDetail getKegDetail(String id) throws KegbotApiException;
+  public Keg getKegDetail(String id) throws KegbotApiException;
 
   /**
    * @param kegId
    * @return
    * @throws KegbotApiException
    */
-  public DrinkSet getKegDrinks(String kegId) throws KegbotApiException;
+  public List<Drink> getKegDrinks(String kegId) throws KegbotApiException;
 
   /**
    * @param kegId
    * @return
    * @throws KegbotApiException
    */
-  public SystemEventDetailSet getKegEvents(String kegId) throws KegbotApiException;
+  public List<SystemEvent> getKegEvents(String kegId) throws KegbotApiException;
 
   /**
    * @param kegId
    * @return
    * @throws KegbotApiException
    */
-  public SessionSet getKegSessions(String kegId) throws KegbotApiException;
+  public List<Session> getKegSessions(String kegId) throws KegbotApiException;
 
   /**
    * @return
@@ -114,7 +109,7 @@ public interface KegbotApi {
    * @return the drinks
    * @throws KegbotApiException
    */
-  public DrinkSet getRecentDrinks() throws KegbotApiException;
+  public List<Drink> getRecentDrinks() throws KegbotApiException;
 
   /**
    * Returns recent system events.
@@ -122,8 +117,8 @@ public interface KegbotApi {
    * @return the events
    * @throws KegbotApiException
    */
-  public SystemEventDetailSet getRecentEvents() throws KegbotApiException;
-  public SystemEventDetailSet getRecentEvents(final long sinceEventId) throws KegbotApiException;
+  public List<SystemEvent> getRecentEvents() throws KegbotApiException;
+  public List<SystemEvent> getRecentEvents(final long sinceEventId) throws KegbotApiException;
 
   /**
    * Returns detailed information about a session.
@@ -132,7 +127,10 @@ public interface KegbotApi {
    * @return the {@link SessionDetail}
    * @throws KegbotApiException
    */
-  public SessionDetail getSessionDetail(String id) throws KegbotApiException;
+  public Session getSessionDetail(String id) throws KegbotApiException;
+
+  public Stats getSessionStats(int sessionId) throws KegbotApiException;
+
 
   /**
    * Returns information about a tap.
@@ -141,20 +139,20 @@ public interface KegbotApi {
    * @return the {@link TapDetail}
    * @throws KegbotApiException
    */
-  public TapDetail getTapDetail(String tapName) throws KegbotApiException;
+  public KegTap getTapDetail(String tapName) throws KegbotApiException;
 
   /**
    * @param sensorId
    * @return
    * @throws KegbotApiException
    */
-  public ThermoLogSet getThermoSensorLogs(String sensorId) throws KegbotApiException;
+  public List<ThermoLog> getThermoSensorLogs(String sensorId) throws KegbotApiException;
 
   /**
    * @return
    * @throws KegbotApiException
    */
-  public ThermoSensorSet getThermoSensors() throws KegbotApiException;
+  public List<ThermoSensor> getThermoSensors() throws KegbotApiException;
 
   /**
    * Returns details for a single user.
@@ -163,18 +161,18 @@ public interface KegbotApi {
    * @return the {@link User}
    * @throws KegbotApiException
    */
-  public UserDetail getUserDetail(String username) throws KegbotApiException;
+  public User getUserDetail(String username) throws KegbotApiException;
 
-  public DrinkSet getUserDrinks(String username) throws KegbotApiException;
+  public List<Drink> getUserDrinks(String username) throws KegbotApiException;
 
-  public SystemEventDetailSet getUserEvents(String username) throws KegbotApiException;
+  public List<SystemEvent> getUserEvents(String username) throws KegbotApiException;
 
   public Drink recordDrink(final RecordDrinkRequest request) throws KegbotApiException;
 
   public ThermoLog recordTemperature(final RecordTemperatureRequest request)
       throws KegbotApiException;
 
-  public UserDetailSet getUsers() throws KegbotApiException;
+  public List<User> getUsers() throws KegbotApiException;
 
   /**
    * Returns the currently-active drinking session, or {@code null} if none is
@@ -183,10 +181,10 @@ public interface KegbotApi {
    * @return
    * @throws KegbotApiException
    */
-  public SessionDetail getCurrentSession() throws KegbotApiException;
+  public Session getCurrentSession() throws KegbotApiException;
 
-  public Image uploadDrinkImage(final String drinkId, final String imagePath) throws KegbotApiException;
+  public Image uploadDrinkImage(final int drinkId, final String imagePath) throws KegbotApiException;
 
-  public UserDetail register(final String username, final String email, final String password, final String imagePath) throws KegbotApiException;
+  public User register(final String username, final String email, final String password, final String imagePath) throws KegbotApiException;
 
 }

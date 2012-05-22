@@ -31,6 +31,10 @@ public class ProtoEncoder {
         continue;
       }
 
+      if (node.isNull()) {
+        continue;
+      }
+
       if (fieldDesc.isRepeated()) {
         final Iterator<JsonNode> iter = node.getElements();
         while (iter.hasNext()) {
