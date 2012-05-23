@@ -27,6 +27,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.ViewFlipper;
 
 import com.google.common.base.Strings;
 
@@ -39,6 +40,10 @@ public class TapStatusFragment extends ListFragment {
   private ImageDownloader mImageDownloader;
 
   private static final int SELECT_DRINKER = 100;
+
+  private static final int CHILD_LOADING = 0;
+  private static final int CHILD_INACTIVE = 1;
+  private static final int CHILD_ACTIVE = 2;
 
   private final OnClickListener mOnBeerMeClickedListener = new OnClickListener() {
     @Override
@@ -83,9 +88,18 @@ public class TapStatusFragment extends ListFragment {
   }
 
   public View buildTapView(View view, KegTap tap) {
+    ViewFlipper flipper = (ViewFlipper) view;
+
     if (tap == null) {
       Log.w(TAG, "Called with empty tap detail.");
+      flipper.setDisplayedChild(CHILD_INACTIVE);
       return view;
+    } else if (!tap.hasCurrentKeg()) {
+      Log.d(TAG, "Tap inactive");
+      flipper.setDisplayedChild(CHILD_INACTIVE);
+      return view;
+    } else {
+      flipper.setDisplayedChild(CHILD_ACTIVE);
     }
 
     final String tapName = tap.getName();
@@ -145,8 +159,6 @@ public class TapStatusFragment extends ListFragment {
       tapTemperature.setText(String.format("%.2f¡C / %.2f¡F", Float.valueOf(lastTemperature),
           Double.valueOf(lastTempF)));
     }
-
-    view.setBackgroundDrawable(getResources().getDrawable(R.drawable.shape_rounded_rect));
 
     final String description = tap.getCurrentKeg().getDescription();
     final TextView descView = (TextView) view.findViewById(R.id.tapDescription);
