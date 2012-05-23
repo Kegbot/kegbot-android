@@ -299,13 +299,19 @@ public class KegbotApiImpl implements KegbotApi {
 
   @Override
   public String getApiKey() throws KegbotApiException {
-    JsonNode result = getJson("/get-api-key/", null);
-    final JsonNode keyNode = result.get("api_key");
-    if (keyNode != null) {
-      debug("Got api key:" + keyNode.getValueAsText());
-      return keyNode.getValueAsText();
+    final JsonNode result = getJson("/get-api-key/", null);
+    final JsonNode rootNode = result.get("object");
+    if (rootNode == null) {
+      throw new KegbotApiServerError("Invalid response.");
     }
-    throw new KegbotApiServerError("Invalid response.");
+
+    final JsonNode keyNode = rootNode.get("api_key");
+    if (keyNode == null) {
+      throw new KegbotApiServerError("Invalid response.");
+    }
+
+    debug("Got api key:" + keyNode.getValueAsText());
+    return keyNode.getValueAsText();
   }
 
   @Override
