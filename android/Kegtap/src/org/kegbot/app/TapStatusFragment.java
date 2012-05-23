@@ -138,11 +138,13 @@ public class TapStatusFragment extends ListFragment {
       badge2.setBadgeCaption("Pints Left");
     }
 
-    // Badge 3: Temp C
+    // Badge 3: Temperpature
+    // TODO(mikey): Preference for C/F
     final NumericBadgeView badge3 = (NumericBadgeView) mView.findViewById(R.id.tapStatsBadge3);
     if (tap.hasLastTemperature()) {
-      final float lastTemperature = tap.getLastTemperature().getTemperatureC();
-      final String tempValue = String.format("%.1f¡", Float.valueOf(lastTemperature));
+      double lastTemperature = tap.getLastTemperature().getTemperatureC();
+      lastTemperature = Units.temperatureCToF(lastTemperature);
+      final String tempValue = String.format("%.1f¡", Double.valueOf(lastTemperature));
       badge3.setBadgeValue(tempValue);
       badge3.setBadgeCaption("Temperature");
       badge3.setVisibility(View.VISIBLE);

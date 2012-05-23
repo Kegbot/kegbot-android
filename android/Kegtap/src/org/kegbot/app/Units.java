@@ -34,4 +34,8 @@ public class Units {
     return volumeMlToOunces(volumeMl) / 16.0;
   }
 
+  public static double temperatureCToF(double tempC) {
+    return (9.0 / 5.0) * tempC + 32;
+  }
+
 }
