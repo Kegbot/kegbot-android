@@ -3,8 +3,8 @@ package org.kegbot.app.setup;
 import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiException;
 import org.kegbot.api.KegbotApiImpl;
-import org.kegbot.app.util.PreferenceHelper;
 import org.kegbot.app.R;
+import org.kegbot.app.util.PreferenceHelper;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

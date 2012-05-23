@@ -6,29 +6,29 @@ import org.kegbot.api.KegbotApiImpl;
 import org.kegbot.app.camera.CameraFragment;
 import org.kegbot.app.setup.SetupAlertDialogFragment;
 import org.kegbot.app.setup.SetupProgressDialogFragment;
+import org.kegbot.core.AuthenticationManager;
 import org.kegbot.proto.Models.User;
 
+import android.app.ActionBar;
 import android.app.DialogFragment;
-import android.app.Fragment;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
-public class DrinkerRegisterFragment extends Fragment {
+public class DrinkerRegistrationActivity extends CoreActivity {
 
-  private static final String TAG = DrinkerRegisterFragment.class.getSimpleName();
+  private static final String TAG = DrinkerRegistrationActivity.class.getSimpleName();
 
   private Button mSubmitButton;
   private EditText mUsername;
   private EditText mEmail;
   private EditText mPassword;
   private CameraFragment mCameraFragment;
+  private AuthenticationManager mAuthManager;
 
   private DialogFragment mDialog;
 
@@ -52,21 +52,31 @@ public class DrinkerRegisterFragment extends Fragment {
     protected void onPostExecute(User result) {
       hideDialog();
       if (result != null) {
-        ((DrinkerSelectActivity) getActivity()).handlerUserSelected(result);
+        Log.d(TAG, "Registration succeeded! Posting authentication.");
+        mAuthManager.noteUserAuthenticated(result);
+        finish();
       }
     }
 
   }
 
   @Override
-  public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    final View view = inflater.inflate(R.layout.create_drinker_activity, null);
+  public void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    final ActionBar actionBar = getActionBar();
+    if (actionBar != null) {
+      actionBar.hide();
+    }
 
-    mUsername = (EditText) view.findViewById(R.id.username);
-    mEmail = (EditText) view.findViewById(R.id.email);
-    mPassword = (EditText) view.findViewById(R.id.password);
-    mSubmitButton = (Button) view.findViewById(R.id.submitButton);
-    mCameraFragment = (CameraFragment) getActivity().getFragmentManager().findFragmentById(R.id.camera);
+    setContentView(R.layout.create_drinker_activity);
+    mUsername = (EditText) findViewById(R.id.username);
+    mEmail = (EditText) findViewById(R.id.email);
+    mPassword = (EditText) findViewById(R.id.password);
+    mSubmitButton = (Button) findViewById(R.id.submitButton);
+
+    mCameraFragment = (CameraFragment) getFragmentManager().findFragmentById(R.id.camera);
+
+    mAuthManager = AuthenticationManager.getSingletonInstance(this);
 
     mSubmitButton.setOnClickListener(new View.OnClickListener() {
 
@@ -78,8 +88,6 @@ public class DrinkerRegisterFragment extends Fragment {
         }
       }
     });
-
-    return view;
   }
 
   private void doRegister() {

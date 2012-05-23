@@ -88,6 +88,16 @@ public class CameraFragment extends Fragment {
     }
   };
 
+  private class CameraSetupTask extends AsyncTask<Void, Void, Void> {
+
+    @Override
+    protected Void doInBackground(Void... params) {
+      doCameraSetup();
+      return null;
+    }
+
+  }
+
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -300,6 +310,11 @@ public class CameraFragment extends Fragment {
   public void onResume() {
     super.onResume();
     Log.d(TAG, "onResume()");
+    //new CameraSetupTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    doCameraSetup();
+  }
+
+  private void doCameraSetup() {
     mCamera = Camera.open(mDefaultCameraId);
     setCameraDisplayOrientation(getActivity(), mDefaultCameraId, mCamera);
     mPreview.setCamera(mCamera);

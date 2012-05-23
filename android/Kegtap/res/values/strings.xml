@@ -42,5 +42,6 @@
     <string name="setup_manager_pin_description">Set a manager PIN to prevent unauthorized access to Kegtab application settings.\n\nThis value is only used locally. If you forget the PIN value, you will need to reset Kegtab.</string>
     <string name="camera_discard_picture">Discard</string>
     <string name="camera_take_another">Re-Take</string>
+    <string name="kegbot_core_running">Kegbot Core is running</string>
     
 </resources>

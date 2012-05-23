@@ -1,36 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-  xmlns:android="http://schemas.android.com/apk/res/android"
-  android:orientation="horizontal"
-  android:layout_width="fill_parent"
-  android:layout_height="fill_parent"
-  android:weightSum="1.0">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="horizontal"
+    android:weightSum="1.0" >
 
-  <!-- Left column: tap + session detail. -->
-  <android.support.v4.view.ViewPager
-    android:id="@+id/tap_status_pager"
-    android:layout_width="0dip"
-    android:layout_height="match_parent"
-    android:layout_weight="0.6"/>
+    <!-- Left column: tap + session detail. -->
 
-  <!-- Right column: controls + events. -->
-  <LinearLayout
-    android:orientation="vertical"
-    android:layout_weight="0.4"
-    android:layout_width="0dip"
-    android:layout_height="match_parent">
-    
-    <fragment
-      android:id="@+id/currentSessionFragment"
-      class="org.kegbot.app.SessionStatsFragment"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"/>
+    <android.support.v4.view.ViewPager
+        android:id="@+id/tap_status_pager"
+        android:layout_width="0dip"
+        android:layout_height="match_parent"
+        android:layout_weight="0.6" />
 
-    <fragment
-      android:id="@+id/event_list"
-      class="org.kegbot.app.EventListFragment"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content" />
+    <!-- Right column: controls + events. -->
 
-  </LinearLayout>
+    <LinearLayout
+        android:layout_width="0dip"
+        android:layout_height="match_parent"
+        android:layout_weight="0.4"
+        android:orientation="vertical" >
+
+        <fragment
+            android:id="@+id/currentSessionFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            class="org.kegbot.app.SessionStatsFragment"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/beerMeButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dip"
+            android:text="Beer Me!"
+            android:textSize="36dip"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/newDrinkerButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dip"
+            android:text="New Drinker"
+            android:textSize="36dip" />
+
+        <fragment
+            android:id="@+id/event_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            class="org.kegbot.app.EventListFragment" />
+    </LinearLayout>
+
 </LinearLayout>

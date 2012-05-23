@@ -6,13 +6,13 @@
   android:layout_height="wrap_content"
   android:orientation="horizontal"
   android:minHeight="64dip"
-  android:layout_margin="5dip">
+  android:padding="5dip">
 
   <ImageView
     android:id="@+id/eventIcon"
     android:layout_width="64dip"
     android:layout_height="64dip"
-    android:layout_margin="5dip"/>
+    android:layout_marginRight="5dip"/>
 
   <LinearLayout
     android:layout_width="match_parent"

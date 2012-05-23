@@ -1,12 +1,7 @@
 package org.kegbot.app;
 
-import java.text.ParseException;
-
-import javax.measure.units.NonSI;
-import javax.measure.units.SI;
-
-import org.jscience.physics.measures.Measure;
 import org.kegbot.app.util.image.ImageDownloader;
+import org.kegbot.app.view.NumericBadgeView;
 import org.kegbot.core.FlowManager;
 import org.kegbot.core.Tap;
 import org.kegbot.core.TapManager;
@@ -18,13 +13,10 @@ import android.app.Activity;
 import android.app.ListFragment;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
@@ -39,21 +31,13 @@ public class TapStatusFragment extends ListFragment {
 
   private ImageDownloader mImageDownloader;
 
+  private View mView;
+
   private static final int SELECT_DRINKER = 100;
 
   private static final int CHILD_LOADING = 0;
   private static final int CHILD_INACTIVE = 1;
   private static final int CHILD_ACTIVE = 2;
-
-  private final OnClickListener mOnBeerMeClickedListener = new OnClickListener() {
-    @Override
-    public void onClick(View v) {
-      final String tapName = mTapDetail.getMeterName();
-      final Intent intent = DrinkerSelectActivity.getStartIntentForTap(getActivity(), tapName);
-      startActivity(intent);
-      //startActivityForResult(intent, SELECT_DRINKER);
-    }
-  };
 
   @Override
   public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -73,12 +57,11 @@ public class TapStatusFragment extends ListFragment {
 
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    final View view = inflater.inflate(R.layout.tap_detail, container, false);
+    mView = inflater.inflate(R.layout.tap_detail, container, false);
     if (mTapDetail != null) {
-      buildTapView(view, mTapDetail);
+      setTapDetail(mTapDetail);
     }
-    ((Button) view.findViewById(R.id.beerMeButton)).setOnClickListener(mOnBeerMeClickedListener);
-    return view;
+    return mView;
   }
 
   @Override
@@ -87,52 +70,41 @@ public class TapStatusFragment extends ListFragment {
     mImageDownloader = ImageDownloader.getSingletonInstance(activity);
   }
 
-  public View buildTapView(View view, KegTap tap) {
-    ViewFlipper flipper = (ViewFlipper) view;
+  public void setTapDetail(KegTap tap) {
+    mTapDetail = tap;
+    if (mView == null) {
+      return;
+    }
+    final TextView title = (TextView) mView.findViewById(R.id.tapTitle);
+    final TextView subtitle = (TextView) mView.findViewById(R.id.tapSubtitle);
+    final ViewFlipper flipper = (ViewFlipper) mView.findViewById(R.id.tapStatusFlipper);
 
     if (tap == null) {
       Log.w(TAG, "Called with empty tap detail.");
       flipper.setDisplayedChild(CHILD_INACTIVE);
-      return view;
+      return;
     } else if (!tap.hasCurrentKeg()) {
       Log.d(TAG, "Tap inactive");
       flipper.setDisplayedChild(CHILD_INACTIVE);
-      return view;
+      title.setText(tap.getName());
+      return;
     } else {
       flipper.setDisplayedChild(CHILD_ACTIVE);
     }
 
     final String tapName = tap.getName();
     if (!Strings.isNullOrEmpty(tapName)) {
-      TextView subtitle = (TextView) view.findViewById(R.id.tapSubtitle);
       subtitle.setText(tapName);
     }
 
     if (!tap.hasCurrentKeg()) {
-      return view;
+      return;
     }
 
     final Keg keg = tap.getCurrentKeg();
-    final TextView title = (TextView) view.findViewById(R.id.tapTitle);
     title.setText(keg.getType().getName());
 
-    CharSequence relTime;
-    try {
-      long tapDate = Utils.dateFromIso8601String(keg.getStartTime());
-      relTime = DateUtils.getRelativeTimeSpanString(tapDate);
-    } catch (ParseException e) {
-      Log.w(TAG, "Error parsing time:", e);
-      relTime = null;
-    }
-
-    TextView date = (TextView) view.findViewById(R.id.tapDateTapped);
-    if (relTime != null) {
-      date.setText("Tapped " + relTime);
-    } else {
-      date.setVisibility(View.GONE);
-    }
-
-    final ImageView tapImage = (ImageView) view.findViewById(R.id.tapImage);
+    final ImageView tapImage = (ImageView) mView.findViewById(R.id.tapImage);
     if (tapImage != null) {
       tapImage.setBackgroundResource(R.drawable.kegbot_unknown_square_2);
       if (keg.getType().hasImage()) {
@@ -142,38 +114,43 @@ public class TapStatusFragment extends ListFragment {
       }
     }
 
-    float percentFull = tap.getCurrentKeg().getPercentFull();
-    TextView kegStatusText = (TextView) view.findViewById(R.id.tapKeg);
-    final String statusString;
-    if (percentFull > 0) {
-      statusString = String.format("%.1f%% full", Float.valueOf(percentFull));
+    // TODO(mikey): proper units support
+    // Badge 1: Pints Poured
+    final NumericBadgeView badge1 = (NumericBadgeView) mView.findViewById(R.id.tapStatsBadge1);
+    int pintsPoured = (int) Units.volumeMlToPints(keg.getSizeVolumeMl()
+        * (100.0 - keg.getPercentFull()) / 100.0);
+    pintsPoured = Math.max(pintsPoured, 0);
+    badge1.setBadgeValue(String.format("%d", Integer.valueOf(pintsPoured)));
+    if (pintsPoured == 1) {
+      badge1.setBadgeCaption("Pint Poured");
     } else {
-      statusString = "Empty!";
+      badge1.setBadgeCaption("Pints Poured");
     }
-    kegStatusText.setText(statusString);
 
+    // Badge 2: Pints Remain
+    final NumericBadgeView badge2 = (NumericBadgeView) mView.findViewById(R.id.tapStatsBadge2);
+    int pintsRemain = (int) Units.volumeMlToPints(keg.getVolumeMlRemain());
+    pintsRemain = Math.max(pintsRemain, 0);
+    badge2.setBadgeValue(String.format("%d", Integer.valueOf(pintsRemain)));
+    if (pintsRemain == 1) {
+      badge2.setBadgeCaption("Pint Left");
+    } else {
+      badge2.setBadgeCaption("Pints Left");
+    }
+
+    // Badge 3: Temp C
+    final NumericBadgeView badge3 = (NumericBadgeView) mView.findViewById(R.id.tapStatsBadge3);
     if (tap.hasLastTemperature()) {
-      float lastTemperature = tap.getLastTemperature().getTemperatureC();
-      TextView tapTemperature = (TextView) view.findViewById(R.id.tapTemperature);
-      double lastTempF = Measure.valueOf(lastTemperature, SI.CELSIUS).doubleValue(NonSI.FAHRENHEIT);
-      tapTemperature.setText(String.format("%.2f¡C / %.2f¡F", Float.valueOf(lastTemperature),
-          Double.valueOf(lastTempF)));
-    }
-
-    final String description = tap.getCurrentKeg().getDescription();
-    final TextView descView = (TextView) view.findViewById(R.id.tapDescription);
-    if (!Strings.isNullOrEmpty(description)) {
-      descView.setVisibility(View.VISIBLE);
-      descView.setText(description);
+      final float lastTemperature = tap.getLastTemperature().getTemperatureC();
+      final String tempValue = String.format("%.1f¡", Float.valueOf(lastTemperature));
+      badge3.setBadgeValue(tempValue);
+      badge3.setBadgeCaption("Temperature");
+      badge3.setVisibility(View.VISIBLE);
     } else {
-      descView.setVisibility(View.GONE);
+      badge3.setVisibility(View.GONE);
     }
 
-    return view;
-  }
-
-  public void setTapDetail(KegTap tapDetail) {
-    mTapDetail = tapDetail;
+    return;
   }
 
   public KegTap getTapDetail() {

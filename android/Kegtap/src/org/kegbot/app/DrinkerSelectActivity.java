@@ -52,11 +52,6 @@ public class DrinkerSelectActivity extends CoreActivity {
         .setTabListener(new TabListener<DrinkerSelectFragment>(
                 this, "recent", DrinkerSelectFragment.class, args)));
 
-    bar.addTab(bar.newTab()
-        .setText("New Drinker")
-        .setTabListener(new TabListener<DrinkerRegisterFragment>(
-                this, "new", DrinkerRegisterFragment.class)));
-
     bar.setTitle("Select Drinker");
 
     if (savedInstanceState != null) {

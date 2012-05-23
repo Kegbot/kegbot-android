@@ -1,6 +1,8 @@
 package org.kegbot.app;
 
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiException;
@@ -23,30 +25,60 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 public class KegtapActivity extends CoreActivity {
 
   public final String LOG_TAG = "KegtapActivity";
 
+  /**
+   * Interval for periodic API polling.
+   */
+  private static final long REFRESH_INTERVAL_MILLIS = TimeUnit.SECONDS.toMillis(30);
+
   private EventListFragment mEvents;
 
   private KegbotApi mApi;
 
+  private Button mBeerMeButton;
+  private Button mNewDrinkerButton;
+
   private MyAdapter mTapStatusAdapter;
   private ViewPager mTapStatusPager;
-  private List<KegTap> mTapDetails = Lists.newArrayList();
   private SessionStatsFragment mSession;
   private PreferenceHelper mPrefsHelper;
   private final Handler mHandler = new Handler();
+
+  private final List<KegTap> mTapDetails = Lists.newArrayList();
+  private final Map<String, TapStatusFragment> mFragMap = Maps.newLinkedHashMap();
 
   private final Runnable mRefreshRunnable = new Runnable() {
     @Override
     public void run() {
       mEvents.loadEvents();
       mSession.loadCurrentSessionDetail();
-      mHandler.postDelayed(this, 10000);
+      new TapLoaderTask().execute();
+      mHandler.postDelayed(this, REFRESH_INTERVAL_MILLIS);
+    }
+  };
+
+  private final OnClickListener mOnBeerMeClickedListener = new OnClickListener() {
+    @Override
+    public void onClick(View v) {
+      final Intent intent = DrinkerSelectActivity.getStartIntentForTap(KegtapActivity.this, "");
+      startActivity(intent);
+    }
+  };
+
+  private final OnClickListener mOnNewDrinkerClickedListener = new OnClickListener() {
+    @Override
+    public void onClick(View v) {
+      final Intent intent = new Intent(KegtapActivity.this, DrinkerRegistrationActivity.class);
+      startActivity(intent);
     }
   };
 
@@ -67,6 +99,11 @@ public class KegtapActivity extends CoreActivity {
     mSession = (SessionStatsFragment) getFragmentManager().findFragmentById(
         R.id.currentSessionFragment);
 
+    mBeerMeButton = (Button) findViewById(R.id.beerMeButton);
+    mBeerMeButton.setOnClickListener(mOnBeerMeClickedListener);
+    mNewDrinkerButton = (Button) findViewById(R.id.newDrinkerButton);
+    mNewDrinkerButton.setOnClickListener(mOnNewDrinkerClickedListener);
+
     View v = findViewById(R.id.tap_status_pager);
     v.setSystemUiVisibility(View.STATUS_BAR_HIDDEN);
 
@@ -78,15 +115,13 @@ public class KegtapActivity extends CoreActivity {
   @Override
   public void onStart() {
     super.onStart();
-    initializeUi();
   }
 
   @Override
   protected void onResume() {
     super.onResume();
     handleIntent();
-    initializeUi();
-    mHandler.post(mRefreshRunnable);
+    startStatusPolling();
   }
 
   @Override
@@ -132,23 +167,15 @@ public class KegtapActivity extends CoreActivity {
     }
   }
 
-  /**
-   * Starts the UI.
-   * <p>
-   * Checks if there is a current kegbot set up: if not, launches settings.
-   * <p>
-   * If so, loads from last known kegbot.
-   */
-  private void initializeUi() {
-    new TapLoaderTask().execute();
-    // mEvents.loadEvents();
-    mSession.loadCurrentSessionDetail();
+  private void startStatusPolling() {
+    mHandler.removeCallbacks(mRefreshRunnable);
+    mHandler.post(mRefreshRunnable);
   }
 
   @Override
   public void onConfigurationChanged(Configuration newConfig) {
     super.onConfigurationChanged(newConfig);
-    initializeUi();
+    startStatusPolling();
   }
 
   public class MyAdapter extends FragmentPagerAdapter {
@@ -158,9 +185,8 @@ public class KegtapActivity extends CoreActivity {
 
     @Override
     public Fragment getItem(int arg0) {
-      TapStatusFragment frag = new TapStatusFragment();
-      frag.setTapDetail(mTapDetails.get(arg0));
-      return frag;
+      KegTap tap = mTapDetails.get(arg0);
+      return getTapFragment(tap);
     }
 
     @Override
@@ -168,6 +194,16 @@ public class KegtapActivity extends CoreActivity {
       return mTapDetails.size();
     }
 
+  }
+
+  private TapStatusFragment getTapFragment(KegTap tap) {
+    final String tapName = tap.getMeterName();
+    if (!mFragMap.containsKey(tapName)) {
+      final TapStatusFragment frag = new TapStatusFragment();
+      frag.setTapDetail(tap);
+      mFragMap.put(tapName, frag);
+    }
+    return mFragMap.get(tapName);
   }
 
   private class TapLoaderTask extends AsyncTask<Void, Void, List<KegTap>> {
@@ -188,10 +224,18 @@ public class KegtapActivity extends CoreActivity {
         return;
       }
       try {
-        mTapDetails.clear();
-        mTapDetails.addAll(result);
-        Log.d(LOG_TAG, "Updating adapter, taps: " + mTapDetails.size());
-        mTapStatusPager.setAdapter(mTapStatusAdapter);
+        for (final KegTap tap : result) {
+          final String tapName = tap.getMeterName();
+          if (!mFragMap.containsKey(tapName)) {
+            Log.d(LOG_TAG, "Adding new tap: " + tapName);
+            Log.d(LOG_TAG, "Tap details: " + tap);
+            mTapDetails.add(tap);
+            mTapStatusAdapter.notifyDataSetChanged();
+          } else {
+            Log.d(LOG_TAG, "Updating tap: " + tapName);
+            mFragMap.get(tapName).setTapDetail(tap);
+          }
+        }
       } catch (Throwable e) {
         Log.wtf("TapStatusFragment", "UNCAUGHT EXCEPTION", e);
       }
