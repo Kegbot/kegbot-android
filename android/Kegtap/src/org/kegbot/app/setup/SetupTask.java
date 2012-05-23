@@ -6,8 +6,8 @@ package org.kegbot.app.setup;
 import org.apache.http.conn.HttpHostConnectException;
 import org.kegbot.api.KegbotApiException;
 import org.kegbot.api.KegbotApiServerError;
-import org.kegbot.app.util.PreferenceHelper;
 import org.kegbot.app.R;
+import org.kegbot.app.util.PreferenceHelper;
 
 import android.app.Fragment;
 import android.content.Context;
@@ -199,7 +199,7 @@ public enum SetupTask {
 
   public static final SetupTask FIRST_SETUP_STEP = API_URL;
 
-  public static final int SETUP_VERSION = 2;
+  public static final int SETUP_VERSION = 3;
 
   /**
    * Returns the next task to be performed.  If this is the final task, use {@code null};
