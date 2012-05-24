@@ -1,3 +1,21 @@
+/*
+ * Copyright 2012 Mike Wakerly <opensource@hoho.com>
+ * 
+ * This file is part of the Kegtab package from the Kegbot project. For more
+ * information on kegbot-android or Kegbot, see <http://kegbot.org/>
+ * 
+ * Kegtab is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, version 2.
+ * 
+ * Kegtab is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with
+ * Kegtab. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package org.kegbot.api;
 
 import java.io.IOException;
@@ -38,8 +56,7 @@ public class ProtoEncoder {
       if (fieldDesc.isRepeated()) {
         final Iterator<JsonNode> iter = node.getElements();
         while (iter.hasNext()) {
-          builder.addRepeatedField(fieldDesc,
-              toJavaObj(builder, fieldDesc, iter.next()));
+          builder.addRepeatedField(fieldDesc, toJavaObj(builder, fieldDesc, iter.next()));
         }
       } else {
         builder.setField(fieldDesc, toJavaObj(builder, fieldDesc, node));
@@ -48,44 +65,44 @@ public class ProtoEncoder {
     return builder;
   }
 
-  private static Object toJavaObj(final Builder builder,
-      final FieldDescriptor fieldDesc, final JsonNode node) {
+  private static Object toJavaObj(final Builder builder, final FieldDescriptor fieldDesc,
+      final JsonNode node) {
     Object value;
     switch (fieldDesc.getJavaType()) {
-    case MESSAGE:
-      final Builder subBuilder = builder.newBuilderForField(fieldDesc);
-      value = toProto(subBuilder, node).build();
-      break;
-    case BOOLEAN:
-      value = Boolean.valueOf(node.getBooleanValue());
-      break;
-    case BYTE_STRING:
-      try {
-        value = node.getBinaryValue();
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-      break;
-    case DOUBLE:
-      value = Double.valueOf(node.getDoubleValue());
-      break;
-    case FLOAT:
-      value = Float.valueOf(Double.valueOf(node.getDoubleValue()).floatValue());
-      break;
-    case ENUM:
-      value = fieldDesc.getEnumType().findValueByName(node.getTextValue());
-      break;
-    case INT:
-      value = Integer.valueOf(node.getIntValue());
-      break;
-    case LONG:
-      value = Long.valueOf(node.getLongValue());
-      break;
-    case STRING:
-      value = node.getTextValue();
-      break;
-    default:
-      throw new IllegalArgumentException();
+      case MESSAGE:
+        final Builder subBuilder = builder.newBuilderForField(fieldDesc);
+        value = toProto(subBuilder, node).build();
+        break;
+      case BOOLEAN:
+        value = Boolean.valueOf(node.getBooleanValue());
+        break;
+      case BYTE_STRING:
+        try {
+          value = node.getBinaryValue();
+        } catch (IOException e) {
+          throw new RuntimeException(e);
+        }
+        break;
+      case DOUBLE:
+        value = Double.valueOf(node.getDoubleValue());
+        break;
+      case FLOAT:
+        value = Float.valueOf(Double.valueOf(node.getDoubleValue()).floatValue());
+        break;
+      case ENUM:
+        value = fieldDesc.getEnumType().findValueByName(node.getTextValue());
+        break;
+      case INT:
+        value = Integer.valueOf(node.getIntValue());
+        break;
+      case LONG:
+        value = Long.valueOf(node.getLongValue());
+        break;
+      case STRING:
+        value = node.getTextValue();
+        break;
+      default:
+        throw new IllegalArgumentException();
     }
     return value;
 

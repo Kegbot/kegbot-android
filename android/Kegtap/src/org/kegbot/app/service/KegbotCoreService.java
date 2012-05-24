@@ -1,9 +1,23 @@
-/**
- * CONFIDENTIAL -- NOT OPEN SOURCE
+/*
+ * Copyright 2012 Mike Wakerly <opensource@hoho.com>
+ * 
+ * This file is part of the Kegtab package from the Kegbot project. For more
+ * information on kegbot-android or Kegbot, see <http://kegbot.org/>
+ * 
+ * Kegtab is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, version 2.
+ * 
+ * Kegtab is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with
+ * Kegtab. If not, see <http://www.gnu.org/licenses/>.
  */
+
 package org.kegbot.app.service;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -79,11 +93,13 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
   private KegbotSoundService mSoundService;
   private boolean mSoundServiceBound;
 
+  private final CheckinClient mCheckinClient = new CheckinClient(this);
+
   private final ExecutorService mExecutorService = Executors.newSingleThreadExecutor();
 
   private final ScheduledExecutorService mScheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
 
-  private static final long CHECKIN_RETRY_DELAY_MINUTES = 120;
+  private static final long CHECKIN_RETRY_DELAY_MINUTES = TimeUnit.HOURS.toMinutes(2);
 
   private static final long CHECKIN_INTERVAL_MINUTES = TimeUnit.HOURS.toMinutes(12);
 
@@ -94,16 +110,17 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
   private final Runnable mCheckinRunnable = new Runnable() {
     @Override
     public void run() {
-      final CheckinClient client = new CheckinClient(KegbotCoreService.this);
       long nextDelay = CHECKIN_INTERVAL_MINUTES;
       try {
         // TODO(mikey): process messages/errors/updates
-        client.checkin();
-      } catch (IOException e) {
+        mCheckinClient.checkin();
+        Log.w(TAG, "Checkin succeeded.");
+      } catch (Exception e) {
         // Ignore
+        Log.w(TAG, "Checkin failed: " + e);
         nextDelay = CHECKIN_RETRY_DELAY_MINUTES;
       }
-      Log.d(TAG, "Next checking: " + nextDelay);
+      Log.d(TAG, "Next checkin attempt: " + nextDelay + " minutes");
       mScheduledExecutorService.schedule(this, nextDelay, TimeUnit.MINUTES);
     }
   };
