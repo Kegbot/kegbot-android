@@ -40,8 +40,18 @@ import org.kegbot.proto.Models.User;
  */
 public interface KegbotApi {
 
+  /**
+   * Sets the API URL used internally by this KegbotApi instance.
+   *
+   * @param apiUrl the url
+   */
   public void setApiUrl(String apiUrl);
 
+  /**
+   * Sets the API key used internally by this KegbotApi instance.
+   *
+   * @param apiKey
+   */
   public void setApiKey(String apiKey);
 
   public void login(String username, String password) throws KegbotApiException;

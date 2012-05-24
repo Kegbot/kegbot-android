@@ -20,7 +20,7 @@ package org.kegbot.app;
 
 import java.util.List;
 
-import org.kegbot.app.util.image.ImageDownloader;
+import org.kegbot.app.util.ImageDownloader;
 import org.kegbot.proto.Models.User;
 
 import android.app.Activity;

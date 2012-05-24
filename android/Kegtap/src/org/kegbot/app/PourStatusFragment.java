@@ -20,7 +20,8 @@ package org.kegbot.app;
 
 import java.util.concurrent.TimeUnit;
 
-import org.kegbot.app.util.image.ImageDownloader;
+import org.kegbot.app.util.ImageDownloader;
+import org.kegbot.app.util.Units;
 import org.kegbot.core.ConfigurationManager;
 import org.kegbot.core.Flow;
 import org.kegbot.core.Flow.State;

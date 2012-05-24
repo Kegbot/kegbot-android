@@ -26,7 +26,7 @@ import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiException;
 import org.kegbot.api.KegbotApiImpl;
 import org.kegbot.api.KegbotApiNotFoundError;
-import org.kegbot.app.core.backend.LocalDbHelper;
+import org.kegbot.app.storage.LocalDbHelper;
 import org.kegbot.app.util.PreferenceHelper;
 import org.kegbot.core.Flow;
 import org.kegbot.proto.Api.RecordDrinkRequest;

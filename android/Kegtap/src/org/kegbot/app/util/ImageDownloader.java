@@ -14,7 +14,7 @@
  * the License.
  */
 
-package org.kegbot.app.util.image;
+package org.kegbot.app.util;
 
 import java.io.File;
 import java.io.FileOutputStream;

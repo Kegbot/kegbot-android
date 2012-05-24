@@ -219,8 +219,6 @@ public abstract class KegboardMessage {
       return new KegboardTemperatureReadingMessage(bytes);
     case KegboardOutputStatusMessage.MESSAGE_TYPE:
       return new KegboardOutputStatusMessage(bytes);
-    case KegboardOnewirePresenceMessage.MESSAGE_TYPE:
-      return new KegboardOnewirePresenceMessage(bytes);
     case KegboardAuthTokenMessage.MESSAGE_TYPE:
       return new KegboardAuthTokenMessage(bytes);
     default:

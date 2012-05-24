@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License along
  * with Kegtab. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.kegbot.app.core.backend;
+package org.kegbot.app.storage;
 
 import org.kegbot.proto.Api.RecordTemperatureRequest;
 import org.kegbot.proto.Internal.PendingPour;

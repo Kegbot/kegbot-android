@@ -34,7 +34,6 @@ import org.kegbot.kegboard.KegboardHelloMessage;
 import org.kegbot.kegboard.KegboardMessage;
 import org.kegbot.kegboard.KegboardMessageFactory;
 import org.kegbot.kegboard.KegboardMeterStatusMessage;
-import org.kegbot.kegboard.KegboardOnewirePresenceMessage;
 import org.kegbot.kegboard.KegboardOutputStatusMessage;
 import org.kegbot.kegboard.KegboardSetOutputCommand;
 import org.kegbot.kegboard.KegboardTemperatureReadingMessage;
@@ -110,8 +109,6 @@ public class KegboardService extends Service {
     public void onHelloMessage(KegboardHelloMessage message);
 
     public void onMeterStatusMessage(KegboardMeterStatusMessage message);
-
-    public void onOnewirePresenceMessage(KegboardOnewirePresenceMessage message);
 
     public void onOutputStatusMessage(KegboardOutputStatusMessage message);
 
@@ -343,8 +340,6 @@ public class KegboardService extends Service {
         listener.onHelloMessage((KegboardHelloMessage) message);
       } else if (message instanceof KegboardMeterStatusMessage) {
         listener.onMeterStatusMessage((KegboardMeterStatusMessage) message);
-      } else if (message instanceof KegboardOnewirePresenceMessage) {
-        listener.onOnewirePresenceMessage((KegboardOnewirePresenceMessage) message);
       } else if (message instanceof KegboardOutputStatusMessage) {
         listener.onOutputStatusMessage((KegboardOutputStatusMessage) message);
       } else if (message instanceof KegboardTemperatureReadingMessage) {

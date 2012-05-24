@@ -25,7 +25,9 @@ import java.util.List;
 import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiException;
 import org.kegbot.api.KegbotApiImpl;
-import org.kegbot.app.util.image.ImageDownloader;
+import org.kegbot.app.util.ImageDownloader;
+import org.kegbot.app.util.Units;
+import org.kegbot.app.util.Utils;
 import org.kegbot.proto.Models.Drink;
 import org.kegbot.proto.Models.SystemEvent;
 

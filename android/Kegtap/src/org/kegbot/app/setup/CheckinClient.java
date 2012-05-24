@@ -34,9 +34,9 @@ import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.util.EntityUtils;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.kegbot.app.Utils;
 import org.kegbot.app.build.BuildInfo;
 import org.kegbot.app.util.DeviceId;
+import org.kegbot.app.util.Utils;
 
 import android.content.Context;
 import android.os.Build;

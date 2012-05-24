@@ -23,8 +23,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.kegbot.app.camera.CameraFragment;
+import org.kegbot.app.util.ImageDownloader;
 import org.kegbot.app.util.PreferenceHelper;
-import org.kegbot.app.util.image.ImageDownloader;
 import org.kegbot.core.AuthenticationManager;
 import org.kegbot.core.Flow;
 import org.kegbot.core.FlowManager;

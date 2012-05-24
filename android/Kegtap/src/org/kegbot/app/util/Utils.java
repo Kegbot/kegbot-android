@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License along
  * with Kegtab. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.kegbot.app;
+package org.kegbot.app.util;
 
 import java.io.File;
 import java.io.IOException;

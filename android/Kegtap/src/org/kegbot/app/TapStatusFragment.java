@@ -18,7 +18,8 @@
  */
 package org.kegbot.app;
 
-import org.kegbot.app.util.image.ImageDownloader;
+import org.kegbot.app.util.ImageDownloader;
+import org.kegbot.app.util.Units;
 import org.kegbot.app.view.NumericBadgeView;
 import org.kegbot.core.FlowManager;
 import org.kegbot.core.Tap;

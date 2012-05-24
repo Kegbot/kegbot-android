@@ -31,7 +31,6 @@ import org.kegbot.kegboard.KegboardAuthTokenMessage;
 import org.kegbot.kegboard.KegboardAuthTokenMessage.Status;
 import org.kegbot.kegboard.KegboardHelloMessage;
 import org.kegbot.kegboard.KegboardMeterStatusMessage;
-import org.kegbot.kegboard.KegboardOnewirePresenceMessage;
 import org.kegbot.kegboard.KegboardOutputStatusMessage;
 import org.kegbot.kegboard.KegboardTemperatureReadingMessage;
 
@@ -183,10 +182,6 @@ public class KegbotHardwareService extends Service {
     @Override
     public void onOutputStatusMessage(KegboardOutputStatusMessage message) {
       //
-    }
-
-    @Override
-    public void onOnewirePresenceMessage(KegboardOnewirePresenceMessage message) {
     }
 
     @Override
