@@ -1,18 +1,18 @@
 /*
  * Copyright 2012 Mike Wakerly <opensource@hoho.com>.
- * 
+ *
  * This file is part of the Kegtab package from the Kegbot project. For
  * more information on Kegtab or Kegbot, see <http://kegbot.org/>.
- * 
+ *
  * Kegtab is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free
  * Software Foundation, version 2.
- * 
+ *
  * Kegtab is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along
  * with Kegtab. If not, see <http://www.gnu.org/licenses/>.
  */
@@ -23,14 +23,12 @@ import java.util.List;
 import org.kegbot.app.setup.SetupActivity;
 import org.kegbot.app.util.PreferenceHelper;
 import org.kegbot.core.FlowManager;
-import org.kegbot.app.R;
 
 import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
-import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
@@ -140,15 +138,6 @@ public class SettingsActivity extends PreferenceActivity {
             }
           });
 
-      findPreference("controller_type").setOnPreferenceChangeListener(
-          new OnPreferenceChangeListener() {
-            @Override
-            public boolean onPreferenceChange(Preference preference, Object newValue) {
-              handleControllerTypeChanged();
-              return true;
-            }
-          });
-
       findPreference("idle_timeout_seconds").setOnPreferenceChangeListener(
           new OnPreferenceChangeListener() {
             @Override
@@ -169,10 +158,6 @@ public class SettingsActivity extends PreferenceActivity {
       if (!enabled) {
         // getActivity().sendBroadcast(intent)
       }
-    }
-
-    private void handleControllerTypeChanged() {
-      ListPreference controllerTypePref = (ListPreference) findPreference("controller_type");
     }
 
   }

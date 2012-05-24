@@ -1,18 +1,18 @@
 /*
  * Copyright 2012 Mike Wakerly <opensource@hoho.com>.
- * 
+ *
  * This file is part of the Kegtab package from the Kegbot project. For
  * more information on Kegtab or Kegbot, see <http://kegbot.org/>.
- * 
+ *
  * Kegtab is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free
  * Software Foundation, version 2.
- * 
+ *
  * Kegtab is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along
  * with Kegtab. If not, see <http://www.gnu.org/licenses/>.
  */
@@ -26,8 +26,10 @@ import com.google.common.primitives.Bytes;
 import com.google.common.primitives.Shorts;
 
 /**
+ * Base message type for messages to/from a Kegboard device.
  *
- * @author mike
+ * @author mike wakerly (opensource@hoho.com)
+ * @see <a href="http://kegbot.org/docs/kegboard-guide/">Kegboard Guide</a>
  */
 public abstract class KegboardMessage {
 
@@ -47,10 +49,6 @@ public abstract class KegboardMessage {
   private static final int KBSP_PAYLOAD_MAX_LENGTH = KBSP_MAX_LENGTH - KBSP_MIN_LENGTH;
 
   protected final Map<Integer, byte[]> mTags = Maps.newLinkedHashMap();
-
-  protected static Map<Integer, String> TAG_NAMES = Maps.newLinkedHashMap();
-
-  protected static Map<Integer, KegboardMessageTagFormatter> TAG_FORMATS = Maps.newLinkedHashMap();
 
   protected KegboardMessage() {
     assert (false);
@@ -103,6 +101,10 @@ public abstract class KegboardMessage {
     }
 
     short messageType = Shorts.fromBytes(wholeMessage[9], wholeMessage[8]);
+    if (messageType != getMessageType()) {
+      throw new KegboardMessageException("Message type mismatch: expected=" + getMessageType()
+          + " got=" + messageType);
+    }
 
     // System.out.println(HexDump.dumpHexString(wholeMessage));
 
@@ -193,19 +195,6 @@ public abstract class KegboardMessage {
       return null;
     }
     return KegboardMessageTagFormatter.STRING.format(tagData);
-  }
-
-  private String formatTag(int tagNum) {
-    final byte[] tagData = readTag(tagNum);
-    if (tagData == null) {
-      return "null";
-    }
-    KegboardMessageTagFormatter formatter = TAG_FORMATS.get(Integer
-        .valueOf(tagNum));
-    if (formatter == null) {
-      formatter = KegboardMessageTagFormatter.DEFAULT;
-    }
-    return formatter.format(tagData);
   }
 
   private static int extractType(final byte[] bytes) {

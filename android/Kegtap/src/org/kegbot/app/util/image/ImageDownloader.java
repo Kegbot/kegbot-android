@@ -309,7 +309,6 @@ public class ImageDownloader {
    */
 
   private static final int HARD_CACHE_CAPACITY = 10;
-  private static final int DELAY_BEFORE_PURGE = 10 * 1000; // in milliseconds
 
   // Hard cache, with a fixed maximum capacity and a life duration
   private final HashMap<String, Bitmap> sHardBitmapCache = new LinkedHashMap<String, Bitmap>(
@@ -330,15 +329,6 @@ public class ImageDownloader {
   // Soft cache for bitmaps kicked out of hard cache
   private final static ConcurrentHashMap<String, SoftReference<Bitmap>> sSoftBitmapCache = new ConcurrentHashMap<String, SoftReference<Bitmap>>(
       HARD_CACHE_CAPACITY / 2);
-
-  private final Handler purgeHandler = new Handler();
-
-  private final Runnable purger = new Runnable() {
-    @Override
-    public void run() {
-      clearCache();
-    }
-  };
 
   /**
    * Adds this bitmap to the cache.
@@ -443,14 +433,6 @@ public class ImageDownloader {
   public void clearCache() {
     sHardBitmapCache.clear();
     sSoftBitmapCache.clear();
-  }
-
-  /**
-   * Allow a new delay before the automatic cache clear is done.
-   */
-  private void resetPurgeTimer() {
-    purgeHandler.removeCallbacks(purger);
-    purgeHandler.postDelayed(purger, DELAY_BEFORE_PURGE);
   }
 
   public synchronized static ImageDownloader getSingletonInstance(final Context context) {
