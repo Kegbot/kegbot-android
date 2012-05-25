@@ -194,7 +194,7 @@ public abstract class KegboardMessage {
     if (tagData == null) {
       return null;
     }
-    return KegboardMessageTagFormatter.STRING.format(tagData);
+    return new String(tagData);
   }
 
   private static int extractType(final byte[] bytes) {

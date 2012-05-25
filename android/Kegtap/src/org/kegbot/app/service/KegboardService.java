@@ -80,8 +80,6 @@ public class KegboardService extends Service {
    */
   private UsbManager mUsbManager;
 
-  private UsbDevice mUsbDevice;
-
   /**
    * The device currently in use, or {@code null}.
    */
@@ -287,7 +285,6 @@ public class KegboardService extends Service {
 
   private void setUpUsbDevice(UsbDevice device) {
     Log.d(TAG, "Opening serial device");
-    mUsbDevice = device;
 
     try {
       mSerialDevice.open();

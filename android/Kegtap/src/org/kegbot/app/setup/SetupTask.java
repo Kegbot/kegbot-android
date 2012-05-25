@@ -1,20 +1,19 @@
 /*
  * Copyright 2012 Mike Wakerly <opensource@hoho.com>.
  *
- * This file is part of the Kegtab package from the Kegbot project. For
- * more information on Kegtab or Kegbot, see <http://kegbot.org/>.
+ * This file is part of the Kegtab package from the Kegbot project. For more
+ * information on Kegtab or Kegbot, see <http://kegbot.org/>.
  *
- * Kegtab is free software: you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the Free
- * Software Foundation, version 2.
+ * Kegtab is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, version 2.
  *
- * Kegtab is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
- * more details.
+ * Kegtab is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along
- * with Kegtab. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * Kegtab. If not, see <http://www.gnu.org/licenses/>.
  */
 package org.kegbot.app.setup;
 
@@ -25,8 +24,10 @@ import android.app.Fragment;
 import android.content.Context;
 
 /**
+ * All steps involved in application setup. Each steps represents a screen in
+ * the setup wizard.
  *
- * @author mike wakerly (mike@wakerly.com)
+ * @author mike wakerly (opensource@hoho.com)
  */
 public enum SetupTask {
 
@@ -192,8 +193,14 @@ public enum SetupTask {
     }
   };
 
+  public static final SetupTask FIRST_SETUP_STEP = API_URL;
+
+  public static final int SETUP_VERSION = 3;
+
   /**
    * Returns the fragment for this task.
+   *
+   * @return the {@link Fragment}
    */
   public Fragment getFragment() {
     return new SetupEmptyFragment();
@@ -201,25 +208,27 @@ public enum SetupTask {
 
   /**
    * Returns a short title for this task, used in the UI.
+   *
+   * @return the resource id of the title
    */
   public abstract int getTitle();
 
   /**
    * Returns the descriptive text for this task.
+   *
+   * @return the resource id of the description
    */
   public abstract int getDescription();
 
-  public static final SetupTask FIRST_SETUP_STEP = API_URL;
-
-  public static final int SETUP_VERSION = 3;
-
   /**
-   * Returns the next task to be performed.  If this is the final task, use {@code null};
+   * Returns the next task to be performed. If this is the final task, use
+   * {@code null};
+   *
+   * @return the next {@link SetupTask}
    */
   public abstract SetupTask next();
 
   protected void onExitSuccess(Context context) {
-
   }
 
 }

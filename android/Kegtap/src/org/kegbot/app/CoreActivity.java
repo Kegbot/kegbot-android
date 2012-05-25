@@ -19,7 +19,6 @@
 package org.kegbot.app;
 
 import org.kegbot.app.service.KegbotCoreService;
-import org.kegbot.app.service.KegbotCoreServiceInterface;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -112,10 +111,6 @@ public class CoreActivity extends Activity {
       actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_USE_LOGO);
       actionBar.setTitle("");
     }
-  }
-
-  protected KegbotCoreServiceInterface getCoreService() {
-    return mCoreService;
   }
 
   protected void onCoreServiceBound() {

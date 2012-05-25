@@ -66,7 +66,7 @@ import android.widget.Toast;
  *
  * @author mike wakerly (mike@wakerly.com)
  */
-public class KegbotCoreService extends Service implements KegbotCoreServiceInterface {
+public class KegbotCoreService extends Service {
 
   private static String TAG = KegbotCoreService.class.getSimpleName();
 
@@ -490,16 +490,6 @@ public class KegbotCoreService extends Service implements KegbotCoreServiceInter
   private void debugNotice(String message) {
     Log.d(TAG, message);
     Toast.makeText(KegbotCoreService.this, message, Toast.LENGTH_SHORT).show();
-  }
-
-  @Override
-  public FlowManager getFlowManager() {
-    return mFlowManager;
-  }
-
-  @Override
-  public TapManager getTapManager() {
-    return mTapManager;
   }
 
 }

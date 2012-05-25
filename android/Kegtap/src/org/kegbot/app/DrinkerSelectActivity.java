@@ -29,6 +29,7 @@ import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.common.base.Strings;
@@ -50,6 +51,7 @@ public class DrinkerSelectActivity extends CoreActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    Log.v(TAG, "onCreate");
 
     final ActionBar bar = getActionBar();
     bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);

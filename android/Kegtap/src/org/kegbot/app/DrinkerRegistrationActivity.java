@@ -22,7 +22,6 @@ import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiException;
 import org.kegbot.api.KegbotApiImpl;
 import org.kegbot.app.camera.CameraFragment;
-import org.kegbot.app.setup.SetupAlertDialogFragment;
 import org.kegbot.app.setup.SetupProgressDialogFragment;
 import org.kegbot.core.AuthenticationManager;
 import org.kegbot.proto.Models.User;
@@ -111,12 +110,6 @@ public class DrinkerRegistrationActivity extends CoreActivity {
   private void doRegister() {
     showProgressDialog();
     new RegistrationTask().execute();
-  }
-
-  private void showAlertDialog(String message) {
-    hideDialog();
-    final DialogFragment dialog = SetupAlertDialogFragment.newInstance(message);
-    dialog.show(getFragmentManager(), "dialog");
   }
 
   private void showProgressDialog() {

@@ -24,14 +24,6 @@
     android:title="Run as Kegerator Controller"
     android:summary="Enable this tablet as a Kegerator Controller">
   </CheckBoxPreference>
-  <ListPreference
-    android:title="Controller"
-    android:summary="Select the type of controller"
-    android:key="controller_type"
-    android:entries="@array/controllerTypeLabels"
-    android:entryValues="@array/controllerTypeValues"
-    android:defaultValue="fake">
-  </ListPreference>
   <EditTextPreference
     android:key="minimum_volume_ml"
     android:title="Minimum Volume (mL)"

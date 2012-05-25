@@ -27,6 +27,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+/**
+ * A simple fragment which shows a title and a description.
+ *
+ * @author mike wakerly (opensource@hoho.com)
+ */
 public class SetupTextFragment extends Fragment {
 
   final String mTitle;
