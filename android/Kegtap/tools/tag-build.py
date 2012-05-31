@@ -19,7 +19,7 @@ public final class BuildInfo {
 }
 """
 
-OUT_SRC_DIR = 'gen/org/kegbot/app/build'
+OUT_SRC_DIR = 'src/org/kegbot/app/build'
 OUT_SRC_FILENAME = 'BuildInfo.java'
 
 OUT_RES_DIR = 'res/values'

@@ -153,7 +153,6 @@ public class SettingsActivity extends PreferenceActivity {
     private void handleCoreEnabledChanged() {
       final CheckBoxPreference enablePref = (CheckBoxPreference) findPreference(PreferenceHelper.KEY_RUN_CORE);
       boolean enabled = enablePref.isChecked();
-      findPreference("controller_type").setEnabled(enabled);
 
       if (!enabled) {
         // getActivity().sendBroadcast(intent)

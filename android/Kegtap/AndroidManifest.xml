@@ -19,8 +19,8 @@
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.kegbot.app"
-    android:versionCode="6"
-    android:versionName="1.0 beta 6" >
+    android:versionCode="7"
+    android:versionName="1.0 beta 7" >
 
     <uses-sdk
         android:minSdkVersion="14"
@@ -34,6 +34,9 @@
     <uses-feature
         android:name="android.hardware.usb.host"
         android:required="true" />
+    <uses-feature
+        android:name="android.hardware.camera.autofocus"
+        android:required="false" />
     <uses-feature
         android:name="android.hardware.screen.landscape"
         android:required="true" />
@@ -60,7 +63,8 @@
             android:label="@string/app_name"
             android:launchMode="singleTop"
             android:screenOrientation="sensorLandscape"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustPan" >
+            android:windowSoftInputMode="stateAlwaysHidden|adjustPan"
+            android:theme="@android:style/Theme.Holo.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -86,14 +90,16 @@
             android:name=".setup.SetupActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
-            android:screenOrientation="sensorLandscape" >
+            android:screenOrientation="sensorLandscape"
+            android:theme="@android:style/Theme.Holo.NoActionBar">
         </activity>
         <activity
             android:name=".PourInProgressActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
             android:screenOrientation="sensorLandscape"
-            android:windowSoftInputMode="stateHidden|adjustPan" />
+            android:windowSoftInputMode="stateHidden|adjustPan"
+            android:theme="@android:style/Theme.Holo.NoActionBar"/>
         <activity
             android:name=".DrinkerSelectActivity"
             android:label="@string/app_name"

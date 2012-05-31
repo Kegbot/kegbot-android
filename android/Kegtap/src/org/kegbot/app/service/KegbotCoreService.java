@@ -93,7 +93,7 @@ public class KegbotCoreService extends Service {
   private KegbotSoundService mSoundService;
   private boolean mSoundServiceBound;
 
-  private final CheckinClient mCheckinClient = new CheckinClient(this);
+  private CheckinClient mCheckinClient;
 
   private final ExecutorService mExecutorService = Executors.newSingleThreadExecutor();
 
@@ -348,9 +348,11 @@ public class KegbotCoreService extends Service {
   @Override
   public void onCreate() {
     super.onCreate();
+    Log.d(TAG, "onCreate()");
+
     mPreferences = new PreferenceHelper(getApplicationContext());
     mFlowManager.setDefaultIdleTimeMillis(mPreferences.getIdleTimeoutMs());
-    Log.d(TAG, "onCreate()");
+    mCheckinClient = new CheckinClient(this);
     Log.d(TAG, "Kegtap User-Agent: " + Utils.getUserAgent());
     updateFromPreferences();
     PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
