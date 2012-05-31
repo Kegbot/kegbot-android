@@ -38,17 +38,17 @@ import android.widget.EditText;
 
 import com.google.common.base.Strings;
 
-public class SetupApiUrlFragment extends SetupFragment {
+public class SetupKegbotUrlFragment extends SetupFragment {
 
-  private static final String TAG = SetupApiUrlFragment.class.getSimpleName();
+  private static final String TAG = SetupKegbotUrlFragment.class.getSimpleName();
 
   private View mView;
 
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    mView = inflater.inflate(R.layout.setup_api_url_fragment, null);
+    mView = inflater.inflate(R.layout.setup_kegbot_url_fragment, null);
     PreferenceHelper prefs = new PreferenceHelper(getActivity());
-    EditText text = (EditText) mView.findViewById(R.id.apiUrl);
+    EditText text = (EditText) mView.findViewById(R.id.kegbotUrl);
     final String existingUrl = prefs.getKegbotUrl().toString();
     if (!Strings.isNullOrEmpty(existingUrl)) {
       // Don't clobber the hint if empty.
@@ -58,16 +58,19 @@ public class SetupApiUrlFragment extends SetupFragment {
     return mView;
   }
 
-  public String getApiUrl() {
-    EditText text = (EditText) mView.findViewById(R.id.apiUrl);
+  public String getUrl() {
+    EditText text = (EditText) mView.findViewById(R.id.kegbotUrl);
     return text.getText().toString();
   }
 
   @Override
   public String validate() {
-    final String apiUrl = getApiUrl();
+    String baseUrl = getUrl();
+    baseUrl = baseUrl.replaceAll("/$", "");
+    Log.d(TAG, "Got base URL: " + baseUrl);
 
-    Log.d(TAG, "Got api URL: " + apiUrl);
+    final String apiUrl = baseUrl + "/api";
+
     final Uri uri = Uri.parse(apiUrl);
     final String scheme = uri.getScheme();
 

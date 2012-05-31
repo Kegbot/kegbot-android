@@ -37,7 +37,7 @@ public enum SetupTask {
   WELCOME {
     @Override
     public SetupTask next() {
-      return API_URL;
+      return KEGBOT_URL;
     }
 
     @Override
@@ -57,7 +57,7 @@ public enum SetupTask {
   UPGRADE {
     @Override
     public SetupTask next() {
-      return API_URL;
+      return KEGBOT_URL;
     }
 
     @Override
@@ -72,10 +72,10 @@ public enum SetupTask {
   },
 
   /**
-   * Requests and validates the API URL.
+   * Requests and validates the Kegbot URL.
    */
-  API_URL {
-    private final SetupApiUrlFragment mFragment = new SetupApiUrlFragment();
+  KEGBOT_URL {
+    private final SetupKegbotUrlFragment mFragment = new SetupKegbotUrlFragment();
 
     @Override
     public SetupTask next() {
@@ -89,12 +89,12 @@ public enum SetupTask {
 
     @Override
     public int getTitle() {
-      return R.string.setup_api_url_title;
+      return R.string.setup_kegbot_url_title;
     }
 
     @Override
     public int getDescription() {
-      return R.string.setup_api_url_description;
+      return R.string.setup_kegbot_url_description;
     }
   },
 
@@ -193,9 +193,9 @@ public enum SetupTask {
     }
   };
 
-  public static final SetupTask FIRST_SETUP_STEP = API_URL;
+  public static final SetupTask FIRST_SETUP_STEP = KEGBOT_URL;
 
-  public static final int SETUP_VERSION = 3;
+  public static final int SETUP_VERSION = 4;
 
   /**
    * Returns the fragment for this task.

@@ -283,24 +283,24 @@ public class FlowManager {
    */
   public synchronized Flow activateUserAtTap(final Tap tap, final String username) {
     Flow flow = getFlowForTap(tap);
-    Log.d(TAG, "Activating user " + username + " at tap: " + tap);
+    Log.d(TAG, "Activating username=" + username + " at tap=" + tap + " current flow=" + flow);
 
-    if (flow != null && flow.getUsername().equals(username)) {
-      Log.d(TAG, "activateUserAtTap: got same username, nothing to do.");
-      return flow;
-    }
-
-    if (flow != null && flow.isAnonymous()) {
-      Log.d(TAG, "activateUserAtTap: existing flow is anonymous, taking it over.");
-      flow.setUsername(username);
-      publishFlowUpdate(flow);
-      return flow;
-    } else if (flow != null && flow.isAuthenticated()) {
-      Log.d(TAG, "activateUserAtTap: existing flow is authenticated; ignoring auth event.");
-      // NOTE(mikey): In previous version of Kegbot, we let the new user take
-      // over the existing flow.  Testing has shown this to be surprise users,
-      // so just ignore the auth event rather than ending the flow.
-      return flow;
+    if (flow != null) {
+      if (flow.getUsername().equals(username)) {
+        Log.d(TAG, "activateUserAtTap: got same username, nothing to do.");
+        return flow;
+      } else if (flow.isAnonymous()) {
+        Log.d(TAG, "activateUserAtTap: existing flow is anonymous, taking it over.");
+        flow.setUsername(username);
+        publishFlowUpdate(flow);
+        return flow;
+      } else if (flow.isAuthenticated()) {
+        Log.d(TAG, "activateUserAtTap: existing flow is authenticated; ignoring auth event.");
+        // NOTE(mikey): In previous version of Kegbot, we let the new user take
+        // over the existing flow.  Testing has shown this to be surprise users,
+        // so just ignore the auth event rather than ending the flow.
+        return flow;
+      }
     }
 
     // New flow to replace previous or empty.

@@ -215,7 +215,11 @@ public class CameraFragment extends Fragment {
       mLastFilename = result;
       updateState(State.TAKEN);
       final Intent intent = KegtapBroadcast.getPictureTakenBroadcastIntent(result);
-      getActivity().sendBroadcast(intent);
+
+      final Activity activity = getActivity();
+      if (activity != null) {
+        activity.sendBroadcast(intent);
+      }
     }
 
     private Bitmap decodeAndRotateFromJpeg(byte[] data, int rotation) {

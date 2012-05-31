@@ -8,22 +8,22 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/setup_api_url_api_name"
+        android:text="@string/setup_kegbot_url_url_name"
         android:textSize="24dip"
         android:textStyle="bold"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/setup_api_url_api_description"
+        android:text="@string/setup_kegbot_url_url_description"
         android:textColor="@android:color/darker_gray"
         android:textSize="18dip"/>
     
     <EditText
-        android:id="@+id/apiUrl"
+        android:id="@+id/kegbotUrl"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="textUri"
-        android:hint="http://example.com/api"/>
+        android:hint="http://kegbot.example.com"/>
     
 </LinearLayout>

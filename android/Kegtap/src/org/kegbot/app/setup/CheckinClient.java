@@ -39,14 +39,17 @@ import org.kegbot.app.util.DeviceId;
 import org.kegbot.app.util.Utils;
 
 import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Build;
 import android.util.Log;
 
 import com.google.common.collect.Lists;
 
 /**
+ * Checks the Kegbot registration server for updated Kegbot version.
  *
- * @author mike wakerly (mike@wakerly.com)
+ * @author mike wakerly (opensource@hoho.com)
  */
 public class CheckinClient {
 
@@ -65,6 +68,15 @@ public class CheckinClient {
     final HttpPost request = new HttpPost(CHECKIN_URL);
     final HttpParams requestParams = new BasicHttpParams();
 
+    int kegbotVersion = -1;
+    try {
+      final PackageInfo pinfo = mContext.getPackageManager().getPackageInfo(
+          mContext.getPackageName(), 0);
+      kegbotVersion = pinfo.versionCode;
+    } catch (NameNotFoundException e) {
+      Log.w(TAG, "Could not look up own package info.");
+    }
+
     HttpProtocolParams.setUserAgent(requestParams, Utils.getUserAgent());
     request.setParams(requestParams);
 
@@ -72,7 +84,8 @@ public class CheckinClient {
     params.add(new BasicNameValuePair("kbid", DeviceId.getDeviceId(mContext)));
     params.add(new BasicNameValuePair("android_version", Build.VERSION.SDK));
     params.add(new BasicNameValuePair("android_device", Build.DEVICE));
-    params.add(new BasicNameValuePair("kegbot_version", BuildInfo.BUILD_DATE_HUMAN));
+    params.add(new BasicNameValuePair("kegbot_version", String.valueOf(kegbotVersion)));
+    params.add(new BasicNameValuePair("kegbot_date", BuildInfo.BUILD_DATE_HUMAN));
     request.setEntity(new UrlEncodedFormEntity(params));
 
     final HttpResponse response = client.execute(request);
