@@ -20,7 +20,7 @@ package org.kegbot.app;
 
 import org.kegbot.app.util.ImageDownloader;
 import org.kegbot.app.util.Units;
-import org.kegbot.app.view.NumericBadgeView;
+import org.kegbot.app.view.BadgeView;
 import org.kegbot.core.FlowManager;
 import org.kegbot.core.Tap;
 import org.kegbot.core.TapManager;
@@ -135,7 +135,7 @@ public class TapStatusFragment extends ListFragment {
 
     // TODO(mikey): proper units support
     // Badge 1: Pints Poured
-    final NumericBadgeView badge1 = (NumericBadgeView) mView.findViewById(R.id.tapStatsBadge1);
+    final BadgeView badge1 = (BadgeView) mView.findViewById(R.id.tapStatsBadge1);
     int pintsPoured = (int) Units.volumeMlToPints(keg.getSizeVolumeMl()
         * (100.0 - keg.getPercentFull()) / 100.0);
     pintsPoured = Math.max(pintsPoured, 0);
@@ -147,7 +147,7 @@ public class TapStatusFragment extends ListFragment {
     }
 
     // Badge 2: Pints Remain
-    final NumericBadgeView badge2 = (NumericBadgeView) mView.findViewById(R.id.tapStatsBadge2);
+    final BadgeView badge2 = (BadgeView) mView.findViewById(R.id.tapStatsBadge2);
     int pintsRemain = (int) Units.volumeMlToPints(keg.getVolumeMlRemain());
     pintsRemain = Math.max(pintsRemain, 0);
     badge2.setBadgeValue(String.format("%d", Integer.valueOf(pintsRemain)));
@@ -159,7 +159,7 @@ public class TapStatusFragment extends ListFragment {
 
     // Badge 3: Temperpature
     // TODO(mikey): Preference for C/F
-    final NumericBadgeView badge3 = (NumericBadgeView) mView.findViewById(R.id.tapStatsBadge3);
+    final BadgeView badge3 = (BadgeView) mView.findViewById(R.id.tapStatsBadge3);
     if (tap.hasLastTemperature()) {
       double lastTemperature = tap.getLastTemperature().getTemperatureC();
       lastTemperature = Units.temperatureCToF(lastTemperature);

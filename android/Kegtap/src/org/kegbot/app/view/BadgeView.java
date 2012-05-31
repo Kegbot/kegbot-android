@@ -32,22 +32,22 @@ import android.widget.TextView;
  *
  * @author mike wakerly (opensource@hoho.com)
  */
-public class NumericBadgeView extends LinearLayout {
+public class BadgeView extends LinearLayout {
 
   private TextView mBadgeValue;
   private TextView mBadgeCaption;
 
-  public NumericBadgeView(Context context, AttributeSet attrs, int defStyle) {
+  public BadgeView(Context context, AttributeSet attrs, int defStyle) {
     super(context, attrs, defStyle);
     init(context);
   }
 
-  public NumericBadgeView(Context context, AttributeSet attrs) {
+  public BadgeView(Context context, AttributeSet attrs) {
     super(context, attrs);
     init(context);
   }
 
-  public NumericBadgeView(Context context) {
+  public BadgeView(Context context) {
     super(context);
     init(context);
   }

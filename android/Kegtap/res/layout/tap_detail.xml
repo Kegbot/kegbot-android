@@ -114,21 +114,21 @@
                 android:gravity="center"
                 android:orientation="horizontal" >
 
-                <org.kegbot.app.view.NumericBadgeView
+                <org.kegbot.app.view.BadgeView
                     android:id="@+id/tapStatsBadge1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="10dip"
                     android:background="@color/black20pct" />
 
-                <org.kegbot.app.view.NumericBadgeView
+                <org.kegorg.kegbot.app.view.BadgeView
                     android:id="@+id/tapStatsBadge2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="10dip"
                     android:background="@color/black20pct" />
 
-                <org.kegbot.app.view.NumericBadgeView
+                <org.kegbot.apporg.kegbot.app.view.BadgeView
                     android:id="@+id/tapStatsBadge3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
