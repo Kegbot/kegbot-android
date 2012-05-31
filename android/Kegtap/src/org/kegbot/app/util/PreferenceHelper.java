@@ -99,11 +99,11 @@ public class PreferenceHelper {
   }
 
   public long getIdleTimeoutMs() {
-    return Long.valueOf(mSharedPreferences.getString("idle_timeout_seconds", "20")).longValue() * 1000;
+    return Long.valueOf(mSharedPreferences.getString("idle_timeout_seconds", "90")).longValue() * 1000;
   }
 
   public long getIdleWarningMs() {
-    return Long.valueOf(mSharedPreferences.getString("idle_warning_seconds", "20")).longValue() * 1000;
+    return Long.valueOf(mSharedPreferences.getString("idle_warning_seconds", "60")).longValue() * 1000;
   }
 
   public int getSetupVersion() {
