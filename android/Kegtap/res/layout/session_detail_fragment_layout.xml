@@ -1,214 +1,239 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-  xmlns:android="http://schemas.android.com/apk/res/android"
-  android:layout_width="match_parent"
-  android:layout_height="match_parent"
-  android:orientation="vertical"
-  android:minHeight="64dip"
-  android:gravity="top">
-
-  <!-- Header -->
-  <LinearLayout
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:gravity="top">
-    <TextView
-      android:id="@+id/sessionSubtitle"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:textColor="#888"
-      android:textSize="24dip"
-      android:text="Current Session: " />
-    <TextView
-      android:id="@+id/sessionTitle"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:textStyle="bold"
-      android:textSize="24dip" />
-  </LinearLayout>
-
-  <View
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="2dip"
-    android:layout_margin="5dip"
-    android:background="#1FFFFFFF" />
+    android:layout_height="match_parent"
+    android:background="@drawable/shape_rounded_rect"
+    android:gravity="top"
+    android:minHeight="64dip"
+    android:orientation="vertical" >
 
-  <!-- Rest of content -->
-  <HorizontalScrollView
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    <!-- Header -->
+
     <LinearLayout
-      android:layout_width="wrap_content"
-      android:layout_height="match_parent"
-      android:orientation="horizontal"
-      android:gravity="center|left">
-
-      <!-- Num Drinkers -->
-      <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginRight="15dip"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:background="@color/black20pct"
-        android:padding="5dip"
-        android:minHeight="96dip"
-        android:minWidth="96dip">
-        <TextView
-          android:id="@+id/sessionDetailNumDrinkers"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:textSize="22dip"
-          android:textStyle="bold"
-          android:gravity="center" />
-        <View
-          android:layout_width="match_parent"
-          android:layout_height="1dip"
-          android:layout_margin="5dip"
-          android:background="#1FFFFFFF" />
-        <TextView
-          android:id="@+id/sessionDetailNumDrinkersHeader"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:textSize="18dip"
-          android:text="drinkers"
-          android:textColor="#888"
-          android:gravity="center" />
-      </LinearLayout>
+        android:gravity="top"
+        android:orientation="horizontal" >
 
-      <!-- Num Pints -->
-      <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="15dip"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:background="@color/black20pct"
-        android:padding="5dip"
-        android:minHeight="96dip"
-        android:minWidth="96dip">
         <TextView
-          android:id="@+id/sessionDetailVolServed"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:textSize="22dip"
-          android:textStyle="bold"
-          android:gravity="center" />
-        <View
-          android:layout_width="match_parent"
-          android:layout_height="1dip"
-          android:layout_margin="5dip"
-          android:background="#1FFFFFFF" />
-        <TextView
-          android:id="@+id/sessionDetailVolServedHeader"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:textSize="18dip"
-          android:text="total pints"
-          android:textColor="#888"
-          android:gravity="center" />
-      </LinearLayout>
+            android:id="@+id/sessionSubtitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Current Session: "
+            android:textColor="#888"
+            android:textSize="24dip" />
 
-      <!-- Top Drinker -->
-      <LinearLayout
-        android:id="@+id/sessionDetailDrinker1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="15dip"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:background="@color/black20pct"
-        android:padding="5dip"
-        android:minHeight="96dip"
-        android:minWidth="96dip">
         <TextView
-          android:id="@+id/drinkerName"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:textSize="22dip"
-          android:textStyle="bold"
-          android:gravity="center" />
-        <View
-          android:layout_width="match_parent"
-          android:layout_height="1dip"
-          android:layout_margin="5dip"
-          android:background="#1FFFFFFF" />
-        <TextView
-          android:id="@+id/drinkerHeader"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:textSize="18dip"
-          android:textColor="#888"
-          android:gravity="center" />
-      </LinearLayout>
-
-      <!-- 2nd -->
-      <LinearLayout
-        android:id="@+id/sessionDetailDrinker2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="15dip"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:background="@color/black20pct"
-        android:padding="5dip"
-        android:minHeight="96dip"
-        android:minWidth="96dip">
-        <TextView
-          android:id="@+id/drinkerName"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:textSize="22dip"
-          android:textStyle="bold"
-          android:gravity="center" />
-        <View
-          android:layout_width="match_parent"
-          android:layout_height="1dip"
-          android:layout_margin="5dip"
-          android:background="#1FFFFFFF" />
-        <TextView
-          android:id="@+id/drinkerHeader"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:textSize="18dip"
-          android:textColor="#888"
-          android:gravity="center" />
-      </LinearLayout>
-
-
-      <!-- 3rd -->
-      <LinearLayout
-        android:id="@+id/sessionDetailDrinker3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="15dip"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:background="@color/black20pct"
-        android:padding="5dip"
-        android:minHeight="96dip"
-        android:minWidth="96dip">
-        <TextView
-          android:id="@+id/drinkerName"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:textSize="22dip"
-          android:textStyle="bold"
-          android:gravity="center" />
-        <View
-          android:layout_width="match_parent"
-          android:layout_height="1dip"
-          android:layout_margin="5dip"
-          android:background="#1FFFFFFF" />
-        <TextView
-          android:id="@+id/drinkerHeader"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:textSize="18dip"
-          android:textColor="#888"
-          android:gravity="center" />
-      </LinearLayout>
+            android:id="@+id/sessionTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="24dip"
+            android:textStyle="bold" />
     </LinearLayout>
-  </HorizontalScrollView>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dip"
+        android:layout_margin="5dip"
+        android:background="#1FFFFFFF" />
+
+    <!-- Rest of content -->
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center|left"
+            android:orientation="horizontal" >
+
+            <!-- Num Drinkers -->
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="15dip"
+                android:background="@color/black20pct"
+                android:gravity="center"
+                android:minHeight="96dip"
+                android:minWidth="96dip"
+                android:orientation="vertical"
+                android:padding="5dip" >
+
+                <TextView
+                    android:id="@+id/sessionDetailNumDrinkers"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textSize="22dip"
+                    android:textStyle="bold" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dip"
+                    android:layout_margin="5dip"
+                    android:background="#1FFFFFFF" />
+
+                <TextView
+                    android:id="@+id/sessionDetailNumDrinkersHeader"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="drinkers"
+                    android:textColor="#888"
+                    android:textSize="18dip" />
+            </LinearLayout>
+
+            <!-- Num Pints -->
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="15dip"
+                android:background="@color/black20pct"
+                android:gravity="center"
+                android:minHeight="96dip"
+                android:minWidth="96dip"
+                android:orientation="vertical"
+                android:padding="5dip" >
+
+                <TextView
+                    android:id="@+id/sessionDetailVolServed"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textSize="22dip"
+                    android:textStyle="bold" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dip"
+                    android:layout_margin="5dip"
+                    android:background="#1FFFFFFF" />
+
+                <TextView
+                    android:id="@+id/sessionDetailVolServedHeader"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="total pints"
+                    android:textColor="#888"
+                    android:textSize="18dip" />
+            </LinearLayout>
+
+            <!-- Top Drinker -->
+
+            <LinearLayout
+                android:id="@+id/sessionDetailDrinker1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="15dip"
+                android:background="@color/black20pct"
+                android:gravity="center"
+                android:minHeight="96dip"
+                android:minWidth="96dip"
+                android:orientation="vertical"
+                android:padding="5dip" >
+
+                <TextView
+                    android:id="@+id/drinkerName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textSize="22dip"
+                    android:textStyle="bold" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dip"
+                    android:layout_margin="5dip"
+                    android:background="#1FFFFFFF" />
+
+                <TextView
+                    android:id="@+id/drinkerHeader"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textColor="#888"
+                    android:textSize="18dip" />
+            </LinearLayout>
+
+            <!-- 2nd -->
+
+            <LinearLayout
+                android:id="@+id/sessionDetailDrinker2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="15dip"
+                android:background="@color/black20pct"
+                android:gravity="center"
+                android:minHeight="96dip"
+                android:minWidth="96dip"
+                android:orientation="vertical"
+                android:padding="5dip" >
+
+                <TextView
+                    android:id="@+id/drinkerName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textSize="22dip"
+                    android:textStyle="bold" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dip"
+                    android:layout_margin="5dip"
+                    android:background="#1FFFFFFF" />
+
+                <TextView
+                    android:id="@+id/drinkerHeader"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textColor="#888"
+                    android:textSize="18dip" />
+            </LinearLayout>
+
+            <!-- 3rd -->
+
+            <LinearLayout
+                android:id="@+id/sessionDetailDrinker3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="15dip"
+                android:background="@color/black20pct"
+                android:gravity="center"
+                android:minHeight="96dip"
+                android:minWidth="96dip"
+                android:orientation="vertical"
+                android:padding="5dip" >
+
+                <TextView
+                    android:id="@+id/drinkerName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textSize="22dip"
+                    android:textStyle="bold" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dip"
+                    android:layout_margin="5dip"
+                    android:background="#1FFFFFFF" />
+
+                <TextView
+                    android:id="@+id/drinkerHeader"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textColor="#888"
+                    android:textSize="18dip" />
+            </LinearLayout>
+        </LinearLayout>
+    </HorizontalScrollView>
+
 </LinearLayout>

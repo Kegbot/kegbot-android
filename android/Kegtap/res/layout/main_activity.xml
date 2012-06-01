@@ -21,6 +21,32 @@
         android:layout_weight="0.4"
         android:orientation="vertical" >
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/shape_rounded_rect"
+            android:orientation="vertical"
+            android:padding="16dip" >
+
+            <Button
+                android:id="@+id/beerMeButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dip"
+                android:text="Beer Me!"
+                android:textSize="36dip"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/newDrinkerButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dip"
+                android:text="New Drinker"
+                android:textSize="36dip"
+                android:textStyle="bold" />
+        </LinearLayout>
+
         <fragment
             android:id="@+id/currentSessionFragment"
             android:layout_width="match_parent"
@@ -28,28 +54,32 @@
             class="org.kegbot.app.SessionStatsFragment"
             android:visibility="gone" />
 
-        <Button
-            android:id="@+id/beerMeButton"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="16dip"
-            android:text="Beer Me!"
-            android:textSize="36dip"
-            android:textStyle="bold" />
+            android:layout_height="fill_parent"
+            android:background="@drawable/shape_rounded_rect"
+            android:orientation="vertical" >
 
-        <Button
-            android:id="@+id/newDrinkerButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="16dip"
-            android:text="New Drinker"
-            android:textSize="36dip" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="fill_parent"
+                android:text="Recent Activity"
+                android:textColor="#888"
+                android:textSize="24dip" />
 
-        <fragment
-            android:id="@+id/event_list"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            class="org.kegbot.app.EventListFragment" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dip"
+                android:layout_marginTop="5dip"
+                android:layout_marginBottom="5dip"
+                android:background="#1FFFFFFF" />
+
+            <fragment
+                android:id="@+id/event_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                class="org.kegbot.app.EventListFragment" />
+        </LinearLayout>
     </LinearLayout>
 
 </LinearLayout>
