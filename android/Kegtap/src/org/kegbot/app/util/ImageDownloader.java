@@ -33,18 +33,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.kegbot.app.R;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.http.AndroidHttpClient;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -166,7 +159,7 @@ public class ImageDownloader {
           if (DEBUG) Log.d(LOG_TAG, "Found bitmap in file cache.");
         } else {
           if (DEBUG) Log.d(LOG_TAG, "Download running for url=" + url);
-          bitmap = downloadBitmap(url);
+          bitmap = Downloader.downloadBitmap(url);
           Log.d(LOG_TAG, "Downloaded: " + url);
           addBitmapToFileCache(url, bitmap);
         }
@@ -205,8 +198,9 @@ public class ImageDownloader {
           final String imageViewTag = (String) imageView.getTag();
           if (url.equals(imageViewTag)) {
             applyBitmapToImageView(bitmap, imageView);
-            Animation myFadeInAnimation = AnimationUtils.loadAnimation(mContext, R.anim.image_fade_in);
-            imageView.startAnimation(myFadeInAnimation); //Set animation to your ImageView
+            Animation myFadeInAnimation = AnimationUtils.loadAnimation(mContext,
+                R.anim.image_fade_in);
+            imageView.startAnimation(myFadeInAnimation);
           }
         }
       }
@@ -222,55 +216,6 @@ public class ImageDownloader {
     synchronized (mDownloadRequests) {
       mDownloadRequests.remove(view);
     }
-  }
-
-  private Bitmap downloadBitmap(String url) {
-    // AndroidHttpClient is not allowed to be used from the main thread
-    final HttpClient client = new DefaultHttpClient();
-    final HttpGet getRequest = new HttpGet(url);
-
-    try {
-      HttpResponse response = client.execute(getRequest);
-      final int statusCode = response.getStatusLine().getStatusCode();
-      if (statusCode != HttpStatus.SC_OK) {
-        Log.w("ImageDownloader", "Error " + statusCode + " while retrieving bitmap from " + url);
-        return null;
-      }
-
-      final HttpEntity entity = response.getEntity();
-      if (entity != null) {
-        InputStream inputStream = null;
-        try {
-          BitmapFactory.Options options = new BitmapFactory.Options();
-          options.inSampleSize = 2;
-
-          inputStream = entity.getContent();
-          return BitmapFactory.decodeStream(inputStream, null, options);
-          // Bug on slow connections, fixed in future release.
-          // return BitmapFactory.decodeStream(new
-          // FlushedInputStream(inputStream));
-        } finally {
-          if (inputStream != null) {
-            inputStream.close();
-          }
-          entity.consumeContent();
-        }
-      }
-    } catch (IOException e) {
-      getRequest.abort();
-      Log.w(LOG_TAG, "I/O error while retrieving bitmap from " + url, e);
-    } catch (IllegalStateException e) {
-      getRequest.abort();
-      Log.w(LOG_TAG, "Incorrect URL: " + url);
-    } catch (Exception e) {
-      getRequest.abort();
-      Log.w(LOG_TAG, "Error while retrieving bitmap from " + url, e);
-    } finally {
-      if ((client instanceof AndroidHttpClient)) {
-        ((AndroidHttpClient) client).close();
-      }
-    }
-    return null;
   }
 
   /*
@@ -361,6 +306,9 @@ public class ImageDownloader {
   }
 
   private void addBitmapToFileCache(String url, Bitmap bitmap) {
+    if (bitmap == null) {
+      return;
+    }
     final File cacheFile = getCacheFilename(url);
     if (cacheFile.exists()) {
       Log.d(LOG_TAG, "Updating cached file url=" + url + " filename=" + cacheFile);

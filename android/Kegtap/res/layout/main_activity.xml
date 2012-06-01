@@ -62,7 +62,7 @@
 
             <TextView
                 android:layout_width="match_parent"
-                android:layout_height="fill_parent"
+                android:layout_height="wrap_content"
                 android:text="Recent Activity"
                 android:textColor="#888"
                 android:textSize="24dip" />
@@ -77,7 +77,7 @@
             <fragment
                 android:id="@+id/event_list"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="fill_parent"
                 class="org.kegbot.app.EventListFragment" />
         </LinearLayout>
     </LinearLayout>

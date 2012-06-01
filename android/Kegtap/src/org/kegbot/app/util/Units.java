@@ -25,8 +25,9 @@ import javax.measure.units.SI;
 import org.jscience.physics.measures.Measure;
 
 /**
+ * Various unit conversion helpers.
  *
- * @author mike wakerly (mike@wakerly.com)
+ * @author mike wakerly (opensource@hoho.com)
  */
 public class Units {
 
