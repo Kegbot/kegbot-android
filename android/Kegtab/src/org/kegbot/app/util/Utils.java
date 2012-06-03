@@ -72,7 +72,7 @@ public class Utils {
 
   public static String getUserAgent() {
     return new StringBuilder()
-      .append("Kegtap/")
+      .append("Kegtab/")
       .append(BuildInfo.BUILD_DATE_HUMAN)
       .append(" (Android ")
       .append(Build.VERSION.RELEASE)
