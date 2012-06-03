@@ -35,7 +35,7 @@ import java.util.concurrent.TimeUnit;
 import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiException;
 import org.kegbot.api.KegbotApiImpl;
-import org.kegbot.app.KegtapBroadcast;
+import org.kegbot.app.KegtabBroadcast;
 import org.kegbot.app.util.Downloader;
 import org.kegbot.app.util.Units;
 import org.kegbot.core.Flow;
@@ -147,9 +147,9 @@ public class KegbotSoundService extends BackgroundService {
 
   private static final IntentFilter INTENT_FILTER = new IntentFilter();
   static {
-    INTENT_FILTER.addAction(KegtapBroadcast.ACTION_USER_AUTHED);
-    INTENT_FILTER.addAction(KegtapBroadcast.ACTION_POUR_START);
-    INTENT_FILTER.addAction(KegtapBroadcast.ACTION_POUR_UPDATE);
+    INTENT_FILTER.addAction(KegtabBroadcast.ACTION_USER_AUTHED);
+    INTENT_FILTER.addAction(KegtabBroadcast.ACTION_POUR_START);
+    INTENT_FILTER.addAction(KegtabBroadcast.ACTION_POUR_UPDATE);
     INTENT_FILTER.setPriority(1000);
   }
 
@@ -265,8 +265,8 @@ public class KegbotSoundService extends BackgroundService {
 
     final Flow flow = getFlowForPourIntent(command);
     String username = "";
-    if (command.hasExtra(KegtapBroadcast.USER_AUTHED_EXTRA_USERNAME)) {
-      username = command.getStringExtra(KegtapBroadcast.USER_AUTHED_EXTRA_USERNAME);
+    if (command.hasExtra(KegtabBroadcast.USER_AUTHED_EXTRA_USERNAME)) {
+      username = command.getStringExtra(KegtabBroadcast.USER_AUTHED_EXTRA_USERNAME);
     } else if (flow != null && flow.isAuthenticated()) {
       username = flow.getUsername();
     }
@@ -347,10 +347,10 @@ public class KegbotSoundService extends BackgroundService {
     final String action = intent.getAction();
     final Flow flow = getFlowForPourIntent(intent);
 
-    if (KegtapBroadcast.ACTION_POUR_START.equals(action)) {
+    if (KegtabBroadcast.ACTION_POUR_START.equals(action)) {
       mThresholds.put(flow, getThresholds());
       return SoundEventHandler.POUR_START;
-    } else if (KegtapBroadcast.ACTION_POUR_UPDATE.equals(action)) {
+    } else if (KegtabBroadcast.ACTION_POUR_UPDATE.equals(action)) {
       if (flow == null) {
         return null;
       }
@@ -375,7 +375,7 @@ public class KegbotSoundService extends BackgroundService {
       if (match) {
         return SoundEventHandler.POUR_UPDATE;
       }
-    } else if (KegtapBroadcast.ACTION_USER_AUTHED.equals(action)) {
+    } else if (KegtabBroadcast.ACTION_USER_AUTHED.equals(action)) {
       return SoundEventHandler.USER_AUTHED;
     }
     return null;
@@ -394,7 +394,7 @@ public class KegbotSoundService extends BackgroundService {
   }
 
   private Flow getFlowForPourIntent(final Intent intent) {
-    final String tapName = intent.getStringExtra(KegtapBroadcast.POUR_UPDATE_EXTRA_TAP_NAME);
+    final String tapName = intent.getStringExtra(KegtabBroadcast.POUR_UPDATE_EXTRA_TAP_NAME);
     if (Strings.isNullOrEmpty(tapName)) {
       return null;
     }

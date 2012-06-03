@@ -73,11 +73,11 @@ public class AuthenticatingActivity extends Activity {
   private void handleIntent() {
     final Intent intent = getIntent();
     final String action = intent.getAction();
-    if (KegtapBroadcast.ACTION_AUTH_FAIL.equals(action)) {
+    if (KegtabBroadcast.ACTION_AUTH_FAIL.equals(action)) {
       setFail();
-    } else if (KegtapBroadcast.ACTION_AUTH_BEGIN.equals(action)) {
+    } else if (KegtabBroadcast.ACTION_AUTH_BEGIN.equals(action)) {
       setAuthenticating();
-    } else if (KegtapBroadcast.ACTION_USER_AUTHED.equals(action)) {
+    } else if (KegtabBroadcast.ACTION_USER_AUTHED.equals(action)) {
       finish();
     }
   }
@@ -97,8 +97,8 @@ public class AuthenticatingActivity extends Activity {
     mProgressBar.setVisibility(View.GONE);
 
     final Intent intent = getIntent();
-    if (intent.hasExtra(KegtapBroadcast.AUTH_FAIL_EXTRA_MESSAGE)) {
-      mMessage.setText(intent.getStringExtra(KegtapBroadcast.AUTH_FAIL_EXTRA_MESSAGE));
+    if (intent.hasExtra(KegtabBroadcast.AUTH_FAIL_EXTRA_MESSAGE)) {
+      mMessage.setText(intent.getStringExtra(KegtabBroadcast.AUTH_FAIL_EXTRA_MESSAGE));
       Log.d("AUTH", mMessage.getText().toString());
       mMessage.setVisibility(View.VISIBLE);
     } else {

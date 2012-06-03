@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.kegbot.app.KegtapBroadcast;
+import org.kegbot.app.KegtabBroadcast;
 import org.kegbot.app.R;
 
 import android.app.Activity;
@@ -214,7 +214,7 @@ public class CameraFragment extends Fragment {
       super.onPostExecute(result);
       mLastFilename = result;
       updateState(State.TAKEN);
-      final Intent intent = KegtapBroadcast.getPictureTakenBroadcastIntent(result);
+      final Intent intent = KegtabBroadcast.getPictureTakenBroadcastIntent(result);
 
       final Activity activity = getActivity();
       if (activity != null) {
@@ -294,7 +294,7 @@ public class CameraFragment extends Fragment {
   }
 
   private void discardLastPicture() {
-    final Intent intent = KegtapBroadcast.getPictureDiscardedBroadcastIntent(mLastFilename);
+    final Intent intent = KegtabBroadcast.getPictureDiscardedBroadcastIntent(mLastFilename);
     getActivity().sendBroadcast(intent);
     mLastFilename = "";
     //mPreview.startCameraPreview();

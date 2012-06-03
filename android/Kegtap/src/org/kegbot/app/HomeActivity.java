@@ -49,9 +49,9 @@ import android.widget.Button;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-public class KegtapActivity extends CoreActivity {
+public class HomeActivity extends CoreActivity {
 
-  public final String LOG_TAG = "KegtapActivity";
+  private static final String LOG_TAG = HomeActivity.class.getSimpleName();
 
   /**
    * Interval for periodic API polling.
@@ -87,7 +87,7 @@ public class KegtapActivity extends CoreActivity {
   private final OnClickListener mOnBeerMeClickedListener = new OnClickListener() {
     @Override
     public void onClick(View v) {
-      final Intent intent = DrinkerSelectActivity.getStartIntentForTap(KegtapActivity.this, "");
+      final Intent intent = DrinkerSelectActivity.getStartIntentForTap(HomeActivity.this, "");
       startActivity(intent);
     }
   };
@@ -95,7 +95,7 @@ public class KegtapActivity extends CoreActivity {
   private final OnClickListener mOnNewDrinkerClickedListener = new OnClickListener() {
     @Override
     public void onClick(View v) {
-      final Intent intent = new Intent(KegtapActivity.this, DrinkerRegistrationActivity.class);
+      final Intent intent = new Intent(HomeActivity.this, DrinkerRegistrationActivity.class);
       startActivity(intent);
     }
   };

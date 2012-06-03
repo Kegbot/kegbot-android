@@ -32,9 +32,9 @@ import android.util.Log;
  *
  * @author mike wakerly (mike@wakerly.com)
  */
-public class KegtapLauncherActivity extends Activity {
+public class KegtabLauncherActivity extends Activity {
 
-  private static final String TAG = KegtapLauncherActivity.class.getSimpleName();
+  private static final String TAG = KegtabLauncherActivity.class.getSimpleName();
 
   private static final int REQUEST_START_SETUP = 100;
   private static final int REQUEST_START_MAIN = 101;
@@ -70,7 +70,7 @@ public class KegtapLauncherActivity extends Activity {
       startActivityForResult(setupIntent, REQUEST_START_SETUP);
     } else {
       Log.d(TAG, "Starting main activity");
-      final Intent mainIntent = new Intent(this, KegtapActivity.class);
+      final Intent mainIntent = new Intent(this, HomeActivity.class);
       startActivityForResult(mainIntent, REQUEST_START_MAIN);
     }
   }

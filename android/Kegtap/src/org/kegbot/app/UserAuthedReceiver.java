@@ -43,7 +43,7 @@ public class UserAuthedReceiver extends BroadcastReceiver {
     final String action = intent.getAction();
     handleAuthBegin(context, intent);
 
-    if (KegtapBroadcast.ACTION_USER_AUTHED.equals(action)) {
+    if (KegtabBroadcast.ACTION_USER_AUTHED.equals(action)) {
       handleUserAuthed(context, intent);
     }
   }
@@ -59,8 +59,8 @@ public class UserAuthedReceiver extends BroadcastReceiver {
 
   private void handleUserAuthed(Context context, Intent intent) {
     Log.d(TAG, "handleUserAuthed: " + intent);
-    final String username = intent.getStringExtra(KegtapBroadcast.USER_AUTHED_EXTRA_USERNAME);
-    final String tapName = intent.getStringExtra(KegtapBroadcast.DRINKER_SELECT_EXTRA_TAP_NAME);
+    final String username = intent.getStringExtra(KegtabBroadcast.USER_AUTHED_EXTRA_USERNAME);
+    final String tapName = intent.getStringExtra(KegtabBroadcast.DRINKER_SELECT_EXTRA_TAP_NAME);
 
     FlowManager flowManager = FlowManager.getSingletonInstance();
     TapManager tapManager = TapManager.getSingletonInstance();

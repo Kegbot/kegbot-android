@@ -109,11 +109,11 @@ public class PourInProgressActivity extends CoreActivity {
   private static final boolean DEBUG = false;
 
   private static final IntentFilter POUR_INTENT_FILTER = new IntentFilter(
-      KegtapBroadcast.ACTION_POUR_START);
+      KegtabBroadcast.ACTION_POUR_START);
   static {
-    POUR_INTENT_FILTER.addAction(KegtapBroadcast.ACTION_POUR_UPDATE);
-    POUR_INTENT_FILTER.addAction(KegtapBroadcast.ACTION_PICTURE_TAKEN);
-    POUR_INTENT_FILTER.addAction(KegtapBroadcast.ACTION_PICTURE_DISCARDED);
+    POUR_INTENT_FILTER.addAction(KegtabBroadcast.ACTION_POUR_UPDATE);
+    POUR_INTENT_FILTER.addAction(KegtabBroadcast.ACTION_PICTURE_TAKEN);
+    POUR_INTENT_FILTER.addAction(KegtabBroadcast.ACTION_PICTURE_DISCARDED);
     POUR_INTENT_FILTER.setPriority(100);
   }
 
@@ -121,21 +121,21 @@ public class PourInProgressActivity extends CoreActivity {
     @Override
     public void onReceive(Context context, Intent intent) {
       final String action = intent.getAction();
-      if (KegtapBroadcast.ACTION_POUR_UPDATE.equals(action)
-          || KegtapBroadcast.ACTION_POUR_START.equals(action)) {
+      if (KegtabBroadcast.ACTION_POUR_UPDATE.equals(action)
+          || KegtabBroadcast.ACTION_POUR_START.equals(action)) {
         handleIntent(intent);
         abortBroadcast();
-      } else if (KegtapBroadcast.ACTION_PICTURE_TAKEN.equals(action)) {
-        final String filename = intent.getStringExtra(KegtapBroadcast.PICTURE_TAKEN_EXTRA_FILENAME);
+      } else if (KegtabBroadcast.ACTION_PICTURE_TAKEN.equals(action)) {
+        final String filename = intent.getStringExtra(KegtabBroadcast.PICTURE_TAKEN_EXTRA_FILENAME);
         Log.d(TAG, "Got photo: " + filename);
         final Flow flow = getCurrentlyFocusedFlow();
         if (flow != null) {
           Log.d(TAG, "  - attached to flow: " + flow);
           flow.addImage(filename);
         }
-      } else if (KegtapBroadcast.ACTION_PICTURE_DISCARDED.equals(action)) {
+      } else if (KegtabBroadcast.ACTION_PICTURE_DISCARDED.equals(action)) {
         final String filename =
-            intent.getStringExtra(KegtapBroadcast.PICTURE_DISCARDED_EXTRA_FILENAME);
+            intent.getStringExtra(KegtabBroadcast.PICTURE_DISCARDED_EXTRA_FILENAME);
         Log.d(TAG, "Discarded photo: " + filename);
         final Flow flow = getCurrentlyFocusedFlow();
         if (flow != null) {
@@ -439,8 +439,8 @@ public class PourInProgressActivity extends CoreActivity {
     final String action = intent.getAction();
     Log.d(TAG, "Handling intent: " + intent);
 
-    if (KegtapBroadcast.ACTION_POUR_UPDATE.equals(action)
-        || KegtapBroadcast.ACTION_POUR_START.equals(action)) {
+    if (KegtabBroadcast.ACTION_POUR_UPDATE.equals(action)
+        || KegtabBroadcast.ACTION_POUR_START.equals(action)) {
       refreshFlows();
     }
   }
@@ -568,8 +568,8 @@ public class PourInProgressActivity extends CoreActivity {
     final Intent intent = new Intent(context, PourInProgressActivity.class);
     intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
     intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-    intent.setAction(KegtapBroadcast.ACTION_POUR_START);
-    intent.putExtra(KegtapBroadcast.POUR_UPDATE_EXTRA_TAP_NAME, tapName);
+    intent.setAction(KegtabBroadcast.ACTION_POUR_START);
+    intent.putExtra(KegtabBroadcast.POUR_UPDATE_EXTRA_TAP_NAME, tapName);
     return intent;
   }
 

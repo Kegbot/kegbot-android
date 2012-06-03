@@ -29,7 +29,7 @@ import com.google.common.base.Strings;
  *
  * @author mike wakerly (mike@wakerly.com)
  */
-public class KegtapBroadcast {
+public class KegtabBroadcast {
 
   /**
    * Action set when a pour is being updated.
@@ -74,7 +74,7 @@ public class KegtapBroadcast {
   /**
    * Non-instantiable.
    */
-  private KegtapBroadcast() {
+  private KegtabBroadcast() {
     assert (false);
   }
 

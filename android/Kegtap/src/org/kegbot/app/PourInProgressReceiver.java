@@ -33,9 +33,9 @@ public class PourInProgressReceiver extends BroadcastReceiver {
 
   @Override
   public void onReceive(Context context, Intent intent) {
-    if (KegtapBroadcast.ACTION_POUR_START.equals(intent.getAction())) {
+    if (KegtabBroadcast.ACTION_POUR_START.equals(intent.getAction())) {
       Log.d(TAG, "Got pour start, starting activity.");
-      final String tapName = intent.getStringExtra(KegtapBroadcast.POUR_UPDATE_EXTRA_TAP_NAME);
+      final String tapName = intent.getStringExtra(KegtabBroadcast.POUR_UPDATE_EXTRA_TAP_NAME);
       final Intent startIntent = PourInProgressActivity.getStartIntent(context, tapName);
       startIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_SINGLE_TOP
           | Intent.FLAG_ACTIVITY_NEW_TASK);

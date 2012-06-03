@@ -104,7 +104,7 @@ public class DrinkerSelectActivity extends CoreActivity {
   }
 
   public void handlerUserSelected(User user) {
-    final String tapName = getIntent().getStringExtra(KegtapBroadcast.DRINKER_SELECT_EXTRA_TAP_NAME);
+    final String tapName = getIntent().getStringExtra(KegtabBroadcast.DRINKER_SELECT_EXTRA_TAP_NAME);
     if (!Strings.isNullOrEmpty(tapName)) {
       mAuthManager.noteUserAuthenticated(user, tapName);
     } else {
@@ -115,7 +115,7 @@ public class DrinkerSelectActivity extends CoreActivity {
 
   public static Intent getStartIntentForTap(final Context context, final String tapName) {
     final Intent intent = new Intent(context, DrinkerSelectActivity.class);
-    intent.putExtra(KegtapBroadcast.DRINKER_SELECT_EXTRA_TAP_NAME, tapName);
+    intent.putExtra(KegtabBroadcast.DRINKER_SELECT_EXTRA_TAP_NAME, tapName);
     return intent;
   }
 

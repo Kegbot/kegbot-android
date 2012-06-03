@@ -179,7 +179,7 @@ public class SettingsActivity extends PreferenceActivity {
     switch (item.getItemId()) {
       case android.R.id.home:
         // app icon in Action Bar clicked; go home
-        Intent intent = new Intent(this, KegtapActivity.class);
+        Intent intent = new Intent(this, HomeActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
         return true;

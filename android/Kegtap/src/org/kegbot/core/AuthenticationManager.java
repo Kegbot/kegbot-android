@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiImpl;
 import org.kegbot.api.KegbotApiNotFoundError;
-import org.kegbot.app.KegtapBroadcast;
+import org.kegbot.app.KegtabBroadcast;
 import org.kegbot.proto.Models.User;
 
 import android.content.Context;
@@ -114,14 +114,14 @@ public class AuthenticationManager {
 
   public void noteUserAuthenticated(User userDetail) {
     mUserDetailCache.put(userDetail.getUsername(), userDetail);
-    final Intent intent = KegtapBroadcast.getUserAuthedBroadcastIntent(userDetail.getUsername());
+    final Intent intent = KegtabBroadcast.getUserAuthedBroadcastIntent(userDetail.getUsername());
     mContext.sendBroadcast(intent);
   }
 
   public void noteUserAuthenticated(User userDetail, String tapName) {
     mUserDetailCache.put(userDetail.getUsername(), userDetail);
-    final Intent intent = KegtapBroadcast.getUserAuthedBroadcastIntent(userDetail.getUsername());
-    intent.putExtra(KegtapBroadcast.DRINKER_SELECT_EXTRA_TAP_NAME, tapName);
+    final Intent intent = KegtabBroadcast.getUserAuthedBroadcastIntent(userDetail.getUsername());
+    intent.putExtra(KegtabBroadcast.DRINKER_SELECT_EXTRA_TAP_NAME, tapName);
     mContext.sendBroadcast(intent);
   }
 

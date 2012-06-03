@@ -25,8 +25,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.kegbot.api.KegbotApiException;
-import org.kegbot.app.KegtapActivity;
-import org.kegbot.app.KegtapBroadcast;
+import org.kegbot.app.HomeActivity;
+import org.kegbot.app.KegtabBroadcast;
 import org.kegbot.app.R;
 import org.kegbot.app.setup.CheckinClient;
 import org.kegbot.app.util.PreferenceHelper;
@@ -228,7 +228,7 @@ public class KegbotCoreService extends Service {
     @Override
     public void onTokenAttached(final AuthenticationToken token, final String tapName) {
       Log.d(TAG, "Auth token added: " + token);
-      final Intent intent = KegtapBroadcast.getAuthBeginIntent(token);
+      final Intent intent = KegtabBroadcast.getAuthBeginIntent(token);
       sendBroadcast(intent);
 
       final Runnable r = new Runnable() {
@@ -256,7 +256,7 @@ public class KegbotCoreService extends Service {
             message = getString(R.string.authenticating_connection_error);
           }
           if (!success) {
-            sendBroadcast(KegtapBroadcast.getAuthFailIntent(message));
+            sendBroadcast(KegtabBroadcast.getAuthFailIntent(message));
           }
         }
       };
@@ -301,7 +301,7 @@ public class KegbotCoreService extends Service {
         @Override
         public void run() {
           Log.d(TAG, "Flow updated: " + flow);
-          final Intent intent = KegtapBroadcast.getPourUpdateBroadcastIntent(flow);
+          final Intent intent = KegtabBroadcast.getPourUpdateBroadcastIntent(flow);
           sendOrderedBroadcast(intent, null);
         }
       };
@@ -323,7 +323,7 @@ public class KegbotCoreService extends Service {
           @Override
           public void run() {
             Log.d(TAG, "Flow started: " + flow);
-            final Intent intent = KegtapBroadcast.getPourStartBroadcastIntent(flow);
+            final Intent intent = KegtabBroadcast.getPourStartBroadcastIntent(flow);
             sendOrderedBroadcast(intent, null);
           }
         };
@@ -443,7 +443,7 @@ public class KegbotCoreService extends Service {
   }
 
   private Notification buildForegroundNotification() {
-    final Intent intent = new Intent(this, KegtapActivity.class);
+    final Intent intent = new Intent(this, HomeActivity.class);
     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
     intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
     final PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent,
