@@ -2,3 +2,6 @@ android/*/bin
 android/*/gen
 
 .DS_Store
+
+android/Kegtap/res/values/build_strings.xml
+android/Kegtap/src/org/kegbot/app/build/BuildInfo.java
