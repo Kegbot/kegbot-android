@@ -1,32 +1,34 @@
 /*
  * Copyright 2012 Mike Wakerly <opensource@hoho.com>.
  *
- * This file is part of the Kegtab package from the Kegbot project. For
- * more information on Kegtab or Kegbot, see <http://kegbot.org/>.
+ * This file is part of the Kegtab package from the Kegbot project. For more
+ * information on Kegtab or Kegbot, see <http://kegbot.org/>.
  *
- * Kegtab is free software: you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the Free
- * Software Foundation, version 2.
+ * Kegtab is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, version 2.
  *
- * Kegtab is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
- * more details.
+ * Kegtab is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along
- * with Kegtab. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * Kegtab. If not, see <http://www.gnu.org/licenses/>.
  */
 package org.kegbot.core;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.http.annotation.GuardedBy;
 import org.kegbot.core.Flow.State;
 
+import android.os.SystemClock;
 import android.util.Log;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -39,16 +41,13 @@ public class FlowManager {
 
   private static final String TAG = FlowManager.class.getSimpleName();
 
-  /**
-   * Minimum tick delta needed to start a flow. This prevents slight meter
-   * readings (for example those that might be caused by bubbles) from starting
-   * a new pour.
-   */
-  private static final int MIN_FLOW_START_TICKS = 10;
-
   private static FlowManager sSingleton = null;
 
   private final TapManager mTapManager;
+
+  private final Clock mClock;
+
+  private int mNextFlowId = 1;
 
   private long mDefaultIdleTimeMillis = TimeUnit.SECONDS.toMillis(30);
 
@@ -60,7 +59,12 @@ public class FlowManager {
   /**
    * All flow listeners.
    */
+  @GuardedBy("mListeners")
   private Collection<Listener> mListeners = Sets.newLinkedHashSet();
+
+  public interface Clock {
+    public long currentTimeMillis();
+  }
 
   /**
    * Listener interfaces for updates to managed flows.
@@ -119,8 +123,9 @@ public class FlowManager {
   private ScheduledFuture<?> mFuture;
 
   @VisibleForTesting
-  protected FlowManager(final TapManager tapManager) {
+  protected FlowManager(final TapManager tapManager, final Clock clock) {
     mTapManager = tapManager;
+    mClock = clock;
   }
 
   private synchronized void startIdleChecker() {
@@ -150,7 +155,7 @@ public class FlowManager {
    *
    * @return
    */
-  public Collection<Flow> getAllActiveFlows() {
+  public List<Flow> getAllActiveFlows() {
     synchronized (mFlowsByTap) {
       return ImmutableList.copyOf(Iterables.filter(mFlowsByTap.values(), Flow.PREDICATE_ACTIVE));
     }
@@ -161,20 +166,9 @@ public class FlowManager {
    *
    * @return
    */
-  public Collection<Flow> getIdleFlows() {
+  public List<Flow> getIdleFlows() {
     synchronized (mFlowsByTap) {
       return ImmutableList.copyOf(Iterables.filter(mFlowsByTap.values(), Flow.PREDICATE_IDLE));
-    }
-  }
-
-  /**
-   * Returns all flows that are marked as completed.
-   *
-   * @return
-   */
-  public Collection<Flow> getCompletedFlows() {
-    synchronized (mFlowsByTap) {
-      return ImmutableList.copyOf(Iterables.filter(mFlowsByTap.values(), Flow.PREDICATE_COMPLETED));
     }
   }
 
@@ -211,20 +205,6 @@ public class FlowManager {
     return mDefaultIdleTimeMillis;
   }
 
-  public Flow handleNewTicks(final String tapName, final int newTicks) {
-    final Tap tap = mTapManager.getTapForMeterName(tapName);
-    if (tap == null || tapName == null) {
-      Log.d(TAG, "Dropping activity for unknown tap: " + tapName);
-      return null;
-    }
-    final Integer original = mLastTapReading.get(tap);
-    int ticks = newTicks;
-    if (original != null) {
-      ticks += original.intValue();
-    }
-    return handleMeterActivity(tapName, ticks);
-  }
-
   public Flow handleMeterActivity(final String tapName, final int ticks) {
     Log.d(TAG, "handleMeterActivity: " + tapName + "=" + ticks);
     final Tap tap = mTapManager.getTapForMeterName(tapName);
@@ -240,14 +220,6 @@ public class FlowManager {
       delta = 0;
     } else {
       delta = Math.max(0, ticks - lastReading.intValue());
-    }
-
-    // A delta of zero is a special case: either the meter reading overflowed,
-    // or this is the first recorded flow.
-    if (delta > 0 && delta < MIN_FLOW_START_TICKS) {
-      Log.d(TAG, "handleMeterActivity: not enough activity to start " + "flow: delta=" + delta
-          + " min=" + MIN_FLOW_START_TICKS);
-      return null;
     }
 
     mLastTapReading.put(tap, Integer.valueOf(ticks));
@@ -286,20 +258,19 @@ public class FlowManager {
     Log.d(TAG, "Activating username=" + username + " at tap=" + tap + " current flow=" + flow);
 
     if (flow != null) {
-      if (flow.getUsername().equals(username)) {
-        Log.d(TAG, "activateUserAtTap: got same username, nothing to do.");
-        return flow;
-      } else if (flow.isAnonymous()) {
+      if (!flow.isAuthenticated()) {
         Log.d(TAG, "activateUserAtTap: existing flow is anonymous, taking it over.");
         flow.setUsername(username);
         publishFlowUpdate(flow);
         return flow;
-      } else if (flow.isAuthenticated()) {
-        Log.d(TAG, "activateUserAtTap: existing flow is authenticated; ignoring auth event.");
-        // NOTE(mikey): In previous version of Kegbot, we let the new user take
-        // over the existing flow.  Testing has shown this to be surprise users,
-        // so just ignore the auth event rather than ending the flow.
-        return flow;
+      } else {
+        if (flow.getUsername().equals(username)) {
+          Log.d(TAG, "activateUserAtTap: got same username, nothing to do.");
+          return flow;
+        } else {
+          Log.d(TAG, "activateUserAtTap: existing flow is for different user; replacing.");
+          endFlow(flow);
+        }
       }
     }
 
@@ -337,7 +308,7 @@ public class FlowManager {
 
   public Flow startFlow(final Tap tap, final long maxIdleTimeMs) {
     Log.d(TAG, "Starting flow on tap " + tap);
-    final Flow flow = Flow.build(tap, maxIdleTimeMs);
+    final Flow flow = new Flow(mClock, mNextFlowId++, tap, maxIdleTimeMs);
     synchronized (mFlowsByTap) {
       mFlowsByTap.put(tap, flow);
       flow.setState(State.ACTIVE);
@@ -349,18 +320,20 @@ public class FlowManager {
   }
 
   /**
-   * Attaches a {@link Listener} to the core.
+   * Attaches a {@link Listener} to the flow manager.
    *
    * @param listener
    *          the listener
    * @return <code>true</code> if the listener was not already attached
    */
-  public synchronized boolean addFlowListener(final Listener listener) {
-    return mListeners.add(listener);
+  public boolean addFlowListener(final Listener listener) {
+    synchronized (mListeners) {
+      return mListeners.add(listener);
+    }
   }
 
   /**
-   * Removes a {@link Listener} from the core.
+   * Removes a {@link Listener} from the flow manager.
    *
    * @param listener
    *          the listener
@@ -401,7 +374,13 @@ public class FlowManager {
 
   public static synchronized FlowManager getSingletonInstance() {
     if (sSingleton == null) {
-      sSingleton = new FlowManager(TapManager.getSingletonInstance());
+      final Clock clock = new Clock() {
+        @Override
+        public long currentTimeMillis() {
+          return SystemClock.uptimeMillis();
+        }
+      };
+      sSingleton = new FlowManager(TapManager.getSingletonInstance(), clock);
     }
     return sSingleton;
   }

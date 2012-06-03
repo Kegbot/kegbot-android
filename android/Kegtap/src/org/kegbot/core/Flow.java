@@ -20,8 +20,9 @@ package org.kegbot.core;
 
 import java.util.List;
 
-import android.os.SystemClock;
+import org.kegbot.core.FlowManager.Clock;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Predicate;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
@@ -54,10 +55,7 @@ public class Flow {
     INITIAL, ACTIVE, IDLE, COMPLETED,
   }
 
-  /**
-   * Global for next flow id.
-   */
-  private static int sFlowId = 0;
+  private Clock mClock;
 
   /**
    * Flow id for this instance.
@@ -109,15 +107,16 @@ public class Flow {
 
   private final List<String> mImages = Lists.newArrayList();
 
-  private Flow(int flowId, Tap tap, long maxIdleTimeMs) {
+  public Flow(Clock clock, int flowId, Tap tap, long maxIdleTimeMs) {
     mState = State.INITIAL;
+    mClock = clock;
     mFlowId = flowId;
     mTap = tap;
     mMaxIdleTimeMs = maxIdleTimeMs;
     mUsername = "";
     mTicks = 0;
-    mStartTime = SystemClock.uptimeMillis();
-    mUpdateTime = SystemClock.uptimeMillis();
+    mStartTime = clock.currentTimeMillis();
+    mUpdateTime = clock.currentTimeMillis();
   }
 
   @Override
@@ -139,21 +138,10 @@ public class Flow {
   }
 
   /**
-   * Factory method. Generates a new Flow object with a unique flow id.
-   *
-   * @param tap
-   * @param maxIdleTimeMs
-   * @return
-   */
-  public static Flow build(Tap tap, long maxIdleTimeMs) {
-    return new Flow(++sFlowId, tap, maxIdleTimeMs);
-  }
-
-  /**
    * Sets the flow's last activity time to now.
    */
   public void pokeActivity() {
-    mUpdateTime = SystemClock.uptimeMillis();
+    mUpdateTime = mClock.currentTimeMillis();
   }
 
   /**
@@ -196,13 +184,14 @@ public class Flow {
     return mMaxIdleTimeMs;
   }
 
-  public void setState(State state) {
+  @VisibleForTesting
+  protected void setState(State state) {
     if (mState == State.COMPLETED) {
       throw new IllegalStateException("Flow already completed, cannot set " + state);
     }
     mState = state;
     if (mState == State.COMPLETED) {
-      mEndTime = SystemClock.uptimeMillis();
+      mEndTime = mClock.currentTimeMillis();
     }
   }
 
@@ -212,13 +201,13 @@ public class Flow {
 
   public long getDurationMs() {
     if (mState != State.COMPLETED) {
-      return SystemClock.uptimeMillis() - mStartTime;
+      return mClock.currentTimeMillis() - mStartTime;
     }
     return mEndTime - mStartTime;
   }
 
   public long getIdleTimeMs() {
-    return SystemClock.uptimeMillis() - mUpdateTime;
+    return mClock.currentTimeMillis() - mUpdateTime;
   }
 
   public long getMsUntilIdle() {
@@ -255,6 +244,9 @@ public class Flow {
    * @return
    */
   public boolean isIdle() {
+    if (mState == State.IDLE) {
+      return true;
+    }
     if (mState != State.ACTIVE) {
       return false;
     }
