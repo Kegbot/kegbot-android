@@ -4,9 +4,6 @@
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 	<classpathentry exported="true" kind="lib" path="libs/protobuf/protobuf-java-2.4.1-pre.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/jackson/jackson-core-asl-1.7.4.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/jackson/jackson-mapper-asl-1.7.4.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/unit/jscience-vm14.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/httpcomponents-client-4.0.3/lib/apache-mime4j-0.6.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/GoogleAnalytics/libGoogleAnalytics.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/guava/guava-11.0.2.jar"/>
@@ -17,6 +14,9 @@
 	<classpathentry exported="true" kind="lib" path="libs/httpcomponents-client-4.0.3/lib/commons-logging-1.1.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/EasyTrackerAndroid_1.0/EasyTracker.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/kegbot-api/kegbot-api.jar" sourcepath="libs/kegbot-api/kegbot-api-src.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/jackson/jackson-core-asl-1.7.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/jackson/jackson-mapper-asl-1.7.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/jscience/jscience-vm14.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/UsbSerialLibrary"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry kind="output" path="bin/classes"/>
