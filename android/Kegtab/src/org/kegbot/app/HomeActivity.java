@@ -44,6 +44,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.google.common.collect.Lists;
@@ -62,6 +63,7 @@ public class HomeActivity extends CoreActivity {
 
   private KegbotApi mApi;
 
+  private ViewGroup mControls;
   private Button mBeerMeButton;
   private Button mNewDrinkerButton;
 
@@ -117,6 +119,8 @@ public class HomeActivity extends CoreActivity {
     mSession = (SessionStatsFragment) getFragmentManager().findFragmentById(
         R.id.currentSessionFragment);
 
+    mControls = (ViewGroup) findViewById(R.id.mainActivityControls);
+
     mBeerMeButton = (Button) findViewById(R.id.beerMeButton);
     mBeerMeButton.setOnClickListener(mOnBeerMeClickedListener);
     mNewDrinkerButton = (Button) findViewById(R.id.newDrinkerButton);
@@ -138,6 +142,11 @@ public class HomeActivity extends CoreActivity {
   @Override
   protected void onResume() {
     super.onResume();
+    if (mPrefsHelper.getRunCore()) {
+      mControls.setVisibility(View.VISIBLE);
+    } else {
+      mControls.setVisibility(View.GONE);
+    }
     handleIntent();
     startStatusPolling();
   }

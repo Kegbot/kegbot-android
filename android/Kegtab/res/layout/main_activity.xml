@@ -22,6 +22,7 @@
         android:orientation="vertical" >
 
         <LinearLayout
+            android:id="@+id/mainActivityControls"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/shape_rounded_rect"
@@ -70,8 +71,8 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="2dip"
-                android:layout_marginTop="5dip"
                 android:layout_marginBottom="5dip"
+                android:layout_marginTop="5dip"
                 android:background="#1FFFFFFF" />
 
             <fragment
