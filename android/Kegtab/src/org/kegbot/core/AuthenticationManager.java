@@ -64,8 +64,9 @@ public class AuthenticationManager {
               Log.d(TAG, "Got auth token: " + tok);
               if (tok.hasUser()) {
                 return tok.getUser();
+              } else {
+                throw new KegbotApiNotFoundError("Token not assigned.");
               }
-              return null;
             }
           });
 
