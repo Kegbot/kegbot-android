@@ -20,12 +20,9 @@ package org.kegbot.app.settings;
 
 import org.kegbot.app.R;
 
-import android.app.Fragment;
+import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 import android.webkit.WebView;
 
 /**
@@ -33,21 +30,19 @@ import android.webkit.WebView;
  *
  * @author mike wakerly (opensource@hoho.com)
  */
-public class ThirdPartyLicensesFragment extends Fragment {
+public class ThirdPartyLicensesActivity extends Activity {
 
-  private static final String TAG = ThirdPartyLicensesFragment.class.getSimpleName();
+  private static final String TAG = ThirdPartyLicensesActivity.class.getSimpleName();
 
-  private ViewGroup mView;
   private WebView mWebView;
 
   @Override
-  public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    Log.d(TAG, "onCreateView");
-    mView = (ViewGroup) inflater.inflate(R.layout.third_party_licenses_fragment_layout, container, false);
-    mWebView = (WebView) mView.findViewById(R.id.thirdPartyLicensesWebView);
+  public void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    Log.d(TAG, "onCreate");
+    setContentView(R.layout.third_party_licenses_fragment_layout);
+    mWebView = (WebView) findViewById(R.id.thirdPartyLicensesWebView);
     mWebView.loadUrl("file:///android_asset/html/third_party_licenses.html");
-
-    return mView;
   }
 
   @Override
@@ -58,19 +53,6 @@ public class ThirdPartyLicensesFragment extends Fragment {
       mWebView.destroy();
       mWebView = null;
     }
-  }
-
-  @Override
-  public void onDestroyView() {
-    super.onDestroyView();
-    Log.d(TAG, "onDestroyView");
-
-    if (mWebView != null) {
-      mView.removeView(mWebView);
-      mWebView.destroy();
-      mWebView = null;
-    }
-    mView = null;
   }
 
   @Override
@@ -87,7 +69,7 @@ public class ThirdPartyLicensesFragment extends Fragment {
     super.onResume();
     Log.d(TAG, "onResume");
     if (mWebView != null) {
-      //mWebView.onResume();
+      mWebView.onResume();
     }
   }
 

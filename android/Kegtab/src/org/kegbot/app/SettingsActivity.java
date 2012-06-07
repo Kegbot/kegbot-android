@@ -20,6 +20,7 @@ package org.kegbot.app;
 
 import java.util.List;
 
+import org.kegbot.app.settings.ThirdPartyLicensesActivity;
 import org.kegbot.app.setup.SetupActivity;
 import org.kegbot.app.util.PreferenceHelper;
 import org.kegbot.core.FlowManager;
@@ -93,13 +94,15 @@ public class SettingsActivity extends PreferenceActivity {
   public void onBuildHeaders(List<Header> target) {
     loadHeadersFromResource(R.xml.settings_headers, target);
 
+    /*
     final Header thirdParty = new PreferenceActivity.Header();
     thirdParty.breadCrumbShortTitle = "Open Source Licenses";
     thirdParty.breadCrumbTitle = "Open Source Licenses";
-    thirdParty.fragment = "org.kegbot.app.settings.ThirdPartyLicensesFragment";
+    thirdParty.fragment = "org.kegbot.app.settings.ThirdPartyLicensesActivity";
     thirdParty.title = "Open Source Licenses";
 
     target.add(thirdParty);
+    */
   }
 
   public static class GeneralFragment extends PreferenceFragment {
@@ -178,6 +181,15 @@ public class SettingsActivity extends PreferenceActivity {
       if (actionBar != null) {
         actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_USE_LOGO);
       }
+
+      findPreference("third_party").setOnPreferenceClickListener(new OnPreferenceClickListener() {
+        @Override
+        public boolean onPreferenceClick(Preference preference) {
+          final Intent thirdPartyIntent = new Intent(getActivity(), ThirdPartyLicensesActivity.class);
+          startActivity(thirdPartyIntent);
+          return true;
+        }
+      });
 
     }
   }

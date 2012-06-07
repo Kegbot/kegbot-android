@@ -19,8 +19,8 @@
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.kegbot.app"
-    android:versionCode="10"
-    android:versionName="1.0 beta 10" >
+    android:versionCode="14"
+    android:versionName="1.0 beta 14" >
 
     <uses-sdk
         android:minSdkVersion="14"
@@ -39,7 +39,7 @@
         android:required="false" />
     <uses-feature
         android:name="android.hardware.screen.landscape"
-        android:required="true" />
+        android:required="false" />
 
     <supports-screens
         android:largeScreens="false"
@@ -110,6 +110,9 @@
         </activity>
         <activity
             android:name=".SettingsActivity"
+            android:label="@string/settings_name" />
+        <activity
+            android:name=".settings.ThirdPartyLicensesActivity"
             android:label="@string/settings_name" />
         <activity
             android:name=".EnterPinActivity"
