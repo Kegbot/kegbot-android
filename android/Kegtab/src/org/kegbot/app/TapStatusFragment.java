@@ -32,6 +32,7 @@ import android.app.Activity;
 import android.app.ListFragment;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -94,9 +95,14 @@ public class TapStatusFragment extends ListFragment {
     if (mView == null) {
       return;
     }
+
     final TextView title = (TextView) mView.findViewById(R.id.tapTitle);
     final TextView subtitle = (TextView) mView.findViewById(R.id.tapSubtitle);
+    final TextView tapNotes = (TextView) mView.findViewById(R.id.tapNotes);
     final ViewFlipper flipper = (ViewFlipper) mView.findViewById(R.id.tapStatusFlipper);
+
+    tapNotes.setText("Last synced: " + DateUtils.formatDateTime(getActivity(), System.currentTimeMillis(),
+        DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME));
 
     if (tap == null) {
       Log.w(TAG, "Called with empty tap detail.");
@@ -124,13 +130,11 @@ public class TapStatusFragment extends ListFragment {
     title.setText(keg.getType().getName());
 
     final ImageView tapImage = (ImageView) mView.findViewById(R.id.tapImage);
-    if (tapImage != null) {
-      tapImage.setBackgroundResource(R.drawable.kegbot_unknown_square_2);
-      if (keg.getType().hasImage()) {
-        final Image image = keg.getType().getImage();
-        final String imageUrl = image.getUrl();
-        mImageDownloader.download(imageUrl, tapImage);
-      }
+    tapImage.setImageResource(R.drawable.kegbot_unknown_square_2);
+    if (keg.getType().hasImage()) {
+      final Image image = keg.getType().getImage();
+      final String imageUrl = image.getUrl();
+      mImageDownloader.download(imageUrl, tapImage);
     }
 
     // TODO(mikey): proper units support
@@ -157,7 +161,7 @@ public class TapStatusFragment extends ListFragment {
       badge2.setBadgeCaption("Pints Left");
     }
 
-    // Badge 3: Temperpature
+    // Badge 3: Temperature
     // TODO(mikey): Preference for C/F
     final BadgeView badge3 = (BadgeView) mView.findViewById(R.id.tapStatsBadge3);
     if (tap.hasLastTemperature()) {

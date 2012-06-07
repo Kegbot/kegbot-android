@@ -37,10 +37,9 @@
     </LinearLayout>
 
     <View
+        android:id="@+id/tap_detail_divider"
         android:layout_width="match_parent"
         android:layout_height="2dip"
-        android:layout_marginLeft="5dip"
-        android:layout_marginRight="5dip"
         android:background="#1FFFFFFF" />
 
     <!-- Inner contents -->
@@ -100,17 +99,16 @@
 
         <!-- Main View -->
 
-        <LinearLayout
+        <RelativeLayout
             android:id="@+id/tapActiveView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="top"
-            android:orientation="vertical" >
+            android:layout_height="match_parent" >
 
             <LinearLayout
                 android:id="@+id/tapStatsBadges"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_below="@+id/tap_detail_divider"
                 android:gravity="center"
                 android:orientation="horizontal" >
 
@@ -119,37 +117,45 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="10dip"
-                    android:background="@color/black20pct" />
+                    android:background="@color/black20pct" >
+                </org.kegbot.app.view.BadgeView>
 
                 <org.kegbot.app.view.BadgeView
                     android:id="@+id/tapStatsBadge2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="10dip"
-                    android:background="@color/black20pct" />
+                    android:background="@color/black20pct" >
+                </org.kegbot.app.view.BadgeView>
 
                 <org.kegbot.app.view.BadgeView
                     android:id="@+id/tapStatsBadge3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="10dip"
-                    android:background="@color/black20pct" />
+                    android:background="@color/black20pct" >
+                </org.kegbot.app.view.BadgeView>
             </LinearLayout>
 
             <ImageView
                 android:id="@+id/tapImage"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="16dip"
-                android:adjustViewBounds="true" />
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_below="@id/tapStatsBadges"
+                android:layout_centerHorizontal="true"
+                android:layout_margin="16dip" />
 
             <TextView
                 android:id="@+id/tapNotes"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="5dip"
                 android:textColor="#888"
-                android:textSize="16dip" />
-        </LinearLayout>
+                android:textSize="16dip"
+                android:textStyle="italic" />
+        </RelativeLayout>
     </ViewFlipper>
 
 </LinearLayout>

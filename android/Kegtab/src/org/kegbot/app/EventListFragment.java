@@ -33,8 +33,10 @@ import org.kegbot.proto.Models.SystemEvent;
 
 import android.app.Activity;
 import android.app.ListFragment;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Html;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.View;
@@ -51,9 +53,9 @@ import android.widget.TextView;
 import com.google.common.base.Strings;
 
 /**
- * Displays events in a System Event Set in a list.
+ * Lists recent events.
  *
- * @author justinkoh
+ * @author mike wakerly (opensource@hoho.com)
  */
 public class EventListFragment extends ListFragment {
 
@@ -79,143 +81,115 @@ public class EventListFragment extends ListFragment {
     }
   };
 
-  @Override
-  public void onAttach(Activity activity) {
-    super.onAttach(activity);
-    mImageDownloader = ImageDownloader.getSingletonInstance(activity);
-  }
+  /**
+   *
+   */
+  private class EventListArrayAdapter extends ArrayAdapter<SystemEvent> {
 
-  @Override
-  public void onActivityCreated(Bundle savedInstanceState) {
-    super.onActivityCreated(savedInstanceState);
+    private EventListArrayAdapter(Context context, int resource, int textViewResourceId) {
+      super(context, resource, textViewResourceId);
+    }
 
-    mAdapter = new ArrayAdapter<SystemEvent>(getActivity(), R.layout.event_list_item,
-        R.id.eventTitle) {
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+      final View view = super.getView(position, convertView, parent);
+      final SystemEvent eventDetail = getItem(position);
+      try {
+        formatEvent(eventDetail, view);
+      } catch (Throwable e) {
+        Log.wtf(LOG_TAG, "UNCAUGHT EXCEPTION", e);
+      }
+      return view;
+    }
 
-      @Override
-      public View getView(int position, View convertView, ViewGroup parent) {
-        final SystemEvent eventDetail = getItem(position);
-        final View view = super.getView(position, convertView, parent);
-        try {
-          formatEvent(eventDetail, view);
-        } catch (Throwable e) {
-          Log.wtf(LOG_TAG, "UNCAUGHT EXCEPTION", e);
+    private void formatEvent(SystemEvent event, View view) {
+      // Common: image.
+      final ImageView icon = (ImageView) view.findViewById(R.id.eventIcon);
+      icon.setVisibility(View.GONE);
+      if (event.hasImage()) {
+        final String imageUrl = event.getImage().getThumbnailUrl();
+        if (!Strings.isNullOrEmpty(imageUrl)) {
+          icon.setVisibility(View.VISIBLE);
+          icon.setImageBitmap(null);
+
+          // Default to unknown drinker, may be immediately replaced by downloader.
+          icon.setBackgroundResource(R.drawable.unknown_drinker);
+          mImageDownloader.download(imageUrl, icon);
         }
-        return view;
       }
 
-      private void formatEvent(SystemEvent event, View view) {
-        // Common: image.
-        final ImageView icon = (ImageView) view.findViewById(R.id.eventIcon);
-        icon.setVisibility(View.GONE);
-        if (event.hasImage()) {
-          final String imageUrl = event.getImage().getThumbnailUrl();
-          if (!Strings.isNullOrEmpty(imageUrl)) {
-            icon.setVisibility(View.VISIBLE);
-            icon.setImageBitmap(null);
-
-            // Default to unknown drinker, may be immediately replaced by downloader.
-            icon.setBackgroundResource(R.drawable.unknown_drinker);
-            mImageDownloader.download(imageUrl, icon);
-          }
-        }
-
-        // Common: user portion.
-        final TextView userName = (TextView) view.findViewById(R.id.eventUserName);
-        final String userNameString = getUsernameForEvent(event);
-        if (userNameString != null) {
-          userName.setText(userNameString);
-          userName.setVisibility(View.VISIBLE);
-        } else {
-          userName.setVisibility(View.GONE);
-        }
-
-        // Event body.
-        final TextView title = (TextView) view.findViewById(R.id.eventTitle);
-        title.setText(getTitle(event));
-
-        // Date and time.
-        TextView dateView = (TextView) view.findViewById(R.id.eventDate);
-        String isoTime = event.getTime();
-        try {
-          long time = Utils.dateFromIso8601String(isoTime);
-
-          CharSequence relTime = DateUtils.getRelativeDateTimeString(getContext(), time, 60 * 1000,
-              7 * 24 * 60 * 60 * 100, 0);
-          dateView.setText(relTime);
-          dateView.setVisibility(View.VISIBLE);
-        } catch (ParseException e) {
-          dateView.setVisibility(View.GONE);
-        }
-
+      final String eventTextContent;
+      final String userNameString = getUsernameForEvent(event);
+      if (userNameString != null) {
+        eventTextContent = "<b>" + userNameString + "</b> " + getTitle(event);
+      } else {
+        eventTextContent = getTitle(event);
       }
 
-      private String getTitle(SystemEvent eventDetail) {
-        final String kind = eventDetail.getKind();
-        final Drink drink = eventDetail.getDrink();
-        String result;
+      final TextView eventText = (TextView) view.findViewById(R.id.eventText);
+      eventText.setText(Html.fromHtml(eventTextContent));
 
-        if ("keg_ended".equals(kind)) {
-          result = "ended";
-        } else if ("keg_tapped".equals(kind)) {
-          result = "tapped";
-        } else if ("drink_poured".equals(kind)) {
-          double ounces = Units.volumeMlToOunces(drink.getVolumeMl());
-          result = String.format("poured %.1f ounces", Double.valueOf(ounces));
-        } else if ("session_joined".equals(kind)) {
-          result = "started drinking";
-        } else if ("session_started".equals(kind)) {
-          result = "started a new session";
-        } else {
-          result = "Unknown event";
-        }
-        return result;
+      // Date and time.
+      TextView dateView = (TextView) view.findViewById(R.id.eventDate);
+      String isoTime = event.getTime();
+      try {
+        long time = Utils.dateFromIso8601String(isoTime);
+
+        CharSequence relTime = DateUtils.getRelativeDateTimeString(getContext(), time, 60 * 1000,
+            7 * 24 * 60 * 60 * 100, 0);
+        dateView.setText(relTime);
+        dateView.setVisibility(View.VISIBLE);
+      } catch (ParseException e) {
+        dateView.setVisibility(View.GONE);
       }
 
-      private String getUsernameForEvent(SystemEvent eventDetail) {
-        final String userName;
-        if (!eventDetail.hasUser()) {
-          userName = "a guest";
-        } else {
-          userName = eventDetail.getUser().getUsername();
-        }
+    }
 
-        final String kind = eventDetail.getKind();
-        if ("drink_poured".equals(kind)) {
-          return userName;
-        } else if ("session_joined".equals(kind)) {
-          return userName;
-        } else if ("session_started".equals(kind)) {
-          return userName;
-        } else if ("keg_ended".equals(kind) || "keg_tapped".equals(kind)) {
-          if (eventDetail.hasKeg()) {
-            return "Keg " + eventDetail.getKeg().getId();
-          }
-        }
+    private String getTitle(SystemEvent eventDetail) {
+      final String kind = eventDetail.getKind();
+      final Drink drink = eventDetail.getDrink();
+      String result;
 
-        return null;
+      if ("keg_ended".equals(kind)) {
+        result = "ended";
+      } else if ("keg_tapped".equals(kind)) {
+        result = "tapped";
+      } else if ("drink_poured".equals(kind)) {
+        double ounces = Units.volumeMlToOunces(drink.getVolumeMl());
+        result = String.format("poured %.1f ounces", Double.valueOf(ounces));
+      } else if ("session_joined".equals(kind)) {
+        result = "started drinking";
+      } else if ("session_started".equals(kind)) {
+        result = "started a new session";
+      } else {
+        result = "Unknown event";
       }
-    };
+      return result;
+    }
 
-    AnimationSet set = new AnimationSet(true);
+    private String getUsernameForEvent(SystemEvent eventDetail) {
+      final String userName;
+      if (!eventDetail.hasUser()) {
+        userName = "a guest";
+      } else {
+        userName = eventDetail.getUser().getUsername();
+      }
 
-    Animation animation = new AlphaAnimation(0.0f, 1.0f);
-    animation.setDuration(300);
-    set.addAnimation(animation);
-    animation = new TranslateAnimation(
-        Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF, 0.0f,
-        Animation.RELATIVE_TO_SELF, -1.0f, Animation.RELATIVE_TO_SELF, 0.0f
-    );
-    animation.setDuration(300);
-    set.addAnimation(animation);
+      final String kind = eventDetail.getKind();
+      if ("drink_poured".equals(kind)) {
+        return userName;
+      } else if ("session_joined".equals(kind)) {
+        return userName;
+      } else if ("session_started".equals(kind)) {
+        return userName;
+      } else if ("keg_ended".equals(kind) || "keg_tapped".equals(kind)) {
+        if (eventDetail.hasKeg()) {
+          return "Keg " + eventDetail.getKeg().getId();
+        }
+      }
 
-    LayoutAnimationController controller = new LayoutAnimationController(set, 0.3f);
-    getListView().setLayoutAnimation(controller);
-    setListAdapter(mAdapter);
-  }
-
-  void loadEvents() {
-    new EventLoaderTask().execute();
+      return null;
+    }
   }
 
   private class EventLoaderTask extends AsyncTask<Void, Void, List<SystemEvent>> {
@@ -254,5 +228,38 @@ public class EventListFragment extends ListFragment {
         }
       }
     }
+  }
+
+  @Override
+  public void onAttach(Activity activity) {
+    super.onAttach(activity);
+    mImageDownloader = ImageDownloader.getSingletonInstance(activity);
+  }
+
+  @Override
+  public void onActivityCreated(Bundle savedInstanceState) {
+    super.onActivityCreated(savedInstanceState);
+
+    mAdapter = new EventListArrayAdapter(getActivity(), R.layout.event_list_item, R.id.eventText);
+
+    AnimationSet set = new AnimationSet(true);
+
+    Animation animation = new AlphaAnimation(0.0f, 1.0f);
+    animation.setDuration(300);
+    set.addAnimation(animation);
+    animation = new TranslateAnimation(
+        Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF, 0.0f,
+        Animation.RELATIVE_TO_SELF, -1.0f, Animation.RELATIVE_TO_SELF, 0.0f
+    );
+    animation.setDuration(300);
+    set.addAnimation(animation);
+
+    LayoutAnimationController controller = new LayoutAnimationController(set, 0.3f);
+    getListView().setLayoutAnimation(controller);
+    setListAdapter(mAdapter);
+  }
+
+  void loadEvents() {
+    new EventLoaderTask().execute();
   }
 }
