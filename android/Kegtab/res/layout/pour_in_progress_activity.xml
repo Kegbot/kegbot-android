@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
+    android:gravity="top"
     android:orientation="horizontal"
     android:weightSum="1.0" >
 
@@ -21,64 +21,17 @@
     <LinearLayout
         android:id="@+id/pourInProgressRightCol"
         android:layout_width="0dip"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_weight="0.4"
-        android:gravity="center"
+        android:gravity="top"
         android:orientation="vertical" >
-
-        <LinearLayout
-            android:id="@+id/controlsBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="top"
-            android:gravity="center"
-            android:orientation="horizontal" >
-
-            <ImageView
-                android:id="@+id/pourDrinkerImage"
-                android:layout_width="128dip"
-                android:layout_height="128dip"
-                android:scaleType="centerCrop"
-                android:layout_margin="5dip"
-                android:src="@drawable/unknown_drinker"
-                android:adjustViewBounds="true"/>
-
-            <LinearLayout
-                android:id="@+id/controlsBoxSub"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="vertical" >
-
-                <org.kegbot.app.util.SoftMultiLineEditText
-                    android:id="@+id/shoutText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="top|left"
-                    android:hint="Shout something! (optional)"
-                    android:inputType="textCapSentences|textShortMessage|textMultiLine"
-                    android:lines="3"
-                    android:maxLength="140"
-                    android:scrollHorizontally="false"
-                    android:imeOptions="actionDone"
-                    />
-
-                <Button
-                    android:id="@+id/pourEndButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="Done Pouring!"
-                    android:textSize="32dip" />
-            </LinearLayout>
-        </LinearLayout>
 
         <fragment
             android:id="@+id/camera"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
             class="org.kegbot.app.camera.CameraFragment" >
+
             <!-- Preview: layout=@layout/camera_fragment_layout -->
         </fragment>
     </LinearLayout>

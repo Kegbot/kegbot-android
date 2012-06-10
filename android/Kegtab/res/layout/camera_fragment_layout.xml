@@ -8,13 +8,18 @@
     <!-- Header. -->
 
     <TextView
-        android:id="@+id/cameraTitle"
+        android:id="@+id/sessionSubtitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="5dip"
-        android:text="Now Pouring..."
+        android:text="Beer Goggles!"
         android:textColor="#888"
         android:textSize="24dip"
+        android:visibility="gone"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dip"
+        android:background="#1FFFFFFF"
         android:visibility="gone" />
 
     <!-- Camera. -->
@@ -38,22 +43,22 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="horizontal"
-        android:weightSum="1.0"
-        android:visibility="gone">
+        android:visibility="gone"
+        android:weightSum="1.0" >
 
         <Button
             android:id="@+id/cameraDiscardPictureButton"
             android:layout_width="0dip"
-            android:layout_weight="0.5"
             android:layout_height="wrap_content"
+            android:layout_weight="0.5"
             android:text="@string/camera_discard_picture"
             android:textSize="32dip" />
 
         <Button
             android:id="@+id/cameraTakeAnotherButton"
             android:layout_width="0dip"
-            android:layout_weight="0.5"
             android:layout_height="wrap_content"
+            android:layout_weight="0.5"
             android:text="@string/camera_take_another"
             android:textSize="32dip" />
     </LinearLayout>

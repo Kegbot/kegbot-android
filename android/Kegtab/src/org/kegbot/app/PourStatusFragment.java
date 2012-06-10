@@ -1,20 +1,19 @@
 /*
  * Copyright 2012 Mike Wakerly <opensource@hoho.com>.
  *
- * This file is part of the Kegtab package from the Kegbot project. For
- * more information on Kegtab or Kegbot, see <http://kegbot.org/>.
+ * This file is part of the Kegtab package from the Kegbot project. For more
+ * information on Kegtab or Kegbot, see <http://kegbot.org/>.
  *
- * Kegtab is free software: you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the Free
- * Software Foundation, version 2.
+ * Kegtab is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, version 2.
  *
- * Kegtab is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
- * more details.
+ * Kegtab is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along
- * with Kegtab. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * Kegtab. If not, see <http://www.gnu.org/licenses/>.
  */
 package org.kegbot.app;
 
@@ -22,22 +21,33 @@ import java.util.concurrent.TimeUnit;
 
 import org.kegbot.app.util.ImageDownloader;
 import org.kegbot.app.util.Units;
+import org.kegbot.app.view.BadgeView;
+import org.kegbot.core.AuthenticationManager;
 import org.kegbot.core.ConfigurationManager;
 import org.kegbot.core.Flow;
 import org.kegbot.core.Flow.State;
+import org.kegbot.core.FlowManager;
 import org.kegbot.core.Tap;
 import org.kegbot.proto.Models.BeerType;
 import org.kegbot.proto.Models.Keg;
 import org.kegbot.proto.Models.KegTap;
+import org.kegbot.proto.Models.User;
 
 import android.app.Activity;
 import android.app.ListFragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Editable;
+import android.text.Html;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -58,11 +68,18 @@ public class PourStatusFragment extends ListFragment {
   private final Tap mTap;
 
   private View mView;
-  private TextView mPourVolumeNumbers;
-  private TextView mPourVolumeUnits;
-  private TextView mPourBeerName;
+  private BadgeView mPourVolumeBadge;
+  private TextView mTapTitle;
+  private TextView mTapSubtitle;
+  private TextView mStatusText;
   private TextView mStatusLine;
+
+  private EditText mShoutText;
+
   private ImageView mBeerImage;
+  private ImageView mDrinkerImage;
+
+  private String mAppliedUsername;
 
   private Handler mHandler;
 
@@ -74,15 +91,17 @@ public class PourStatusFragment extends ListFragment {
       }
 
       mCurrentVolume += VOLUME_COUNTER_INCREMENT;
-      final String volumeStr;
-      final String units = "ounces";
-      volumeStr = String.format("%.1f", Double.valueOf(mCurrentVolume));
-      if (mPourVolumeNumbers != null) {
-        mPourVolumeNumbers.setText(volumeStr);
+
+      final String volumeStr = String.format("%.1f", Double.valueOf(mCurrentVolume));
+      mPourVolumeBadge.setBadgeValue(volumeStr);
+
+      final String units;
+      if (volumeStr == "1.0") {
+        units = "Ounce Poured";
+      } else {
+        units = "Ounces Poured";
       }
-      if (mPourVolumeUnits != null) {
-        mPourVolumeUnits.setText(units);
-      }
+      mPourVolumeBadge.setBadgeCaption(units);
 
       if (mCurrentVolume < mTargetVolume) {
         mHandler.postDelayed(mCounterIncrementRunnable, VOLUME_COUNTER_INCREMENT_DELAY_MILLIS);
@@ -107,11 +126,66 @@ public class PourStatusFragment extends ListFragment {
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     mView = inflater.inflate(R.layout.pour_status_item_layout, container, false);
 
-    mPourVolumeNumbers = (TextView) mView.findViewById(R.id.pourVolumeNumbers);
-    mPourVolumeUnits = (TextView) mView.findViewById(R.id.pourVolumeWords);
-    mPourBeerName = (TextView) mView.findViewById(R.id.pourBeerName);
-    mStatusLine = (TextView) mView.findViewById(R.id.pourStatusLine);
-    mBeerImage = (ImageView) mView.findViewById(R.id.pourImage);
+    mPourVolumeBadge = (BadgeView) mView.findViewById(R.id.tapStatsBadge1);
+    mPourVolumeBadge.setBadgeValue("0.0");
+    mPourVolumeBadge.setBadgeCaption("Ounces Poured");
+
+    mTapTitle = (TextView) mView.findViewById(R.id.tapTitle);
+    mTapSubtitle = (TextView) mView.findViewById(R.id.tapSubtitle);
+
+    mStatusText = (TextView) mView.findViewById(R.id.tapStatusText);
+    mStatusLine = (TextView) mView.findViewById(R.id.tapNotes);
+    mBeerImage = (ImageView) mView.findViewById(R.id.tapImage);
+    mDrinkerImage = (ImageView) mView.findViewById(R.id.pourDrinkerImage);
+
+    mDrinkerImage.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        final Intent intent = DrinkerSelectActivity.getStartIntentForTap(
+            getActivity(), getTap().getMeterName());
+        startActivity(intent);
+      }
+    });
+
+    final OnClickListener donePouringListener = new OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        final FlowManager flowManager = FlowManager.getSingletonInstance();
+        final Flow flow = flowManager.getFlowForTap(getTap());
+
+        if (flow != null) {
+          flowManager.endFlow(flow);
+        }
+      }
+    };
+    ((Button) mView.findViewById(R.id.pourEndButton)).setOnClickListener(donePouringListener);
+
+    mShoutText = (EditText) mView.findViewById(R.id.shoutText);
+    mShoutText.addTextChangedListener(new TextWatcher() {
+      @Override
+      public void onTextChanged(CharSequence s, int start, int before, int count) {
+      }
+
+      @Override
+      public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+      }
+
+      @Override
+      public void afterTextChanged(Editable s) {
+        final Tap tap = getTap();
+        if (tap == null) {
+          Log.w(TAG, "Bad tap.");
+          return;
+        }
+        final Flow flow = FlowManager.getSingletonInstance().getFlowForTap(tap);
+        if (flow == null) {
+          Log.w(TAG, "Flow went away, dropping shout.");
+          return;
+        }
+        flow.setShout(s.toString());
+        flow.pokeActivity();
+      }
+    });
 
     return mView;
   }
@@ -129,6 +203,10 @@ public class PourStatusFragment extends ListFragment {
     applyTapDetail();
   }
 
+  public ImageView getDrinkerImageView() {
+    return mDrinkerImage;
+  }
+
   private void applyTapDetail() {
     final KegTap tapDetail = ConfigurationManager.getSingletonInstance().getTapDetail(
         getTap().getMeterName());
@@ -136,8 +214,7 @@ public class PourStatusFragment extends ListFragment {
       Log.wtf(TAG, "Tap detail is null.");
       return;
     }
-
-    mBeerImage.setBackgroundDrawable(getResources().getDrawable(R.drawable.kegbot_unknown_square_2));
+    mBeerImage.setImageResource(R.drawable.kegbot_unknown_square_2);
 
     if (tapDetail.hasCurrentKeg()) {
       final Keg keg = tapDetail.getCurrentKeg();
@@ -145,8 +222,8 @@ public class PourStatusFragment extends ListFragment {
       final String beerName = type.getName();
 
       // Set beer name.
-      if (!Strings.isNullOrEmpty(beerName) && mPourBeerName != null) {
-        mPourBeerName.setText(beerName);
+      if (!Strings.isNullOrEmpty(beerName) && mTapTitle != null) {
+        mTapTitle.setText(beerName);
       }
 
       // Set beer image.
@@ -154,6 +231,10 @@ public class PourStatusFragment extends ListFragment {
         final String imageUrl = type.getImage().getUrl();
         mImageDownloader.download(imageUrl, mBeerImage);
       }
+      mTapSubtitle.setText(mTap.getName());
+    } else {
+      mTapTitle.setText(mTap.getName());
+      mTapSubtitle.setText("");
     }
   }
 
@@ -176,20 +257,14 @@ public class PourStatusFragment extends ListFragment {
       mHandler.post(mCounterIncrementRunnable);
     }
 
-    // Set drinker image.
-    //final ImageView pourDrinkerImage = (ImageView) view.findViewById(R.id.pourDrinkerImager);
-    /*
-    //final Button logInButton = (Button) mView.findViewById(R.id.logInButton);
-    final TextView pourDrinkerName = (TextView) mView.findViewById(R.id.pourDrinkerName);
-    if (flow.isAnonymous()) {
-      logInButton.setVisibility(View.VISIBLE);
-      pourDrinkerName.setVisibility(View.GONE);
+    // Set tap title.
+    final String username = flow.getUsername();
+    if (!Strings.isNullOrEmpty(username)) {
+      final String text = "Now pouring: <b>" + username + "</b>";
+      mStatusText.setText(Html.fromHtml(text));
     } else {
-      logInButton.setVisibility(View.GONE);
-      pourDrinkerName.setText(flow.getUsername());
-      pourDrinkerName.setVisibility(View.VISIBLE);
+      mStatusText.setText("Guest pour (tap drinker image to log in).");
     }
-    */
 
     // Update beer info.
     if ((flowState == State.ACTIVE || flowState == State.IDLE)
@@ -205,16 +280,23 @@ public class PourStatusFragment extends ListFragment {
       mStatusLine.setVisibility(View.INVISIBLE);
     }
 
-    /*
-    final OnClickListener donePouringListener = new OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        mFlowManager.endFlow(flow);
+    if (!Strings.isNullOrEmpty(username) && !username.equals(mAppliedUsername)) {
+      final AuthenticationManager authManager = AuthenticationManager
+          .getSingletonInstance(getActivity());
+      final User user = authManager.getUserDetail(username);
+      if (user.hasImage()) {
+        // NOTE(mikey): Use the full-sized image rather than the thumbnail;
+        // in many cases the former will already be in the cache from
+        // DrinkerSelectActivity.
+        final String thumbnailUrl = user.getImage().getThumbnailUrl();
+        if (!Strings.isNullOrEmpty(thumbnailUrl)) {
+          mImageDownloader.download(thumbnailUrl, mDrinkerImage);
+          mDrinkerImage.setTag(Boolean.TRUE);
+        }
       }
-    };
-    ((Button) view.findViewById(R.id.endPourButton)).setOnClickListener(donePouringListener);
-
-     */
+      mDrinkerImage.setOnClickListener(null);
+    }
+    mAppliedUsername = username;
   }
 
   public void setIdle() {

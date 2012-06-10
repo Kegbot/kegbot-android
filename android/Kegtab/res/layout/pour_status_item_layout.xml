@@ -2,107 +2,138 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
+    android:background="@drawable/shape_rounded_rect"
+    android:gravity="top"
     android:orientation="vertical"
-    android:padding="24dip">
+    android:paddingTop="12dip"
+    android:paddingBottom="12dip"
+    android:paddingLeft="24dip"
+    android:paddingRight="24dip"
+    >
 
     <!-- First row: Keg Image and Pour Total. -->
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center|left"
-        android:orientation="horizontal"
-        android:weightSum="1.0" >
+        android:gravity="bottom|left"
+        android:orientation="horizontal" >
 
-        <!-- Keg image -->
-
-        <ImageView
-            android:id="@+id/pourImage"
-            android:layout_width="0dip"
+        <TextView
+            android:id="@+id/tapTitle"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="0.5"
-            android:adjustViewBounds="true"
-            android:maxHeight="192dip"
-            android:maxWidth="192dip"
-            android:scaleType="centerInside"/>
+            android:layout_marginRight="16dip"
+            android:textSize="48dip"
+            android:textStyle="bold" />
 
-        <!-- Pour total. -->
-
-        <LinearLayout
-            android:layout_width="0dip"
+        <TextView
+            android:id="@+id/tapSubtitle"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="0.5"
-            android:gravity="center"
-            android:orientation="vertical" >
-
-            <TextView
-                android:id="@+id/pourVolumeNumbers"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="0.0"
-                android:textSize="152dip"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/pourVolumeWords"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="ounces"
-                android:textSize="18dip" />
-        </LinearLayout>
+            android:textColor="#888"
+            android:textSize="24dip" />
     </LinearLayout>
-    
+
+    <TextView
+        android:id="@+id/tapStatusText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="24dip"
+        android:textColor="#888"/>
+
     <View
+        android:id="@+id/tap_detail_divider"
         android:layout_width="match_parent"
         android:layout_height="2dip"
-        android:layout_marginBottom="10dip"
-        android:layout_marginLeft="5dip"
-        android:layout_marginRight="5dip"
-        android:layout_marginTop="10dip"
-        android:background="#1FFFFFFF" />
+        android:background="#1FFFFFFF"
+        android:layout_marginTop="5dip"
+        android:layout_marginBottom="5dip"/>
 
-    <TextView
-        android:id="@+id/pourBeerName"
+    <RelativeLayout
+        android:id="@+id/tapActiveView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Unknown Beer"
-        android:textColor="#888"
-        android:textSize="36dip"
-        android:textStyle="bold" />
-    
-    <TextView
-        android:id="@+id/pourStatusLine"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text=""
-        android:textColor="@android:color/darker_gray"
-        android:textSize="18dip" />
+        android:layout_height="match_parent"
+        android:gravity="center" >
 
-    <!-- Next row: main stuff -->
+        <LinearLayout
+            android:id="@+id/controlsBox"
+            android:layout_width="512dip"
+            android:layout_height="160dip"
+            android:layout_alignParentTop="true"
+            android:layout_gravity="top"
+            android:background="@color/black20pct"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="5dip" >
 
-    <!-- gone -->
+            <ImageView
+                android:id="@+id/pourDrinkerImage"
+                android:layout_width="128dip"
+                android:layout_height="128dip"
+                android:layout_margin="5dip"
+                android:adjustViewBounds="true"
+                android:scaleType="centerCrop"
+                android:src="@drawable/unknown_drinker" />
 
-    <TextView
-        android:id="@+id/pourDrinkerName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="16dip"
-        android:text="unknown"
-        android:textSize="24dip"
-        android:textStyle="bold"
-        android:visibility="gone" />
+            <LinearLayout
+                android:id="@+id/controlsBoxSub"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical" >
 
-    <Button
-        android:id="@+id/endPourButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="right"
-        android:gravity="right"
-        android:text="Done Pouring"
-        android:textSize="24dip"
-        android:visibility="gone" />
+                <org.kegbot.app.util.SoftMultiLineEditText
+                    android:id="@+id/shoutText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="top|left"
+                    android:hint="Shout something! (optional)"
+                    android:imeOptions="actionDone"
+                    android:inputType="textCapSentences|textShortMessage|textMultiLine"
+                    android:lines="3"
+                    android:maxLength="140"
+                    android:scrollHorizontally="false" />
+
+                <Button
+                    android:id="@+id/pourEndButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="Done Pouring!"
+                    android:textSize="32dip" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <org.kegbot.app.view.BadgeView
+            android:id="@+id/tapStatsBadge1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="10dip"
+            android:layout_toRightOf="@id/controlsBox"
+            android:background="@color/black20pct" >
+        </org.kegbot.app.view.BadgeView>
+
+        <ImageView
+            android:id="@+id/tapImage"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_below="@id/controlsBox"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="16dip" />
+
+        <TextView
+            android:id="@+id/tapNotes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="5dip"
+            android:textColor="#888"
+            android:textSize="16dip"
+            android:textStyle="italic" />
+    </RelativeLayout>
 
     <!--
     The frame layout is here since we will be showing either

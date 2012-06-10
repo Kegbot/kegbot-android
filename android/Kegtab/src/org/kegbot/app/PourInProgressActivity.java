@@ -1,20 +1,19 @@
 /*
  * Copyright 2012 Mike Wakerly <opensource@hoho.com>.
  *
- * This file is part of the Kegtab package from the Kegbot project. For
- * more information on Kegtab or Kegbot, see <http://kegbot.org/>.
+ * This file is part of the Kegtab package from the Kegbot project. For more
+ * information on Kegtab or Kegbot, see <http://kegbot.org/>.
  *
- * Kegtab is free software: you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the Free
- * Software Foundation, version 2.
+ * Kegtab is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, version 2.
  *
- * Kegtab is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
- * more details.
+ * Kegtab is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along
- * with Kegtab. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * Kegtab. If not, see <http://www.gnu.org/licenses/>.
  */
 package org.kegbot.app;
 
@@ -23,14 +22,11 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.kegbot.app.camera.CameraFragment;
-import org.kegbot.app.util.ImageDownloader;
 import org.kegbot.app.util.PreferenceHelper;
-import org.kegbot.core.AuthenticationManager;
 import org.kegbot.core.Flow;
 import org.kegbot.core.FlowManager;
 import org.kegbot.core.Tap;
 import org.kegbot.core.TapManager;
-import org.kegbot.proto.Models.User;
 
 import android.app.ActionBar;
 import android.app.AlertDialog;
@@ -49,15 +45,8 @@ import android.os.Handler;
 import android.os.PowerManager;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
@@ -80,12 +69,6 @@ public class PourInProgressActivity extends CoreActivity {
 
   private CameraFragment mCameraFragment;
 
-  private Button mEndPourButton;
-
-  private ImageView mPourDrinkerImage;
-
-  private EditText mShoutText;
-
   private AlertDialog mIdleDetectedDialog;
 
   private final Handler mHandler = new Handler();
@@ -101,10 +84,6 @@ public class PourInProgressActivity extends CoreActivity {
   private Tap mCurrentTap;
 
   private List<Tap> mTaps;
-
-  private AuthenticationManager mAuthManager;
-
-  private ImageDownloader mImageDownloader;
 
   private static final boolean DEBUG = false;
 
@@ -134,8 +113,8 @@ public class PourInProgressActivity extends CoreActivity {
           flow.addImage(filename);
         }
       } else if (KegtabBroadcast.ACTION_PICTURE_DISCARDED.equals(action)) {
-        final String filename =
-            intent.getStringExtra(KegtabBroadcast.PICTURE_DISCARDED_EXTRA_FILENAME);
+        final String filename = intent
+            .getStringExtra(KegtabBroadcast.PICTURE_DISCARDED_EXTRA_FILENAME);
         Log.d(TAG, "Discarded photo: " + filename);
         final Flow flow = getCurrentlyFocusedFlow();
         if (flow != null) {
@@ -168,7 +147,8 @@ public class PourInProgressActivity extends CoreActivity {
   private final ViewPager.OnPageChangeListener mPageChangeListener = new ViewPager.OnPageChangeListener() {
     @Override
     public void onPageSelected(int position) {
-      final Tap tap = ((PourStatusFragment) mPouringTapAdapter.getItem(position)).getTap();
+      PourStatusFragment frag = (PourStatusFragment) mPouringTapAdapter.getItem(position);
+      final Tap tap = frag.getTap();
       if (tap != mCurrentTap) {
         updateForNewlyFocusedTap(tap);
       }
@@ -239,9 +219,6 @@ public class PourInProgressActivity extends CoreActivity {
     setContentView(R.layout.pour_in_progress_activity);
     bindToCoreService();
 
-    mAuthManager = AuthenticationManager.getSingletonInstance(this);
-    mImageDownloader = ImageDownloader.getSingletonInstance(this);
-
     mTaps = Lists.newArrayList(mTapManager.getTaps());
     if (mTaps.isEmpty()) {
       Log.e(TAG, "No taps!");
@@ -249,50 +226,10 @@ public class PourInProgressActivity extends CoreActivity {
       return;
     }
 
-    mPourDrinkerImage = (ImageView) findViewById(R.id.pourDrinkerImage);
-
     mTapPager = (ViewPager) findViewById(R.id.tapPager);
     mPouringTapAdapter = new PouringTapAdapter(getFragmentManager());
     mTapPager.setAdapter(mPouringTapAdapter);
     mTapPager.setOnPageChangeListener(mPageChangeListener);
-
-    mEndPourButton = (Button) findViewById(R.id.pourEndButton);
-    mEndPourButton.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        endAllFlows();
-      }
-    });
-
-    mShoutText = (EditText) findViewById(R.id.shoutText);
-    mShoutText.addTextChangedListener(new TextWatcher() {
-      @Override
-      public void onTextChanged(CharSequence s, int start, int before, int count) {
-      }
-
-      @Override
-      public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-      }
-
-      @Override
-      public void afterTextChanged(Editable s) {
-        final Tap tap = mCurrentTap;
-        if (tap == null) {
-          Log.w(TAG, "Bad tap.");
-          return;
-        }
-        final Flow flow = mFlowManager.getFlowForTap(tap);
-        if (flow == null) {
-          Log.w(TAG, "Flow went away, dropping shout.");
-          return;
-        }
-        flow.setShout(s.toString());
-        flow.pokeActivity();
-      }
-    });
-
-    findViewById(R.id.controlsBox).setBackgroundDrawable(
-        getResources().getDrawable(R.drawable.shape_rounded_rect));
 
     mCameraFragment = (CameraFragment) getFragmentManager().findFragmentById(R.id.camera);
 
@@ -340,36 +277,6 @@ public class PourInProgressActivity extends CoreActivity {
     if (flow == null) {
       return;
     }
-
-    final String username = flow.getUsername();
-    boolean imageSet = false;
-    if (!Strings.isNullOrEmpty(username)) {
-      final User user = mAuthManager.getUserDetail(username);
-      if (user.hasImage()) {
-        // NOTE(mikey): Use the full-sized image rather than the thumbnail;
-        // in many cases the former will already be in the cache from
-        // DrinkerSelectActivity.
-        mImageDownloader.download(user.getImage().getThumbnailUrl(), mPourDrinkerImage);
-        imageSet = true;
-      }
-    }
-    if (!imageSet) {
-      mPourDrinkerImage.setBackgroundResource(R.drawable.unknown_drinker);
-    }
-    if (flow.isAnonymous()) {
-      mPourDrinkerImage.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-          final Intent intent = DrinkerSelectActivity.getStartIntentForTap(getApplicationContext(),
-              tap.getMeterName());
-          startActivity(intent);
-        }
-      });
-    } else {
-      mPourDrinkerImage.setOnClickListener(null);
-    }
-
-    mShoutText.setText(flow.getShout());
   }
 
   @Override
@@ -385,9 +292,6 @@ public class PourInProgressActivity extends CoreActivity {
     super.onResume();
     Log.d(TAG, "onResume");
     final PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-
-    // TODO(mikey): Silly to set this on any random view. Better way?
-    mPourDrinkerImage.setSystemUiVisibility(View.STATUS_BAR_HIDDEN);
 
     mWakeLock = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ON_AFTER_RELEASE
         | PowerManager.ACQUIRE_CAUSES_WAKEUP, "kegbot-pour");
@@ -487,8 +391,6 @@ public class PourInProgressActivity extends CoreActivity {
   }
 
   private void enableUiComponents(boolean enable) {
-    mShoutText.setEnabled(enable);
-    mEndPourButton.setEnabled(enable);
     mCameraFragment.setEnabled(enable);
   }
 
@@ -546,8 +448,6 @@ public class PourInProgressActivity extends CoreActivity {
     }
     cancelIdleWarning();
     mCameraFragment.cancelPendingPicture();
-    mShoutText.setEnabled(false);
-    mEndPourButton.setEnabled(false);
   }
 
   private void sendIdleWarning() {
