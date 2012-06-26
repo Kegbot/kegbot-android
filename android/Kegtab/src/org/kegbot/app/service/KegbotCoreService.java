@@ -482,7 +482,7 @@ public class KegbotCoreService extends Service {
     Log.d(TAG, "Found " + taps.size() + " tap(s).");
     for (final KegTap tapInfo : taps) {
       Log.d(TAG, "Adding tap: " + tapInfo.getMeterName());
-      final Tap tap = new Tap(tapInfo.getDescription(), tapInfo.getMlPerTick(), tapInfo
+      final Tap tap = new Tap(tapInfo.getName(), tapInfo.getMlPerTick(), tapInfo
           .getMeterName(), tapInfo.getRelayName());
       mTapManager.addTap(tap);
       mConfigManager.setTapDetail(tap.getMeterName(), tapInfo);
