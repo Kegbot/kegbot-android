@@ -30,6 +30,7 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
 
     <uses-feature
         android:name="android.hardware.usb.host"
@@ -40,6 +41,8 @@
     <uses-feature
         android:name="android.hardware.screen.landscape"
         android:required="false" />
+    <uses-feature android:name="android.hardware.bluetooth"
+        android:required="false"/>
 
     <supports-screens
         android:largeScreens="false"
@@ -163,6 +166,9 @@
 
         <!-- KegbotHardwareService -->
         <service android:name=".service.KegbotSoundService" />
+
+        <!-- BluetoothService -->
+        <service android:name=".service.BluetoothService" />
 
         <!-- KegboardService -->
         <service android:name=".service.KegboardService" >

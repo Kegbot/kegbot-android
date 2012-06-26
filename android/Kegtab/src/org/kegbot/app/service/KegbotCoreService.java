@@ -93,6 +93,9 @@ public class KegbotCoreService extends Service {
   private KegbotSoundService mSoundService;
   private boolean mSoundServiceBound;
 
+  private BluetoothService mBluetoothService;
+  private boolean mBluetoothServiceBound;
+
   private CheckinClient mCheckinClient;
 
   private final ExecutorService mExecutorService = Executors.newSingleThreadExecutor();
@@ -177,6 +180,20 @@ public class KegbotCoreService extends Service {
     public void onServiceDisconnected(ComponentName className) {
       mSoundService = null;
       debugNotice("Core->SoundService connection lost.");
+    }
+  };
+
+  private final ServiceConnection mBluetoothServiceConnection = new ServiceConnection() {
+    @Override
+    public void onServiceConnected(ComponentName className, IBinder service) {
+      mBluetoothService = ((BluetoothService.LocalBinder) service).getService();
+      debugNotice("Core->BluetoothService connection established.");
+    }
+
+    @Override
+    public void onServiceDisconnected(ComponentName className) {
+      mBluetoothService = null;
+      debugNotice("Core->BluetoothService connection lost.");
     }
   };
 
@@ -400,6 +417,12 @@ public class KegbotCoreService extends Service {
     mSoundServiceBound = true;
   }
 
+  private synchronized void bindToBluetoothService() {
+    final Intent intent = new Intent(this, BluetoothService.class);
+    bindService(intent, mBluetoothServiceConnection, Context.BIND_AUTO_CREATE);
+    mSoundServiceBound = true;
+  }
+
   @Override
   public IBinder onBind(Intent intent) {
     return mBinder;
@@ -433,6 +456,7 @@ public class KegbotCoreService extends Service {
       bindToApiService();
       bindToHardwareService();
       bindToSoundService();
+      bindToBluetoothService();
       mFlowManager.addFlowListener(mFlowListener);
       startForeground(NOTIFICATION_FOREGROUND, buildForegroundNotification());
     } else {
