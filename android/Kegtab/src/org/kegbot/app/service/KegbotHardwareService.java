@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import org.kegbot.app.KegtabBroadcast;
 import org.kegbot.core.AuthenticationToken;
 import org.kegbot.core.FlowMeter;
 import org.kegbot.core.Tap;
@@ -63,7 +64,6 @@ public class KegbotHardwareService extends Service {
   private static final long THERMO_REPORT_PERIOD_MILLIS = TimeUnit.SECONDS.toMillis(30);
 
   private static final String ACTION_METER_UPDATE = "org.kegbot.action.METER_UPDATE";
-  private static final String ACTION_TOKEN_AUTHED = "org.kegbot.action.TOKEN_AUTHED";
   private static final String ACTION_TOKEN_DEAUTHED = "org.kegbot.action.TOKEN_DEAUTHED";
 
   private static final String EXTRA_TICKS = "ticks";
@@ -93,7 +93,7 @@ public class KegbotHardwareService extends Service {
   private static final IntentFilter DEBUG_INTENT_FILTER = new IntentFilter();
   static {
     DEBUG_INTENT_FILTER.addAction(ACTION_METER_UPDATE);
-    DEBUG_INTENT_FILTER.addAction(ACTION_TOKEN_AUTHED);
+    DEBUG_INTENT_FILTER.addAction(KegtabBroadcast.ACTION_TOKEN_ADDED);
     DEBUG_INTENT_FILTER.addAction(ACTION_TOKEN_DEAUTHED);
   }
 
@@ -114,15 +114,15 @@ public class KegbotHardwareService extends Service {
           Log.d(TAG, "Got debug meter update: tap=" + tapName + " ticks=" + ticks);
           handleMeterUpdate(tapName, ticks);
         }
-      } else if (ACTION_TOKEN_AUTHED.equals(action) || ACTION_TOKEN_DEAUTHED.equals(action)) {
+      } else if (KegtabBroadcast.ACTION_TOKEN_ADDED.equals(action) || ACTION_TOKEN_DEAUTHED.equals(action)) {
         final Bundle extras = intent.getExtras();
         if (extras == null) {
           return;
         }
         final String tapName = extras.getString(EXTRA_TAP_NAME, "");
-        final String authDevice = extras.getString("auth_device", "core.rfid");
-        final String value = extras.getString("value", "");
-        final boolean added = ACTION_TOKEN_AUTHED.equals(action);
+        final String authDevice = extras.getString(KegtabBroadcast.TOKEN_ADDED_EXTRA_AUTH_DEVICE, "core.rfid");
+        final String value = extras.getString(KegtabBroadcast.TOKEN_ADDED_EXTRA_TOKEN_VALUE, "");
+        final boolean added = KegtabBroadcast.ACTION_TOKEN_ADDED.equals(action);
         Log.d(TAG, "Sending token auth event: authDevice=" + authDevice + " value=" + value);
         handleTokenAuthEvent(tapName, authDevice, value, added);
       }
