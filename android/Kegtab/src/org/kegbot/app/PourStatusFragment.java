@@ -290,7 +290,6 @@ public class PourStatusFragment extends ListFragment {
         final String thumbnailUrl = user.getImage().getThumbnailUrl();
         if (!Strings.isNullOrEmpty(thumbnailUrl)) {
           mImageDownloader.download(thumbnailUrl, mDrinkerImage);
-          mDrinkerImage.setTag(Boolean.TRUE);
         }
       }
       mDrinkerImage.setOnClickListener(null);
