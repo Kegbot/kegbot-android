@@ -39,7 +39,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
-import android.text.Html;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -66,6 +65,7 @@ public class PourStatusFragment extends ListFragment {
   private ImageDownloader mImageDownloader;
 
   private final Tap mTap;
+  private KegTap mTapDetail;
 
   private View mView;
   private BadgeView mPourVolumeBadge;
@@ -223,7 +223,7 @@ public class PourStatusFragment extends ListFragment {
 
       // Set beer name.
       if (!Strings.isNullOrEmpty(beerName) && mTapTitle != null) {
-        mTapTitle.setText(beerName);
+        mStatusText.setText(beerName);
       }
 
       // Set beer image.
@@ -233,8 +233,7 @@ public class PourStatusFragment extends ListFragment {
       }
       mTapSubtitle.setText(mTap.getName());
     } else {
-      mTapTitle.setText(mTap.getName());
-      mTapSubtitle.setText("");
+      mTapSubtitle.setText(mTap.getName());
     }
   }
 
@@ -260,10 +259,10 @@ public class PourStatusFragment extends ListFragment {
     // Set tap title.
     final String username = flow.getUsername();
     if (!Strings.isNullOrEmpty(username)) {
-      final String text = "Now pouring: <b>" + username + "</b>";
-      mStatusText.setText(Html.fromHtml(text));
+      mTapTitle.setText("Hi, " + username + "!");
     } else {
-      mStatusText.setText("Guest pour (tap drinker image to log in).");
+      mTapTitle.setText("Guest Pour");
+      mStatusText.setText("Tap drinker image to log in.");
     }
 
     // Update beer info.
