@@ -50,7 +50,7 @@
     <string name="setup_dialog_validate_title">Verifying ...</string>
     <string name="setup_dialog_validate_description">Verifying information, please wait ...</string>
     <string name="setup_log_in_title">Log In</string>
-    <string name="setup_log_in_description">In order to talk to your Kegbot server, the Kegtab application needs an API key.\n\nPlease log in with a manager account in order to accquire an API key for this application.</string>
+    <string name="setup_log_in_description">In order to talk to your Kegbot server, the Kegtab application needs an API key.\n\nPlease log in with a manager account in order to accquire an API key for this application. Your password will not be saved.</string>
     <string name="setup_finished_title">Done!</string>
     <string name="setup_finished_description">You\'re all set!\n\nYour Kegtab is now active. Press Next to finish. Please drink responsibly.</string>
     <string name="setup_run_core_title">Run Core</string>

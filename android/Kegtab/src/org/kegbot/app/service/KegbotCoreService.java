@@ -497,7 +497,7 @@ public class KegbotCoreService extends Service {
    */
   private void configure() throws KegbotApiException {
     Log.d(TAG, "Configuring!");
-    final Uri apiUrl = mPreferences.getKegbotUrl();
+    final Uri apiUrl = Uri.parse(mPreferences.getApiUrl());
     mApiService.setApiUrl(apiUrl.toString());
     mApiService.setApiKey(mPreferences.getApiKey());
 

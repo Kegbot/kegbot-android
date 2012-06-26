@@ -20,7 +20,6 @@ package org.kegbot.app.util;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.preference.PreferenceManager;
 
 public class PreferenceHelper {
@@ -30,7 +29,6 @@ public class PreferenceHelper {
   public static final String KEY_KEGBOT_URL = "kegbot_url";
   public static final String KEY_API_KEY = "api_key";
   public static final String KEY_USERNAME = "username";
-  public static final String KEY_PASSWORD = "password";
   public static final String KEY_PIN = "pin";
   public static final String KEY_DEVICE_ID = "kbid";
   public static final String KEY_IS_REGISTERED = "is_registered";
@@ -43,10 +41,14 @@ public class PreferenceHelper {
     mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
   }
 
-  public Uri getKegbotUrl() {
+  public String getKegbotUrl() {
     String uriString = mSharedPreferences.getString("kegbot_url", "");
     uriString = uriString.replaceAll("/+$", "");
-    return Uri.parse(uriString);
+    return uriString;
+  }
+
+  public String getApiUrl() {
+    return getKegbotUrl() + "/api";
   }
 
   public void setKegbotUrl(String url) {
@@ -76,14 +78,6 @@ public class PreferenceHelper {
 
   public void setUsername(String username) {
     mSharedPreferences.edit().putString(KEY_USERNAME, username).apply();
-  }
-
-  public String getPassword() {
-    return mSharedPreferences.getString(KEY_PASSWORD, "");
-  }
-
-  public void setPassword(String password) {
-    mSharedPreferences.edit().putString(KEY_PASSWORD, password).apply();
   }
 
   public long getMinimumVolumeMl() {

@@ -130,7 +130,7 @@ public class HomeActivity extends CoreActivity {
     v.setSystemUiVisibility(View.STATUS_BAR_HIDDEN);
 
     mApi = KegbotApiImpl.getSingletonInstance();
-    mApi.setApiUrl(mPrefsHelper.getKegbotUrl().toString());
+    mApi.setApiUrl(mPrefsHelper.getApiUrl());
     mApi.setApiKey(mPrefsHelper.getApiKey());
   }
 

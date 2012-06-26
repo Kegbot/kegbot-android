@@ -44,9 +44,6 @@ public class SetupLogInFragment extends SetupFragment {
     EditText text = (EditText) mView.findViewById(R.id.apiUsername);
     text.setText(prefs.getUsername());
 
-    text = (EditText) mView.findViewById(R.id.apiPassword);
-    text.setText(prefs.getPassword());
-
     mView.setBackgroundDrawable(getResources().getDrawable(R.drawable.shape_rounded_rect));
     return mView;
   }
@@ -74,7 +71,7 @@ public class SetupLogInFragment extends SetupFragment {
 
     PreferenceHelper prefs = new PreferenceHelper(getActivity());
     KegbotApi api = new KegbotApiImpl();
-    api.setApiUrl(prefs.getKegbotUrl().toString());
+    api.setApiUrl(prefs.getApiUrl());
 
     try {
       api.login(username, password);
@@ -90,7 +87,6 @@ public class SetupLogInFragment extends SetupFragment {
     }
 
     prefs.setUsername(username);
-    prefs.setPassword(password);
     prefs.setApiKey(apiKey);
 
     return "";

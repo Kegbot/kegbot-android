@@ -49,7 +49,7 @@ public class SetupKegbotUrlFragment extends SetupFragment {
     mView = inflater.inflate(R.layout.setup_kegbot_url_fragment, null);
     PreferenceHelper prefs = new PreferenceHelper(getActivity());
     EditText text = (EditText) mView.findViewById(R.id.kegbotUrl);
-    final String existingUrl = prefs.getKegbotUrl().toString();
+    final String existingUrl = prefs.getKegbotUrl();
     if (!Strings.isNullOrEmpty(existingUrl)) {
       // Don't clobber the hint if empty.
       text.setText(existingUrl);
@@ -106,7 +106,7 @@ public class SetupKegbotUrlFragment extends SetupFragment {
       return builder.toString();
     }
 
-    prefs.setKegbotUrl(apiUrl);
+    prefs.setKegbotUrl(baseUrl);
 
     return "";
   }
