@@ -84,7 +84,7 @@ public class KegbotApiImpl implements KegbotApi {
 
   private String mBaseUrl;
 
-  private String apiKey = null;
+  private String mApiKey;
 
   private ClientConnectionManager mConnManager;
   private HttpParams mHttpParams;
@@ -146,9 +146,7 @@ public class KegbotApiImpl implements KegbotApi {
     if (params != null) {
       actualParams.addAll(params);
     }
-    if (!Strings.isNullOrEmpty(apiKey)) {
-      actualParams.add(new BasicNameValuePair("api_key", apiKey));
-    }
+
     if (!actualParams.isEmpty()) {
       path += "?" + URLEncodedUtils.format(actualParams, "utf-8");
     }
@@ -160,10 +158,6 @@ public class KegbotApiImpl implements KegbotApi {
   }
 
   private JsonNode doPost(String path, Map<String, String> params) throws KegbotApiException {
-    if (apiKey != null) {
-      debug("POST: api_key=" + apiKey);
-      params.put("api_key", apiKey);
-    }
     return toJson(doRawPost(path, params));
   }
 
@@ -188,9 +182,9 @@ public class KegbotApiImpl implements KegbotApi {
     try {
       final HttpResponse response;
       debug("Requesting: " + request.getURI());
-
-      // HttpContext localContext = new BasicHttpContext();
-      // localContext.setAttribute(ClientContext.COOKIE_STORE, mCookieStore);
+      if (!Strings.isNullOrEmpty(mApiKey)) {
+        request.addHeader("X-Kegbot-Api-Key", mApiKey);
+      }
 
       response = mHttpClient.execute(request);
       debug("DONE: " + request.getURI());
@@ -302,8 +296,7 @@ public class KegbotApiImpl implements KegbotApi {
 
   @Override
   public void setApiKey(String apiKey) {
-    this.apiKey = apiKey;
-    debug("Set apiKey=" + apiKey);
+    mApiKey = apiKey;
   }
 
   @Override
@@ -548,14 +541,6 @@ public class KegbotApiImpl implements KegbotApi {
     final HttpPost httpost = new HttpPost(getRequestUrl("/drinks/" + drinkId + "/add-photo/"));
     MultipartEntity entity = new MultipartEntity();
     entity.addPart("photo", new FileBody(imageFile));
-    if (apiKey != null) {
-      try {
-        entity.addPart("api_key", new StringBody(apiKey));
-        debug("image upload set api key");
-      } catch (UnsupportedEncodingException e) {
-        debug("BAD API KEY");
-      }
-    }
     httpost.setEntity(entity);
     final HttpResponse response = execute(httpost);
     final JsonNode responseJson = toJson(response);
@@ -575,11 +560,6 @@ public class KegbotApiImpl implements KegbotApi {
       entity.addPart("photo", new FileBody(imageFile));
     }
     try {
-      if (!Strings.isNullOrEmpty(apiKey)) {
-        entity.addPart("api_key", new StringBody(apiKey));
-      } else {
-        throw new KegbotApiException("Need an API key");
-      }
       entity.addPart("username", new StringBody(username));
       entity.addPart("email", new StringBody(email));
       entity.addPart("password", new StringBody(password));
