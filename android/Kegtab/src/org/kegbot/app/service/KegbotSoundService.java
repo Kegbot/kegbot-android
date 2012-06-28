@@ -258,8 +258,10 @@ public class KegbotSoundService extends BackgroundService {
 
   private void handleCommand(final Intent command) {
     final SoundEventHandler handler = getHandlerForEvent(command);
+    Log.d(TAG, "Handling command: " + command + " mSoundEvents.size=" + mSoundEvents.size());
 
     if (handler == null) {
+      Log.d(TAG, "No handler.");
       return;
     }
 
@@ -347,8 +349,11 @@ public class KegbotSoundService extends BackgroundService {
     final String action = intent.getAction();
     final Flow flow = getFlowForPourIntent(intent);
 
-    if (KegtabBroadcast.ACTION_POUR_START.equals(action)) {
+    if (!mThresholds.containsKey(flow)) {
       mThresholds.put(flow, getThresholds());
+    }
+
+    if (KegtabBroadcast.ACTION_POUR_START.equals(action)) {
       return SoundEventHandler.POUR_START;
     } else if (KegtabBroadcast.ACTION_POUR_UPDATE.equals(action)) {
       if (flow == null) {
