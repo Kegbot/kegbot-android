@@ -69,7 +69,7 @@ public class KegboardService extends Service {
   private static final String ACTION_USB_PERMISSION = KegboardService.class.getCanonicalName()
       + ".ACTION_USB_PERMISSION";
 
-  private static final boolean VERBOSE = false;
+  private static final boolean VERBOSE = true;
 
   private static final long REFRESH_OUTPUT_PERIOD_MILLIS = TimeUnit.SECONDS.toMillis(5);
 
@@ -213,7 +213,10 @@ public class KegboardService extends Service {
           }
         }
       } else if (UsbManager.ACTION_USB_DEVICE_DETACHED.equals(action)) {
+        Log.d(TAG, "Device detached");
         removeUsbDevice();
+      } else {
+        Log.d(TAG, "Unknown action: " + action);
       }
     }
   };
