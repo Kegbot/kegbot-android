@@ -105,7 +105,7 @@ def generate_license_info(project_dir):
     os.makedirs(out_dir)
   out_file = os.path.join(out_dir, OUT_HTML_LICENSES_FILENAME)
   f = open(out_file, 'w')
-  f.write('<html><body>\n')
+  f.write('<html><body style="color: #eee; background: #000;">\n')
   
   for library_name, license_file in license_map.iteritems():
     f.write('<h2>%s</h2><br>\n' % library_name)
