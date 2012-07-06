@@ -23,9 +23,11 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import org.kegbot.api.KegbotApi;
+import org.kegbot.api.KegbotApiException;
 import org.kegbot.api.KegbotApiImpl;
 import org.kegbot.api.KegbotApiNotFoundError;
 import org.kegbot.app.KegtabBroadcast;
+import org.kegbot.app.util.PreferenceHelper;
 import org.kegbot.proto.Models.User;
 
 import android.content.Context;
@@ -51,22 +53,28 @@ public class AuthenticationManager {
 
   private final KegbotApi mApi = KegbotApiImpl.getSingletonInstance();
 
+  private final PreferenceHelper mPrefsHelper;
+
   private final Context mContext;
+
+  private User fetchUserForToken(AuthenticationToken token) throws KegbotApiException {
+    Log.d(TAG, "Loading token");
+    org.kegbot.proto.Models.AuthenticationToken tok = mApi.getAuthToken(token
+        .getAuthDevice(), token.getTokenValue());
+    Log.d(TAG, "Got auth token: " + tok);
+    if (tok.hasUser()) {
+      return tok.getUser();
+    } else {
+      throw new KegbotApiNotFoundError("Token not assigned.");
+    }
+  }
 
   private final LoadingCache<AuthenticationToken, User> mAuthTokenCache = CacheBuilder
       .newBuilder().expireAfterWrite(CACHE_EXPIRE_HOURS, TimeUnit.HOURS).build(
           new CacheLoader<AuthenticationToken, User>() {
             @Override
             public User load(AuthenticationToken token) throws Exception {
-              Log.d(TAG, "Loading token");
-              org.kegbot.proto.Models.AuthenticationToken tok = mApi.getAuthToken(token
-                  .getAuthDevice(), token.getTokenValue());
-              Log.d(TAG, "Got auth token: " + tok);
-              if (tok.hasUser()) {
-                return tok.getUser();
-              } else {
-                throw new KegbotApiNotFoundError("Token not assigned.");
-              }
+              return fetchUserForToken(token);
             }
           });
 
@@ -82,9 +90,22 @@ public class AuthenticationManager {
 
   private AuthenticationManager(Context context) {
     mContext = context.getApplicationContext();
+    mPrefsHelper = new PreferenceHelper(mContext);
   }
 
   public User authenticateToken(AuthenticationToken token) {
+    if (!mPrefsHelper.getCacheCredentials()) {
+      try {
+        return fetchUserForToken(token);
+      } catch (KegbotApiNotFoundError e) {
+        Log.d(TAG, "Token is not assigned to anyone: " + token);
+        return null;
+      } catch (KegbotApiException e) {
+        Log.w(TAG, "Error fetching token: " + e.getCause(), e);
+        return null;
+      }
+    }
+
     try {
       return mAuthTokenCache.get(token);
     } catch (ExecutionException e) {

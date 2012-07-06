@@ -33,6 +33,10 @@ public class PreferenceHelper {
   public static final String KEY_DEVICE_ID = "kbid";
   public static final String KEY_IS_REGISTERED = "is_registered";
 
+  public static final String KEY_ALLOW_REGISTRAION = "allow_registration";
+  public static final String KEY_ALLOW_MANUAL_LOGIN = "allow_manual_login";
+  public static final String KEY_CACHE_CREDENTIALS = "cache_credentials";
+
   public static final String KEY_RUN_CORE = "run_core";
 
   private final SharedPreferences mSharedPreferences;
@@ -122,6 +126,18 @@ public class PreferenceHelper {
 
   public void setIsRegistered(boolean value) {
     mSharedPreferences.edit().putBoolean(KEY_IS_REGISTERED, value).apply();
+  }
+
+  public boolean getAllowRegistration() {
+    return mSharedPreferences.getBoolean(KEY_ALLOW_REGISTRAION, true);
+  }
+
+  public boolean getAllowManualLogin() {
+    return mSharedPreferences.getBoolean(KEY_ALLOW_MANUAL_LOGIN, true);
+  }
+
+  public boolean getCacheCredentials() {
+    return mSharedPreferences.getBoolean(KEY_CACHE_CREDENTIALS, true);
   }
 
 }

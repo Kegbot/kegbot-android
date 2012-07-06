@@ -142,7 +142,24 @@ public class HomeActivity extends CoreActivity {
   @Override
   protected void onResume() {
     super.onResume();
-    if (mPrefsHelper.getRunCore()) {
+
+    boolean showControls = false;
+
+    if (mPrefsHelper.getAllowManualLogin()) {
+      mBeerMeButton.setVisibility(View.VISIBLE);
+      showControls = true;
+    } else {
+      mBeerMeButton.setVisibility(View.GONE);
+    }
+
+    if (mPrefsHelper.getAllowRegistration()) {
+      mNewDrinkerButton.setVisibility(View.VISIBLE);
+      showControls = true;
+    } else {
+      mNewDrinkerButton.setVisibility(View.GONE);
+    }
+
+    if (showControls && mPrefsHelper.getRunCore()) {
       mControls.setVisibility(View.VISIBLE);
     } else {
       mControls.setVisibility(View.GONE);
