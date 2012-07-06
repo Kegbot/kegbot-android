@@ -21,6 +21,7 @@ package org.kegbot.app.setup;
 import java.util.List;
 
 import org.kegbot.app.R;
+import org.kegbot.app.service.KegbotCoreService;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -29,6 +30,7 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -116,6 +118,9 @@ public class SetupActivity extends Activity {
     super.onCreate(savedInstanceState);
     EasyTracker.getTracker().setContext(this);
     setContentView(R.layout.setup_activity);
+
+    final Intent intent = new Intent(this, KegbotCoreService.class);
+    stopService(intent);
   }
 
   @Override

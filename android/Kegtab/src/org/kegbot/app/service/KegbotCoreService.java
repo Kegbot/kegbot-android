@@ -389,7 +389,7 @@ public class KegbotCoreService extends Service {
 
   @Override
   public int onStartCommand(Intent intent, int flags, int startId) {
-    debugNotice("Core service started.");
+    //debugNotice("Core service started.");
     return START_STICKY;
   }
 
@@ -447,6 +447,20 @@ public class KegbotCoreService extends Service {
       mFlowExecutorService.shutdown();
       mFlowExecutorService = null;
     }
+    if (mBluetoothServiceBound) {
+      unbindService(mBluetoothServiceConnection);
+      mBluetoothServiceBound = false;
+    }
+  }
+
+  public static void startService(Context context) {
+    final Intent intent = new Intent(context, KegbotCoreService.class);
+    context.startService(intent);
+  }
+
+  public static void stopService(Context context) {
+    final Intent intent = new Intent(context, KegbotCoreService.class);
+    context.stopService(intent);
   }
 
   private void updateFromPreferences() {

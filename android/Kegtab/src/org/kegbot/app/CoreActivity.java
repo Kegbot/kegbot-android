@@ -22,47 +22,24 @@ import org.kegbot.app.service.KegbotCoreService;
 
 import android.app.ActionBar;
 import android.app.Activity;
-import android.content.ComponentName;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.view.MenuItem;
 
 import com.google.android.apps.analytics.easytracking.EasyTracker;
 
 /**
- * An activity which is bound to the core service.
+ * An activity which starts the core service on create and resume.
  *
  * @author mike wakerly (mike@wakerly.com)
  */
 public class CoreActivity extends Activity {
 
-  protected KegbotCoreService mCoreService;
-  protected boolean mCoreServiceBound;
-
-  /**
-   * Connection to the Core service.
-   */
-  protected ServiceConnection mCoreServiceConnection = new ServiceConnection() {
-    @Override
-    public void onServiceConnected(ComponentName className, IBinder service) {
-      mCoreService = ((KegbotCoreService.LocalBinder) service).getService();
-      onCoreServiceBound();
-    }
-
-    @Override
-    public void onServiceDisconnected(ComponentName className) {
-      mCoreService = null;
-      onCoreServiceUnbound();
-    }
-  };
-
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     EasyTracker.getTracker().setContext(this);
-    bindToCoreService();
+    KegbotCoreService.startService(this);
   }
 
   @Override
@@ -80,29 +57,8 @@ public class CoreActivity extends Activity {
   @Override
   protected void onResume() {
     setupActionBar();
+    KegbotCoreService.startService(this);
     super.onResume();
-  }
-
-  @Override
-  protected void onDestroy() {
-    try {
-      unbindFromCoreService();
-    } finally {
-      super.onDestroy();
-    }
-  }
-
-  protected void bindToCoreService() {
-    final Intent serviceIntent = new Intent(this, KegbotCoreService.class);
-    bindService(serviceIntent, mCoreServiceConnection, BIND_AUTO_CREATE);
-    mCoreServiceBound = true;
-  }
-
-  protected void unbindFromCoreService() {
-    if (mCoreServiceBound) {
-      unbindService(mCoreServiceConnection);
-      mCoreServiceBound = false;
-    }
   }
 
   protected void setupActionBar() {
@@ -111,14 +67,6 @@ public class CoreActivity extends Activity {
       actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_USE_LOGO);
       actionBar.setTitle("");
     }
-  }
-
-  protected void onCoreServiceBound() {
-
-  }
-
-  protected void onCoreServiceUnbound() {
-
   }
 
   @Override

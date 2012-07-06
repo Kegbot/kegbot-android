@@ -217,7 +217,6 @@ public class PourInProgressActivity extends CoreActivity {
       actionBar.hide();
     }
     setContentView(R.layout.pour_in_progress_activity);
-    bindToCoreService();
 
     mTaps = Lists.newArrayList(mTapManager.getTaps());
     if (mTaps.isEmpty()) {
