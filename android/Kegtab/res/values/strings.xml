@@ -61,5 +61,8 @@
     <string name="camera_discard_picture">Discard</string>
     <string name="camera_take_another">Re-Take</string>
     <string name="kegbot_core_running">Kegbot Core is running</string>
+    <string name="beer_me_button">Beer Me!</string>
+    <string name="new_drinker_button">New Drinker</string>
+    <string name="recent_activity_header">Recent Activity</string>
     
 </resources>

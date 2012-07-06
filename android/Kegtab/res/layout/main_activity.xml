@@ -34,7 +34,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="16dip"
-                android:text="Beer Me!"
+                android:text="@string/beer_me_button"
                 android:textSize="36dip"
                 android:textStyle="bold" />
 
@@ -43,7 +43,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="16dip"
-                android:text="New Drinker"
+                android:text="@string/new_drinker_button"
                 android:textSize="36dip"
                 android:textStyle="bold" />
         </LinearLayout>
@@ -64,7 +64,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Recent Activity"
+                android:text="@string/recent_activity_header"
                 android:textColor="#888"
                 android:textSize="24dip" />
 
