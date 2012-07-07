@@ -194,14 +194,6 @@ public class KegbotHardwareService extends Service {
     }
 
     @Override
-    public void onDeviceDetached() {
-    }
-
-    @Override
-    public void onDeviceAttached() {
-    }
-
-    @Override
     public void onAuthTokenMessage(KegboardAuthTokenMessage message) {
       String deviceName = message.getName();
       if ("onewire".equals(deviceName)) {

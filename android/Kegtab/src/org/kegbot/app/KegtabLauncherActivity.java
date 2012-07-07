@@ -37,7 +37,6 @@ public class KegtabLauncherActivity extends Activity {
   private static final String TAG = KegtabLauncherActivity.class.getSimpleName();
 
   private static final int REQUEST_START_SETUP = 100;
-  private static final int REQUEST_START_MAIN = 101;
 
   PreferenceHelper mPrefs;
 
@@ -71,7 +70,9 @@ public class KegtabLauncherActivity extends Activity {
     } else {
       Log.d(TAG, "Starting main activity");
       final Intent mainIntent = new Intent(this, HomeActivity.class);
-      startActivityForResult(mainIntent, REQUEST_START_MAIN);
+      mainIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+      startActivity(mainIntent);
+      finish();
     }
   }
 
@@ -87,10 +88,6 @@ public class KegtabLauncherActivity extends Activity {
           finish();
           return;
         }
-      case REQUEST_START_MAIN:
-        // Finished main activity.
-        finish();
-        return;
       default:
         Log.w(TAG, "Unknown requestCode: " + requestCode);
         finish();
