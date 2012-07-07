@@ -25,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiException;
 import org.kegbot.api.KegbotApiImpl;
+import org.kegbot.app.service.CheckinService;
 import org.kegbot.app.service.KegboardService;
 import org.kegbot.app.util.PreferenceHelper;
 import org.kegbot.proto.Models.KegTap;
@@ -47,6 +48,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.google.android.gcm.GCMRegistrar;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -58,6 +60,8 @@ public class HomeActivity extends CoreActivity {
    * Interval for periodic API polling.
    */
   private static final long REFRESH_INTERVAL_MILLIS = TimeUnit.SECONDS.toMillis(30);
+
+  private static final String GCM_SENDER_ID = "431392459978";
 
   private EventListFragment mEvents;
 
@@ -132,6 +136,18 @@ public class HomeActivity extends CoreActivity {
     mApi = KegbotApiImpl.getSingletonInstance();
     mApi.setApiUrl(mPrefsHelper.getApiUrl());
     mApi.setApiKey(mPrefsHelper.getApiKey());
+
+    // GCM
+    GCMRegistrar.checkDevice(this);
+    GCMRegistrar.checkManifest(this);
+    final String regId = GCMRegistrar.getRegistrationId(this);
+    if (regId.equals("")) {
+      GCMRegistrar.register(this, GCM_SENDER_ID);
+    } else {
+      Log.v(LOG_TAG, "Already registered");
+      mPrefsHelper.setGcmRegistrationId(regId);
+    }
+    // End GCM
   }
 
   @Override

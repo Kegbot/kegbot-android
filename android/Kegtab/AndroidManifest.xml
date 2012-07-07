@@ -32,6 +32,13 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
 
+    <permission
+        android:name="org.kegbot.app.permission.C2D_MESSAGE"
+        android:protectionLevel="signature" />
+
+    <uses-permission android:name="org.kegbot.app.permission.C2D_MESSAGE" />
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+    
     <uses-feature
         android:name="android.hardware.usb.host"
         android:required="true" />
@@ -149,6 +156,16 @@
                 <action android:name="org.kegbot.action.USER_AUTHED" />
             </intent-filter>
         </receiver>
+        
+        <receiver
+            android:name="com.google.android.gcm.GCMBroadcastReceiver"
+            android:permission="com.google.android.c2dm.permission.SEND" >
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
+                <category android:name="org.kegbot.app" />
+            </intent-filter>
+        </receiver>
 
         <!-- ######## -->
         <!-- SERVICES -->
@@ -171,8 +188,9 @@
         <service android:name=".service.BluetoothService" />
 
         <!-- KegboardService -->
-        <service android:name=".service.KegboardService" >
-        </service>
+        <service android:name=".service.KegboardService" />
+        
+        <service android:name=".GCMIntentService" />
     </application>
 
 </manifest>
