@@ -22,13 +22,11 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import org.kegbot.api.KegbotApiException;
 import org.kegbot.app.HomeActivity;
 import org.kegbot.app.KegtabBroadcast;
 import org.kegbot.app.R;
-import org.kegbot.app.setup.CheckinClient;
 import org.kegbot.app.util.PreferenceHelper;
 import org.kegbot.app.util.Utils;
 import org.kegbot.core.AuthenticationManager;
@@ -96,37 +94,13 @@ public class KegbotCoreService extends Service {
   private BluetoothService mBluetoothService;
   private boolean mBluetoothServiceBound;
 
-  private CheckinClient mCheckinClient;
-
   private final ExecutorService mExecutorService = Executors.newSingleThreadExecutor();
 
   private final ScheduledExecutorService mScheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
 
-  private static final long CHECKIN_RETRY_DELAY_MINUTES = TimeUnit.HOURS.toMinutes(2);
-
-  private static final long CHECKIN_INTERVAL_MINUTES = TimeUnit.HOURS.toMinutes(12);
-
   private long mLastPourStartUptimeMillis = 0;
 
   private static final long SUPPRESS_POUR_START_MILLIS = 2000;
-
-  private final Runnable mCheckinRunnable = new Runnable() {
-    @Override
-    public void run() {
-      long nextDelay = CHECKIN_INTERVAL_MINUTES;
-      try {
-        // TODO(mikey): process messages/errors/updates
-        mCheckinClient.checkin();
-        Log.w(TAG, "Checkin succeeded.");
-      } catch (Exception e) {
-        // Ignore
-        Log.w(TAG, "Checkin failed: " + e);
-        nextDelay = CHECKIN_RETRY_DELAY_MINUTES;
-      }
-      Log.d(TAG, "Next checkin attempt: " + nextDelay + " minutes");
-      mScheduledExecutorService.schedule(this, nextDelay, TimeUnit.MINUTES);
-    }
-  };
 
   /**
    * Connection to the API service.
@@ -364,13 +338,11 @@ public class KegbotCoreService extends Service {
 
     mPreferences = new PreferenceHelper(getApplicationContext());
     mFlowManager.setDefaultIdleTimeMillis(mPreferences.getIdleTimeoutMs());
-    mCheckinClient = new CheckinClient(this);
+
     Log.d(TAG, "Kegtap User-Agent: " + Utils.getUserAgent());
     updateFromPreferences();
     PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
         .registerOnSharedPreferenceChangeListener(mPreferenceListener);
-
-    mScheduledExecutorService.submit(mCheckinRunnable);
   }
 
   @Override

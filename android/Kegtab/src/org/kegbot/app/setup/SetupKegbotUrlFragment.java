@@ -18,13 +18,13 @@
  */
 package org.kegbot.app.setup;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiException;
 import org.kegbot.api.KegbotApiImpl;
 import org.kegbot.app.R;
+import org.kegbot.app.service.CheckinService;
 import org.kegbot.app.util.PreferenceHelper;
 import org.kegbot.proto.Models.SystemEvent;
 
@@ -82,14 +82,7 @@ public class SetupKegbotUrlFragment extends SetupFragment {
     }
 
     PreferenceHelper prefs = new PreferenceHelper(getActivity());
-
-    final CheckinClient checkinClient = new CheckinClient(getActivity());
-    try {
-      checkinClient.checkin();
-      prefs.setIsRegistered(true);
-    } catch (IOException e) {
-      return "Could not verify network connection. Please verify network is up.";
-    }
+    CheckinService.requestImmediateCheckin(getActivity());
 
     KegbotApi api = new KegbotApiImpl();
     api.setApiUrl(apiUrl);

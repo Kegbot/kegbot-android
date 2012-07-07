@@ -148,6 +148,9 @@ public class HomeActivity extends CoreActivity {
       mPrefsHelper.setGcmRegistrationId(regId);
     }
     // End GCM
+
+    CheckinService.requestImmediateCheckin(this);
+
   }
 
   @Override

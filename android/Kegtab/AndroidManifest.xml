@@ -166,6 +166,13 @@
                 <category android:name="org.kegbot.app" />
             </intent-filter>
         </receiver>
+        
+        <receiver 
+            android:name=".service.CheckinBroadcastReceiver">
+            <intent-filter>
+                <action android:name="org.kegbot.app.CHECKIN" />
+            </intent-filter>
+        </receiver>
 
         <!-- ######## -->
         <!-- SERVICES -->
@@ -189,6 +196,8 @@
 
         <!-- KegboardService -->
         <service android:name=".service.KegboardService" />
+        
+        <service android:name=".service.CheckinService" />
         
         <service android:name=".GCMIntentService" />
     </application>

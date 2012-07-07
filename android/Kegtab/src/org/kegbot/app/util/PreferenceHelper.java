@@ -39,6 +39,11 @@ public class PreferenceHelper {
 
   public static final String KEY_RUN_CORE = "run_core";
 
+  private static final String KEY_GCM_REGISTRATION_ID = "gcm_reg_id";
+
+  private static final String KEY_LAST_CHECKIN_ATTEMPT = "last_checkin_attempt";
+  private static final String KEY_LAST_CHECKIN_SUCCESS = "last_checkin_success";
+
   private final SharedPreferences mSharedPreferences;
 
   public PreferenceHelper(final Context context) {
@@ -138,6 +143,30 @@ public class PreferenceHelper {
 
   public boolean getCacheCredentials() {
     return mSharedPreferences.getBoolean(KEY_CACHE_CREDENTIALS, true);
+  }
+
+  public String getGcmRegistrationId() {
+    return mSharedPreferences.getString(KEY_GCM_REGISTRATION_ID, "");
+  }
+
+  public void setGcmRegistrationId(String regId) {
+    mSharedPreferences.edit().putString(KEY_GCM_REGISTRATION_ID, regId).apply();
+  }
+
+  public long getLastCheckinAttempt() {
+    return mSharedPreferences.getLong(KEY_LAST_CHECKIN_ATTEMPT, Long.MIN_VALUE);
+  }
+
+  public void setLastCheckinAttempt(long currentTimeMillis) {
+    mSharedPreferences.edit().putLong(KEY_LAST_CHECKIN_ATTEMPT, currentTimeMillis).apply();
+  }
+
+  public long getLastCheckinSuccess() {
+    return mSharedPreferences.getLong(KEY_LAST_CHECKIN_SUCCESS, Long.MIN_VALUE);
+  }
+
+  public void setLastCheckinSuccess(long currentTimeMillis) {
+    mSharedPreferences.edit().putLong(KEY_LAST_CHECKIN_SUCCESS, currentTimeMillis).apply();
   }
 
 }
