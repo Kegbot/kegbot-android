@@ -95,13 +95,17 @@ public class TapStatusFragment extends ListFragment {
     if (mView == null) {
       return;
     }
+    final Activity activity = getActivity();
+    if (activity == null) {
+      return;
+    }
 
     final TextView title = (TextView) mView.findViewById(R.id.tapTitle);
     final TextView subtitle = (TextView) mView.findViewById(R.id.tapSubtitle);
     final TextView tapNotes = (TextView) mView.findViewById(R.id.tapNotes);
     final ViewFlipper flipper = (ViewFlipper) mView.findViewById(R.id.tapStatusFlipper);
 
-    tapNotes.setText("Last synced: " + DateUtils.formatDateTime(getActivity(), System.currentTimeMillis(),
+    tapNotes.setText("Last synced: " + DateUtils.formatDateTime(activity, System.currentTimeMillis(),
         DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME));
 
     if (tap == null) {
