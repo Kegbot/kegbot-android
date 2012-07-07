@@ -46,7 +46,7 @@ import com.google.common.collect.Lists;
 public class CheckinService extends IntentService {
 
   private static final String TAG = CheckinService.class.getSimpleName();
-  private static final String CHECKIN_URL = "http://checkin.kegbot.org/checkin/";
+  private static final String CHECKIN_URL = "https://kegbot.org/checkin/";
   private static final String CHECKIN_ACTION = "org.kegbot.app.CHECKIN";
   private static final long CHECKIN_INTERVAL_MILLIS = AlarmManager.INTERVAL_HALF_DAY;
 
