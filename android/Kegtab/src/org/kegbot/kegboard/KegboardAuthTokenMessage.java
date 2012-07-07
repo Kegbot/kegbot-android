@@ -69,7 +69,7 @@ public class KegboardAuthTokenMessage extends KegboardMessage {
 
   @Override
   protected String getStringExtra() {
-    return String.format("name=%s token=%s", getName(), getToken());
+    return String.format("name=%s token=%s status=%s", getName(), getToken(), getStatus());
   }
 
   public String getName() {
