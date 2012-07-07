@@ -51,7 +51,6 @@ public class KegtabBroadcast {
    * Action set when a new temperature reading is recorded.
    */
   public static final String ACTION_THERMO_UPDATE = "org.kegbot.action.THERMO_UPDATE";
-
   public static final String THERMO_UPDATE_EXTRA_SENSOR_NAME = "sensor_name";
   public static final String THERMO_UPDATE_EXTRA_TEMP_C = "temp_c";
 

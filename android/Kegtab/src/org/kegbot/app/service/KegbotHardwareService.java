@@ -18,11 +18,11 @@
  */
 package org.kegbot.app.service;
 
-import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.http.annotation.GuardedBy;
 import org.kegbot.app.KegtabBroadcast;
 import org.kegbot.core.AuthenticationToken;
 import org.kegbot.core.FlowMeter;
@@ -49,7 +49,6 @@ import android.os.SystemClock;
 import android.util.Log;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
@@ -72,12 +71,14 @@ public class KegbotHardwareService extends Service {
   /**
    * All monitored flow meters.
    */
-  private final Collection<FlowMeter> mFlowMeters = Sets.newLinkedHashSet();
+  @GuardedBy("mFlowMeters")
+  private final Map<String, FlowMeter> mFlowMeters = Maps.newLinkedHashMap();
 
   /**
    * All monitored thermo sensors.
    */
-  private final Collection<ThermoSensor> mThermoSensors = Sets.newLinkedHashSet();
+  @GuardedBy("mThermoSensors")
+  private final Map<String, ThermoSensor> mThermoSensors = Maps.newLinkedHashMap();
 
   /**
    * All listeners.
@@ -87,7 +88,7 @@ public class KegbotHardwareService extends Service {
   private KegboardService mKegboardService;
   private boolean mKegboardServiceBound;
 
-  private final Map<String, Long> mLastThermoReadingUptimeMillis =
+  private final Map<String, Long> mLastThermoReadingElapsedRealtime =
     Maps.newLinkedHashMap();
 
   private static final IntentFilter DEBUG_INTENT_FILTER = new IntentFilter();
@@ -167,21 +168,20 @@ public class KegbotHardwareService extends Service {
     @Override
     public void onTemperatureReadingMessage(KegboardTemperatureReadingMessage message) {
       final String sensorName = mBoardName + "." + message.getName();
-      final Long lastReport = mLastThermoReadingUptimeMillis.get(sensorName);
-      final long now = SystemClock.uptimeMillis();
+      final Long lastReport = mLastThermoReadingElapsedRealtime.get(sensorName);
+      final long now = SystemClock.elapsedRealtime();
       if (lastReport != null) {
         final long delta = now - lastReport.longValue();
         if (delta < THERMO_REPORT_PERIOD_MILLIS) {
           return;
         }
       }
-      mLastThermoReadingUptimeMillis.put(sensorName, Long.valueOf(now));
+      mLastThermoReadingElapsedRealtime.put(sensorName, Long.valueOf(now));
       handleThermoUpdate(sensorName, message.getValue());
     }
 
     @Override
     public void onOutputStatusMessage(KegboardOutputStatusMessage message) {
-      //
     }
 
     @Override
@@ -306,36 +306,20 @@ public class KegbotHardwareService extends Service {
 
   private FlowMeter getOrCreateMeter(String tapName) {
     synchronized (mFlowMeters) {
-      for (FlowMeter meter : mFlowMeters) {
-        if (meter.getName().equals(tapName)) {
-          return meter;
-        }
+      if (!mFlowMeters.containsKey(tapName)) {
+        mFlowMeters.put(tapName, new FlowMeter(tapName));
       }
-      FlowMeter meter = new FlowMeter(tapName);
-      mFlowMeters.add(meter);
-      return meter;
+      return mFlowMeters.get(tapName);
     }
   }
 
   private ThermoSensor getOrCreateThermoSensor(String sensorName) {
     synchronized (mThermoSensors) {
-      for (ThermoSensor sensor : mThermoSensors) {
-        if (sensor.getName().equals(sensorName)) {
-          return sensor;
-        }
+      if (!mThermoSensors.containsKey(sensorName)) {
+        mThermoSensors.put(sensorName, new ThermoSensor(sensorName));
       }
-      ThermoSensor sensor = new ThermoSensor(sensorName);
-      mThermoSensors.add(sensor);
-      return sensor;
+      return mThermoSensors.get(sensorName);
     }
-  }
-
-  public Collection<FlowMeter> getAllFlowMeters() {
-    return ImmutableList.copyOf(mFlowMeters);
-  }
-
-  public Collection<ThermoSensor> getAllThermoSensors() {
-    return ImmutableList.copyOf(mThermoSensors);
   }
 
   public boolean attachListener(Listener listener) {
@@ -366,14 +350,6 @@ public class KegbotHardwareService extends Service {
      *          the sensor that was updated
      */
     public void onThermoSensorUpdate(ThermoSensor sensor);
-
-    /**
-     * An authentication token was momentarily swiped.
-     *
-     * @param token
-     * @param tapName
-     */
-    public void onTokenSwiped(AuthenticationToken token, String tapName);
 
     /**
      * A token was attached.

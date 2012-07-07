@@ -233,11 +233,6 @@ public class KegbotCoreService extends Service {
 
   private final KegbotHardwareService.Listener mHardwareListener = new KegbotHardwareService.Listener() {
     @Override
-    public void onTokenSwiped(AuthenticationToken token, String tapName) {
-      Log.d(TAG, "Auth token swiped: " + token);
-    }
-
-    @Override
     public void onTokenRemoved(AuthenticationToken token, String tapName) {
       Log.d(TAG, "Auth token removed: " + token);
     }
@@ -389,7 +384,6 @@ public class KegbotCoreService extends Service {
 
   @Override
   public int onStartCommand(Intent intent, int flags, int startId) {
-    //debugNotice("Core service started.");
     return START_STICKY;
   }
 

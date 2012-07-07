@@ -69,7 +69,7 @@ public class KegboardService extends Service {
   private static final String ACTION_USB_PERMISSION = KegboardService.class.getCanonicalName()
       + ".ACTION_USB_PERMISSION";
 
-  private static final boolean VERBOSE = true;
+  private static final boolean VERBOSE = false;
 
   private static final long REFRESH_OUTPUT_PERIOD_MILLIS = TimeUnit.SECONDS.toMillis(5);
 

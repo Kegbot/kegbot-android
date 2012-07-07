@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <string name="BUILD_DATE_HUMAN">20120531-224256</string>
+  <string name="BUILD_DATE_HUMAN">20120706-170357</string>
   <string name="BUILD_TAGS">dev</string>
   <string name="RELEASE_BUILD">false</string>
 </resources>
