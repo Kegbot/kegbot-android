@@ -19,7 +19,11 @@
 package org.kegbot.core;
 
 import java.util.Set;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import org.kegbot.api.KegbotApi;
@@ -56,6 +60,8 @@ public class AuthenticationManager {
   private final PreferenceHelper mPrefsHelper;
 
   private final Context mContext;
+
+  private final ExecutorService mExecutorService = Executors.newSingleThreadExecutor();
 
   private User fetchUserForToken(AuthenticationToken token) throws KegbotApiException {
     Log.d(TAG, "Loading token");
@@ -120,31 +126,37 @@ public class AuthenticationManager {
     }
   }
 
-  public User authenticateUsername(String username, String pin) {
+  public void authenticateUser(User user) {
+    mUserDetailCache.put(user.getUsername(), user);
+    final Intent intent = KegtabBroadcast.getUserAuthedBroadcastIntent(user.getUsername());
+    mContext.sendBroadcast(intent);
+  }
+
+  public User authenticateUsername(String username) {
     // TODO(mikey): use pin
     try {
-      return mUserDetailCache.get(username);
+      final User user = mUserDetailCache.get(username);
+      if (user != null) {
+        authenticateUser(user);
+      }
+      return user;
     } catch (ExecutionException e) {
       Log.w(TAG, "Error fetching user: " + e, e);
       return null;
     }
   }
 
+  public Future<User> authenticateUsernameAsync(final String username) {
+    return mExecutorService.submit(new Callable<User>() {
+      @Override
+      public User call() {
+        return authenticateUsername(username);
+      }
+    });
+  }
+
   public User getUserDetail(String username) {
     return mUserDetailCache.getIfPresent(username);
-  }
-
-  public void noteUserAuthenticated(User userDetail) {
-    mUserDetailCache.put(userDetail.getUsername(), userDetail);
-    final Intent intent = KegtabBroadcast.getUserAuthedBroadcastIntent(userDetail.getUsername());
-    mContext.sendBroadcast(intent);
-  }
-
-  public void noteUserAuthenticated(User userDetail, String tapName) {
-    mUserDetailCache.put(userDetail.getUsername(), userDetail);
-    final Intent intent = KegtabBroadcast.getUserAuthedBroadcastIntent(userDetail.getUsername());
-    intent.putExtra(KegtabBroadcast.DRINKER_SELECT_EXTRA_TAP_NAME, tapName);
-    mContext.sendBroadcast(intent);
   }
 
   public Set<User> getAllRecent() {

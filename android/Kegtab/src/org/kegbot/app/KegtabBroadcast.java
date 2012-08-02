@@ -69,6 +69,8 @@ public class KegtabBroadcast {
   public static final String ACTION_AUTH_BEGIN = "org.kegbot.action.AUTH_BEGIN";
   public static final String ACTION_AUTH_FAIL = "org.kegbot.action.AUTH_FAIL";
   public static final String AUTH_FAIL_EXTRA_MESSAGE = "message";
+  public static final String AUTH_FAIL_EXTRA_AUTH_DEVICE = "auth_device";
+  public static final String AUTH_FAIL_EXTRA_TOKEN_VALUE = "token_value";
 
   public static final String ACTION_TOKEN_ADDED = "org.kegbot.action.TOKEN_ADDED";
   public static final String TOKEN_ADDED_EXTRA_AUTH_DEVICE = "auth_device";
@@ -124,10 +126,14 @@ public class KegtabBroadcast {
     return intent;
   }
 
-  public static Intent getAuthFailIntent(String message) {
+  public static Intent getAuthFailIntent(AuthenticationToken token, String message) {
     final Intent intent = new Intent(ACTION_AUTH_FAIL);
     if (!Strings.isNullOrEmpty(message)) {
       intent.putExtra(AUTH_FAIL_EXTRA_MESSAGE, message);
+    }
+    if (token != null) {
+      intent.putExtra(AUTH_FAIL_EXTRA_AUTH_DEVICE, token.getAuthDevice());
+      intent.putExtra(AUTH_FAIL_EXTRA_TOKEN_VALUE, token.getTokenValue());
     }
     return intent;
   }

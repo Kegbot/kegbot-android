@@ -202,6 +202,8 @@ public interface KegbotApi {
 
   public List<User> getUsers() throws KegbotApiException;
 
+  public AuthenticationToken assignToken(String authDevice, String tokenValue, String username) throws KegbotApiException;
+
   /**
    * Returns the currently-active drinking session, or {@code null} if none is
    * active.

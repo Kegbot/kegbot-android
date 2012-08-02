@@ -59,6 +59,8 @@ public class PourStatusFragment extends ListFragment {
   private static final double VOLUME_COUNTER_INCREMENT = 0.1;
   private static final long VOLUME_COUNTER_INCREMENT_DELAY_MILLIS = 20;
 
+  private static final int AUTH_DRINKER_REQUEST = 1;
+
   private double mTargetVolume = 0.0;
   private double mCurrentVolume = 0.0;
 
@@ -141,9 +143,8 @@ public class PourStatusFragment extends ListFragment {
     mDrinkerImage.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        final Intent intent = DrinkerSelectActivity.getStartIntentForTap(
-            getActivity(), getTap().getMeterName());
-        startActivity(intent);
+        final Intent intent = KegtabCommon.getAuthDrinkerActivityIntent(getActivity());
+        startActivityForResult(intent, AUTH_DRINKER_REQUEST);
       }
     });
 
@@ -188,6 +189,25 @@ public class PourStatusFragment extends ListFragment {
     });
 
     return mView;
+  }
+
+  @Override
+  public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    switch (requestCode) {
+      case AUTH_DRINKER_REQUEST:
+        if (resultCode == Activity.RESULT_OK) {
+          final String username =
+              data.getStringExtra(KegtabCommon.ACTIVITY_AUTH_DRINKER_RESULT_EXTRA_USERNAME);
+          if (!Strings.isNullOrEmpty(username)) {
+            Log.d(TAG, "Authenticating async.");
+            AuthenticationManager am = AuthenticationManager.getSingletonInstance(getActivity());
+            am.authenticateUsernameAsync(username);
+          }
+        }
+        break;
+      default:
+        super.onActivityResult(requestCode, resultCode, data);
+    }
   }
 
   @Override
@@ -283,7 +303,7 @@ public class PourStatusFragment extends ListFragment {
       final AuthenticationManager authManager = AuthenticationManager
           .getSingletonInstance(getActivity());
       final User user = authManager.getUserDetail(username);
-      if (user.hasImage()) {
+      if (user != null && user.hasImage()) {
         // NOTE(mikey): Use the full-sized image rather than the thumbnail;
         // in many cases the former will already be in the cache from
         // DrinkerSelectActivity.

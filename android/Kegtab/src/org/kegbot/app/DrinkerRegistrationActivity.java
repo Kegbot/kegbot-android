@@ -23,12 +23,12 @@ import org.kegbot.api.KegbotApiException;
 import org.kegbot.api.KegbotApiImpl;
 import org.kegbot.app.camera.CameraFragment;
 import org.kegbot.app.setup.SetupProgressDialogFragment;
-import org.kegbot.core.AuthenticationManager;
 import org.kegbot.proto.Models.User;
 
 import android.app.ActionBar;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -45,7 +45,6 @@ public class DrinkerRegistrationActivity extends CoreActivity {
   private EditText mEmail;
   private EditText mPassword;
   private CameraFragment mCameraFragment;
-  private AuthenticationManager mAuthManager;
 
   private DialogFragment mDialog;
 
@@ -69,8 +68,12 @@ public class DrinkerRegistrationActivity extends CoreActivity {
     protected void onPostExecute(User result) {
       hideDialog();
       if (result != null) {
-        Log.d(TAG, "Registration succeeded! Posting authentication.");
-        mAuthManager.noteUserAuthenticated(result);
+        Log.d(TAG, "Registration succeeded!");
+        final Intent data = new Intent();
+        data.putExtra(KegtabCommon.ACTIVITY_CREATE_DRINKER_RESULT_EXTRA_USERNAME,
+            result.getUsername());
+        setResult(RESULT_OK, data);
+
         finish();
       }
     }
@@ -92,8 +95,6 @@ public class DrinkerRegistrationActivity extends CoreActivity {
     mSubmitButton = (Button) findViewById(R.id.submitButton);
 
     mCameraFragment = (CameraFragment) getFragmentManager().findFragmentById(R.id.camera);
-
-    mAuthManager = AuthenticationManager.getSingletonInstance(this);
 
     mSubmitButton.setOnClickListener(new View.OnClickListener() {
 

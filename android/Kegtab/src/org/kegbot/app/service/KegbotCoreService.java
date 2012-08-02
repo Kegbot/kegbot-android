@@ -230,7 +230,7 @@ public class KegbotCoreService extends Service {
             Log.d(TAG, "Authenticated user: " + user);
             if (user != null) {
               success = true;
-              am.noteUserAuthenticated(user);
+              am.authenticateUser(user);
               for (final Tap tap : mTapManager.getTaps()) {
                 mFlowManager.activateUserAtTap(tap, user.getUsername());
               }
@@ -242,7 +242,7 @@ public class KegbotCoreService extends Service {
             message = getString(R.string.authenticating_connection_error);
           }
           if (!success) {
-            sendBroadcast(KegtabBroadcast.getAuthFailIntent(message));
+            sendBroadcast(KegtabBroadcast.getAuthFailIntent(token, message));
           }
         }
       };

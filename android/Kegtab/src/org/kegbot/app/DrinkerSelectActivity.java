@@ -26,13 +26,10 @@ import android.app.ActionBar.Tab;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
-
-import com.google.common.base.Strings;
 
 /**
  *
@@ -98,25 +95,16 @@ public class DrinkerSelectActivity extends CoreActivity {
   @Override
   protected void onPause() {
     final Intent data = new Intent();
-    data.putExtra(EXTRA_USERNAME, mSelectedUsername);
+    data.putExtra(KegtabCommon.ACTIVITY_AUTH_DRINKER_RESULT_EXTRA_USERNAME, mSelectedUsername);
     setResult(RESULT_OK, data);
     super.onPause();
   }
 
   public void handlerUserSelected(User user) {
-    final String tapName = getIntent().getStringExtra(KegtabBroadcast.DRINKER_SELECT_EXTRA_TAP_NAME);
-    if (!Strings.isNullOrEmpty(tapName)) {
-      mAuthManager.noteUserAuthenticated(user, tapName);
-    } else {
-      mAuthManager.noteUserAuthenticated(user);
-    }
+    Intent resultData = new Intent();
+    resultData.putExtra("username", user.getUsername());
+    setResult(RESULT_OK, resultData);
     finish();
-  }
-
-  public static Intent getStartIntentForTap(final Context context, final String tapName) {
-    final Intent intent = new Intent(context, DrinkerSelectActivity.class);
-    intent.putExtra(KegtabBroadcast.DRINKER_SELECT_EXTRA_TAP_NAME, tapName);
-    return intent;
   }
 
   public static class TabListener<T extends Fragment> implements ActionBar.TabListener {

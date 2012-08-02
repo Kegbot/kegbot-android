@@ -574,6 +574,24 @@ public class KegbotApiImpl implements KegbotApi {
     return getSingleProto(User.newBuilder(), responseJson.get("object"));
   }
 
+  @Override
+  public AuthenticationToken assignToken(String authDevice, String tokenValue, String username)
+      throws KegbotApiException {
+    final HttpPost httpost =
+        new HttpPost(getRequestUrl("/auth-tokens/" + authDevice + "/" + tokenValue + "/assign/"));
+    MultipartEntity entity = new MultipartEntity();
+    try {
+      entity.addPart("username", new StringBody(username));
+    } catch (UnsupportedEncodingException e) {
+      throw new RuntimeException(e);
+    }
+    httpost.setEntity(entity);
+    final HttpResponse response = execute(httpost);
+    final JsonNode responseJson = toJson(response);
+    debug("Assignment response: " + responseJson);
+    return getSingleProto(AuthenticationToken.newBuilder(), responseJson.get("object"));
+  }
+
   private synchronized void debug(String message) {
     if (mListener != null) {
       mListener.debug(message);

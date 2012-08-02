@@ -28,8 +28,10 @@ import org.kegbot.api.KegbotApiImpl;
 import org.kegbot.app.service.CheckinService;
 import org.kegbot.app.service.KegboardService;
 import org.kegbot.app.util.PreferenceHelper;
+import org.kegbot.core.AuthenticationManager;
 import org.kegbot.proto.Models.KegTap;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
@@ -49,6 +51,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.google.android.gcm.GCMRegistrar;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -62,6 +65,9 @@ public class HomeActivity extends CoreActivity {
   private static final long REFRESH_INTERVAL_MILLIS = TimeUnit.SECONDS.toMillis(30);
 
   private static final String GCM_SENDER_ID = "431392459978";
+
+  private static final int REQUEST_AUTHENTICATE = RESULT_FIRST_USER + 1000;
+  private static final int REQUEST_CREATE_DRINKER = RESULT_FIRST_USER + 1001;
 
   private EventListFragment mEvents;
 
@@ -93,16 +99,16 @@ public class HomeActivity extends CoreActivity {
   private final OnClickListener mOnBeerMeClickedListener = new OnClickListener() {
     @Override
     public void onClick(View v) {
-      final Intent intent = DrinkerSelectActivity.getStartIntentForTap(HomeActivity.this, "");
-      startActivity(intent);
+      final Intent intent = KegtabCommon.getAuthDrinkerActivityIntent(HomeActivity.this);
+      startActivityForResult(intent, REQUEST_AUTHENTICATE);
     }
   };
 
   private final OnClickListener mOnNewDrinkerClickedListener = new OnClickListener() {
     @Override
     public void onClick(View v) {
-      final Intent intent = new Intent(HomeActivity.this, DrinkerRegistrationActivity.class);
-      startActivity(intent);
+      final Intent intent = KegtabCommon.getCreateDrinkerActivityIntent(HomeActivity.this);
+      startActivityForResult(intent, REQUEST_CREATE_DRINKER);
     }
   };
 
@@ -217,6 +223,38 @@ public class HomeActivity extends CoreActivity {
     super.onNewIntent(intent);
     setIntent(intent);
     handleIntent();
+  }
+
+  @Override
+  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    switch (requestCode) {
+      case REQUEST_AUTHENTICATE:
+        Log.d(LOG_TAG, "Got authentication result.");
+        if (resultCode == Activity.RESULT_OK && data != null) {
+          final String username =
+              data.getStringExtra(KegtabCommon.ACTIVITY_AUTH_DRINKER_RESULT_EXTRA_USERNAME);
+          if (!Strings.isNullOrEmpty(username)) {
+            Log.d(LOG_TAG, "Authenticating async.");
+            AuthenticationManager am = AuthenticationManager.getSingletonInstance(this);
+            am.authenticateUsernameAsync(username);
+          }
+        }
+        break;
+      case REQUEST_CREATE_DRINKER:
+        Log.d(LOG_TAG, "Got registration result.");
+        if (resultCode == Activity.RESULT_OK && data != null) {
+          final String username =
+              data.getStringExtra(KegtabCommon.ACTIVITY_CREATE_DRINKER_RESULT_EXTRA_USERNAME);
+          if (!Strings.isNullOrEmpty(username)) {
+            Log.d(LOG_TAG, "Authenticating newly-created user.");
+            AuthenticationManager am = AuthenticationManager.getSingletonInstance(this);
+            am.authenticateUsernameAsync(username);
+          }
+        }
+        break;
+      default:
+        super.onActivityResult(requestCode, resultCode, data);
+    }
   }
 
   private void handleIntent() {

@@ -52,7 +52,6 @@ public class UserAuthedReceiver extends BroadcastReceiver {
     final Intent activityIntent = new Intent(intent);
     activityIntent.setClass(context, AuthenticatingActivity.class);
     activityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-    activityIntent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
     activityIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
     context.startActivity(activityIntent);
   }
