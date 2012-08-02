@@ -329,6 +329,7 @@ public class CameraFragment extends Fragment {
   public void onPause() {
     super.onPause();
     Log.d(TAG, "onPause()");
+    cancelPendingPicture();
 
     if (mCamera != null) {
       mPreview.setCamera(null);
