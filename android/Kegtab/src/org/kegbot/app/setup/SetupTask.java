@@ -37,7 +37,7 @@ public enum SetupTask {
   WELCOME {
     @Override
     public SetupTask next() {
-      return KEGBOT_URL;
+      return LICENSE;
     }
 
     @Override
@@ -52,12 +52,12 @@ public enum SetupTask {
   },
 
   /**
-   * Alternate task, shows "getting started".
+   * Alternate task, shows "we need to upgrade".
    */
   UPGRADE {
     @Override
     public SetupTask next() {
-      return KEGBOT_URL;
+      return LICENSE;
     }
 
     @Override
@@ -70,6 +70,34 @@ public enum SetupTask {
       return R.string.setup_upgrade_description;
     }
   },
+
+  /**
+   * Shows license agreements
+   */
+  LICENSE {
+    private final SetupLicenseFragment mFragment = new SetupLicenseFragment();
+
+    @Override
+    public SetupTask next() {
+      return KEGBOT_URL;
+    }
+
+    @Override
+    public Fragment getFragment() {
+      return mFragment;
+    }
+
+    @Override
+    public int getTitle() {
+      return R.string.setup_license_title;
+    }
+
+    @Override
+    public int getDescription() {
+      return R.string.setup_license_description;
+    }
+  },
+
 
   /**
    * Requests and validates the Kegbot URL.
@@ -195,7 +223,7 @@ public enum SetupTask {
 
   public static final SetupTask FIRST_SETUP_STEP = KEGBOT_URL;
 
-  public static final int SETUP_VERSION = 4;
+  public static final int SETUP_VERSION = 5;
 
   /**
    * Returns the fragment for this task.

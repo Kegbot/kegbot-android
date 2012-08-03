@@ -64,5 +64,10 @@
     <string name="beer_me_button">Beer Me!</string>
     <string name="new_drinker_button">New Drinker</string>
     <string name="recent_activity_header">Recent Activity</string>
+    <string name="license_agreement_description">By continuing, you agree to be bound by the terms of the Kegtab license agreement at kegbot.org/android/license</string>
+    <string name="privacy_policy_agreement">By continuing, you agree to the terms of the Kegbot privacy policy at kegbot.org/about/privacy</string>
+    <string name="checkbox_agree_text">I Agree</string>
+    <string name="setup_license_title">Before You Continue...</string>
+    <string name="setup_license_description">You\'re free to use this app, but your use is governed by the License Agreement and Privacy Policy linked at left.</string>
     
 </resources>
