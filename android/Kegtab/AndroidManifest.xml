@@ -19,8 +19,8 @@
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.kegbot.app"
-    android:versionCode="23"
-    android:versionName="1.0 beta 23" >
+    android:versionCode="25"
+    android:versionName="1.0 beta 25" >
 
     <uses-sdk
         android:minSdkVersion="14"
@@ -42,6 +42,8 @@
     <uses-feature
         android:name="android.hardware.usb.host"
         android:required="true" />
+    <uses-feature android:name="android.hardware.camera"
+        android:required="false" />
     <uses-feature
         android:name="android.hardware.camera.autofocus"
         android:required="false" />
@@ -53,7 +55,7 @@
 
     <supports-screens
         android:largeScreens="true"
-        android:normalScreens="true"
+        android:normalScreens="false"
         android:smallScreens="false"
         android:xlargeScreens="true" />
 
@@ -63,9 +65,9 @@
         <!--no small size screens -->
 
         <!--Only hdpi and xhdpi for normal size screens -->
-        <screen android:screenSize="normal" android:screenDensity="mdpi" />
-        <screen android:screenSize="normal" android:screenDensity="hdpi" />
-        <screen android:screenSize="normal" android:screenDensity="xhdpi" />
+<!--         <screen android:screenSize="normal" android:screenDensity="mdpi" /> -->
+<!--         <screen android:screenSize="normal" android:screenDensity="hdpi" /> -->
+<!--         <screen android:screenSize="normal" android:screenDensity="xhdpi" /> -->
 
         <!-- all large size screens -->
         <screen android:screenSize="large" android:screenDensity="ldpi" />
@@ -81,7 +83,7 @@
 
         <!-- Special case for Nexus 7 -->
         <screen android:screenSize="large" android:screenDensity="213" />
-    </compatible-screens>
+        </compatible-screens>
     
     <application
         android:hardwareAccelerated="true"
