@@ -19,8 +19,8 @@
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.kegbot.app"
-    android:versionCode="21"
-    android:versionName="1.0 beta 21" >
+    android:versionCode="23"
+    android:versionName="1.0 beta 23" >
 
     <uses-sdk
         android:minSdkVersion="14"
@@ -52,11 +52,37 @@
         android:required="false"/>
 
     <supports-screens
-        android:largeScreens="false"
-        android:normalScreens="false"
+        android:largeScreens="true"
+        android:normalScreens="true"
         android:smallScreens="false"
         android:xlargeScreens="true" />
 
+    <!-- Hack for Nexus 7 support, per http://stackoverflow.com/a/11745425/642485 -->
+    <!-- TODO(mikey): figure out what's really going on here. -->
+    <compatible-screens>
+        <!--no small size screens -->
+
+        <!--Only hdpi and xhdpi for normal size screens -->
+        <screen android:screenSize="normal" android:screenDensity="mdpi" />
+        <screen android:screenSize="normal" android:screenDensity="hdpi" />
+        <screen android:screenSize="normal" android:screenDensity="xhdpi" />
+
+        <!-- all large size screens -->
+        <screen android:screenSize="large" android:screenDensity="ldpi" />
+        <screen android:screenSize="large" android:screenDensity="mdpi" />
+        <screen android:screenSize="large" android:screenDensity="hdpi" />
+        <screen android:screenSize="large" android:screenDensity="xhdpi" />
+
+        <!-- all xlarge size screens -->
+        <screen android:screenSize="xlarge" android:screenDensity="ldpi" />
+        <screen android:screenSize="xlarge" android:screenDensity="mdpi" />
+        <screen android:screenSize="xlarge" android:screenDensity="hdpi" />
+        <screen android:screenSize="xlarge" android:screenDensity="xhdpi" />
+
+        <!-- Special case for Nexus 7 -->
+        <screen android:screenSize="large" android:screenDensity="213" />
+    </compatible-screens>
+    
     <application
         android:hardwareAccelerated="true"
         android:icon="@drawable/icon"
