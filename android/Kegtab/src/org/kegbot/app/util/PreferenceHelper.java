@@ -18,6 +18,11 @@
  */
 package org.kegbot.app.util;
 
+import java.io.IOException;
+
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.map.ObjectMapper;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -43,6 +48,8 @@ public class PreferenceHelper {
 
   private static final String KEY_LAST_CHECKIN_ATTEMPT = "last_checkin_attempt";
   private static final String KEY_LAST_CHECKIN_SUCCESS = "last_checkin_success";
+  private static final String KEY_LAST_CHECKIN_RESPONSE = "last_checkin_response";
+  private static final String KEY_LAST_CHECKIN_STATUS = "last_checkin_status";
 
   private final SharedPreferences mSharedPreferences;
 
@@ -167,6 +174,31 @@ public class PreferenceHelper {
 
   public void setLastCheckinSuccess(long currentTimeMillis) {
     mSharedPreferences.edit().putLong(KEY_LAST_CHECKIN_SUCCESS, currentTimeMillis).apply();
+  }
+
+  public JsonNode getLastCheckinResponse() {
+    final String raw = mSharedPreferences.getString(KEY_LAST_CHECKIN_RESPONSE, "{}");
+    final ObjectMapper mapper = new ObjectMapper();
+    JsonNode rootNode;
+    try {
+      rootNode = mapper.readValue(raw, JsonNode.class);
+    } catch (IOException e) {
+      rootNode = null;
+    }
+    return rootNode;
+  }
+
+  public void setLastCheckinResponse(JsonNode response) {
+    final String raw = response.toString();
+    mSharedPreferences.edit().putString(KEY_LAST_CHECKIN_RESPONSE, raw).apply();
+  }
+
+  public String getLastCheckinStatus() {
+    return mSharedPreferences.getString(KEY_LAST_CHECKIN_STATUS, "unknown");
+  }
+
+  public void setLastCheckinStatus(String status) {
+    mSharedPreferences.edit().putString(KEY_LAST_CHECKIN_STATUS, status).apply();
   }
 
 }

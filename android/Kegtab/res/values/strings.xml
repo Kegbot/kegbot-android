@@ -69,5 +69,8 @@
     <string name="checkbox_agree_text">I Agree</string>
     <string name="setup_license_title">Before You Continue...</string>
     <string name="setup_license_description">You\'re free to use this app, but your use is governed by the License Agreement and Privacy Policy linked at left.</string>
+    <string name="checkin_update_available_title">Kegbot update available</string>
+    <string name="checkin_update_required_title">Kegbot update required</string>
+    <string name="checkin_update_description">Tap to update Kegbot</string>
     
 </resources>

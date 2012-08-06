@@ -3,7 +3,10 @@
  */
 package org.kegbot.app.service;
 
+import java.io.FileDescriptor;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.http.HttpResponse;
@@ -19,6 +22,7 @@ import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.util.EntityUtils;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.kegbot.app.R;
 import org.kegbot.app.build.BuildInfo;
 import org.kegbot.app.util.DeviceId;
 import org.kegbot.app.util.PreferenceHelper;
@@ -26,11 +30,14 @@ import org.kegbot.app.util.Utils;
 
 import android.app.AlarmManager;
 import android.app.IntentService;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.net.Uri;
 import android.os.Build;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
@@ -47,9 +54,28 @@ public class CheckinService extends IntentService {
 
   private static final String TAG = CheckinService.class.getSimpleName();
   private static final String CHECKIN_URL = "https://kegbot.org/checkin/";
-  private static final String CHECKIN_ACTION = "org.kegbot.app.CHECKIN";
+  static final String CHECKIN_ACTION = "org.kegbot.app.CHECKIN";
+  static final String CHECKIN_COMPLETE_ACTION = "org.kegbot.app.CHECKIN_COMPLETE";
   private static final long CHECKIN_INTERVAL_MILLIS = AlarmManager.INTERVAL_HALF_DAY;
 
+  private static final int CHECKIN_NOTIFICATION_ID = 100;
+
+  /**
+   * Normal checkin response status; nothing to do.
+   */
+  static final String STATUS_OK = "ok";
+  /**
+   * Checkin response status indicating that an upgrade is available.
+   */
+  static final String STATUS_UPGRADE_AVAILABLE = "upgrade-available";
+  /**
+   * Checkin response status indicating that an upgrade is required.
+   */
+  static final String STATUS_UPGRADE_REQUIRED = "upgrade-required";
+  /**
+   * Checkin response status indicating that this device is not supported.
+   */
+  static final String STATUS_NOT_SUPPORTED = "not-supported";
   private PreferenceHelper mPrefsHelper;
 
   private int mKegbotVersion = -1;
@@ -95,14 +121,21 @@ public class CheckinService extends IntentService {
         Log.w(TAG, "Unknown intent action: " + action);
         return;
       }
-
-      final JsonNode result = doCheckin();
-      if (result != null) {
-        processCheckinResponse(result);
-      }
+      doCheckin();
     } finally {
       releaseWakeLock();
     }
+  }
+
+  @Override
+  protected void dump(FileDescriptor fd, PrintWriter writer, String[] args) {
+    super.dump(fd, writer, args);
+    writer.println(
+        String.format("Last checkin attempt: %s", new Date(mPrefsHelper.getLastCheckinAttempt())));
+    writer.println(
+        String.format("Last checkin success: %s", new Date(mPrefsHelper.getLastCheckinSuccess())));
+    writer.println(String.format("Last response:"));
+    writer.println(mPrefsHelper.getLastCheckinResponse().toString());
   }
 
   private void registerAlarm() {
@@ -143,7 +176,7 @@ public class CheckinService extends IntentService {
     }
   }
 
-  private JsonNode doCheckin() {
+  private void doCheckin() {
     Log.d(TAG, "Performing checkin: " + CHECKIN_URL);
     final long now = System.currentTimeMillis();
     mPrefsHelper.setLastCheckinAttempt(now);
@@ -174,17 +207,84 @@ public class CheckinService extends IntentService {
       if (response.getStatusLine().getStatusCode() == 200) {
         mPrefsHelper.setLastCheckinSuccess(now);
         mPrefsHelper.setIsRegistered(true);
+        mPrefsHelper.setLastCheckinResponse(rootNode);
       }
-      return rootNode;
     } catch (IOException e) {
       Log.d(TAG, "Checkin failed: " + e);
-      return null;
     }
+    processLastCheckinResponse();
   }
 
-  private void processCheckinResponse(JsonNode response) {
+  /**
+   * Processes the checkin response message.
+   *
+   * A well-formed response will have the following attributes:
+   * <ul>
+   * <li><code>status</code>: a string status code.
+   * <li><code>title</code>: title of the message shown (optional)
+   * <li><code>description</code>: body of the message shown (optional)
+   * </ul>
+   *
+   * <code>title</code> and <code>description</code> are meaningful only if
+   * <code>status</code> is not {@value #STATUS_OK}.
+   *
+   * @see #STATUS_OK
+   * @see #STATUS_UPGRADE_AVAILABLE
+   * @see #STATUS_UPGRADE_REQUIRED
+   * @see #STATUS_NOT_SUPPORTED
+   */
+  private void processLastCheckinResponse() {
+    final JsonNode response = mPrefsHelper.getLastCheckinResponse();
     Log.d(TAG, "Checkin response: " + response);
-    // TODO(mikey): Post notification about updates.
+    NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+    final JsonNode statusNode = response.get("status");
+    if (statusNode == null || !statusNode.isTextual()) {
+      Log.d(TAG, "Invalid checkin response: no status.");
+      return;
+    }
+
+    final String status = statusNode.getTextValue();
+    if (STATUS_OK.equals(status) || STATUS_UPGRADE_AVAILABLE.equals(status)
+        || STATUS_UPGRADE_REQUIRED.equals(status) || STATUS_NOT_SUPPORTED.equals(status)) {
+      Log.d(TAG, "Checkin status: " + status);
+    } else {
+      Log.d(TAG, "Invalid checkin response: unknown status: " + status);
+      return;
+    }
+
+    final String lastStatus = mPrefsHelper.getLastCheckinStatus();
+    mPrefsHelper.setLastCheckinStatus(status);
+
+    if (!STATUS_OK.equals(status)) {
+      if (STATUS_UPGRADE_AVAILABLE.equals(status) || STATUS_UPGRADE_REQUIRED.equals(status)) {
+        Intent notificationIntent = new Intent(Intent.ACTION_VIEW);
+        notificationIntent.setData(Uri.parse("market://details?id=org.kegbot.app"));
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+
+        int titleRes = STATUS_UPGRADE_AVAILABLE.equals(status) ? R.string.checkin_update_available_title : R.string.checkin_update_required_title;
+
+        Notification noti = new Notification.Builder(this)
+          .setSmallIcon(R.drawable.warning_icon)
+          .setContentTitle(getString(titleRes))
+          .setContentText(getString(R.string.checkin_update_description))
+          .setContentIntent(contentIntent)
+          .setOngoing(true)
+          .setOnlyAlertOnce(true)
+          .getNotification();
+
+        Log.d(TAG, "Posting notification.");
+        nm.notify(CHECKIN_NOTIFICATION_ID, noti);
+
+      } else {
+        nm.cancel(CHECKIN_NOTIFICATION_ID);
+      }
+    }
+
+    final Intent intent = new Intent(CHECKIN_COMPLETE_ACTION);
+    intent.putExtra("status", status);
+    intent.putExtra("last-status", lastStatus);
+    sendBroadcast(intent);
   }
 
   private static Intent getCheckinIntent(Context context) {
