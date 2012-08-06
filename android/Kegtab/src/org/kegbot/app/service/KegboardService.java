@@ -257,8 +257,8 @@ public class KegboardService extends BackgroundService {
    */
   private boolean acquireSerialDevice() {
     UsbSerialDriver result = UsbSerialProber.acquire(mUsbManager);
-    Log.d(TAG, "FindUsbSerialDevice, result=" + result);
     if (result != null) {
+      Log.d(TAG, "FindUsbSerialDevice, result=" + result);
       boolean opened = false;
       try {
         result.open();
