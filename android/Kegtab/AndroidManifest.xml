@@ -217,28 +217,15 @@
         <!-- SERVICES -->
         <!-- ######## -->
 
-
-        <!-- KegbotCoreService -->
         <service android:name=".service.KegbotCoreService" />
-
-        <!-- KegbotApiService -->
         <service android:name=".service.KegbotApiService" />
-
-        <!-- KegbotHardwareService -->
         <service android:name=".service.KegbotHardwareService" />
-
-        <!-- KegbotHardwareService -->
         <service android:name=".service.KegbotSoundService" />
-
-        <!-- BluetoothService -->
         <service android:name=".service.BluetoothService" />
-
-        <!-- KegboardService -->
         <service android:name=".service.KegboardService" />
-        
         <service android:name=".service.CheckinService" />
-        
         <service android:name=".GCMIntentService" />
+        
     </application>
 
 </manifest>

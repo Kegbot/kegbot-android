@@ -96,16 +96,6 @@ public class SettingsActivity extends PreferenceActivity {
   @Override
   public void onBuildHeaders(List<Header> target) {
     loadHeadersFromResource(R.xml.settings_headers, target);
-
-    /*
-    final Header thirdParty = new PreferenceActivity.Header();
-    thirdParty.breadCrumbShortTitle = "Open Source Licenses";
-    thirdParty.breadCrumbTitle = "Open Source Licenses";
-    thirdParty.fragment = "org.kegbot.app.settings.ThirdPartyLicensesActivity";
-    thirdParty.title = "Open Source Licenses";
-
-    target.add(thirdParty);
-    */
   }
 
   public static class GeneralFragment extends PreferenceFragment {

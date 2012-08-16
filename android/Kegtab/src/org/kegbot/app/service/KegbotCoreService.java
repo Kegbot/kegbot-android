@@ -339,7 +339,7 @@ public class KegbotCoreService extends Service {
     mPreferences = new PreferenceHelper(getApplicationContext());
     mFlowManager.setDefaultIdleTimeMillis(mPreferences.getIdleTimeoutMs());
 
-    Log.d(TAG, "Kegtap User-Agent: " + Utils.getUserAgent());
+    Log.d(TAG, "Kegtab User-Agent: " + Utils.getUserAgent());
     updateFromPreferences();
     PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
         .registerOnSharedPreferenceChangeListener(mPreferenceListener);

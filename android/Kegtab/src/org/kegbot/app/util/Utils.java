@@ -34,6 +34,10 @@ public class Utils {
 
   public static final DateFormat ISO8601_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
+  private Utils() {
+    throw new IllegalStateException("Non-instantiable class.");
+  }
+
   /**
    * Returns a timestamp, for a the local timezone, given an ISO8601-formatted
    * UTC timestamp.

@@ -29,7 +29,6 @@ import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Toast;
 
 /**
  *
@@ -42,8 +41,6 @@ public class DrinkerSelectActivity extends CoreActivity {
   private static final String EXTRA_USERNAME = "username";
 
   private String mSelectedUsername = "";
-
-  private AuthenticationManager mAuthManager;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -71,8 +68,6 @@ public class DrinkerSelectActivity extends CoreActivity {
     if (savedInstanceState != null) {
         bar.setSelectedNavigationItem(savedInstanceState.getInt("tab", 0));
     }
-
-    mAuthManager = AuthenticationManager.getSingletonInstance(this);
   }
 
   @Override
@@ -102,7 +97,7 @@ public class DrinkerSelectActivity extends CoreActivity {
 
   public void handlerUserSelected(User user) {
     Intent resultData = new Intent();
-    resultData.putExtra("username", user.getUsername());
+    resultData.putExtra(EXTRA_USERNAME, user.getUsername());
     setResult(RESULT_OK, resultData);
     finish();
   }
@@ -154,7 +149,6 @@ public class DrinkerSelectActivity extends CoreActivity {
 
     @Override
     public void onTabReselected(Tab tab, FragmentTransaction ft) {
-      Toast.makeText(mActivity, "Reselected!", Toast.LENGTH_SHORT).show();
     }
   }
 

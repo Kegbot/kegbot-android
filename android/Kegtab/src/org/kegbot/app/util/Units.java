@@ -32,6 +32,7 @@ import org.jscience.physics.measures.Measure;
 public class Units {
 
   private Units() {
+    throw new IllegalStateException("Non-instantiable class.");
   }
 
   public static double volumeMlToOunces(double volumeMl) {
