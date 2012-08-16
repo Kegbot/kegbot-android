@@ -28,6 +28,9 @@ import org.kegbot.core.FlowManager;
 import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
@@ -191,7 +194,22 @@ public class SettingsActivity extends PreferenceActivity {
         }
       });
 
+      final PackageManager pm = getActivity().getPackageManager();
+      final String versionString;
+      final int versionCode;
+      try {
+        final PackageInfo info = pm.getPackageInfo(getActivity().getPackageName(), 0);
+        versionString = info.versionName;
+        versionCode = info.versionCode;
+      } catch (NameNotFoundException e) {
+        // Impossible!
+        throw new IllegalStateException(e);
+      }
+
+      findPreference("version").setSummary(String.format("%s (build #%d)", versionString,
+          Integer.valueOf(versionCode)));
     }
+
   }
 
   @Override

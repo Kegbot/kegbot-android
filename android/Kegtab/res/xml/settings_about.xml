@@ -20,6 +20,11 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <Preference
+        android:key="version"
+        android:summary=""
+        android:title="Version" >
+    </Preference>
+    <Preference
         android:key="build_date"
         android:summary="@string/BUILD_DATE_HUMAN"
         android:title="Build Date" >
