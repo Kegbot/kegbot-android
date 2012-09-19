@@ -23,33 +23,11 @@ import java.util.List;
 import org.kegbot.core.FlowManager.Clock;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Predicate;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
 public class Flow {
-
-  public static Predicate<Flow> PREDICATE_ACTIVE = new Predicate<Flow>() {
-    @Override
-    public boolean apply(Flow flow) {
-      return flow.getState() == State.ACTIVE;
-    }
-  };
-
-  public static Predicate<Flow> PREDICATE_IDLE = new Predicate<Flow>() {
-    @Override
-    public boolean apply(Flow flow) {
-      return flow.isIdle();
-    }
-  };
-
-  public static Predicate<Flow> PREDICATE_COMPLETED = new Predicate<Flow>() {
-    @Override
-    public boolean apply(Flow flow) {
-      return flow.getState() == State.COMPLETED;
-    }
-  };
 
   public static enum State {
     INITIAL, ACTIVE, IDLE, COMPLETED,

@@ -32,6 +32,7 @@ import android.os.SystemClock;
 import android.util.Log;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
@@ -42,6 +43,20 @@ public class FlowManager {
   private static final String TAG = FlowManager.class.getSimpleName();
 
   private static FlowManager sSingleton = null;
+  
+  public static Predicate<Flow> PREDICATE_ACTIVE = new Predicate<Flow>() {
+    @Override
+    public boolean apply(Flow flow) {
+      return flow.getState() == State.ACTIVE;
+    }
+  };
+
+  public static Predicate<Flow> PREDICATE_IDLE = new Predicate<Flow>() {
+    @Override
+    public boolean apply(Flow flow) {
+      return flow.isIdle();
+    }
+  };
 
   private final TapManager mTapManager;
 
@@ -157,7 +172,7 @@ public class FlowManager {
    */
   public List<Flow> getAllActiveFlows() {
     synchronized (mFlowsByTap) {
-      return ImmutableList.copyOf(Iterables.filter(mFlowsByTap.values(), Flow.PREDICATE_ACTIVE));
+      return ImmutableList.copyOf(Iterables.filter(mFlowsByTap.values(), PREDICATE_ACTIVE));
     }
   }
 
@@ -168,7 +183,7 @@ public class FlowManager {
    */
   public List<Flow> getIdleFlows() {
     synchronized (mFlowsByTap) {
-      return ImmutableList.copyOf(Iterables.filter(mFlowsByTap.values(), Flow.PREDICATE_IDLE));
+      return ImmutableList.copyOf(Iterables.filter(mFlowsByTap.values(), PREDICATE_IDLE));
     }
   }
 
