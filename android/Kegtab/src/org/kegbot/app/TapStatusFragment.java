@@ -55,7 +55,6 @@ public class TapStatusFragment extends ListFragment {
 
   private static final int SELECT_DRINKER = 100;
 
-  private static final int CHILD_LOADING = 0;
   private static final int CHILD_INACTIVE = 1;
   private static final int CHILD_ACTIVE = 2;
 

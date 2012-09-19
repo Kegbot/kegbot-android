@@ -67,7 +67,6 @@ public class PourStatusFragment extends ListFragment {
   private ImageDownloader mImageDownloader;
 
   private final Tap mTap;
-  private KegTap mTapDetail;
 
   private View mView;
   private BadgeView mPourVolumeBadge;
