@@ -51,6 +51,8 @@ public class CameraFragment extends Fragment {
 
   private static final String TAG = CameraFragment.class.getSimpleName();
 
+  private static final long CAMERA_SETUP_DELAY_MILLIS = 200;
+
   private Preview mPreview;
   Camera mCamera;
   int mNumberOfCameras;
@@ -88,15 +90,12 @@ public class CameraFragment extends Fragment {
     }
   };
 
-  private class CameraSetupTask extends AsyncTask<Void, Void, Void> {
-
+  private final Runnable CAMERA_SETUP_RUNNABLE = new Runnable() {
     @Override
-    protected Void doInBackground(Void... params) {
+    public void run() {
       doCameraSetup();
-      return null;
     }
-
-  }
+  };
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
@@ -314,8 +313,7 @@ public class CameraFragment extends Fragment {
   public void onResume() {
     super.onResume();
     Log.d(TAG, "onResume()");
-    //new CameraSetupTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-    doCameraSetup();
+    mHandler.postDelayed(CAMERA_SETUP_RUNNABLE, CAMERA_SETUP_DELAY_MILLIS);
   }
 
   private void doCameraSetup() {
@@ -330,6 +328,7 @@ public class CameraFragment extends Fragment {
     super.onPause();
     Log.d(TAG, "onPause()");
     cancelPendingPicture();
+    mHandler.removeCallbacks(CAMERA_SETUP_RUNNABLE);
 
     if (mCamera != null) {
       mPreview.setCamera(null);
