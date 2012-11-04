@@ -75,32 +75,6 @@ public class KegbotApiService extends BackgroundService {
 
   private boolean mRunning = true;
 
-  /**
-   * Current state of this service with respect to its backend.
-   */
-  public enum ConnectionState {
-    /**
-     * The service is currently connecting to the backend.
-     */
-    CONNECTING,
-
-    /**
-     * The service is currently connected to the backend.
-     */
-    CONNECTED,
-
-    /**
-     * The service has become disconnected from the backend. API calls will
-     * fail. The service will attempt to reconnect.
-     */
-    DISCONNECTED,
-
-    /**
-     * The service has entered a permanent failure state.
-     */
-    FAILED
-  }
-
   public class LocalBinder extends Binder {
     public KegbotApiService getService() {
       return KegbotApiService.this;
