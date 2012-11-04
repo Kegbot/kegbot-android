@@ -70,7 +70,7 @@ public class SettingsActivity extends PreferenceActivity {
       if (!mPinValid) {
         if (!mPinChecked) {
           Log.d(TAG, "Checking pin...");
-          final Intent intent = new Intent(this, EnterPinActivity.class);
+          final Intent intent = new Intent(this, PinActivity.class);
           startActivityForResult(intent, REQUEST_PIN);
           mPinChecked = true;
         } else {

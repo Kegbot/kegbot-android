@@ -30,11 +30,13 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
+import com.google.common.base.Strings;
+
 /**
  *
  * @author mike wakerly (mike@wakerly.com)
  */
-public class EnterPinActivity extends Activity {
+public class PinActivity extends Activity {
 
   private static final int MAX_FAILURES = 3;
 
@@ -47,9 +49,16 @@ public class EnterPinActivity extends Activity {
   @Override
   protected void onStart() {
     super.onStart();
-    setContentView(R.layout.enter_pin_activity);
 
     mPrefs = new PreferenceHelper(getApplicationContext());
+    if (Strings.isNullOrEmpty(mPrefs.getPin())) {
+      setResult(RESULT_OK);
+      finish();
+      return;
+    }
+
+    setContentView(R.layout.enter_pin_activity);
+
     mPinText = (EditText) findViewById(R.id.managerPin);
 
     mPinText.setOnEditorActionListener(new OnEditorActionListener() {

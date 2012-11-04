@@ -159,7 +159,7 @@
             android:name=".settings.ThirdPartyLicensesActivity"
             android:label="@string/settings_name" />
         <activity
-            android:name=".EnterPinActivity"
+            android:name=".PinActivity"
             android:label="@string/app_name" />
         <activity
             android:name=".DrinkerRegistrationActivity"
