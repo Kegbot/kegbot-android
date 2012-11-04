@@ -28,22 +28,18 @@ import java.util.concurrent.TimeUnit;
 import org.apache.http.annotation.GuardedBy;
 import org.kegbot.core.Flow.State;
 
-import android.os.SystemClock;
 import android.util.Log;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
-public class FlowManager {
+public class FlowManager extends Manager {
 
   private static final String TAG = FlowManager.class.getSimpleName();
 
-  private static FlowManager sSingleton = null;
-  
   public static Predicate<Flow> PREDICATE_ACTIVE = new Predicate<Flow>() {
     @Override
     public boolean apply(Flow flow) {
@@ -137,8 +133,7 @@ public class FlowManager {
 
   private ScheduledFuture<?> mFuture;
 
-  @VisibleForTesting
-  protected FlowManager(final TapManager tapManager, final Clock clock) {
+  FlowManager(final TapManager tapManager, final Clock clock) {
     mTapManager = tapManager;
     mClock = clock;
   }
@@ -385,19 +380,6 @@ public class FlowManager {
         listener.onFlowEnd(flow);
       }
     }
-  }
-
-  public static synchronized FlowManager getSingletonInstance() {
-    if (sSingleton == null) {
-      final Clock clock = new Clock() {
-        @Override
-        public long currentTimeMillis() {
-          return SystemClock.uptimeMillis();
-        }
-      };
-      sSingleton = new FlowManager(TapManager.getSingletonInstance(), clock);
-    }
-    return sSingleton;
   }
 
 }

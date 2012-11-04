@@ -22,12 +22,11 @@ import java.text.ParseException;
 import java.util.Comparator;
 import java.util.List;
 
-import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiException;
-import org.kegbot.api.KegbotApiImpl;
 import org.kegbot.app.util.ImageDownloader;
 import org.kegbot.app.util.Units;
 import org.kegbot.app.util.Utils;
+import org.kegbot.core.KegbotCore;
 import org.kegbot.proto.Models.Drink;
 import org.kegbot.proto.Models.SystemEvent;
 
@@ -62,7 +61,7 @@ public class EventListFragment extends ListFragment {
   private static final String LOG_TAG = EventListFragment.class.getSimpleName();
 
   private ArrayAdapter<SystemEvent> mAdapter;
-  private final KegbotApi mApi = KegbotApiImpl.getSingletonInstance();
+  private KegbotCore mCore;
   private ImageDownloader mImageDownloader;
 
   private int mLastEventId = -1;
@@ -198,9 +197,9 @@ public class EventListFragment extends ListFragment {
     protected List<SystemEvent> doInBackground(Void... params) {
       try {
         if (mLastEventId <= 0) {
-          return mApi.getRecentEvents();
+          return mCore.getApi().getRecentEvents();
         } else {
-          return mApi.getRecentEvents(mLastEventId);
+          return mCore.getApi().getRecentEvents(mLastEventId);
         }
       } catch (KegbotApiException e) {
         Log.w(LOG_TAG, "Could not load events: " + e.toString());
@@ -257,6 +256,12 @@ public class EventListFragment extends ListFragment {
     LayoutAnimationController controller = new LayoutAnimationController(set, 0.3f);
     getListView().setLayoutAnimation(controller);
     setListAdapter(mAdapter);
+  }
+
+  @Override
+  public void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    mCore = KegbotCore.getInstance(getActivity());
   }
 
   void loadEvents() {

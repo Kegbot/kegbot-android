@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiException;
-import org.kegbot.api.KegbotApiImpl;
+import org.kegbot.core.KegbotCore;
 import org.kegbot.proto.Models.User;
 
 import android.content.AsyncTaskLoader;
@@ -64,7 +64,7 @@ public class UserDetailListLoader extends AsyncTaskLoader<List<User>> {
    */
   public UserDetailListLoader(Context context) {
     super(context);
-    mApi = KegbotApiImpl.getSingletonInstance();
+    mApi = KegbotCore.getInstance(context).getApi();
   }
 
   @Override

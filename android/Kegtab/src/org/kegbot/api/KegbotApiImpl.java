@@ -78,8 +78,6 @@ import com.google.protobuf.Message.Builder;
 
 public class KegbotApiImpl implements KegbotApi {
 
-  private static KegbotApiImpl sSingleton = null;
-
   private static final String CONTENT_TYPE_JSON = "application/json";
 
   private String mBaseUrl;
@@ -598,10 +596,4 @@ public class KegbotApiImpl implements KegbotApi {
     }
   }
 
-  public static synchronized KegbotApiImpl getSingletonInstance() {
-    if (sSingleton == null) {
-      sSingleton = new KegbotApiImpl();
-    }
-    return sSingleton;
-  }
 }

@@ -34,13 +34,12 @@ import java.util.concurrent.TimeUnit;
 
 import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiException;
-import org.kegbot.api.KegbotApiImpl;
 import org.kegbot.app.KegtabBroadcast;
 import org.kegbot.app.util.Downloader;
 import org.kegbot.app.util.Units;
 import org.kegbot.core.Flow;
 import org.kegbot.core.Flow.State;
-import org.kegbot.core.FlowManager;
+import org.kegbot.core.KegbotCore;
 import org.kegbot.proto.Models.SoundEvent;
 
 import android.content.BroadcastReceiver;
@@ -67,7 +66,8 @@ public class KegbotSoundService extends BackgroundService {
 
   private static final String TAG = KegbotSoundService.class.getSimpleName();
 
-  private final KegbotApi mApi = KegbotApiImpl.getSingletonInstance();
+  private KegbotCore mCore;
+  private KegbotApi mApi;
 
   private final LinkedBlockingQueue<Intent> mCommandQueue = Queues.newLinkedBlockingQueue();
 
@@ -168,10 +168,12 @@ public class KegbotSoundService extends BackgroundService {
 
   @Override
   public void onCreate() {
-    super.onCreate();
     registerReceiver(mBroadcastReceiver, INTENT_FILTER);
+    mCore = KegbotCore.getInstance(this);
+    mApi = mCore.getApi();
     mMediaPlayer = new MediaPlayer();
     mQuit = false;
+    super.onCreate();
   }
 
   @Override
@@ -403,7 +405,7 @@ public class KegbotSoundService extends BackgroundService {
     if (Strings.isNullOrEmpty(tapName)) {
       return null;
     }
-    final Flow flow = FlowManager.getSingletonInstance().getFlowForMeterName(tapName);
+    final Flow flow = mCore.getFlowManager().getFlowForMeterName(tapName);
     if (flow == null) {
       return null;
     }

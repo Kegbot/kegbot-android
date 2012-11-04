@@ -23,6 +23,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.kegbot.core.AuthenticationManager;
+import org.kegbot.core.KegbotCore;
 import org.kegbot.proto.Models.User;
 
 import android.content.Context;
@@ -38,14 +39,12 @@ import com.google.common.collect.Lists;
 public class RecentUserDetailLoader extends Loader<List<User>> {
 
   private static final String TAG = RecentUserDetailLoader.class.getSimpleName();
-
+  private KegbotCore mCore;
   private boolean mReported = false;
 
-  /**
-   * @param context
-   */
-  public RecentUserDetailLoader(Context context) {
+  public RecentUserDetailLoader(Context context, KegbotCore core) {
     super(context);
+    mCore = core;
   }
 
   private static Comparator<User> USERS_ALPHABETIC = new Comparator<User>() {
@@ -62,7 +61,7 @@ public class RecentUserDetailLoader extends Loader<List<User>> {
     Log.d(TAG, "onStartLoading isStarted=" + isStarted() + " isReset=" + isReset()
         + " isAbandoned=" + isAbandoned());
     if (!mReported) {
-      final AuthenticationManager am = AuthenticationManager.getSingletonInstance(getContext());
+      final AuthenticationManager am = mCore.getAuthenticationManager();
       final List<User> result = Lists.newArrayList(am.getAllRecent());
       Log.d(TAG, "Load result size: " + result.size());
       Collections.sort(result, USERS_ALPHABETIC);

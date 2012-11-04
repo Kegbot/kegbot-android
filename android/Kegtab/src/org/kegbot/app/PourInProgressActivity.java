@@ -25,6 +25,7 @@ import org.kegbot.app.camera.CameraFragment;
 import org.kegbot.app.util.PreferenceHelper;
 import org.kegbot.core.Flow;
 import org.kegbot.core.FlowManager;
+import org.kegbot.core.KegbotCore;
 import org.kegbot.core.Tap;
 import org.kegbot.core.TapManager;
 
@@ -62,8 +63,10 @@ public class PourInProgressActivity extends CoreActivity {
 
   private static final int DIALOG_IDLE_WARNING = 1;
 
-  private final FlowManager mFlowManager = FlowManager.getSingletonInstance();
-  private final TapManager mTapManager = TapManager.getSingletonInstance();
+  private KegbotCore mCore;
+
+  private FlowManager mFlowManager;
+  private TapManager mTapManager;
 
   private PowerManager.WakeLock mWakeLock;
 
@@ -211,6 +214,10 @@ public class PourInProgressActivity extends CoreActivity {
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     Log.d(TAG, "onCreate()");
+
+    mCore = KegbotCore.getInstance(this);
+    mFlowManager = mCore.getFlowManager();
+    mTapManager = mCore.getTapManager();
 
     final ActionBar actionBar = getActionBar();
     if (actionBar != null) {

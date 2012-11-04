@@ -20,6 +20,7 @@
 package org.kegbot.app;
 
 import org.kegbot.core.FlowManager;
+import org.kegbot.core.KegbotCore;
 import org.kegbot.core.Tap;
 import org.kegbot.core.TapManager;
 
@@ -58,11 +59,12 @@ public class UserAuthedReceiver extends BroadcastReceiver {
 
   private void handleUserAuthed(Context context, Intent intent) {
     Log.d(TAG, "handleUserAuthed: " + intent);
+
     final String username = intent.getStringExtra(KegtabBroadcast.USER_AUTHED_EXTRA_USERNAME);
     final String tapName = intent.getStringExtra(KegtabBroadcast.DRINKER_SELECT_EXTRA_TAP_NAME);
 
-    FlowManager flowManager = FlowManager.getSingletonInstance();
-    TapManager tapManager = TapManager.getSingletonInstance();
+    FlowManager flowManager = KegbotCore.getInstance(context).getFlowManager();
+    TapManager tapManager = KegbotCore.getInstance(context).getTapManager();
     if (!Strings.isNullOrEmpty(tapName)) {
       final Tap tap = tapManager.getTapForMeterName(tapName);
       flowManager.activateUserAtTap(tap, username);

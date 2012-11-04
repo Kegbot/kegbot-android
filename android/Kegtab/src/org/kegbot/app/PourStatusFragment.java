@@ -23,10 +23,10 @@ import org.kegbot.app.util.ImageDownloader;
 import org.kegbot.app.util.Units;
 import org.kegbot.app.view.BadgeView;
 import org.kegbot.core.AuthenticationManager;
-import org.kegbot.core.ConfigurationManager;
 import org.kegbot.core.Flow;
 import org.kegbot.core.Flow.State;
 import org.kegbot.core.FlowManager;
+import org.kegbot.core.KegbotCore;
 import org.kegbot.core.Tap;
 import org.kegbot.proto.Models.BeerType;
 import org.kegbot.proto.Models.Keg;
@@ -63,6 +63,8 @@ public class PourStatusFragment extends ListFragment {
 
   private double mTargetVolume = 0.0;
   private double mCurrentVolume = 0.0;
+
+  private KegbotCore mCore;
 
   private ImageDownloader mImageDownloader;
 
@@ -124,6 +126,12 @@ public class PourStatusFragment extends ListFragment {
   }
 
   @Override
+  public void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    mCore = KegbotCore.getInstance(getActivity());
+  }
+
+  @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     mView = inflater.inflate(R.layout.pour_status_item_layout, container, false);
 
@@ -150,7 +158,7 @@ public class PourStatusFragment extends ListFragment {
     final OnClickListener donePouringListener = new OnClickListener() {
       @Override
       public void onClick(View v) {
-        final FlowManager flowManager = FlowManager.getSingletonInstance();
+        final FlowManager flowManager = mCore.getFlowManager();
         final Flow flow = flowManager.getFlowForTap(getTap());
 
         if (flow != null) {
@@ -177,7 +185,7 @@ public class PourStatusFragment extends ListFragment {
           Log.w(TAG, "Bad tap.");
           return;
         }
-        final Flow flow = FlowManager.getSingletonInstance().getFlowForTap(tap);
+        final Flow flow = mCore.getFlowManager().getFlowForTap(tap);
         if (flow == null) {
           Log.w(TAG, "Flow went away, dropping shout.");
           return;
@@ -199,7 +207,7 @@ public class PourStatusFragment extends ListFragment {
               data.getStringExtra(KegtabCommon.ACTIVITY_AUTH_DRINKER_RESULT_EXTRA_USERNAME);
           if (!Strings.isNullOrEmpty(username)) {
             Log.d(TAG, "Authenticating async.");
-            AuthenticationManager am = AuthenticationManager.getSingletonInstance(getActivity());
+            AuthenticationManager am = mCore.getAuthenticationManager();
             am.authenticateUsernameAsync(username);
           }
         }
@@ -227,7 +235,7 @@ public class PourStatusFragment extends ListFragment {
   }
 
   private void applyTapDetail() {
-    final KegTap tapDetail = ConfigurationManager.getSingletonInstance().getTapDetail(
+    final KegTap tapDetail = mCore.getConfigurationManager().getTapDetail(
         getTap().getMeterName());
     if (tapDetail == null) {
       Log.wtf(TAG, "Tap detail is null.");
@@ -299,8 +307,7 @@ public class PourStatusFragment extends ListFragment {
     }
 
     if (!Strings.isNullOrEmpty(username) && !username.equals(mAppliedUsername)) {
-      final AuthenticationManager authManager = AuthenticationManager
-          .getSingletonInstance(getActivity());
+      final AuthenticationManager authManager = mCore.getAuthenticationManager();
       final User user = authManager.getUserDetail(username);
       if (user != null && user.hasImage()) {
         // NOTE(mikey): Use the full-sized image rather than the thumbnail;

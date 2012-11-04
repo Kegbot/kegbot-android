@@ -23,7 +23,7 @@ import java.util.List;
 import org.kegbot.app.settings.ThirdPartyLicensesActivity;
 import org.kegbot.app.setup.SetupActivity;
 import org.kegbot.app.util.PreferenceHelper;
-import org.kegbot.core.FlowManager;
+import org.kegbot.core.KegbotCore;
 
 import android.app.ActionBar;
 import android.content.Context;
@@ -49,9 +49,16 @@ public class SettingsActivity extends PreferenceActivity {
 
   private static final int REQUEST_PIN = 100;
 
+  private KegbotCore mCore;
   private PreferenceHelper mPrefs;
   private boolean mPinValid = false;
   private boolean mPinChecked = false;
+
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    mCore = KegbotCore.getInstance(this);
+  }
 
   @Override
   protected void onStart() {
@@ -124,7 +131,7 @@ public class SettingsActivity extends PreferenceActivity {
 
   }
 
-  public static class KegeratorFragment extends PreferenceFragment {
+  public class KegeratorFragment extends PreferenceFragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -147,8 +154,7 @@ public class SettingsActivity extends PreferenceActivity {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
               final PreferenceHelper helper = new PreferenceHelper(getActivity());
-              FlowManager.getSingletonInstance()
-                  .setDefaultIdleTimeMillis(helper.getIdleTimeoutMs());
+              mCore.getFlowManager().setDefaultIdleTimeMillis(helper.getIdleTimeoutMs());
               return true;
             }
           });

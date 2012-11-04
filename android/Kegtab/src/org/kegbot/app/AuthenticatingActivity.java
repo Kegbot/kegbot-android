@@ -18,8 +18,7 @@
 package org.kegbot.app;
 
 import org.kegbot.api.KegbotApiException;
-import org.kegbot.api.KegbotApiImpl;
-import org.kegbot.core.AuthenticationManager;
+import org.kegbot.core.KegbotCore;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -47,6 +46,8 @@ public class AuthenticatingActivity extends Activity {
   private static final long AUTO_FINISH_DELAY_MILLIS = 10000;
   private static final int REQUEST_SELECT_USER_TO_BIND = 100;
 
+  private KegbotCore mCore;
+
   private ViewGroup mButtonGroup;
   private TextView mBeginTitle;
   private TextView mFailTitle;
@@ -70,6 +71,8 @@ public class AuthenticatingActivity extends Activity {
     super.onCreate(savedInstanceState);
     requestWindowFeature(Window.FEATURE_NO_TITLE);
     setContentView(R.layout.authenticating_activity);
+
+    mCore = KegbotCore.getInstance(this);
 
     mBeginTitle = (TextView) findViewById(R.id.authenticatingBeginTitle);
     mFailTitle = (TextView) findViewById(R.id.authenticatingFailTitle);
@@ -167,13 +170,12 @@ public class AuthenticatingActivity extends Activity {
         Log.d(TAG, "Assigning authDevice=" + authDevice + " tokenValue=" + tokenValue
             + "to username=" + username);
         try {
-          KegbotApiImpl.getSingletonInstance().assignToken(authDevice, tokenValue, username);
+          mCore.getApi().assignToken(authDevice, tokenValue, username);
         } catch (KegbotApiException e) {
           Log.w(TAG, "Assignment failed!", e);
           return Boolean.FALSE;
         }
-        AuthenticationManager.getSingletonInstance(AuthenticatingActivity.this)
-            .authenticateUsernameAsync(username);
+        mCore.getAuthenticationManager().authenticateUsernameAsync(username);
         finish();
         return Boolean.TRUE;
       }

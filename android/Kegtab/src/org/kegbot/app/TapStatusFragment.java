@@ -21,9 +21,8 @@ package org.kegbot.app;
 import org.kegbot.app.util.ImageDownloader;
 import org.kegbot.app.util.Units;
 import org.kegbot.app.view.BadgeView;
-import org.kegbot.core.FlowManager;
+import org.kegbot.core.KegbotCore;
 import org.kegbot.core.Tap;
-import org.kegbot.core.TapManager;
 import org.kegbot.proto.Models.Image;
 import org.kegbot.proto.Models.Keg;
 import org.kegbot.proto.Models.KegTap;
@@ -47,6 +46,8 @@ public class TapStatusFragment extends ListFragment {
 
   private final String TAG = TapStatusFragment.class.getSimpleName();
 
+  private KegbotCore mCore;
+
   private KegTap mTapDetail;
 
   private ImageDownloader mImageDownloader;
@@ -59,14 +60,20 @@ public class TapStatusFragment extends ListFragment {
   private static final int CHILD_ACTIVE = 2;
 
   @Override
+  public void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    mCore = KegbotCore.getInstance(getActivity());
+  }
+
+  @Override
   public void onActivityResult(int requestCode, int resultCode, Intent data) {
     switch (requestCode) {
       case SELECT_DRINKER:
         if (resultCode == Activity.RESULT_OK) {
           String username = data.getStringExtra("username");
           final String tapName = mTapDetail.getMeterName();
-          final Tap tap = TapManager.getSingletonInstance().getTapForMeterName(tapName);
-          FlowManager.getSingletonInstance().activateUserAtTap(tap, username);
+          final Tap tap = mCore.getTapManager().getTapForMeterName(tapName);
+          mCore.getFlowManager().activateUserAtTap(tap, username);
         }
         break;
       default:

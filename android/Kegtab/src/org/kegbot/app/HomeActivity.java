@@ -24,11 +24,11 @@ import java.util.concurrent.TimeUnit;
 
 import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiException;
-import org.kegbot.api.KegbotApiImpl;
 import org.kegbot.app.service.CheckinService;
 import org.kegbot.app.service.KegboardService;
 import org.kegbot.app.util.PreferenceHelper;
 import org.kegbot.core.AuthenticationManager;
+import org.kegbot.core.KegbotCore;
 import org.kegbot.proto.Models.KegTap;
 
 import android.app.Activity;
@@ -76,6 +76,7 @@ public class HomeActivity extends CoreActivity {
   private ViewGroup mControls;
   private Button mBeerMeButton;
   private Button mNewDrinkerButton;
+  private KegbotCore mCore;
 
   private MyAdapter mTapStatusAdapter;
   private ViewPager mTapStatusPager;
@@ -117,7 +118,9 @@ public class HomeActivity extends CoreActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.main_activity);
 
-    mPrefsHelper = new PreferenceHelper(this);
+    mCore = KegbotCore.getInstance(this);
+    mApi = mCore.getApi();
+    mPrefsHelper = mCore.getPreferences();
 
     mTapStatusAdapter = new MyAdapter(getFragmentManager());
 
@@ -138,10 +141,6 @@ public class HomeActivity extends CoreActivity {
 
     View v = findViewById(R.id.tap_status_pager);
     v.setSystemUiVisibility(View.STATUS_BAR_HIDDEN);
-
-    mApi = KegbotApiImpl.getSingletonInstance();
-    mApi.setApiUrl(mPrefsHelper.getApiUrl());
-    mApi.setApiKey(mPrefsHelper.getApiKey());
 
     // GCM
     GCMRegistrar.checkDevice(this);
@@ -235,7 +234,7 @@ public class HomeActivity extends CoreActivity {
               data.getStringExtra(KegtabCommon.ACTIVITY_AUTH_DRINKER_RESULT_EXTRA_USERNAME);
           if (!Strings.isNullOrEmpty(username)) {
             Log.d(LOG_TAG, "Authenticating async.");
-            AuthenticationManager am = AuthenticationManager.getSingletonInstance(this);
+            AuthenticationManager am = mCore.getAuthenticationManager();
             am.authenticateUsernameAsync(username);
           }
         }
@@ -247,7 +246,7 @@ public class HomeActivity extends CoreActivity {
               data.getStringExtra(KegtabCommon.ACTIVITY_CREATE_DRINKER_RESULT_EXTRA_USERNAME);
           if (!Strings.isNullOrEmpty(username)) {
             Log.d(LOG_TAG, "Authenticating newly-created user.");
-            AuthenticationManager am = AuthenticationManager.getSingletonInstance(this);
+            AuthenticationManager am = mCore.getAuthenticationManager();
             am.authenticateUsernameAsync(username);
           }
         }

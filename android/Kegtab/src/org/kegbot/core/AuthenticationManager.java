@@ -28,7 +28,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiException;
-import org.kegbot.api.KegbotApiImpl;
 import org.kegbot.api.KegbotApiNotFoundError;
 import org.kegbot.app.KegtabBroadcast;
 import org.kegbot.app.util.PreferenceHelper;
@@ -47,15 +46,13 @@ import com.google.common.collect.Sets;
  *
  * @author mike wakerly (mike@wakerly.com)
  */
-public class AuthenticationManager {
+public class AuthenticationManager extends Manager {
 
   private static final String TAG = AuthenticationManager.class.getSimpleName();
 
   private static final long CACHE_EXPIRE_HOURS = 3;
 
-  private static AuthenticationManager sSingleton = null;
-
-  private final KegbotApi mApi = KegbotApiImpl.getSingletonInstance();
+  private final KegbotApi mApi;
 
   private final PreferenceHelper mPrefsHelper;
 
@@ -95,8 +92,9 @@ public class AuthenticationManager {
             }
           });
 
-  private AuthenticationManager(Context context) {
+  AuthenticationManager(Context context, KegbotApi api) {
     mContext = context.getApplicationContext();
+    mApi = api;
     mPrefsHelper = new PreferenceHelper(mContext);
   }
 
@@ -168,13 +166,6 @@ public class AuthenticationManager {
     // TODO(mikey): clear me on config change broadcast
     mUserDetailCache.invalidateAll();
     mAuthTokenCache.invalidateAll();
-  }
-
-  public static synchronized AuthenticationManager getSingletonInstance(Context context) {
-    if (sSingleton == null) {
-      sSingleton = new AuthenticationManager(context);
-    }
-    return sSingleton;
   }
 
 }

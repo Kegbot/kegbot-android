@@ -21,6 +21,7 @@ package org.kegbot.app;
 import java.util.List;
 
 import org.kegbot.app.util.ImageDownloader;
+import org.kegbot.core.KegbotCore;
 import org.kegbot.proto.Models.User;
 
 import android.app.Activity;
@@ -49,6 +50,8 @@ public class DrinkerSelectFragment extends Fragment implements LoaderCallbacks<L
 
   private static final String LOG_TAG = DrinkerSelectFragment.class.getSimpleName();
 
+  private KegbotCore mCore;
+
   private ArrayAdapter<User> mAdapter;
 
   private View mView;
@@ -64,6 +67,12 @@ public class DrinkerSelectFragment extends Fragment implements LoaderCallbacks<L
   public void onAttach(Activity activity) {
     super.onAttach(activity);
     mImageDownloader = ImageDownloader.getSingletonInstance(activity);
+  }
+
+  @Override
+  public void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    mCore = KegbotCore.getInstance(getActivity());
   }
 
   @Override
@@ -164,7 +173,7 @@ public class DrinkerSelectFragment extends Fragment implements LoaderCallbacks<L
 
     if (LOAD_SOURCE_RECENT.equalsIgnoreCase(method)) {
       Log.d(LOG_TAG, "load from recent!");
-      return new RecentUserDetailLoader(getActivity());
+      return new RecentUserDetailLoader(getActivity(), mCore);
     } else {
       return new UserDetailListLoader(getActivity());
     }

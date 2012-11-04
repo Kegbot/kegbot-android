@@ -18,32 +18,32 @@
  */
 package org.kegbot.core;
 
-import java.util.Map;
+import org.kegbot.app.util.IndentingPrintWriter;
 
-import org.kegbot.proto.Models.KegTap;
-
-import com.google.common.collect.Maps;
+import android.util.Log;
 
 /**
+ * Base class for Kegbot core components.
  *
- * @author mike wakerly (mike@wakerly.com)
+ * @author mike wakerly (opensource@hoho.com)
  */
-public class ConfigurationManager extends Manager {
+public abstract class Manager {
+
+  private final String mName;
+
+  public Manager() {
+    mName = getClass().getSimpleName();
+    Log.d(mName, "Manager started: " + mName);
+  }
+
+  public String getName() {
+    return mName;
+  }
 
   /**
-   * Maps tap names to TapDetail.
+   * Writes manager-specific debug information.
    */
-  private final Map<String, KegTap> mTapConfig = Maps.newLinkedHashMap();
-
-  ConfigurationManager() {
-  }
-
-  public KegTap getTapDetail(final String tapName) {
-    return mTapConfig.get(tapName);
-  }
-
-  public void setTapDetail(final String tapName, final KegTap tapDetail) {
-    mTapConfig.put(tapName, tapDetail);
+  protected void dump(IndentingPrintWriter writer) {
   }
 
 }

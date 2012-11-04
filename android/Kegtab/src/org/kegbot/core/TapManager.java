@@ -20,23 +20,21 @@ package org.kegbot.core;
 
 import java.util.Set;
 
-import com.google.common.annotations.VisibleForTesting;
+import org.kegbot.app.util.IndentingPrintWriter;
+
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 
 /**
+ * Tap manager.
  *
  * @author mike wakerly (mike@wakerly.com)
  */
-public class TapManager {
+public class TapManager extends Manager {
 
-  private static TapManager sSingleton = null;
+  private static final String TAG = TapManager.class.getSimpleName();
 
   private final Set<Tap> mTaps = Sets.newLinkedHashSet();
-
-  @VisibleForTesting
-  protected TapManager() {
-  }
 
   public synchronized boolean addTap(final Tap newTap) {
     return mTaps.add(newTap);
@@ -59,10 +57,19 @@ public class TapManager {
     return ImmutableSet.copyOf(mTaps);
   }
 
-  public static synchronized TapManager getSingletonInstance() {
-    if (sSingleton == null) {
-      sSingleton = new TapManager();
+  @Override
+  protected synchronized void dump(IndentingPrintWriter writer) {
+    writer.printf("Tap count: %s\n", Integer.valueOf(mTaps.size()));
+    writer.println("Taps:");
+
+    writer.increaseIndent();
+    for (final Tap tap : mTaps) {
+      writer.printPair("meterName", tap.getMeterName());
+      writer.printPair("mlPerTick", Double.valueOf(tap.getMlPerTick()));
+      writer.printPair("relayName", tap.getRelayName());
+      writer.println();
     }
-    return sSingleton;
+    writer.decreaseIndent();
   }
+
 }

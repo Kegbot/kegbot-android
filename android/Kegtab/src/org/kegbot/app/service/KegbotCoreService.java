@@ -18,6 +18,8 @@
  */
 package org.kegbot.app.service;
 
+import java.io.FileDescriptor;
+import java.io.PrintWriter;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -28,13 +30,13 @@ import org.kegbot.app.HomeActivity;
 import org.kegbot.app.KegtabBroadcast;
 import org.kegbot.app.R;
 import org.kegbot.app.util.PreferenceHelper;
-import org.kegbot.app.util.Utils;
 import org.kegbot.core.AuthenticationManager;
 import org.kegbot.core.AuthenticationToken;
 import org.kegbot.core.ConfigurationManager;
 import org.kegbot.core.Flow;
 import org.kegbot.core.FlowManager;
 import org.kegbot.core.FlowMeter;
+import org.kegbot.core.KegbotCore;
 import org.kegbot.core.Tap;
 import org.kegbot.core.TapManager;
 import org.kegbot.core.ThermoSensor;
@@ -70,14 +72,10 @@ public class KegbotCoreService extends Service {
 
   private static final int NOTIFICATION_FOREGROUND = 1;
 
-  /**
-   * The flow manager for the core.
-   */
-  private final FlowManager mFlowManager = FlowManager.getSingletonInstance();
-
-  private final TapManager mTapManager = TapManager.getSingletonInstance();
-
-  private final ConfigurationManager mConfigManager = ConfigurationManager.getSingletonInstance();
+  private KegbotCore mCore;
+  private FlowManager mFlowManager;
+  private TapManager mTapManager;
+  private ConfigurationManager mConfigManager;
 
   private ExecutorService mFlowExecutorService;
   private PreferenceHelper mPreferences;
@@ -224,8 +222,7 @@ public class KegbotCoreService extends Service {
           String message = "";
           try {
             Log.d(TAG, "onTokenAttached: running");
-            final AuthenticationManager am =
-                AuthenticationManager.getSingletonInstance(KegbotCoreService.this);
+            final AuthenticationManager am = mCore.getAuthenticationManager();
             User user = am.authenticateToken(token);
             Log.d(TAG, "Authenticated user: " + user);
             if (user != null) {
@@ -335,14 +332,23 @@ public class KegbotCoreService extends Service {
   public void onCreate() {
     super.onCreate();
     Log.d(TAG, "onCreate()");
+    mCore = KegbotCore.getInstance(this);
+    mTapManager = mCore.getTapManager();
+    mFlowManager = mCore.getFlowManager();
+    mConfigManager = mCore.getConfigurationManager();
 
     mPreferences = new PreferenceHelper(getApplicationContext());
     mFlowManager.setDefaultIdleTimeMillis(mPreferences.getIdleTimeoutMs());
 
-    Log.d(TAG, "Kegtab User-Agent: " + Utils.getUserAgent());
     updateFromPreferences();
     PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
         .registerOnSharedPreferenceChangeListener(mPreferenceListener);
+  }
+
+  @Override
+  protected void dump(FileDescriptor fd, PrintWriter writer, String[] args) {
+    super.dump(fd, writer, args);
+    mCore.dump(writer);
   }
 
   @Override

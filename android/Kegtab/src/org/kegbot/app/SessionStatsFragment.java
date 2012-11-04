@@ -24,8 +24,8 @@ import java.util.List;
 
 import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiException;
-import org.kegbot.api.KegbotApiImpl;
 import org.kegbot.app.util.Units;
+import org.kegbot.core.KegbotCore;
 import org.kegbot.proto.Models.Session;
 import org.kegbot.proto.Models.Stats;
 import org.kegbot.proto.Models.Stats.DrinkerVolume;
@@ -45,7 +45,7 @@ public class SessionStatsFragment extends Fragment {
 
   private static final String TAG = SessionStatsFragment.class.getSimpleName();
 
-  private final KegbotApi mApi = KegbotApiImpl.getSingletonInstance();
+  private KegbotCore mCore;
 
   private View mView;
 
@@ -55,6 +55,12 @@ public class SessionStatsFragment extends Fragment {
       return Float.valueOf(object2.getVolumeMl()).compareTo(Float.valueOf(object1.getVolumeMl()));
     }
   };
+
+  @Override
+  public void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    mCore = KegbotCore.getInstance(getActivity());
+  }
 
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -128,8 +134,9 @@ public class SessionStatsFragment extends Fragment {
 
     @Override
     protected Session doInBackground(Void... params) {
+      KegbotApi api = mCore.getApi();
       try {
-        final Session session = mApi.getCurrentSession();
+        final Session session = api.getCurrentSession();
         if (session == null) {
           return null;
         }
@@ -137,7 +144,7 @@ public class SessionStatsFragment extends Fragment {
         if (session.hasStats()) {
           return session;
         }
-        final Stats stats = mApi.getSessionStats(session.getId());
+        final Stats stats = api.getSessionStats(session.getId());
         Log.d(TAG, "Got stats: " + stats);
         return Session.newBuilder(session).setStats(stats).build();
       } catch (KegbotApiException e) {

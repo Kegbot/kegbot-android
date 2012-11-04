@@ -29,6 +29,7 @@ import org.kegbot.api.KegbotApiNotFoundError;
 import org.kegbot.app.storage.LocalDbHelper;
 import org.kegbot.app.util.PreferenceHelper;
 import org.kegbot.core.Flow;
+import org.kegbot.core.KegbotCore;
 import org.kegbot.proto.Api.RecordDrinkRequest;
 import org.kegbot.proto.Api.RecordTemperatureRequest;
 import org.kegbot.proto.Internal.PendingPour;
@@ -68,7 +69,7 @@ public class KegbotApiService extends BackgroundService {
   private final BlockingQueue<AbstractMessage> mPendingRequests =
     new LinkedBlockingQueue<AbstractMessage>(10);
 
-  private KegbotApi mApi = new KegbotApiImpl();
+  private KegbotApi mApi;
 
   private SQLiteOpenHelper mLocalDbHelper;
   private PreferenceHelper mPreferences;
@@ -92,6 +93,7 @@ public class KegbotApiService extends BackgroundService {
 
   @Override
   public void onCreate() {
+    mApi = KegbotCore.getInstance(this).getApi();
     Log.d(TAG, "Opening local database");
     mRunning = true;
     mLocalDbHelper = new LocalDbHelper(this);

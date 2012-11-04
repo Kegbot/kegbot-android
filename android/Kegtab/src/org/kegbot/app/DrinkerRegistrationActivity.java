@@ -20,9 +20,9 @@ package org.kegbot.app;
 
 import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiException;
-import org.kegbot.api.KegbotApiImpl;
 import org.kegbot.app.camera.CameraFragment;
 import org.kegbot.app.setup.SetupProgressDialogFragment;
+import org.kegbot.core.KegbotCore;
 import org.kegbot.proto.Models.User;
 
 import android.app.ActionBar;
@@ -40,6 +40,8 @@ public class DrinkerRegistrationActivity extends CoreActivity {
 
   private static final String TAG = DrinkerRegistrationActivity.class.getSimpleName();
 
+  private KegbotCore mCore;
+
   private Button mSubmitButton;
   private EditText mUsername;
   private EditText mEmail;
@@ -52,7 +54,7 @@ public class DrinkerRegistrationActivity extends CoreActivity {
 
     @Override
     protected User doInBackground(Void... params) {
-      KegbotApi api = KegbotApiImpl.getSingletonInstance();
+      KegbotApi api = mCore.getApi();
       Log.d(TAG, "Registering...");
       final String imagePath = mCameraFragment.getLastFilename();
       try {
@@ -83,6 +85,7 @@ public class DrinkerRegistrationActivity extends CoreActivity {
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    mCore = KegbotCore.getInstance(this);
     final ActionBar actionBar = getActionBar();
     if (actionBar != null) {
       actionBar.hide();

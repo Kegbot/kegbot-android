@@ -19,6 +19,7 @@
 package org.kegbot.app;
 
 import org.kegbot.core.AuthenticationManager;
+import org.kegbot.core.KegbotCore;
 import org.kegbot.proto.Models.User;
 
 import android.app.ActionBar;
@@ -40,12 +41,16 @@ public class DrinkerSelectActivity extends CoreActivity {
 
   private static final String EXTRA_USERNAME = "username";
 
+  private KegbotCore mCore;
+
   private String mSelectedUsername = "";
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     Log.v(TAG, "onCreate");
+
+    mCore = KegbotCore.getInstance(this);
 
     final ActionBar bar = getActionBar();
     bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
@@ -73,7 +78,7 @@ public class DrinkerSelectActivity extends CoreActivity {
   @Override
   protected void onResume() {
     super.onResume();
-    final AuthenticationManager am = AuthenticationManager.getSingletonInstance(this);
+    final AuthenticationManager am = mCore.getAuthenticationManager();
 
     if (!am.getAllRecent().isEmpty()) {
       final ActionBar bar = getActionBar();
