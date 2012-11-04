@@ -150,8 +150,6 @@ public class KegbotApiImpl implements KegbotApi {
     }
 
     final HttpGet request = new HttpGet(getRequestUrl(path));
-    debug("GET: uri=" + request.getURI());
-    debug("GET: request=" + request.getRequestLine());
     return toJson(execute(request));
   }
 
@@ -161,8 +159,6 @@ public class KegbotApiImpl implements KegbotApi {
 
   private HttpResponse doRawPost(String path, Map<String, String> params) throws KegbotApiException {
     HttpPost request = new HttpPost(getRequestUrl(path));
-    debug("POST: uri=" + request.getURI());
-    debug("POST: request=" + request.getRequestLine());
     List<NameValuePair> pairs = Lists.newArrayList();
     for (Map.Entry<String, String> entry : params.entrySet()) {
       pairs.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
@@ -178,17 +174,16 @@ public class KegbotApiImpl implements KegbotApi {
   private HttpResponse execute(HttpUriRequest request) throws KegbotApiException {
     boolean success = false;
     try {
-      final HttpResponse response;
-      debug("Requesting: " + request.getURI());
       if (!Strings.isNullOrEmpty(mApiKey)) {
         request.addHeader("X-Kegbot-Api-Key", mApiKey);
       }
 
-      response = mHttpClient.execute(request);
-      debug("DONE: " + request.getURI());
-      debug(response.getStatusLine().toString());
+      debug(request.getRequestLine().toString());
+      final HttpResponse response = mHttpClient.execute(request);
       final int statusCode = response.getStatusLine().getStatusCode();
+
       if (statusCode != HttpStatus.SC_OK) {
+        debug(String.format("Error fetching %s: %s", request.getURI(), response.getStatusLine()));
         String reason = response.getStatusLine().getReasonPhrase();
         try {
           final JsonNode responseJson = toJson(response);
