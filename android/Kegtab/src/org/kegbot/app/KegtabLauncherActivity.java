@@ -21,6 +21,7 @@ package org.kegbot.app;
 import org.kegbot.app.setup.SetupActivity;
 import org.kegbot.app.setup.SetupTask;
 import org.kegbot.app.util.PreferenceHelper;
+import org.kegbot.core.KegbotCore;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -43,7 +44,7 @@ public class KegtabLauncherActivity extends Activity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    mPrefs = new PreferenceHelper(getApplicationContext());
+    mPrefs = KegbotCore.getInstance(this).getPreferences();
   }
 
   @Override

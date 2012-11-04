@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License along
  * with Kegtab. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.kegbot.app.service;
+package org.kegbot.core;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,55 +29,55 @@ import org.kegbot.app.KegtabBroadcast;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
-import android.os.IBinder;
 import android.util.Log;
 
 import com.google.common.base.Strings;
 import com.hoho.android.usbserial.util.HexDump;
 
 /**
+ * Listens for bluetooth connections.
  *
  * @author mike wakerly (mike@wakerly.com)
  */
-public class BluetoothService extends BackgroundService {
+public class BluetoothManager extends BackgroundManager {
 
-  private static final String TAG = BluetoothService.class.getSimpleName();
+  private static final String TAG = BluetoothManager.class.getSimpleName();
 
+  private static final String KEGTAB_SERVICE_NAME = "kegtab";
   public static final UUID KEGTAB_BT_UUID = UUID.fromString("50c93109-154d-49c0-8565-4d63abf25615");
 
+  private final Context mContext;
   private boolean mQuit;
 
   public class LocalBinder extends Binder {
-    BluetoothService getService() {
-      return BluetoothService.this;
+    BluetoothManager getService() {
+      return BluetoothManager.this;
     }
   }
 
-  private final IBinder mBinder = new LocalBinder();
-
-  @Override
-  public IBinder onBind(Intent intent) {
-    return mBinder;
+  public BluetoothManager(Context context) {
+    mContext = context;
   }
 
   @Override
-  public void onCreate() {
-    super.onCreate();
+  public synchronized void start() {
     mQuit = false;
+    super.start();
   }
 
   @Override
-  public void onDestroy() {
-    super.onDestroy();
+  public synchronized void stop() {
     mQuit = true;
+    super.stop();
   }
 
   @Override
   protected void runInBackground() {
     Log.d(TAG, "Running in background.");
-    while (true) {
+    while (!mQuit) {
       final BluetoothAdapter adapter = getUsableAdapter();
       if (adapter == null) {
         Log.w(TAG, "No usable adapter, exiting.");
@@ -105,8 +105,8 @@ public class BluetoothService extends BackgroundService {
   }
 
   private void handleOneConnection(BluetoothAdapter adapter) throws IOException {
-    final BluetoothServerSocket serverSocket =
-        adapter.listenUsingRfcommWithServiceRecord("kegtap", KEGTAB_BT_UUID);
+    final BluetoothServerSocket serverSocket = adapter.listenUsingRfcommWithServiceRecord(
+        KEGTAB_SERVICE_NAME, KEGTAB_BT_UUID);
 
     boolean serverSocketClosed = false;
     try {
@@ -175,7 +175,7 @@ public class BluetoothService extends BackgroundService {
       }
       final Intent intent = KegtabBroadcast.getTokenAddedIntent(authDevice.getTextValue(), tokenValue.getTextValue());
       Log.d(TAG, "Issuing broadcast: " + intent);
-      sendBroadcast(intent);
+      mContext.sendBroadcast(intent);
     }
   }
 

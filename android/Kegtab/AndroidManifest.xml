@@ -219,11 +219,6 @@
         <!-- ######## -->
 
         <service android:name=".service.KegbotCoreService" />
-        <service android:name=".service.KegbotApiService" />
-        <service android:name=".service.KegbotHardwareService" />
-        <service android:name=".service.KegbotSoundService" />
-        <service android:name=".service.BluetoothService" />
-        <service android:name=".service.KegboardService" />
         <service android:name=".service.CheckinService" />
         <service android:name=".GCMIntentService" />
         

@@ -153,11 +153,13 @@ public class FlowManager extends Manager {
     }
   }
 
-  public void stop() {
+  @Override
+  protected void stop() {
     stopIdleChecker();
     for (Flow flow : getAllActiveFlows()) {
       endFlow(flow);
     }
+    super.stop();
   }
 
   /**

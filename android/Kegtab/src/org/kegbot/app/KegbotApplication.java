@@ -10,7 +10,7 @@ import android.app.Application;
 import android.util.Log;
 
 /**
- * Holds the current KegbotCore instance.
+ * Kegbot customized application.
  *
  * @author mike wakerly (opensource@hoho.com)
  */

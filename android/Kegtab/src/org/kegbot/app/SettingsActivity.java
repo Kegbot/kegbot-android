@@ -58,12 +58,7 @@ public class SettingsActivity extends PreferenceActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     mCore = KegbotCore.getInstance(this);
-  }
-
-  @Override
-  protected void onStart() {
-    super.onStart();
-    mPrefs = new PreferenceHelper(getApplicationContext());
+    mPrefs = mCore.getPreferences();
   }
 
   @Override

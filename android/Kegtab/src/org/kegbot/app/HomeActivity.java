@@ -25,7 +25,6 @@ import java.util.concurrent.TimeUnit;
 import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiException;
 import org.kegbot.app.service.CheckinService;
-import org.kegbot.app.service.KegboardService;
 import org.kegbot.app.util.PreferenceHelper;
 import org.kegbot.core.AuthenticationManager;
 import org.kegbot.core.KegbotCore;
@@ -36,7 +35,6 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.hardware.usb.UsbManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -258,13 +256,7 @@ public class HomeActivity extends CoreActivity {
 
   private void handleIntent() {
     final Intent intent = getIntent();
-    final String action = intent.getAction();
-    Log.d(LOG_TAG, "Handling intent: " + intent);
-    if (UsbManager.ACTION_USB_DEVICE_ATTACHED.equals(action)) {
-      final Intent serviceIntent = new Intent(this, KegboardService.class);
-      serviceIntent.setAction(UsbManager.ACTION_USB_DEVICE_ATTACHED);
-      startService(serviceIntent);
-    }
+    Log.d(LOG_TAG, "Got intent: " + intent);
   }
 
   private void startStatusPolling() {

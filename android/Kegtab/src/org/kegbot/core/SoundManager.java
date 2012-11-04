@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License along
  * with Kegtab. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.kegbot.app.service;
+package org.kegbot.core;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -37,9 +37,7 @@ import org.kegbot.api.KegbotApiException;
 import org.kegbot.app.KegtabBroadcast;
 import org.kegbot.app.util.Downloader;
 import org.kegbot.app.util.Units;
-import org.kegbot.core.Flow;
 import org.kegbot.core.Flow.State;
-import org.kegbot.core.KegbotCore;
 import org.kegbot.proto.Models.SoundEvent;
 
 import android.content.BroadcastReceiver;
@@ -48,8 +46,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.os.Binder;
-import android.os.IBinder;
 import android.util.Log;
 
 import com.google.common.base.Strings;
@@ -62,12 +58,13 @@ import com.google.common.collect.Sets;
  *
  * @author mike wakerly (mike@wakerly.com)
  */
-public class KegbotSoundService extends BackgroundService {
+public class SoundManager extends Manager {
 
-  private static final String TAG = KegbotSoundService.class.getSimpleName();
+  private static final String TAG = SoundManager.class.getSimpleName();
 
-  private KegbotCore mCore;
+  private Context mContext;
   private KegbotApi mApi;
+  private FlowManager mFlowManager;
 
   private final LinkedBlockingQueue<Intent> mCommandQueue = Queues.newLinkedBlockingQueue();
 
@@ -153,40 +150,34 @@ public class KegbotSoundService extends BackgroundService {
     INTENT_FILTER.setPriority(1000);
   }
 
-  public class LocalBinder extends Binder {
-    KegbotSoundService getService() {
-      return KegbotSoundService.this;
-    }
-  }
-
-  private final IBinder mBinder = new LocalBinder();
-
-  @Override
-  public IBinder onBind(Intent intent) {
-    return mBinder;
+  public SoundManager(Context context, KegbotApi api, FlowManager flowManager) {
+    mContext = context;
+    mApi = api;
+    mFlowManager = flowManager;
   }
 
   @Override
-  public void onCreate() {
-    registerReceiver(mBroadcastReceiver, INTENT_FILTER);
-    mCore = KegbotCore.getInstance(this);
-    mApi = mCore.getApi();
+  public void start() {
+    mContext.registerReceiver(mBroadcastReceiver, INTENT_FILTER);
     mMediaPlayer = new MediaPlayer();
     mQuit = false;
-    super.onCreate();
+    mExecutor.execute(new Runnable() {
+      @Override
+      public void run() {
+        runInBackground();
+      }
+    });
   }
 
   @Override
-  public void onDestroy() {
-    super.onDestroy();
-    unregisterReceiver(mBroadcastReceiver);
+  public void stop() {
+    mContext.unregisterReceiver(mBroadcastReceiver);
     mQuit = true;
     mCommandQueue.clear();
     mMediaPlayer.release();
   }
 
-  @Override
-  protected void runInBackground() {
+  private void runInBackground() {
     Log.d(TAG, "Running in background.");
     try {
       final List<SoundEvent> allEvents = mApi.getAllSoundEvents();
@@ -232,7 +223,7 @@ public class KegbotSoundService extends BackgroundService {
       }
       String[] parts = url.split("/");
       final String filename = parts[parts.length - 1];
-      final File output = new File(getCacheDir(), filename);
+      final File output = new File(mContext.getCacheDir(), filename);
 
       if (output.exists()) {
         Log.d(TAG, "File exists: " + url + " file=" + output) ;
@@ -405,7 +396,7 @@ public class KegbotSoundService extends BackgroundService {
     if (Strings.isNullOrEmpty(tapName)) {
       return null;
     }
-    final Flow flow = mCore.getFlowManager().getFlowForMeterName(tapName);
+    final Flow flow = mFlowManager.getFlowForMeterName(tapName);
     if (flow == null) {
       return null;
     }

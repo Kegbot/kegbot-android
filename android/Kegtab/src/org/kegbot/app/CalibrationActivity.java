@@ -18,11 +18,12 @@
  */
 package org.kegbot.app;
 
+import org.kegbot.app.service.KegbotCoreService;
 import org.kegbot.app.util.PreferenceHelper;
-import org.kegbot.core.KegbotCore;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.content.Intent;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -34,10 +35,11 @@ import android.widget.TextView.OnEditorActionListener;
 import com.google.common.base.Strings;
 
 /**
+ * Calibrates a flow meter.
  *
  * @author mike wakerly (mike@wakerly.com)
  */
-public class PinActivity extends Activity {
+public class CalibrationActivity extends Activity {
 
   private static final int MAX_FAILURES = 3;
 
@@ -51,7 +53,11 @@ public class PinActivity extends Activity {
   protected void onStart() {
     super.onStart();
 
-    mPrefs = KegbotCore.getInstance(this).getPreferences();
+    // Stop the core service while calibrating.
+    final Intent intent = new Intent(this, KegbotCoreService.class);
+    stopService(intent);
+
+    mPrefs = new PreferenceHelper(getApplicationContext());
     if (Strings.isNullOrEmpty(mPrefs.getPin())) {
       setResult(RESULT_OK);
       finish();

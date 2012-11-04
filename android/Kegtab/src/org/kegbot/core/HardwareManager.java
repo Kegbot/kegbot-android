@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License along
  * with Kegtab. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.kegbot.app.service;
+package org.kegbot.core;
 
 import java.util.Map;
 import java.util.Set;
@@ -24,10 +24,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.http.annotation.GuardedBy;
 import org.kegbot.app.KegtabBroadcast;
-import org.kegbot.core.AuthenticationToken;
-import org.kegbot.core.FlowMeter;
-import org.kegbot.core.Tap;
-import org.kegbot.core.ThermoSensor;
 import org.kegbot.kegboard.KegboardAuthTokenMessage;
 import org.kegbot.kegboard.KegboardAuthTokenMessage.Status;
 import org.kegbot.kegboard.KegboardHelloMessage;
@@ -35,16 +31,11 @@ import org.kegbot.kegboard.KegboardMeterStatusMessage;
 import org.kegbot.kegboard.KegboardOutputStatusMessage;
 import org.kegbot.kegboard.KegboardTemperatureReadingMessage;
 
-import android.app.Service;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.ServiceConnection;
-import android.os.Binder;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.os.SystemClock;
 import android.util.Log;
 
@@ -53,12 +44,12 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 /**
- * This service listens to and manages kegbot hardware: attached kegboards,
- * sensors, and so on.
+ * Generic hardware manager. Attaches to hardware-specific managers and exports
+ * generic events to the rest of the core.
  */
-public class KegbotHardwareService extends Service {
+public class HardwareManager extends Manager {
 
-  private static String TAG = KegbotHardwareService.class.getSimpleName();
+  private static String TAG = HardwareManager.class.getSimpleName();
 
   private static final long THERMO_REPORT_PERIOD_MILLIS = TimeUnit.SECONDS.toMillis(30);
 
@@ -85,8 +76,8 @@ public class KegbotHardwareService extends Service {
    */
   private Set<Listener> mListeners = Sets.newLinkedHashSet();
 
-  private KegboardService mKegboardService;
-  private boolean mKegboardServiceBound;
+  private final Context mContext;
+  private KegboardManager mKegboardManager;
 
   private final Map<String, Long> mLastThermoReadingElapsedRealtime =
     Maps.newLinkedHashMap();
@@ -131,43 +122,17 @@ public class KegbotHardwareService extends Service {
   };
 
   /**
-   *
+   * Board name prefixed to kegboard events.
    */
-  private String mBoardName = "kegboard";
+  private static String BOARD_NAME = "kegboard";
 
-  private static String RELAY_NAME_PREFIX = "kegboard.relay";
+  /** Name prefixed to kegboard relay events. */
+  private static String RELAY_NAME_PREFIX = BOARD_NAME + ".relay";
 
-  /**
-   * Connection to the API service.
-   */
-  private ServiceConnection mKegboardServiceConnection = new ServiceConnection() {
-    @Override
-    public void onServiceConnected(ComponentName className, IBinder service) {
-      mKegboardService = ((KegboardService.LocalBinder) service).getService();
-      mKegboardService.addListener(mKegboardListener);
-    }
-
-    @Override
-    public void onServiceDisconnected(ComponentName className) {
-      mKegboardService = null;
-    }
-  };
-
-  /**
-   * Local binder interface.
-   */
-  public class LocalBinder extends Binder {
-    KegbotHardwareService getService() {
-      return KegbotHardwareService.this;
-    }
-  }
-
-  private final IBinder mBinder = new LocalBinder();
-
-  private final KegboardService.Listener mKegboardListener = new KegboardService.Listener() {
+  private final KegboardManager.Listener mKegboardListener = new KegboardManager.Listener() {
     @Override
     public void onTemperatureReadingMessage(KegboardTemperatureReadingMessage message) {
-      final String sensorName = mBoardName + "." + message.getName();
+      final String sensorName = BOARD_NAME + "." + message.getName();
       final Long lastReport = mLastThermoReadingElapsedRealtime.get(sensorName);
       final long now = SystemClock.elapsedRealtime();
       if (lastReport != null) {
@@ -186,7 +151,7 @@ public class KegbotHardwareService extends Service {
 
     @Override
     public void onMeterStatusMessage(KegboardMeterStatusMessage message) {
-      handleMeterUpdate(mBoardName + "." + message.getMeterName(), message.getMeterReading());
+      handleMeterUpdate(BOARD_NAME + "." + message.getMeterName(), message.getMeterReading());
     }
 
     @Override
@@ -205,40 +170,21 @@ public class KegbotHardwareService extends Service {
     }
   };
 
-  @Override
-  public void onCreate() {
-    super.onCreate();
-    startService(new Intent(this, KegboardService.class));
-    bindToKegboardService();
-    registerReceiver(mDebugReceiver, DEBUG_INTENT_FILTER);
+  public HardwareManager(Context context, KegboardManager kegboardManager) {
+    mContext = context;
+    mKegboardManager = kegboardManager;
   }
 
   @Override
-  public void onDestroy() {
-    unbindFromKegboardService();
-    unregisterReceiver(mDebugReceiver);
-    super.onDestroy();
-  }
-
-  private void bindToKegboardService() {
-    final Intent serviceIntent = new Intent(this, KegboardService.class);
-    bindService(serviceIntent, mKegboardServiceConnection, Context.BIND_AUTO_CREATE);
-    mKegboardServiceBound = true;
-  }
-
-  private void unbindFromKegboardService() {
-    if (mKegboardServiceBound) {
-      unbindService(mKegboardServiceConnection);
-      final Intent serviceIntent = new Intent(this, KegboardService.class);
-      stopService(serviceIntent);
-      mKegboardServiceBound = false;
-    }
+  public void start() {
+    mContext.registerReceiver(mDebugReceiver, DEBUG_INTENT_FILTER);
+    mKegboardManager.addListener(mKegboardListener);
   }
 
   @Override
-  public IBinder onBind(Intent intent) {
-    Log.v(TAG, "Bound");
-    return mBinder;
+  public void stop() {
+    mKegboardManager.removeListener(mKegboardListener);
+    mContext.unregisterReceiver(mDebugReceiver);
   }
 
   public void setTapRelayEnabled(Tap tap, boolean enabled) {
@@ -259,7 +205,7 @@ public class KegbotHardwareService extends Service {
       } catch (NumberFormatException e) {
         return;
       }
-      mKegboardService.enableOutput(outputId, enabled);
+      mKegboardManager.enableOutput(outputId, enabled);
     }
   }
 
@@ -314,7 +260,7 @@ public class KegbotHardwareService extends Service {
     }
   }
 
-  public boolean attachListener(Listener listener) {
+  public boolean addListener(Listener listener) {
     return mListeners.add(listener);
   }
 

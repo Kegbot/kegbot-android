@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License along
  * with Kegtab. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.kegbot.app.service;
+package org.kegbot.core;
 
 import java.io.File;
 import java.util.concurrent.BlockingQueue;
@@ -28,27 +28,20 @@ import org.kegbot.api.KegbotApiImpl;
 import org.kegbot.api.KegbotApiNotFoundError;
 import org.kegbot.app.storage.LocalDbHelper;
 import org.kegbot.app.util.PreferenceHelper;
-import org.kegbot.core.Flow;
-import org.kegbot.core.KegbotCore;
 import org.kegbot.proto.Api.RecordDrinkRequest;
 import org.kegbot.proto.Api.RecordTemperatureRequest;
 import org.kegbot.proto.Internal.PendingPour;
-import org.kegbot.proto.Models.AuthenticationToken;
 import org.kegbot.proto.Models.Drink;
 import org.kegbot.proto.Models.ThermoLog;
-import org.kegbot.proto.Models.User;
 
 import android.content.ContentValues;
-import android.content.Intent;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.os.Binder;
-import android.os.IBinder;
 import android.os.SystemClock;
 import android.util.Log;
 
-import com.google.common.base.Strings;
 import com.google.protobuf.AbstractMessage;
 import com.google.protobuf.InvalidProtocolBufferException;
 
@@ -56,9 +49,9 @@ import com.google.protobuf.InvalidProtocolBufferException;
  * This service manages a connection to a Kegbot backend, using the Kegbot API.
  * It implements the {@link KegbotApi} interface, potentially employing caching.
  */
-public class KegbotApiService extends BackgroundService {
+public class SyncManager extends BackgroundManager {
 
-  private static String TAG = KegbotApiService.class.getSimpleName();
+  private static String TAG = SyncManager.class.getSimpleName();
 
   /**
    * All pending asynchronous requests. They will be serviced in order in the
@@ -69,20 +62,13 @@ public class KegbotApiService extends BackgroundService {
   private final BlockingQueue<AbstractMessage> mPendingRequests =
     new LinkedBlockingQueue<AbstractMessage>(10);
 
-  private KegbotApi mApi;
+  private final KegbotApi mApi;
+  private final Context mContext;
+  private final PreferenceHelper mPreferences;
 
   private SQLiteOpenHelper mLocalDbHelper;
-  private PreferenceHelper mPreferences;
 
   private boolean mRunning = true;
-
-  public class LocalBinder extends Binder {
-    public KegbotApiService getService() {
-      return KegbotApiService.this;
-    }
-  }
-
-  private final IBinder mBinder = new LocalBinder();
 
   private final KegbotApiImpl.Listener mApiListener = new KegbotApiImpl.Listener() {
     @Override
@@ -91,29 +77,60 @@ public class KegbotApiService extends BackgroundService {
     }
   };
 
+  public SyncManager(Context context, KegbotApi api, PreferenceHelper preferences) {
+    mApi = api;
+    mContext = context;
+    mPreferences = preferences;
+  }
+
   @Override
-  public void onCreate() {
-    mApi = KegbotCore.getInstance(this).getApi();
+  public synchronized void start() {
     Log.d(TAG, "Opening local database");
     mRunning = true;
-    mLocalDbHelper = new LocalDbHelper(this);
-    mPreferences = new PreferenceHelper(getApplicationContext());
-    mApi.setApiKey(mPreferences.getApiKey());
+    mLocalDbHelper = new LocalDbHelper(mContext);
     ((KegbotApiImpl) mApi).setListener(mApiListener);
-    super.onCreate();
+    mRunning = true;
+    super.start();
   }
 
   @Override
-  public void onDestroy() {
-    synchronized (this) {
-      mRunning = false;
+  public synchronized void stop() {
+    mRunning = false;
+    super.stop();
+  }
+
+  /**
+   * Schedules a drink to be recorded asynchronously.
+   * @param flow
+   */
+  public void recordDrinkAsync(final Flow flow) {
+    final RecordDrinkRequest request = getRequestForFlow(flow);
+    final PendingPour pour = PendingPour.newBuilder()
+        .setDrinkRequest(request)
+        .addAllImages(flow.getImages())
+        .build();
+
+    Log.d(TAG, ">>> Enqueuing pour: " + pour);
+    if (mPendingRequests.remainingCapacity() == 0) {
+      // Drop head when full.
+      mPendingRequests.poll();
     }
-    super.onDestroy();
+    mPendingRequests.add(pour);
+    Log.d(TAG, "<<< Pour enqueued.");
   }
 
-  @Override
-  public IBinder onBind(final Intent intent) {
-    return mBinder;
+  /**
+   * Schedules a temperature reading to be recorded asynchronously.
+   *
+   * @param request
+   */
+  public void recordTemperatureAsync(final RecordTemperatureRequest request) {
+    Log.d(TAG, "Recording temperature: " + request);
+    if (mPendingRequests.remainingCapacity() == 0) {
+      // Drop head when full.
+      mPendingRequests.poll();
+    }
+    mPendingRequests.add(request);
   }
 
   @Override
@@ -277,67 +294,14 @@ public class KegbotApiService extends BackgroundService {
     }
   }
 
-  public void setApiUrl(String apiUrl) {
-    mApi.setApiUrl(apiUrl);
-  }
-
-  public void setApiKey(String apiKey) {
-    mApi.setApiKey(apiKey);
-  }
-
-  public KegbotApi getKegbotApi() {
-    return mApi;
-  }
-
-  /**
-   * Schedules a drink to be recorded asynchronously.
-   * @param flow
-   */
-  public void recordDrinkAsync(final Flow flow) {
-    final RecordDrinkRequest request = getRequestForFlow(flow);
-    final PendingPour pour = PendingPour.newBuilder()
-        .setDrinkRequest(request)
-        .addAllImages(flow.getImages())
-        .build();
-
-    Log.d(TAG, ">>> Enqueuing pour: " + pour);
-    if (mPendingRequests.remainingCapacity() == 0) {
-      // Drop head when full.
-      mPendingRequests.poll();
-    }
-    mPendingRequests.add(pour);
-    Log.d(TAG, "<<< Pour enqueued.");
-  }
-
-  /**
-   * Schedules a temperature reading to be recorded asynchronously.
-   *
-   * @param request
-   */
-  public void recordTemperatureAsync(final RecordTemperatureRequest request) {
-    Log.d(TAG, "Recording temperature: " + request);
-    if (mPendingRequests.remainingCapacity() == 0) {
-      // Drop head when full.
-      mPendingRequests.poll();
-    }
-    mPendingRequests.add(request);
-  }
-
-  public User authenticateUser(String authDevice, String tokenValue) throws KegbotApiException {
-    AuthenticationToken tok = mApi.getAuthToken(authDevice, tokenValue);
-    final String username = tok.getUsername();
-    if (!Strings.isNullOrEmpty(username)) {
-      return mApi.getUserDetail(username);
-    }
-    return null;
-  }
-
   private static RecordDrinkRequest getRequestForFlow(final Flow ended) {
     return RecordDrinkRequest.newBuilder()
         .setTapName(ended.getTap().getMeterName())
         .setTicks(ended.getTicks())
-        .setVolumeMl((float) ended.getVolumeMl()).setUsername(ended.getUsername())
-        .setSecondsAgo(0).setDurationSeconds((int) (ended.getDurationMs() / 1000.0))
+        .setVolumeMl((float) ended.getVolumeMl())
+        .setUsername(ended.getUsername())
+        .setSecondsAgo(0)
+        .setDurationSeconds((int) (ended.getDurationMs() / 1000.0))
         .setSpilled(false)
         .setShout(ended.getShout())
         .buildPartial();

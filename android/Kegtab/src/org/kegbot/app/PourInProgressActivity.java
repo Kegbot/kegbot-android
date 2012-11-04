@@ -218,6 +218,7 @@ public class PourInProgressActivity extends CoreActivity {
     mCore = KegbotCore.getInstance(this);
     mFlowManager = mCore.getFlowManager();
     mTapManager = mCore.getTapManager();
+    mPrefs = mCore.getPreferences();
 
     final ActionBar actionBar = getActionBar();
     if (actionBar != null) {
@@ -260,7 +261,6 @@ public class PourInProgressActivity extends CoreActivity {
     });
 
     mIdleDetectedDialog = builder.create();
-    mPrefs = new PreferenceHelper(this);
 
     scrollToMostActiveTap();
   }

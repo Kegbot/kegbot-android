@@ -23,8 +23,8 @@ import java.io.PrintWriter;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 
+import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiException;
 import org.kegbot.app.HomeActivity;
 import org.kegbot.app.KegtabBroadcast;
@@ -36,7 +36,9 @@ import org.kegbot.core.ConfigurationManager;
 import org.kegbot.core.Flow;
 import org.kegbot.core.FlowManager;
 import org.kegbot.core.FlowMeter;
+import org.kegbot.core.HardwareManager;
 import org.kegbot.core.KegbotCore;
+import org.kegbot.core.SyncManager;
 import org.kegbot.core.Tap;
 import org.kegbot.core.TapManager;
 import org.kegbot.core.ThermoSensor;
@@ -47,10 +49,8 @@ import org.kegbot.proto.Models.User;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.net.Uri;
@@ -76,109 +76,16 @@ public class KegbotCoreService extends Service {
   private FlowManager mFlowManager;
   private TapManager mTapManager;
   private ConfigurationManager mConfigManager;
-
-  private ExecutorService mFlowExecutorService;
   private PreferenceHelper mPreferences;
 
-  private KegbotApiService mApiService;
-  private boolean mApiServiceBound;
-
-  private KegbotHardwareService mHardwareService;
-  private boolean mHardwareServiceBound;
-
-  private KegbotSoundService mSoundService;
-  private boolean mSoundServiceBound;
-
-  private BluetoothService mBluetoothService;
-  private boolean mBluetoothServiceBound;
+  private HardwareManager mHardwareManager;
+  private SyncManager mApiManager;
 
   private final ExecutorService mExecutorService = Executors.newSingleThreadExecutor();
-
-  private final ScheduledExecutorService mScheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
 
   private long mLastPourStartUptimeMillis = 0;
 
   private static final long SUPPRESS_POUR_START_MILLIS = 2000;
-
-  /**
-   * Connection to the API service.
-   */
-  private final ServiceConnection mApiServiceConnection = new ServiceConnection() {
-    @Override
-    public void onServiceConnected(ComponentName className, IBinder service) {
-      mApiService = ((KegbotApiService.LocalBinder) service).getService();
-      debugNotice("Core->APIService connection established.");
-
-      mFlowExecutorService = Executors.newSingleThreadExecutor();
-      mFlowExecutorService.submit(mFlowManagerWorker);
-    }
-
-    @Override
-    public void onServiceDisconnected(ComponentName className) {
-      mApiService = null;
-      debugNotice("Core->APIService connection lost.");
-    }
-  };
-
-  /**
-   * Connection to the hardware service.
-   */
-  private final ServiceConnection mHardwareServiceConnection = new ServiceConnection() {
-    @Override
-    public void onServiceConnected(ComponentName className, IBinder service) {
-      mHardwareService = ((KegbotHardwareService.LocalBinder) service).getService();
-      debugNotice("Core->HardwareService connection established.");
-      mHardwareService.attachListener(mHardwareListener);
-    }
-
-    @Override
-    public void onServiceDisconnected(ComponentName className) {
-      mHardwareService = null;
-      debugNotice("Core->HardwareService connection lost.");
-    }
-  };
-
-  /**
-   * Connection to the hardware service.
-   */
-  private final ServiceConnection mSoundServiceConnection = new ServiceConnection() {
-    @Override
-    public void onServiceConnected(ComponentName className, IBinder service) {
-      mSoundService = ((KegbotSoundService.LocalBinder) service).getService();
-      debugNotice("Core->SoundService connection established.");
-    }
-
-    @Override
-    public void onServiceDisconnected(ComponentName className) {
-      mSoundService = null;
-      debugNotice("Core->SoundService connection lost.");
-    }
-  };
-
-  private final ServiceConnection mBluetoothServiceConnection = new ServiceConnection() {
-    @Override
-    public void onServiceConnected(ComponentName className, IBinder service) {
-      mBluetoothService = ((BluetoothService.LocalBinder) service).getService();
-      debugNotice("Core->BluetoothService connection established.");
-    }
-
-    @Override
-    public void onServiceDisconnected(ComponentName className) {
-      mBluetoothService = null;
-      debugNotice("Core->BluetoothService connection lost.");
-    }
-  };
-
-  /**
-   * Binder interface to this service. Local binds only.
-   */
-  public class LocalBinder extends Binder {
-    public KegbotCoreService getService() {
-      return KegbotCoreService.this;
-    }
-  }
-
-  private final IBinder mBinder = new LocalBinder();
 
   private final OnSharedPreferenceChangeListener mPreferenceListener = new OnSharedPreferenceChangeListener() {
     @Override
@@ -203,7 +110,7 @@ public class KegbotCoreService extends Service {
     }
   };
 
-  private final KegbotHardwareService.Listener mHardwareListener = new KegbotHardwareService.Listener() {
+  private final HardwareManager.Listener mHardwareListener = new HardwareManager.Listener() {
     @Override
     public void onTokenRemoved(AuthenticationToken token, String tapName) {
       Log.d(TAG, "Auth token removed: " + token);
@@ -255,7 +162,7 @@ public class KegbotCoreService extends Service {
           final RecordTemperatureRequest request = RecordTemperatureRequest.newBuilder()
               .setSensorName(sensor.getName()).setTempC((float) sensor.getTemperatureC())
               .buildPartial();
-          mApiService.recordTemperatureAsync(request);
+          mApiManager.recordTemperatureAsync(request);
         }
       };
       mExecutorService.submit(r);
@@ -278,7 +185,7 @@ public class KegbotCoreService extends Service {
     @Override
     public void onFlowUpdate(final Flow flow) {
       if (flow.isAuthenticated()) {
-        mHardwareService.setTapRelayEnabled(flow.getTap(), true);
+        mHardwareManager.setTapRelayEnabled(flow.getTap(), true);
       }
       final Runnable r = new Runnable() {
         @Override
@@ -294,7 +201,7 @@ public class KegbotCoreService extends Service {
     @Override
     public void onFlowStart(final Flow flow) {
       if (flow.isAuthenticated()) {
-        mHardwareService.setTapRelayEnabled(flow.getTap(), true);
+        mHardwareManager.setTapRelayEnabled(flow.getTap(), true);
       }
 
       final long now = SystemClock.uptimeMillis();
@@ -316,7 +223,7 @@ public class KegbotCoreService extends Service {
 
     @Override
     public void onFlowEnd(final Flow flow) {
-      mHardwareService.setTapRelayEnabled(flow.getTap(), false);
+      mHardwareManager.setTapRelayEnabled(flow.getTap(), false);
       final Runnable r = new Runnable() {
         @Override
         public void run() {
@@ -336,93 +243,58 @@ public class KegbotCoreService extends Service {
     mTapManager = mCore.getTapManager();
     mFlowManager = mCore.getFlowManager();
     mConfigManager = mCore.getConfigurationManager();
+    mApiManager = mCore.getSyncManager();
+    mHardwareManager = mCore.getHardwareManager();
 
     mPreferences = new PreferenceHelper(getApplicationContext());
     mFlowManager.setDefaultIdleTimeMillis(mPreferences.getIdleTimeoutMs());
 
+    mFlowManager.addFlowListener(mFlowListener);
+
+    mExecutorService.execute(mFlowManagerWorker);
+
     updateFromPreferences();
+
+    mCore.start();
+
     PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
         .registerOnSharedPreferenceChangeListener(mPreferenceListener);
   }
 
+  /**
+   * Binder interface to this service. Local binds only.
+   */
+  public class LocalBinder extends Binder {
+    public KegbotCoreService getService() {
+      return KegbotCoreService.this;
+    }
+  }
+
+  @Override
+  public IBinder onBind(Intent intent) {
+    return null;  // Not bindable.
+  }
+
   @Override
   protected void dump(FileDescriptor fd, PrintWriter writer, String[] args) {
-    super.dump(fd, writer, args);
     mCore.dump(writer);
   }
 
   @Override
   public void onDestroy() {
     Log.d(TAG, "onDestroy()");
+
+    mFlowManager.removeFlowListener(mFlowListener);
     PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
         .unregisterOnSharedPreferenceChangeListener(mPreferenceListener);
-    stop();
+    mCore.stop();
+
     super.onDestroy();
   }
 
   @Override
   public int onStartCommand(Intent intent, int flags, int startId) {
     return START_STICKY;
-  }
-
-  /**
-   * Attaches to the running {@link KegbotApiService}.
-   */
-  private void bindToApiService() {
-    final Intent serviceIntent = new Intent(this, KegbotApiService.class);
-    bindService(serviceIntent, mApiServiceConnection, Context.BIND_AUTO_CREATE);
-    mApiServiceBound = true;
-  }
-
-  /**
-   * Attaches to the running {@link KegbotHardwareService}.
-   */
-  private synchronized void bindToHardwareService() {
-    final Intent intent = new Intent(this, KegbotHardwareService.class);
-    bindService(intent, mHardwareServiceConnection, Context.BIND_AUTO_CREATE);
-    mHardwareServiceBound = true;
-  }
-
-  private synchronized void bindToSoundService() {
-    final Intent intent = new Intent(this, KegbotSoundService.class);
-    bindService(intent, mSoundServiceConnection, Context.BIND_AUTO_CREATE);
-    mSoundServiceBound = true;
-  }
-
-  private synchronized void bindToBluetoothService() {
-    final Intent intent = new Intent(this, BluetoothService.class);
-    bindService(intent, mBluetoothServiceConnection, Context.BIND_AUTO_CREATE);
-    mSoundServiceBound = true;
-  }
-
-  @Override
-  public IBinder onBind(Intent intent) {
-    return mBinder;
-  }
-
-  public void stop() {
-    mFlowManager.stop();
-    mFlowManager.removeFlowListener(mFlowListener);
-    if (mApiServiceBound) {
-      unbindService(mApiServiceConnection);
-      mApiServiceBound = false;
-    }
-    if (mHardwareServiceBound) {
-      unbindService(mHardwareServiceConnection);
-      mHardwareServiceBound = false;
-    }
-    if (mSoundServiceBound) {
-      unbindService(mSoundServiceConnection);
-      mSoundServiceBound = false;
-    }
-    if (mFlowExecutorService != null) {
-      mFlowExecutorService.shutdown();
-      mFlowExecutorService = null;
-    }
-    if (mBluetoothServiceBound) {
-      unbindService(mBluetoothServiceConnection);
-      mBluetoothServiceBound = false;
-    }
   }
 
   public static void startService(Context context) {
@@ -438,16 +310,15 @@ public class KegbotCoreService extends Service {
   private void updateFromPreferences() {
     final boolean runCore = mPreferences.getRunCore();
     if (runCore) {
-      Log.d(TAG, "Running core!");
-      bindToApiService();
-      bindToHardwareService();
-      bindToSoundService();
-      bindToBluetoothService();
+      debugNotice("Running core!");
       mFlowManager.addFlowListener(mFlowListener);
+      mHardwareManager.addListener(mHardwareListener);
       startForeground(NOTIFICATION_FOREGROUND, buildForegroundNotification());
     } else {
-      Log.d(TAG, "No core.");
-      stop();
+      debugNotice("Stopping core.");
+      mFlowManager.removeFlowListener(mFlowListener);
+      mHardwareManager.removeListener(mHardwareListener);
+      mCore.stop();
       stopForeground(true);
     }
   }
@@ -474,7 +345,7 @@ public class KegbotCoreService extends Service {
   private void recordDrinkForFlow(final Flow ended) {
     Log.d(TAG, "Recording drink for flow: " + ended);
     Log.d(TAG, "Tap: "  + ended.getTap());
-    mApiService.recordDrinkAsync(ended);
+    mApiManager.recordDrinkAsync(ended);
   }
 
   /**
@@ -484,10 +355,12 @@ public class KegbotCoreService extends Service {
   private void configure() throws KegbotApiException {
     Log.d(TAG, "Configuring!");
     final Uri apiUrl = Uri.parse(mPreferences.getApiUrl());
-    mApiService.setApiUrl(apiUrl.toString());
-    mApiService.setApiKey(mPreferences.getApiKey());
 
-    final List<KegTap> taps = mApiService.getKegbotApi().getAllTaps();
+    KegbotApi api = mCore.getApi();
+    api.setApiUrl(apiUrl.toString());
+    api.setApiKey(mPreferences.getApiKey());
+
+    final List<KegTap> taps = api.getAllTaps();
 
     Log.d(TAG, "Found " + taps.size() + " tap(s).");
     for (final KegTap tapInfo : taps) {

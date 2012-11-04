@@ -16,52 +16,44 @@
  * You should have received a copy of the GNU General Public License along
  * with Kegtab. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.kegbot.app.service;
+package org.kegbot.core;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import android.app.Service;
-import android.content.Intent;
-import android.os.IBinder;
-import android.util.Log;
-
 /**
+ * A {@link Manager} which automatically executes {@link #runInBackground()}.
  *
- * @author mike
+ * @author mike wakerly (opensource@hoho.com)
  */
-public abstract class BackgroundService extends Service {
+public abstract class BackgroundManager extends Manager {
 
-  protected final ExecutorService mExecutorService = Executors.newSingleThreadExecutor();
+  private ExecutorService mExecutorService;
 
-  protected final Runnable mBackgroundRunnable = new Runnable() {
+  private final Runnable mRunnable = new Runnable() {
     @Override
     public void run() {
-      try {
-        runInBackground();
-      } catch (Throwable e) {
-        Log.wtf("BackgroundService", "UNCAUGHT EXCEPTION", e);
-      }
+      runInBackground();
     }
   };
 
   @Override
-  public void onCreate() {
-    super.onCreate();
-    mExecutorService.submit(mBackgroundRunnable);
+  protected synchronized void start() {
+    mExecutorService = Executors.newSingleThreadExecutor();
+    mExecutorService.execute(mRunnable);
   }
 
   @Override
-  public IBinder onBind(Intent intent) {
-    return null;
-  }
-
-  @Override
-  public void onDestroy() {
+  protected synchronized void stop() {
     mExecutorService.shutdown();
-    super.onDestroy();
+    mExecutorService = null;
   }
 
+  /**
+   * Runs in the background after calling {@link #start()}. Implementations
+   * performing long-lived background work should respond to {@link #stop()} and
+   * abort the work.
+   */
   protected abstract void runInBackground();
 
 }

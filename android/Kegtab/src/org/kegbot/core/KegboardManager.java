@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License along
  * with Kegtab. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.kegbot.app.service;
+package org.kegbot.core;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -41,8 +41,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.hardware.usb.UsbManager;
-import android.os.Binder;
-import android.os.IBinder;
 import android.os.SystemClock;
 import android.util.Log;
 
@@ -57,11 +55,11 @@ import com.hoho.android.usbserial.util.HexDump;
  *
  * @author mike wakerly (mike@wakerly.com)
  */
-public class KegboardService extends BackgroundService {
+public class KegboardManager extends BackgroundManager {
 
-  private final String TAG = KegboardService.class.getSimpleName();
+  private final String TAG = KegboardManager.class.getSimpleName();
 
-  private static final String ACTION_USB_PERMISSION = KegboardService.class.getCanonicalName()
+  private static final String ACTION_USB_PERMISSION = KegboardManager.class.getCanonicalName()
       + ".ACTION_USB_PERMISSION";
 
   private static final boolean VERBOSE = false;
@@ -81,6 +79,8 @@ public class KegboardService extends BackgroundService {
    * The device currently in use, or {@code null}.
    */
   private UsbSerialDriver mSerialDevice;
+
+  private Context mContext;
 
   private final KegboardMessageFactory mFactory = new KegboardMessageFactory();
 
@@ -126,31 +126,26 @@ public class KegboardService extends BackgroundService {
     }
   };
 
-  /**
-   * Local binder interface.
-   */
-  public class LocalBinder extends Binder {
-    KegboardService getService() {
-      return KegboardService.this;
-    }
-  }
-
-  private final IBinder mBinder = new LocalBinder();
-
-  @Override
-  public IBinder onBind(Intent intent) {
-    return mBinder;
+  public KegboardManager(Context context) {
+    mContext = context;
   }
 
   @Override
-  public void onCreate() {
-    super.onCreate();
+  public synchronized void start() {
     Log.d(TAG, "onCreate");
 
     final IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
     filter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED); // never fired by framework :-\
     filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
-    registerReceiver(mUsbReceiver, filter);
+    mContext.registerReceiver(mUsbReceiver, filter);
+    super.start();
+  }
+
+  @Override
+  public synchronized void stop() {
+    mContext.unregisterReceiver(mUsbReceiver);
+    stateChange(State.FINISHED);
+    super.stop();
   }
 
   public void enableOutput(int outputId, boolean enabled) {
@@ -168,13 +163,6 @@ public class KegboardService extends BackgroundService {
         mEnabledOutputs.remove(key);
       }
     }
-  }
-
-  @Override
-  public void onDestroy() {
-    unregisterReceiver(mUsbReceiver);
-    stateChange(State.FINISHED);
-    super.onDestroy();
   }
 
   public boolean addListener(final Listener listener) {
@@ -203,16 +191,13 @@ public class KegboardService extends BackgroundService {
 
   @Override
   protected void runInBackground() {
-    mUsbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
+    mUsbManager = (UsbManager) mContext.getSystemService(Context.USB_SERVICE);
     Log.d(TAG, "Usb manager: " + mUsbManager);
     if (mUsbManager == null) {
       Log.e(TAG, "No USB manager, exiting.");
       return;
     }
-    mainLoop();
-  }
 
-  private void mainLoop() {
     Log.d(TAG, "Main loop running.");
 
     try {

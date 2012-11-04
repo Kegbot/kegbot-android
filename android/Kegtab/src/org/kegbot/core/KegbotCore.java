@@ -20,7 +20,7 @@ package org.kegbot.core;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.List;
+import java.util.Set;
 
 import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiImpl;
@@ -29,9 +29,9 @@ import org.kegbot.app.util.PreferenceHelper;
 import org.kegbot.core.FlowManager.Clock;
 
 import android.content.Context;
+import android.util.Log;
 
-import com.google.common.collect.Lists;
-
+import com.google.common.collect.Sets;
 
 /**
  * Top-level class implementing the Kegbot core.
@@ -40,16 +40,28 @@ import com.google.common.collect.Lists;
  */
 public class KegbotCore {
 
+  private static final String TAG = KegbotCore.class.getSimpleName();
+
   private static KegbotCore sInstance;
 
+  private final Set<Manager> mManagers = Sets.newLinkedHashSet();
   private final PreferenceHelper mPreferences;
+
   private final TapManager mTapManager;
   private final FlowManager mFlowManager;
   private final AuthenticationManager mAuthenticationManager;
-  private final KegbotApi mApi;
   private final ConfigurationManager mConfigurationManager;
+  private final SoundManager mSoundManager;
 
-  private final List<Manager> mManagers = Lists.newArrayList();
+  private final KegbotApi mApi;
+  private final SyncManager mSyncManager;
+
+  private final KegboardManager mKegboardManager;
+  private final HardwareManager mHardwareManager;
+
+  private final BluetoothManager mBluetoothManager;
+
+  private boolean mStarted = false;
 
   private final FlowManager.Clock mClock = new Clock() {
     @Override
@@ -60,21 +72,57 @@ public class KegbotCore {
 
   public KegbotCore(Context context) {
     mPreferences = new PreferenceHelper(context);
-    mTapManager = new TapManager();
-    mFlowManager = new FlowManager(mTapManager, mClock);
 
     mApi = new KegbotApiImpl();
     mApi.setApiUrl(mPreferences.getApiUrl());
     mApi.setApiKey(mPreferences.getApiKey());
 
-    mAuthenticationManager = new AuthenticationManager(context, mApi);
-    mConfigurationManager = new ConfigurationManager();
-
+    mTapManager = new TapManager();
     mManagers.add(mTapManager);
+
+    mFlowManager = new FlowManager(mTapManager, mClock);
     mManagers.add(mFlowManager);
+
+    mSyncManager = new SyncManager(context, mApi, mPreferences);
+    mManagers.add(mSyncManager);
+
+    mKegboardManager = new KegboardManager(context);
+    mManagers.add(mKegboardManager);
+
+    mHardwareManager = new HardwareManager(context, mKegboardManager);
+    mManagers.add(mHardwareManager);
+
+    mAuthenticationManager = new AuthenticationManager(context, mApi);
     mManagers.add(mAuthenticationManager);
-    mManagers.add(mFlowManager);
+
+    mConfigurationManager = new ConfigurationManager();
     mManagers.add(mConfigurationManager);
+
+    mSoundManager = new SoundManager(context, mApi, mFlowManager);
+    mManagers.add(mSoundManager);
+
+    mBluetoothManager = new BluetoothManager(context);
+    mManagers.add(mBluetoothManager);
+  }
+
+  public synchronized void start() {
+    if (!mStarted) {
+      for (final Manager manager : mManagers) {
+        Log.d(TAG, "Starting " + manager.getName());
+        manager.start();
+      }
+      mStarted = true;
+    }
+  }
+
+  public synchronized void stop() {
+    if (mStarted) {
+      for (final Manager manager : mManagers) {
+        Log.d(TAG, "Stopping " + manager.getName());
+        manager.stop();
+      }
+      mStarted = false;
+    }
   }
 
   /**
@@ -106,10 +154,38 @@ public class KegbotCore {
   }
 
   /**
+   * @return the api manager
+   */
+  public SyncManager getSyncManager() {
+    return mSyncManager;
+  }
+
+  /**
    * @return the flowManager
    */
   public FlowManager getFlowManager() {
     return mFlowManager;
+  }
+
+  /**
+   * @return the soundManager
+   */
+  public SoundManager getSoundManager() {
+    return mSoundManager;
+  }
+
+  /**
+   * @return the kegboardManager
+   */
+  public KegboardManager getKegboardManager() {
+    return mKegboardManager;
+  }
+
+  /**
+   * @return the hardwareManager
+   */
+  public HardwareManager getHardwareManager() {
+    return mHardwareManager;
   }
 
   /**
@@ -122,6 +198,11 @@ public class KegbotCore {
   public void dump(PrintWriter printWriter) {
     StringWriter writer = new StringWriter();
     IndentingPrintWriter newWriter = new IndentingPrintWriter(writer, "  ");
+
+    newWriter.printPair("mStarted: ", Boolean.valueOf(mStarted));
+    newWriter.println();
+    newWriter.println();
+
     for (final Manager manager : mManagers) {
       newWriter.printf("## %s\n", manager.getName());
       newWriter.increaseIndent();

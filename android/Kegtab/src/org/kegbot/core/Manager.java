@@ -40,6 +40,14 @@ public abstract class Manager {
     return mName;
   }
 
+  protected void start() {
+
+  }
+
+  protected void stop() {
+
+  }
+
   /**
    * Writes manager-specific debug information.
    */
