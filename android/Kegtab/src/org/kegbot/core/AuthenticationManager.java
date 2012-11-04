@@ -68,11 +68,12 @@ public class AuthenticationManager {
     org.kegbot.proto.Models.AuthenticationToken tok = mApi.getAuthToken(token
         .getAuthDevice(), token.getTokenValue());
     Log.d(TAG, "Got auth token: " + tok);
-    if (tok.hasUser()) {
-      return tok.getUser();
-    } else {
+    if (!tok.getEnabled()) {
+      throw new KegbotApiNotFoundError("Token not enabled.");
+    } else if (!tok.hasUser()) {
       throw new KegbotApiNotFoundError("Token not assigned.");
     }
+    return tok.getUser();
   }
 
   private final LoadingCache<AuthenticationToken, User> mAuthTokenCache = CacheBuilder
