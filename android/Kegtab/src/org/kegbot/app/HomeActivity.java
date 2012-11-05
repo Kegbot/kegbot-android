@@ -41,7 +41,6 @@ import android.os.Handler;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -157,11 +156,6 @@ public class HomeActivity extends CoreActivity {
   }
 
   @Override
-  public void onStart() {
-    super.onStart();
-  }
-
-  @Override
   protected void onResume() {
     super.onResume();
 
@@ -194,12 +188,6 @@ public class HomeActivity extends CoreActivity {
   protected void onPause() {
     mHandler.removeCallbacks(mRefreshRunnable);
     super.onPause();
-  }
-
-  @Override
-  public boolean onCreateOptionsMenu(Menu menu) {
-    getMenuInflater().inflate(R.menu.main, menu);
-    return true;
   }
 
   @Override

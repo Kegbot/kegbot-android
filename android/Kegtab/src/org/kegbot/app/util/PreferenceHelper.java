@@ -18,11 +18,6 @@
  */
 package org.kegbot.app.util;
 
-import java.io.IOException;
-
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -48,8 +43,11 @@ public class PreferenceHelper {
 
   private static final String KEY_LAST_CHECKIN_ATTEMPT = "last_checkin_attempt";
   private static final String KEY_LAST_CHECKIN_SUCCESS = "last_checkin_success";
-  private static final String KEY_LAST_CHECKIN_RESPONSE = "last_checkin_response";
   private static final String KEY_LAST_CHECKIN_STATUS = "last_checkin_status";
+
+  private static final String KEY_LAST_CHECKIN_VERSION = "last_checkin_version";
+  private static final String KEY_UPGRADE_NEEDED = "upgrade_needed";
+  private static final String KEY_UPGRADE_REQUIRED = "upgrade_required";
 
   private final SharedPreferences mSharedPreferences;
 
@@ -176,21 +174,28 @@ public class PreferenceHelper {
     mSharedPreferences.edit().putLong(KEY_LAST_CHECKIN_SUCCESS, currentTimeMillis).apply();
   }
 
-  public JsonNode getLastCheckinResponse() {
-    final String raw = mSharedPreferences.getString(KEY_LAST_CHECKIN_RESPONSE, "{}");
-    final ObjectMapper mapper = new ObjectMapper();
-    JsonNode rootNode;
-    try {
-      rootNode = mapper.readValue(raw, JsonNode.class);
-    } catch (IOException e) {
-      rootNode = null;
-    }
-    return rootNode;
+  public int getLastCheckinVersion() {
+    return mSharedPreferences.getInt(KEY_LAST_CHECKIN_VERSION, -1);
   }
 
-  public void setLastCheckinResponse(JsonNode response) {
-    final String raw = response.toString();
-    mSharedPreferences.edit().putString(KEY_LAST_CHECKIN_RESPONSE, raw).apply();
+  public void setLastCheckinVersion(int value) {
+    mSharedPreferences.edit().putInt(KEY_LAST_CHECKIN_VERSION, value).apply();
+  }
+
+  public boolean getUpdateNeeded() {
+    return mSharedPreferences.getBoolean(KEY_UPGRADE_NEEDED, false);
+  }
+
+  public void setUpdateNeeded(boolean value) {
+    mSharedPreferences.edit().putBoolean(KEY_UPGRADE_NEEDED, value).apply();
+  }
+
+  public boolean getUpdateRequired() {
+    return mSharedPreferences.getBoolean(KEY_UPGRADE_REQUIRED, false);
+  }
+
+  public void setUpdateRequired(boolean value) {
+    mSharedPreferences.edit().putBoolean(KEY_UPGRADE_REQUIRED, value).apply();
   }
 
   public String getLastCheckinStatus() {

@@ -3,6 +3,7 @@
  */
 package org.kegbot.app;
 
+import org.kegbot.app.service.CheckinService;
 import org.kegbot.app.util.Utils;
 import org.kegbot.core.KegbotCore;
 
@@ -28,6 +29,7 @@ public class KegbotApplication extends Application {
     System.setProperty("http.agent", userAgent);
 
     KegbotCore.getInstance(getApplicationContext());
+    CheckinService.startCheckinService(this);
   }
 
 }

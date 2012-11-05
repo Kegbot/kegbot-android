@@ -19,11 +19,16 @@
 package org.kegbot.app;
 
 import org.kegbot.app.service.KegbotCoreService;
+import org.kegbot.app.util.ExternalIntents;
+import org.kegbot.app.util.PreferenceHelper;
+import org.kegbot.core.KegbotCore;
 
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 
 import com.google.android.apps.analytics.easytracking.EasyTracker;
@@ -35,23 +40,32 @@ import com.google.android.apps.analytics.easytracking.EasyTracker;
  */
 public class CoreActivity extends Activity {
 
+  private static final String TAG = CoreActivity.class.getSimpleName();
+
+  private Menu mMenu;
+  private PreferenceHelper mPrefs;
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     EasyTracker.getTracker().setContext(this);
     KegbotCoreService.startService(this);
+    mPrefs = KegbotCore.getInstance(this).getPreferences();
   }
 
   @Override
   protected void onStart() {
     super.onStart();
     EasyTracker.getTracker().trackActivityStart(this);
+    Log.d(TAG, "Registering with bus.");
+    KegbotCore.getInstance(this).getBus().register(this);
   }
 
   @Override
   protected void onStop() {
     super.onStop();
     EasyTracker.getTracker().trackActivityStop(this);
+    KegbotCore.getInstance(this).getBus().unregister(this);
   }
 
   @Override
@@ -70,6 +84,14 @@ public class CoreActivity extends Activity {
   }
 
   @Override
+  public boolean onCreateOptionsMenu(Menu menu) {
+    mMenu = menu;
+    getMenuInflater().inflate(R.menu.main, menu);
+    updateAlerts();
+    return true;
+  }
+
+  @Override
   public boolean onOptionsItemSelected(MenuItem item) {
     switch (item.getItemId()) {
       case android.R.id.home:
@@ -77,9 +99,18 @@ public class CoreActivity extends Activity {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
         return true;
+      case R.id.alertUpdate:
+        Intent marketIntent = ExternalIntents.getMarketUpdateIntent();
+        marketIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(marketIntent);
+        return true;
       default:
         return super.onOptionsItemSelected(item);
     }
+  }
+
+  private void updateAlerts() {
+    mMenu.findItem(R.id.alertUpdate).setVisible(mPrefs.getUpdateNeeded());
   }
 
 }
