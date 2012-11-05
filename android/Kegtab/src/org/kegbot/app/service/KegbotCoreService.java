@@ -247,7 +247,6 @@ public class KegbotCoreService extends Service {
     mHardwareManager = mCore.getHardwareManager();
 
     mPreferences = new PreferenceHelper(getApplicationContext());
-    mFlowManager.setDefaultIdleTimeMillis(mPreferences.getIdleTimeoutMs());
 
     mFlowManager.addFlowListener(mFlowListener);
 

@@ -26,6 +26,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.http.annotation.GuardedBy;
+import org.kegbot.app.util.PreferenceHelper;
 import org.kegbot.core.Flow.State;
 
 import android.util.Log;
@@ -55,12 +56,10 @@ public class FlowManager extends Manager {
   };
 
   private final TapManager mTapManager;
-
+  private final PreferenceHelper mPreferences;
   private final Clock mClock;
 
   private int mNextFlowId = 1;
-
-  private long mDefaultIdleTimeMillis = TimeUnit.SECONDS.toMillis(30);
 
   /**
    * Records the last reading for each tap.
@@ -133,8 +132,9 @@ public class FlowManager extends Manager {
 
   private ScheduledFuture<?> mFuture;
 
-  FlowManager(final TapManager tapManager, final Clock clock) {
+  FlowManager(final TapManager tapManager, final PreferenceHelper preferences, final Clock clock) {
     mTapManager = tapManager;
+    mPreferences = preferences;
     mClock = clock;
   }
 
@@ -209,14 +209,6 @@ public class FlowManager extends Manager {
     return null;
   }
 
-  public void setDefaultIdleTimeMillis(long defaultIdleTimeMillis) {
-    mDefaultIdleTimeMillis = defaultIdleTimeMillis;
-  }
-
-  public long getDefaultIdleTimeMillis() {
-    return mDefaultIdleTimeMillis;
-  }
-
   public Flow handleMeterActivity(final String tapName, final int ticks) {
     Log.d(TAG, "handleMeterActivity: " + tapName + "=" + ticks);
     final Tap tap = mTapManager.getTapForMeterName(tapName);
@@ -243,7 +235,7 @@ public class FlowManager extends Manager {
     synchronized (mFlowsByTap) {
       flow = getFlowForTap(tap);
       if (flow == null || flow.getState() != Flow.State.ACTIVE) {
-        flow = startFlow(tap, mDefaultIdleTimeMillis);
+        flow = startFlow(tap, mPreferences.getIdleTimeoutMs());
         Log.d(TAG, "  started new flow: " + flow);
       } else {
         Log.d(TAG, "  found existing flow: " + flow);
@@ -288,7 +280,7 @@ public class FlowManager extends Manager {
 
     // New flow to replace previous or empty.
     Log.d(TAG, "activateUserAtTap: creating new flow.");
-    flow = startFlow(tap, mDefaultIdleTimeMillis);
+    flow = startFlow(tap, mPreferences.getIdleTimeoutMs());
     flow.setUsername(username);
     publishFlowUpdate(flow);
     return flow;

@@ -32,9 +32,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
-import android.preference.CheckBoxPreference;
 import android.preference.Preference;
-import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
@@ -126,44 +124,12 @@ public class SettingsActivity extends PreferenceActivity {
 
   }
 
-  public class KegeratorFragment extends PreferenceFragment {
-
+  public static class KegeratorFragment extends PreferenceFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
       addPreferencesFromResource(R.xml.settings_kegerator);
-
-      handleCoreEnabledChanged();
-
-      findPreference(PreferenceHelper.KEY_RUN_CORE).setOnPreferenceChangeListener(
-          new OnPreferenceChangeListener() {
-            @Override
-            public boolean onPreferenceChange(Preference preference, Object newValue) {
-              handleCoreEnabledChanged();
-              return true;
-            }
-          });
-
-      findPreference("idle_timeout_seconds").setOnPreferenceChangeListener(
-          new OnPreferenceChangeListener() {
-            @Override
-            public boolean onPreferenceChange(Preference preference, Object newValue) {
-              final PreferenceHelper helper = new PreferenceHelper(getActivity());
-              mCore.getFlowManager().setDefaultIdleTimeMillis(helper.getIdleTimeoutMs());
-              return true;
-            }
-          });
     }
-
-    private void handleCoreEnabledChanged() {
-      final CheckBoxPreference enablePref = (CheckBoxPreference) findPreference(PreferenceHelper.KEY_RUN_CORE);
-      boolean enabled = enablePref.isChecked();
-
-      if (!enabled) {
-        // getActivity().sendBroadcast(intent)
-      }
-    }
-
   }
 
   public static class AboutFragment extends PreferenceFragment {

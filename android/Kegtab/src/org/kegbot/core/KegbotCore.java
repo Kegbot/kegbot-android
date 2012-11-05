@@ -88,7 +88,7 @@ public class KegbotCore {
     mTapManager = new TapManager();
     mManagers.add(mTapManager);
 
-    mFlowManager = new FlowManager(mTapManager, mClock);
+    mFlowManager = new FlowManager(mTapManager, mPreferences, mClock);
     mManagers.add(mFlowManager);
 
     mSyncManager = new SyncManager(context, mApi, mPreferences);
