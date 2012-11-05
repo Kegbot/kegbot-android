@@ -29,9 +29,12 @@ import org.kegbot.app.util.PreferenceHelper;
 import org.kegbot.core.FlowManager.Clock;
 
 import android.content.Context;
+import android.os.Handler;
 import android.util.Log;
 
 import com.google.common.collect.Sets;
+import com.squareup.otto.Bus;
+import com.squareup.otto.ThreadEnforcer;
 
 /**
  * Top-level class implementing the Kegbot core.
@@ -43,6 +46,9 @@ public class KegbotCore {
   private static final String TAG = KegbotCore.class.getSimpleName();
 
   private static KegbotCore sInstance;
+
+  private final Bus mBus;
+  private final Handler mBusHandler = new Handler();
 
   private final Set<Manager> mManagers = Sets.newLinkedHashSet();
   private final PreferenceHelper mPreferences;
@@ -71,6 +77,8 @@ public class KegbotCore {
   };
 
   public KegbotCore(Context context) {
+    mBus = new Bus(ThreadEnforcer.MAIN);
+
     mPreferences = new PreferenceHelper(context);
 
     mApi = new KegbotApiImpl();
@@ -123,6 +131,25 @@ public class KegbotCore {
       }
       mStarted = false;
     }
+  }
+
+  public Bus getBus() {
+    return mBus;
+  }
+
+  /**
+   * Posts event on the main (UI) thread.
+   *
+   * @param event the event
+   */
+  public void postEvent(final Object event) {
+    mBusHandler.post(new Runnable() {
+      @Override
+      public void run() {
+        Log.d(TAG, "Posting event: " + event);
+        mBus.post(event);
+      }
+    });
   }
 
   /**
