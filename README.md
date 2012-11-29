@@ -18,7 +18,7 @@ Bear with us as better develop documentation is coming!
 
 In the meantime, here are quick and dirty steps:
 
-- Clone the kegbot-android repo and do the same steps, importing Kegtap and KegtapTest
+- Clone the kegbot-android repo
 - Eclipse: Import -> Existing Projects into Workspace.
 - Import the projects (Kegtab, KegtabTest)
 
