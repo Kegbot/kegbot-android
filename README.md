@@ -18,13 +18,9 @@ Bear with us as better develop documentation is coming!
 
 In the meantime, here are quick and dirty steps:
 
-- Get a copy of usb-serial-for-android: http://code.google.com/p/usb-serial-for-android/
-- Eclipse: Import -> Existing Projects into Workspace.
-- Import the projects (UsbSerialLibrary, UsbSerialExamples)
 - Clone the kegbot-android repo and do the same steps, importing Kegtap and KegtapTest
-- Project properties should be set correctly automatically.  In particular:
-  UsbSerialLibrary should be marked as an Android library project (on which
-  Kegtap depends).
+- Eclipse: Import -> Existing Projects into Workspace.
+- Import the projects (Kegtab, KegtabTest)
 
 Patches Welcome!
 ----------------
