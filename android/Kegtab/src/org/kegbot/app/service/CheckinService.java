@@ -196,7 +196,7 @@ public class CheckinService extends IntentService {
     try {
       List<NameValuePair> params = Lists.newArrayList();
       params.add(new BasicNameValuePair("device_id", mDeviceId));
-      params.add(new BasicNameValuePair("android_version", Build.VERSION.SDK));
+      params.add(new BasicNameValuePair("android_version", String.valueOf(Build.VERSION.SDK_INT)));
       params.add(new BasicNameValuePair("android_device", Build.DEVICE));
       params.add(new BasicNameValuePair("app_package", getPackageName()));
       params.add(new BasicNameValuePair("app_version", String.valueOf(mKegbotVersion)));
