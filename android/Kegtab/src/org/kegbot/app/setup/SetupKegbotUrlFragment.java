@@ -18,17 +18,10 @@
  */
 package org.kegbot.app.setup;
 
-import java.util.List;
-
-import org.kegbot.api.KegbotApi;
-import org.kegbot.api.KegbotApiException;
-import org.kegbot.api.KegbotApiImpl;
 import org.kegbot.app.R;
 import org.kegbot.app.service.CheckinService;
 import org.kegbot.app.util.PreferenceHelper;
-import org.kegbot.proto.Models.SystemEvent;
 
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -67,40 +60,19 @@ public class SetupKegbotUrlFragment extends SetupFragment {
   public String validate() {
     String baseUrl = getUrl();
     baseUrl = baseUrl.replaceAll("/$", "");
-    Log.d(TAG, "Got base URL: " + baseUrl);
-
-    final String apiUrl = baseUrl + "/api";
-
-    final Uri uri = Uri.parse(apiUrl);
-    final String scheme = uri.getScheme();
-
-    if (!"http".equals(scheme) && !"https".equals(scheme)) {
-      return "Please enter an HTTP or HTTPs URL.";
-    }
-    if (Strings.isNullOrEmpty(uri.getHost())) {
+    if (Strings.isNullOrEmpty(baseUrl)) {
       return "Please provide a valid URL.";
     }
 
-    PreferenceHelper prefs = new PreferenceHelper(getActivity());
-    CheckinService.requestImmediateCheckin(getActivity());
-
-    KegbotApi api = new KegbotApiImpl();
-    api.setApiUrl(apiUrl);
-
-    try {
-      final List<SystemEvent> events = api.getRecentEvents();
-      Log.d(TAG, "Success: " + events);
-    } catch (KegbotApiException e) {
-      Log.d(TAG, "Error: " + e.toString(), e);
-      StringBuilder builder = new StringBuilder();
-      builder.append("Error contacting the Kegbot site: ");
-      builder.append(toHumanError(e));
-      builder.append("\n\nPlease check the URL and try again.");
-      return builder.toString();
+    if (!baseUrl.startsWith("http")) {
+      baseUrl = "http://" + baseUrl;
     }
 
-    prefs.setKegbotUrl(baseUrl);
+    Log.d(TAG, "Got base URL: " + baseUrl);
 
+    PreferenceHelper prefs = new PreferenceHelper(getActivity());
+    CheckinService.requestImmediateCheckin(getActivity());
+    prefs.setKegbotUrl(baseUrl);
     return "";
   }
 
