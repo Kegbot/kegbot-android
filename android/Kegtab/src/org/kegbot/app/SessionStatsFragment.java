@@ -145,7 +145,6 @@ public class SessionStatsFragment extends Fragment {
           return session;
         }
         final Stats stats = api.getSessionStats(session.getId());
-        Log.d(TAG, "Got stats: " + stats);
         return Session.newBuilder(session).setStats(stats).build();
       } catch (KegbotApiException e) {
         return null;
