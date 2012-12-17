@@ -1,6 +1,8 @@
 android/*/bin
 android/*/gen
 
+docs/build
+
 .DS_Store
 
 android/Kegtap/res/values/build_strings.xml
