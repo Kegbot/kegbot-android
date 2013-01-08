@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="top|center"
+    android:orientation="vertical"
+    android:padding="128dip" >
+
+    <TextView
+        android:id="@+id/calibrateSourceLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:text="Source"
+        android:textSize="24dip"
+        android:textStyle="bold" />
+
+    <Spinner
+        android:id="@+id/calibrateMeterName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/calibrateSourceLabel"
+        android:layout_toRightOf="@+id/calibrateSourceLabel" />
+
+    <TextView
+        android:id="@+id/ticksLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/calibrateSourceLabel"
+        android:layout_below="@+id/calibrateSourceLabel"
+        android:text="Ticks"
+        android:textSize="24dip"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/ticks"
+        android:layout_width="256dip"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/ticksLabel"
+        android:layout_toRightOf="@+id/ticksLabel" />
+
+    <TextView
+        android:id="@+id/ouncesLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/calibrateSourceLabel"
+        android:layout_below="@+id/ticksLabel"
+        android:text="Ounces"
+        android:textSize="24dip"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/ounces"
+        android:layout_width="256dip"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/ouncesLabel"
+        android:layout_toRightOf="@+id/ouncesLabel" />
+
+    <TextView
+        android:id="@+id/mlLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/calibrateSourceLabel"
+        android:layout_below="@+id/ouncesLabel"
+        android:text="mL"
+        android:textSize="24dip"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/ml"
+        android:layout_width="256dip"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/mlLabel"
+        android:layout_toRightOf="@+id/mlLabel" />
+
+    <TextView
+        android:id="@+id/mlPerTickLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/calibrateSourceLabel"
+        android:layout_below="@+id/mlLabel"
+        android:text="mL/Tick"
+        android:textSize="24dip"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/mlPerTick"
+        android:layout_width="256dip"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/mlPerTickLabel"
+        android:layout_toRightOf="@+id/mlPerTickLabel" />
+
+    <TextView
+        android:id="@+id/ticksPerLiterLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/calibrateSourceLabel"
+        android:layout_below="@+id/mlPerTickLabel"
+        android:text="Ticks/Liter"
+        android:textSize="24dip"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/ticksPerLiter"
+        android:layout_width="256dip"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/ticksPerLiterLabel"
+        android:layout_toRightOf="@+id/ticksPerLiterLabel" />
+
+</RelativeLayout>
