@@ -43,8 +43,6 @@ import com.google.common.collect.Lists;
 
 public class SessionStatsFragment extends Fragment {
 
-  private static final String TAG = SessionStatsFragment.class.getSimpleName();
-
   private KegbotCore mCore;
 
   private View mView;

@@ -255,9 +255,8 @@ public class FlowManager extends Manager {
    *
    * @param tap
    * @param username
-   * @return
    */
-  public synchronized Flow activateUserAtTap(final Tap tap, final String username) {
+  public synchronized void activateUserAtTap(final Tap tap, final String username) {
     Flow flow = getFlowForTap(tap);
     Log.d(TAG, "Activating username=" + username + " at tap=" + tap + " current flow=" + flow);
 
@@ -266,11 +265,9 @@ public class FlowManager extends Manager {
         Log.d(TAG, "activateUserAtTap: existing flow is anonymous, taking it over.");
         flow.setUsername(username);
         publishFlowUpdate(flow);
-        return flow;
       } else {
         if (flow.getUsername().equals(username)) {
           Log.d(TAG, "activateUserAtTap: got same username, nothing to do.");
-          return flow;
         } else {
           Log.d(TAG, "activateUserAtTap: existing flow is for different user; replacing.");
           endFlow(flow);
@@ -283,7 +280,32 @@ public class FlowManager extends Manager {
     flow = startFlow(tap, mPreferences.getIdleTimeoutMs());
     flow.setUsername(username);
     publishFlowUpdate(flow);
-    return flow;
+  }
+
+  /**
+   * Like {@link #activateUserAtTap(Tap, String)}, but used when the desired tap
+   * for activation is unknown.
+   *
+   * This method arises since some authentication sources (eg RFID tag) are not
+   * bound to a particular tap. When a drinker authenticates with such a source,
+   * we must decide which taps to activate.
+   *
+   * Activating all taps is confusing, so for now authenticate against the last
+   * focused/viewed tap.
+   *
+   * @param username
+   */
+  public synchronized void activateUserAmbiguousTap(final String username) {
+    final Tap focusedTap = mTapManager.getFocusedTap();
+    if (focusedTap != null) {
+      Log.d(TAG, String.format("activateUserAmbiguousTap: using focused tap: %s", focusedTap));
+      activateUserAtTap(focusedTap, username);
+    } else {
+      Log.d(TAG, String.format("activateUserAmbiguousTap: no focused tap, activating on all taps"));
+      for (final Tap tap : mTapManager.getTaps()) {
+        activateUserAtTap(tap, username);
+      }
+    }
   }
 
   /**

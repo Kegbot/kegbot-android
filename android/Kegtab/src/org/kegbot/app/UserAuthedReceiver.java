@@ -32,8 +32,9 @@ import android.util.Log;
 import com.google.common.base.Strings;
 
 /**
+ * Debugging broadcast receiver.
  *
- * @author mike wakerly (mike@wakerly.com)
+ * @author mike wakerly (opensource@hoho.com)
  */
 public class UserAuthedReceiver extends BroadcastReceiver {
 
@@ -63,15 +64,14 @@ public class UserAuthedReceiver extends BroadcastReceiver {
     final String username = intent.getStringExtra(KegtabBroadcast.USER_AUTHED_EXTRA_USERNAME);
     final String tapName = intent.getStringExtra(KegtabBroadcast.DRINKER_SELECT_EXTRA_TAP_NAME);
 
-    FlowManager flowManager = KegbotCore.getInstance(context).getFlowManager();
-    TapManager tapManager = KegbotCore.getInstance(context).getTapManager();
+    final FlowManager flowManager = KegbotCore.getInstance(context).getFlowManager();
+    final TapManager tapManager = KegbotCore.getInstance(context).getTapManager();
+
     if (!Strings.isNullOrEmpty(tapName)) {
       final Tap tap = tapManager.getTapForMeterName(tapName);
       flowManager.activateUserAtTap(tap, username);
     } else {
-      for (final Tap tap : tapManager.getTaps()) {
-        flowManager.activateUserAtTap(tap, username);
-      }
+      flowManager.activateUserAmbiguousTap(username);
     }
   }
 

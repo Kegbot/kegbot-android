@@ -135,9 +135,7 @@ public class KegbotCoreService extends Service {
             if (user != null) {
               success = true;
               am.authenticateUser(user);
-              for (final Tap tap : mTapManager.getTaps()) {
-                mFlowManager.activateUserAtTap(tap, user.getUsername());
-              }
+              mFlowManager.activateUserAmbiguousTap(user.getUsername());
             } else {
               message = getString(R.string.authenticating_no_access_token);
             }

@@ -123,6 +123,24 @@ public class HomeActivity extends CoreActivity {
 
     mTapStatusPager = (ViewPager) findViewById(R.id.tap_status_pager);
     mTapStatusPager.setAdapter(mTapStatusAdapter);
+    mTapStatusPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+      @Override
+      public void onPageSelected(int position) {
+        final TapStatusFragment frag = (TapStatusFragment) mTapStatusAdapter.getItem(position);
+        final String meterName = frag.getTapDetail().getMeterName();
+
+        Log.d(LOG_TAG, String.format("Selected tap: %s", meterName));
+        mCore.getTapManager().setFocusedTap(frag.getTapDetail().getMeterName());
+      }
+
+      @Override
+      public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+      }
+
+      @Override
+      public void onPageScrollStateChanged(int state) {
+      }
+    });
 
     mEvents = (EventListFragment) getFragmentManager().findFragmentById(R.id.event_list);
 

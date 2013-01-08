@@ -32,14 +32,46 @@ import com.google.common.collect.Sets;
  */
 public class TapManager extends Manager {
 
+  private static final String TAG = TapManager.class.getSimpleName();
+
   private final Set<Tap> mTaps = Sets.newLinkedHashSet();
 
+  /**
+   * Stores the currently "focused" tap.
+   *
+   * Convenient bit of state storage for UI layer. May be {@code null}.
+   */
+  private Tap mFocusedTap = null;
+
   public synchronized boolean addTap(final Tap newTap) {
+    if (mFocusedTap == null) {
+      mFocusedTap = newTap;
+    }
     return mTaps.add(newTap);
   }
 
   public synchronized boolean removeTap(final Tap tap) {
+    if (mFocusedTap == tap) {
+      mFocusedTap = null;
+    }
     return mTaps.remove(tap);
+  }
+
+  /**
+   * @return the currently-focused tap, or {@code null} if none set
+   */
+  public synchronized Tap getFocusedTap() {
+    return mFocusedTap;
+  }
+
+  /**
+   * Sets the currently focused tap to the tap matching {@code meterName}, or
+   * {@code null} if that tap does not exist.
+   *
+   * @param meterName the name of the focused tap
+   */
+  public synchronized void setFocusedTap(final String meterName) {
+    mFocusedTap = getTapForMeterName(meterName);
   }
 
   public synchronized Tap getTapForMeterName(final String meterName) {
@@ -58,6 +90,7 @@ public class TapManager extends Manager {
   @Override
   protected synchronized void dump(IndentingPrintWriter writer) {
     writer.printf("Tap count: %s\n", Integer.valueOf(mTaps.size()));
+    writer.printf("mFocusedTap: %s\n", mFocusedTap);
     writer.println("Taps:");
 
     writer.increaseIndent();
