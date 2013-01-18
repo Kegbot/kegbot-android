@@ -244,6 +244,9 @@ public class KegbotCoreService extends Service {
     mApiManager = mCore.getSyncManager();
     mHardwareManager = mCore.getHardwareManager();
 
+    // TODO: this should be part of a config update event.
+    mCore.getImageDownloader().setBaseUrl(mCore.getPreferences().getKegbotUrl());
+
     mPreferences = new PreferenceHelper(getApplicationContext());
 
     mFlowManager.addFlowListener(mFlowListener);

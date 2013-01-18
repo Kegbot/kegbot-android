@@ -24,7 +24,6 @@ import org.kegbot.app.util.ImageDownloader;
 import org.kegbot.core.KegbotCore;
 import org.kegbot.proto.Models.User;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.Loader;
@@ -64,15 +63,10 @@ public class DrinkerSelectFragment extends Fragment implements LoaderCallbacks<L
   public static final String LOAD_SOURCE_RECENT = "recent";
 
   @Override
-  public void onAttach(Activity activity) {
-    super.onAttach(activity);
-    mImageDownloader = ImageDownloader.getSingletonInstance(activity);
-  }
-
-  @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     mCore = KegbotCore.getInstance(getActivity());
+    mImageDownloader = mCore.getImageDownloader();
   }
 
   @Override

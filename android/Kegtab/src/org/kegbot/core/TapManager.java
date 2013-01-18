@@ -32,8 +32,6 @@ import com.google.common.collect.Sets;
  */
 public class TapManager extends Manager {
 
-  private static final String TAG = TapManager.class.getSimpleName();
-
   private final Set<Tap> mTaps = Sets.newLinkedHashSet();
 
   /**

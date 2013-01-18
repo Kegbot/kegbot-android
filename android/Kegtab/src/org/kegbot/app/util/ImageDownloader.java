@@ -22,6 +22,8 @@ import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.SoftReference;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
@@ -52,27 +54,22 @@ import com.hoho.android.usbserial.util.HexDump;
  * This helper class download images from the Internet and binds those with the
  * provided ImageView.
  *
- * <p>
- * It requires the INTERNET permission, which should be added to your
- * application's manifest file.
- * </p>
- *
+ * <p/>
  * A local cache of downloaded images is maintained internally to improve
  * performance.
  */
 public class ImageDownloader {
-  private static final String LOG_TAG = "ImageDownloader";
+  private static final String TAG = ImageDownloader.class.getSimpleName();
 
   private static final int HANDLER_KEY_DOWNLOAD_COMPLETE = 1;
-
-  private static ImageDownloader sSingleton = null;
 
   private static final boolean DEBUG = false;
 
   /**
    * All ImageViews and the URL they have requested.
    */
-  private final WeakHashMap<ImageView, String> mDownloadRequests = new WeakHashMap<ImageView, String>();
+  private final WeakHashMap<ImageView, String> mDownloadRequests =
+      new WeakHashMap<ImageView, String>();
 
   private static class DownloadResult {
     String url;
@@ -88,6 +85,8 @@ public class ImageDownloader {
 
   private final Context mContext;
 
+  private URL mBaseUrl;
+
   private File mCacheDir;
 
   private final Handler mHandler = new Handler() {
@@ -102,9 +101,21 @@ public class ImageDownloader {
     }
   };
 
-  private ImageDownloader(final Context context) {
+  public ImageDownloader(final Context context, final String baseUrl) {
     mContext = context;
     mCacheDir = context.getCacheDir();
+    setBaseUrl(baseUrl);
+  }
+
+  public void setBaseUrl(String url) {
+    if (url != null) {
+      try {
+        mBaseUrl = new URL(url);
+      } catch (MalformedURLException e) {
+        Log.w(TAG, "Bad base url: " + url);
+        mBaseUrl = null;
+      }
+    }
   }
 
   /**
@@ -118,18 +129,30 @@ public class ImageDownloader {
    * @param imageView
    *          The ImageView to bind the downloaded image to.
    */
-  public void download(final String url, final ImageView imageView) {
-    if (DEBUG) Log.d(LOG_TAG, "download url=" + url + " imageView=" + imageView);
+  public void download(String url, final ImageView imageView) {
+    if (mBaseUrl != null) {
+      URL fullUrl;
+      try {
+        fullUrl = new URL(mBaseUrl, url);
+      } catch (MalformedURLException e) {
+        Log.w(TAG, "Malformed URL: " + url);
+        return;
+      }
+      if (DEBUG) Log.d(TAG, "original url=" + url);
+      url = fullUrl.toString();
+    }
+
+    if (DEBUG) Log.d(TAG, "download url=" + url + " imageView=" + imageView);
     imageView.setTag(url);
     // resetPurgeTimer();
-    final Bitmap bitmap = getBitmapFromCache(url);
+    final Bitmap bitmap = getBitmapFromCache(url.toString());
 
     if (bitmap != null) {
-      if (DEBUG) Log.d(LOG_TAG, "download: cache hit");
+      if (DEBUG) Log.d(TAG, "download: cache hit");
       // Bitmap in cache: no download necessary.
       applyBitmapToImageView(bitmap, imageView);
     } else {
-      if (DEBUG) Log.d(LOG_TAG, "download: cache miss");
+      if (DEBUG) Log.d(TAG, "download: cache miss");
 
       // TODO(mikey): this should be done only in an adapter when convertView !=
       // null
@@ -138,7 +161,7 @@ public class ImageDownloader {
 
       // No bitmap in cache: enqueue the download.
       synchronized (mDownloadRequests) {
-        if (DEBUG) Log.d(LOG_TAG, "download: adding to request queue");
+        if (DEBUG) Log.d(TAG, "download: adding to request queue");
         if (!mDownloadRequests.containsValue(url)) {
           enqueueDownload(url);
         }
@@ -148,19 +171,19 @@ public class ImageDownloader {
   }
 
   private void enqueueDownload(final String url) {
-    if (DEBUG) Log.d(LOG_TAG, "Enqueuing download: url=" + url);
+    if (DEBUG) Log.d(TAG, "Enqueuing download: url=" + url);
     mExecutor.submit(new Runnable() {
       @Override
       public void run() {
-        if (DEBUG) Log.d(LOG_TAG, "Download running for url=" + url);
+        if (DEBUG) Log.d(TAG, "Download running for url=" + url);
 
         Bitmap bitmap = getBitmapFromFileCache(url);
         if (bitmap != null) {
-          if (DEBUG) Log.d(LOG_TAG, "Found bitmap in file cache.");
+          if (DEBUG) Log.d(TAG, "Found bitmap in file cache.");
         } else {
-          if (DEBUG) Log.d(LOG_TAG, "Download running for url=" + url);
+          if (DEBUG) Log.d(TAG, "Download running for url=" + url);
           bitmap = Downloader.downloadBitmap(url);
-          Log.d(LOG_TAG, "Downloaded: " + url);
+          Log.d(TAG, "Downloaded: " + url);
           addBitmapToFileCache(url, bitmap);
         }
 
@@ -177,7 +200,7 @@ public class ImageDownloader {
   }
 
   private void applyBitmapToImageView(Bitmap bitmap, ImageView imageView) {
-    if (DEBUG) Log.d(LOG_TAG, "Assigning bitmap=" + bitmap + " imageView=" + imageView);
+    if (DEBUG) Log.d(TAG, "Assigning bitmap=" + bitmap + " imageView=" + imageView);
     imageView.setBackgroundDrawable(null);
     imageView.setImageBitmap(bitmap);
     imageView.setAlpha(1.0f);
@@ -186,7 +209,7 @@ public class ImageDownloader {
   private void handleDownloadComplete(DownloadResult downloadResult) {
     final String url = downloadResult.url;
     final Bitmap bitmap = downloadResult.bitmap;
-    if (DEBUG) Log.d(LOG_TAG, "handleDownloadComplete: url=" + url + " bitmap=" + bitmap);
+    if (DEBUG) Log.d(TAG, "handleDownloadComplete: url=" + url + " bitmap=" + bitmap);
 
     final Set<ImageView> toRemove = Sets.newLinkedHashSet();
     synchronized (mDownloadRequests) {
@@ -272,8 +295,8 @@ public class ImageDownloader {
   };
 
   // Soft cache for bitmaps kicked out of hard cache
-  private final static ConcurrentHashMap<String, SoftReference<Bitmap>> sSoftBitmapCache = new ConcurrentHashMap<String, SoftReference<Bitmap>>(
-      HARD_CACHE_CAPACITY / 2);
+  private final static ConcurrentHashMap<String, SoftReference<Bitmap>> sSoftBitmapCache =
+      new ConcurrentHashMap<String, SoftReference<Bitmap>>(HARD_CACHE_CAPACITY / 2);
 
   /**
    * Adds this bitmap to the cache.
@@ -311,9 +334,9 @@ public class ImageDownloader {
     }
     final File cacheFile = getCacheFilename(url);
     if (cacheFile.exists()) {
-      Log.d(LOG_TAG, "Updating cached file url=" + url + " filename=" + cacheFile);
+      Log.d(TAG, "Updating cached file url=" + url + " filename=" + cacheFile);
     } else {
-      Log.d(LOG_TAG, "Creating cached file url=" + url + " filename=" + cacheFile);
+      Log.d(TAG, "Creating cached file url=" + url + " filename=" + cacheFile);
     }
 
     try {
@@ -323,7 +346,7 @@ public class ImageDownloader {
       fos.flush();
       fos.close();
     } catch (IOException e) {
-      Log.w(LOG_TAG, "Error adding cache file.", e);
+      Log.w(TAG, "Error adding cache file.", e);
       cacheFile.delete();
     }
 
@@ -332,9 +355,9 @@ public class ImageDownloader {
   private Bitmap getBitmapFromFileCache(String url) {
     final File cacheFile = getCacheFilename(url);
     if (cacheFile.exists()) {
-      if (DEBUG) Log.d(LOG_TAG, "getFromFileCache hit: url=" + url + " filename=" + cacheFile);
+      if (DEBUG) Log.d(TAG, "getFromFileCache hit: url=" + url + " filename=" + cacheFile);
     } else {
-      if (DEBUG) Log.d(LOG_TAG, "getFromFileCache MISS: url=" + url + " filename=" + cacheFile);
+      if (DEBUG) Log.d(TAG, "getFromFileCache MISS: url=" + url + " filename=" + cacheFile);
       return null;
     }
     return BitmapFactory.decodeFile(cacheFile.getAbsolutePath());
@@ -383,10 +406,4 @@ public class ImageDownloader {
     sSoftBitmapCache.clear();
   }
 
-  public synchronized static ImageDownloader getSingletonInstance(final Context context) {
-    if (sSingleton == null) {
-      sSingleton = new ImageDownloader(context.getApplicationContext());
-    }
-    return sSingleton;
-  }
 }

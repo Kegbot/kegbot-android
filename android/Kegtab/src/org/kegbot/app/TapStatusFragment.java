@@ -63,6 +63,7 @@ public class TapStatusFragment extends ListFragment {
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     mCore = KegbotCore.getInstance(getActivity());
+    mImageDownloader = mCore.getImageDownloader();
   }
 
   @Override
@@ -88,12 +89,6 @@ public class TapStatusFragment extends ListFragment {
       setTapDetail(mTapDetail);
     }
     return mView;
-  }
-
-  @Override
-  public void onAttach(Activity activity) {
-    super.onAttach(activity);
-    mImageDownloader = ImageDownloader.getSingletonInstance(activity);
   }
 
   public void setTapDetail(KegTap tap) {

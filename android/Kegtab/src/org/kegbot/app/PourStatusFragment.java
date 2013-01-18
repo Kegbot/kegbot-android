@@ -129,6 +129,7 @@ public class PourStatusFragment extends ListFragment {
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     mCore = KegbotCore.getInstance(getActivity());
+    mImageDownloader = mCore.getImageDownloader();
   }
 
   @Override
@@ -220,7 +221,6 @@ public class PourStatusFragment extends ListFragment {
   @Override
   public void onAttach(Activity activity) {
     super.onAttach(activity);
-    mImageDownloader = ImageDownloader.getSingletonInstance(activity);
     mHandler = new Handler();
   }
 

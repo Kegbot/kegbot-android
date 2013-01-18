@@ -24,6 +24,7 @@ import java.util.Set;
 
 import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiImpl;
+import org.kegbot.app.util.ImageDownloader;
 import org.kegbot.app.util.IndentingPrintWriter;
 import org.kegbot.app.util.PreferenceHelper;
 import org.kegbot.core.FlowManager.Clock;
@@ -58,6 +59,7 @@ public class KegbotCore {
   private final AuthenticationManager mAuthenticationManager;
   private final ConfigurationManager mConfigurationManager;
   private final SoundManager mSoundManager;
+  private final ImageDownloader mImageDownloader;
 
   private final KegbotApi mApi;
   private final SyncManager mSyncManager;
@@ -84,6 +86,8 @@ public class KegbotCore {
     mApi = new KegbotApiImpl();
     mApi.setApiUrl(mPreferences.getApiUrl());
     mApi.setApiKey(mPreferences.getApiKey());
+
+    mImageDownloader = new ImageDownloader(context, mPreferences.getKegbotUrl());
 
     mTapManager = new TapManager();
     mManagers.add(mTapManager);
@@ -220,6 +224,10 @@ public class KegbotCore {
    */
   public ConfigurationManager getConfigurationManager() {
     return mConfigurationManager;
+  }
+
+  public ImageDownloader getImageDownloader() {
+    return mImageDownloader;
   }
 
   public void dump(PrintWriter printWriter) {

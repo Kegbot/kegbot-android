@@ -232,7 +232,7 @@ public class EventListFragment extends ListFragment {
   @Override
   public void onAttach(Activity activity) {
     super.onAttach(activity);
-    mImageDownloader = ImageDownloader.getSingletonInstance(activity);
+    mImageDownloader = KegbotCore.getInstance(activity).getImageDownloader();
   }
 
   @Override
