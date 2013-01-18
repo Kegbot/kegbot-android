@@ -18,7 +18,9 @@
 package org.kegbot.app.setup;
 
 import org.kegbot.app.R;
+import org.kegbot.app.service.CheckinService;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -48,6 +50,11 @@ public class SetupLicenseFragment extends SetupFragment {
 
     if (!licenseBox.isChecked() || !privacyBox.isChecked()) {
       return "You must agree to continue.";
+    }
+
+    Context context = getActivity();
+    if (context != null) {
+      CheckinService.requestImmediateCheckin(context);
     }
 
     return "";
