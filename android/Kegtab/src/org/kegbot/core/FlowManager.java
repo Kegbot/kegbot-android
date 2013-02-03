@@ -235,6 +235,10 @@ public class FlowManager extends Manager {
     synchronized (mFlowsByTap) {
       flow = getFlowForTap(tap);
       if (flow == null || flow.getState() != Flow.State.ACTIVE) {
+        if (!mPreferences.getEnableFlowAutoStart()) {
+          Log.d(TAG, "Not starting new flow: autostart disabled.");
+          return null;
+        }
         flow = startFlow(tap, mPreferences.getIdleTimeoutMs());
         Log.d(TAG, "  started new flow: " + flow);
       } else {

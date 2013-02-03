@@ -38,6 +38,7 @@ public class PreferenceHelper {
   public static final String KEY_CACHE_CREDENTIALS = "cache_credentials";
 
   public static final String KEY_RUN_CORE = "run_core";
+  public static final String KEY_ENABLE_AUTOMATIC_FLOW_START = "autostart_flows";
 
   private static final String KEY_GCM_REGISTRATION_ID = "gcm_reg_id";
 
@@ -204,6 +205,14 @@ public class PreferenceHelper {
 
   public void setLastCheckinStatus(String status) {
     mSharedPreferences.edit().putString(KEY_LAST_CHECKIN_STATUS, status).apply();
+  }
+
+  public boolean getEnableFlowAutoStart() {
+    return mSharedPreferences.getBoolean(KEY_ENABLE_AUTOMATIC_FLOW_START, true);
+  }
+
+  public void setEnableFlowAutoStart(boolean value) {
+    mSharedPreferences.edit().putBoolean(KEY_ENABLE_AUTOMATIC_FLOW_START, value);
   }
 
 }

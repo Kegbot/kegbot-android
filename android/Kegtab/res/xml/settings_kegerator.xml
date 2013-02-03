@@ -17,60 +17,75 @@
   You should have received a copy of the GNU General Public License along
   with Kegtab. If not, see <http://www.gnu.org/licenses/>.
 -->
-<PreferenceScreen
-  xmlns:android="http://schemas.android.com/apk/res/android">
-  <CheckBoxPreference
-    android:key="run_core"
-    android:title="Run as Kegerator Controller"
-    android:summary="Enable this tablet as a Kegerator Controller">
-  </CheckBoxPreference>
-  <EditTextPreference
-    android:key="minimum_volume_ml"
-    android:title="Minimum Volume (mL)"
-    android:dependency="run_core"
-    android:inputType="number"
-    android:defaultValue="10"
-    android:summary="Pours less than this amount will be ignored">
-  </EditTextPreference>
-  <EditTextPreference
-    android:key="idle_warning_seconds"
-    android:title="Pour Idle Time Warning"
-    android:dependency="run_core"
-    android:inputType="number"
-    android:defaultValue="60"
-    android:summary="After this many idle seconds, a warning will be issued">
-  </EditTextPreference>
-  <EditTextPreference
-    android:key="idle_timeout_seconds"
-    android:title="Pour Maximum Idle Time"
-    android:dependency="run_core"
-    android:inputType="number"
-    android:defaultValue="90"
-    android:summary="After this many idle seconds, a pour will be ended">
-  </EditTextPreference>
-  <CheckBoxPreference
-    android:key="allow_registration"
-    android:title="Allow New User Registration"
-    android:dependency="run_core"
-    android:defaultValue="true"
-    android:summaryOn="New users can register from the main screen (uncheck to disable)"
-    android:summaryOff="New users cannot register from the main screen (check to enable)">
-  </CheckBoxPreference>
-  <CheckBoxPreference
-    android:key="allow_manual_login"
-    android:title="Allow Manual Login"
-    android:dependency="run_core"
-    android:defaultValue="true"
-    android:summaryOn="Uncheck to disable the main screen's 'Beer Me' button"
-    android:summaryOff="Check to enable the main screen's 'Beer Me' button">
-  </CheckBoxPreference>
-  <CheckBoxPreference
-    android:key="cache_credentials"
-    android:title="Cache Credentials"
-    android:dependency="run_core"
-    android:defaultValue="true"
-    android:summaryOn="Authentication tokens will be locally cached"
-    android:summaryOff="Authentication tokens will always be checked against the server">
-  </CheckBoxPreference>
-  
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory android:title="General" >
+        <SwitchPreference
+            android:key="run_core"
+            android:summaryOff="Read-only mode; Kegtab will not monitor sensors"
+            android:summaryOn="Kegtab will monitor sensors and record drinks"
+            android:title="Run Kegbot Core" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Pour Processing" >
+        <EditTextPreference
+            android:defaultValue="10"
+            android:dependency="run_core"
+            android:inputType="number"
+            android:key="minimum_volume_ml"
+            android:summary="Pours less than this amount will be ignored"
+            android:title="Minimum Volume (mL)" >
+        </EditTextPreference>
+        <EditTextPreference
+            android:defaultValue="60"
+            android:dependency="run_core"
+            android:inputType="number"
+            android:key="idle_warning_seconds"
+            android:summary="After this many idle seconds, a warning will be issued"
+            android:title="Pour Idle Time Warning" >
+        </EditTextPreference>
+        <EditTextPreference
+            android:defaultValue="90"
+            android:dependency="run_core"
+            android:inputType="number"
+            android:key="idle_timeout_seconds"
+            android:summary="After this many idle seconds, a pour will be ended"
+            android:title="Pour Maximum Idle Time" >
+        </EditTextPreference>
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:dependency="run_core"
+            android:key="autostart_flows"
+            android:summaryOff="New pours will only start when a user authenticates"
+            android:summaryOn="A new pour will start any time meter activity is detected"
+            android:title="Automatically Start Pours" >
+        </CheckBoxPreference>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="User Interface" >
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:dependency="run_core"
+            android:key="allow_registration"
+            android:summaryOff="New users cannot register from the main screen (check to enable)"
+            android:summaryOn="New users can register from the main screen (uncheck to disable)"
+            android:title="Allow New User Registration" >
+        </CheckBoxPreference>
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:dependency="run_core"
+            android:key="allow_manual_login"
+            android:summaryOff="Check to enable the main screen&apos;s &apos;Beer Me&apos; button"
+            android:summaryOn="Uncheck to disable the main screen&apos;s &apos;Beer Me&apos; button"
+            android:title="Allow Manual Login" >
+        </CheckBoxPreference>
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:dependency="run_core"
+            android:key="cache_credentials"
+            android:summaryOff="Authentication tokens will always be checked against the server"
+            android:summaryOn="Authentication tokens will be locally cached"
+            android:title="Cache Credentials" >
+        </CheckBoxPreference>
+    </PreferenceCategory>
+
 </PreferenceScreen>
