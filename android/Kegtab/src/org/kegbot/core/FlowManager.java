@@ -20,6 +20,7 @@ package org.kegbot.core;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -32,6 +33,7 @@ import org.kegbot.core.Flow.State;
 import android.util.Log;
 
 import com.google.common.base.Predicate;
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
@@ -294,21 +296,34 @@ public class FlowManager extends Manager {
    * bound to a particular tap. When a drinker authenticates with such a source,
    * we must decide which taps to activate.
    *
-   * Activating all taps is confusing, so for now authenticate against the last
-   * focused/viewed tap.
-   *
    * @param username
    */
   public synchronized void activateUserAmbiguousTap(final String username) {
     final Tap focusedTap = mTapManager.getFocusedTap();
+    final Set<Tap> activateTaps = Sets.newLinkedHashSet();
     if (focusedTap != null) {
       Log.d(TAG, String.format("activateUserAmbiguousTap: using focused tap: %s", focusedTap));
-      activateUserAtTap(focusedTap, username);
-    } else {
-      Log.d(TAG, String.format("activateUserAmbiguousTap: no focused tap, activating on all taps"));
-      for (final Tap tap : mTapManager.getTaps()) {
-        activateUserAtTap(tap, username);
+      activateTaps.add(focusedTap);
+    }
+
+    for (final Tap tap : mTapManager.getTaps()) {
+      if (tap == focusedTap) {
+        continue;
       }
+      if (Strings.isNullOrEmpty(tap.getRelayName())) {
+        Log.d(TAG, String.format("activateUserAmbiguousTap: also activating at unmanaged tap: %s",
+            focusedTap));
+        activateTaps.add(tap);
+      }
+    }
+
+    if (activateTaps.isEmpty()) {
+      Log.d(TAG, "activateUserAmbiguousTap: no focused or unmanaged taps; activating on all taps");
+      activateTaps.addAll(mTapManager.getTaps());
+    }
+
+    for (final Tap tap : activateTaps) {
+      activateUserAtTap(tap, username);
     }
   }
 
