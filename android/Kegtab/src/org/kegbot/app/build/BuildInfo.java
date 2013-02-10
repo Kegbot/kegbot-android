@@ -4,7 +4,7 @@ package org.kegbot.app.build;
 
 public final class BuildInfo {
 
-  public static final String BUILD_DATE_HUMAN = "20130202-163159";
+  public static final String BUILD_DATE_HUMAN = "20130209-214326";
 
   public static final String BUILD_TAGS = "dev";
 
