@@ -74,5 +74,13 @@
     <string name="checkin_update_description">Tap to update Kegbot</string>
     <string name="alert_network">Network Problem</string>
     <string name="update_available">Update Available</string>
+    <string name="menu_bugreport">Bugreport</string>
+    <string name="bugreport_title">Create Bugreport</string>
+    <string name="bugreport_message_idle">Tap to build a bugreport.</string>
+    <string name="bugreport_message_running">Collecting bugreport data...</string>
+    <string name="bugreport_message_ready">Bugreport collected. Please add detail below, and tap the button to launch your e-mail app.</string>
+    <string name="bugreport_button_idle">Collect Bugreport</string>
+    <string name="bugreport_button_ready">Send Bugreport</string>
+    <string name="bugreport_detail_hint">Describe the problem and any steps leading to it.</string>
     
 </resources>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="32dp" >
+
+    <TextView
+        android:id="@+id/bugreportTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/bugreport_title"
+        android:textSize="32dp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/bugreportMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dip"
+        android:textSize="24dp"
+        android:text="@string/bugreport_message_idle" />
+
+    <ProgressBar
+        android:id="@+id/bugreportProgress"
+        style="@android:style/Widget.Holo.ProgressBar.Horizontal"
+        android:layout_width="512dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dip" />
+
+    <EditText
+        android:id="@+id/bugreportDetail"
+        android:layout_width="512dp"
+        android:layout_height="wrap_content"
+        android:hint="@string/bugreport_detail_hint"
+        android:inputType="textCapSentences|textMultiLine"
+        android:lines="4"
+        android:scrollHorizontally="false" />
+
+    <Button
+        android:id="@+id/bugreportButton"
+        android:layout_width="512dp"
+        android:layout_height="wrap_content"
+        android:text="@string/bugreport_button_idle" />
+
+</LinearLayout>

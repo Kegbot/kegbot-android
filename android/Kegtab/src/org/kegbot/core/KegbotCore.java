@@ -20,6 +20,7 @@ package org.kegbot.core;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Date;
 import java.util.Set;
 
 import org.kegbot.api.KegbotApi;
@@ -27,9 +28,13 @@ import org.kegbot.api.KegbotApiImpl;
 import org.kegbot.app.util.ImageDownloader;
 import org.kegbot.app.util.IndentingPrintWriter;
 import org.kegbot.app.util.PreferenceHelper;
+import org.kegbot.app.util.Utils;
 import org.kegbot.core.FlowManager.Clock;
 
 import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Handler;
 import android.util.Log;
 
@@ -69,6 +74,8 @@ public class KegbotCore {
 
   private final BluetoothManager mBluetoothManager;
 
+  private final Context mContext;
+
   private boolean mStarted = false;
 
   private final FlowManager.Clock mClock = new Clock() {
@@ -79,6 +86,7 @@ public class KegbotCore {
   };
 
   public KegbotCore(Context context) {
+    mContext = context.getApplicationContext();
     mBus = new Bus(ThreadEnforcer.MAIN);
 
     mPreferences = new PreferenceHelper(context);
@@ -231,21 +239,59 @@ public class KegbotCore {
   }
 
   public void dump(PrintWriter printWriter) {
-    StringWriter writer = new StringWriter();
-    IndentingPrintWriter newWriter = new IndentingPrintWriter(writer, "  ");
+    StringWriter baseWriter = new StringWriter();
+    IndentingPrintWriter writer = new IndentingPrintWriter(baseWriter, "  ");
 
-    newWriter.printPair("mStarted: ", Boolean.valueOf(mStarted));
-    newWriter.println();
-    newWriter.println();
+    PackageManager pm = mContext.getPackageManager();
+    PackageInfo packageInfo;
+    try {
+      packageInfo = pm.getPackageInfo(mContext.getPackageName(), PackageManager.GET_SIGNATURES);
+    } catch (NameNotFoundException e) {
+      throw new RuntimeException("Cannot get own package info.", e);
+    }
+
+    writer.println("Package info:");
+    writer.println();
+    writer.increaseIndent();
+    writer.printPair("versionName", packageInfo.versionName).println();
+    writer.printPair("versionCode", String.valueOf(packageInfo.versionCode)).println();
+    writer.printPair("packageName", packageInfo.packageName).println();
+    writer.printPair("installTime", new Date(packageInfo.firstInstallTime)).println();
+    writer.printPair("lastUpdateTime", new Date(packageInfo.lastUpdateTime)).println();
+    writer.printPair("installerPackageName", pm.getInstallerPackageName(mContext.getPackageName()))
+        .println();
+    if (packageInfo.signatures != null && packageInfo.signatures.length > 0) {
+      writer.printPair("signature", Utils.getFingerprintForSignature(packageInfo.signatures[0]))
+          .println();
+    }
+    writer.decreaseIndent();
+    writer.println();
+
+    writer.println("Core info:");
+    writer.println();
+    writer.increaseIndent();
+    writer.printPair("mStarted", Boolean.valueOf(mStarted)).println();
+    writer.printPair("deviceId", mPreferences.getDeviceId()).println();
+    writer.printPair("gcmId", mPreferences.getGcmRegistrationId()).println();
+    writer.printPair("enableFlowAutoStart", Boolean.valueOf(mPreferences.getEnableFlowAutoStart()))
+        .println();
+    writer.printPair("allowManualLogin", Boolean.valueOf(mPreferences.getAllowManualLogin()))
+        .println();
+    writer.printPair("allowRegistration", Boolean.valueOf(mPreferences.getAllowRegistration()))
+        .println();
+    writer.printPair("cacheCredentials", Boolean.valueOf(mPreferences.getCacheCredentials()))
+        .println();
+    writer.println();
 
     for (final Manager manager : mManagers) {
-      newWriter.printf("## %s\n", manager.getName());
-      newWriter.increaseIndent();
-      manager.dump(newWriter);
-      newWriter.decreaseIndent();
-      newWriter.println();
+      writer.println(String.format("## %s", manager.getName()));
+      writer.increaseIndent();
+      manager.dump(writer);
+      writer.decreaseIndent();
+      writer.println();
     }
-    printWriter.write(writer.toString());
+    writer.decreaseIndent();
+    printWriter.write(baseWriter.toString());
   }
 
   public static KegbotCore getInstance(Context context) {

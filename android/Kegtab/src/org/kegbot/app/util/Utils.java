@@ -21,6 +21,8 @@ package org.kegbot.app.util;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -28,11 +30,15 @@ import java.util.TimeZone;
 
 import org.kegbot.app.build.BuildInfo;
 
+import android.content.pm.Signature;
 import android.os.Build;
 
 public class Utils {
 
   public static final DateFormat ISO8601_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+  private final static char[] HEX_DIGITS = {
+    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
+  };
 
   private Utils() {
     throw new IllegalStateException("Non-instantiable class.");
@@ -72,6 +78,34 @@ public class Utils {
     } finally {
       f.close();
     }
+  }
+
+  public static String toHexString(byte[] data) {
+    return toHexString(data, 0, data.length);
+  }
+
+  public static String toHexString(byte[] array, int offset, int length) {
+    char[] buf = new char[length * 2];
+
+    int bufIndex = 0;
+    for (int i = offset; i < offset + length; i++) {
+      byte b = array[i];
+      buf[bufIndex++] = HEX_DIGITS[(b >>> 4) & 0x0F];
+      buf[bufIndex++] = HEX_DIGITS[b & 0x0F];
+    }
+
+    return new String(buf);
+  }
+
+  public static String getFingerprintForSignature(Signature sig) {
+    final MessageDigest md;
+    try {
+      md = MessageDigest.getInstance("SHA1");
+    } catch (NoSuchAlgorithmException e) {
+      return "";
+    }
+    md.update(sig.toByteArray());
+    return toHexString(md.digest());
   }
 
   public static String getUserAgent() {

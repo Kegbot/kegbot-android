@@ -87,18 +87,22 @@ public class TapManager extends Manager {
 
   @Override
   protected synchronized void dump(IndentingPrintWriter writer) {
-    writer.printf("Tap count: %s\n", Integer.valueOf(mTaps.size()));
-    writer.printf("mFocusedTap: %s\n", mFocusedTap);
-    writer.println("Taps:");
+    writer.printPair("numTaps", Integer.valueOf(mTaps.size())).println();
+    writer.printPair("mFocusedTap", mFocusedTap).println();
 
-    writer.increaseIndent();
-    for (final Tap tap : mTaps) {
-      writer.printPair("meterName", tap.getMeterName());
-      writer.printPair("mlPerTick", Double.valueOf(tap.getMlPerTick()));
-      writer.printPair("relayName", tap.getRelayName());
+    if (mTaps.size() > 0) {
       writer.println();
+      writer.println("All taps:");
+      writer.println();
+      writer.increaseIndent();
+      for (final Tap tap : mTaps) {
+        writer.printPair("meterName", tap.getMeterName()).println();
+        writer.printPair("mlPerTick", Double.valueOf(tap.getMlPerTick())).println();
+        writer.printPair("relayName", tap.getRelayName()).println();
+        writer.println();
+      }
+      writer.decreaseIndent();
     }
-    writer.decreaseIndent();
   }
 
 }
