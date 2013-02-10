@@ -19,13 +19,13 @@
 package org.kegbot.app;
 
 import org.kegbot.app.service.KegbotCoreService;
-import org.kegbot.app.util.ExternalIntents;
 import org.kegbot.app.util.PreferenceHelper;
 import org.kegbot.core.KegbotCore;
 
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -67,6 +67,7 @@ public class CoreActivity extends Activity {
     super.onStop();
     EasyTracker.getTracker().trackActivityStop(this);
     KegbotCore.getInstance(this).getBus().unregister(this);
+    mMenu = null;
   }
 
   @Override
@@ -74,6 +75,7 @@ public class CoreActivity extends Activity {
     setupActionBar();
     getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     KegbotCoreService.startService(this);
+    updateAlerts();
     super.onResume();
   }
 
@@ -102,9 +104,9 @@ public class CoreActivity extends Activity {
         startActivity(intent);
         return true;
       case R.id.alertUpdate:
-        Intent marketIntent = ExternalIntents.getMarketUpdateIntent();
-        marketIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(marketIntent);
+        Intent marketIntent = new Intent(Intent.ACTION_VIEW);
+        marketIntent.setData(Uri.parse("market://details?id=org.kegbot.app"));
+        PinActivity.startThroughPinActivity(this, marketIntent);
         return true;
       default:
         return super.onOptionsItemSelected(item);
@@ -112,7 +114,9 @@ public class CoreActivity extends Activity {
   }
 
   private void updateAlerts() {
-    mMenu.findItem(R.id.alertUpdate).setVisible(mPrefs.getUpdateNeeded());
+    if (mMenu != null) {
+      mMenu.findItem(R.id.alertUpdate).setVisible(mPrefs.getUpdateNeeded());
+    }
   }
 
 }

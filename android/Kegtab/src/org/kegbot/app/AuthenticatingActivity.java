@@ -188,8 +188,6 @@ public class AuthenticatingActivity extends Activity {
           setFail();
         }
       }
-
-
     }.execute();
   }
 
