@@ -18,6 +18,8 @@
  */
 package org.kegbot.app;
 
+import java.util.regex.Pattern;
+
 import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiException;
 import org.kegbot.app.camera.CameraFragment;
@@ -31,6 +33,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -39,6 +43,8 @@ import android.widget.EditText;
 public class DrinkerRegistrationActivity extends CoreActivity {
 
   private static final String TAG = DrinkerRegistrationActivity.class.getSimpleName();
+
+  private static final Pattern USERNAME_PATTERN = Pattern.compile("^[\\w-]+$");
 
   private KegbotCore mCore;
 
@@ -96,6 +102,28 @@ public class DrinkerRegistrationActivity extends CoreActivity {
     mEmail = (EditText) findViewById(R.id.email);
     mPassword = (EditText) findViewById(R.id.password);
     mSubmitButton = (Button) findViewById(R.id.submitButton);
+
+    mUsername.addTextChangedListener(new TextWatcher() {
+      @Override
+      public void onTextChanged(CharSequence s, int start, int before, int count) {
+      }
+
+      @Override
+      public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+      }
+
+      @Override
+      public void afterTextChanged(Editable s) {
+        String text = s.toString();
+        int length = text.length();
+
+        if (!USERNAME_PATTERN.matcher(text).matches()) {
+          if (length > 0) {
+            s.delete(length - 1, length);
+          }
+        }
+      }
+    });
 
     mCameraFragment = (CameraFragment) getFragmentManager().findFragmentById(R.id.camera);
 
