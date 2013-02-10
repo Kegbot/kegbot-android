@@ -30,13 +30,14 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.WindowManager;
 
 import com.google.android.apps.analytics.easytracking.EasyTracker;
 
 /**
  * An activity which starts the core service on create and resume.
  *
- * @author mike wakerly (mike@wakerly.com)
+ * @author mike wakerly (opensource@hoho.com)
  */
 public class CoreActivity extends Activity {
 
@@ -71,6 +72,7 @@ public class CoreActivity extends Activity {
   @Override
   protected void onResume() {
     setupActionBar();
+    getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     KegbotCoreService.startService(this);
     super.onResume();
   }
