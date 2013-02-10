@@ -50,6 +50,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 
 public class PourStatusFragment extends ListFragment {
@@ -77,6 +78,7 @@ public class PourStatusFragment extends ListFragment {
   private TextView mStatusText;
   private TextView mStatusLine;
 
+  private Button mEndButton;
   private EditText mShoutText;
 
   private ImageView mBeerImage;
@@ -117,6 +119,8 @@ public class PourStatusFragment extends ListFragment {
    */
   private static final long IDLE_TOOLTIP_MILLIS = TimeUnit.SECONDS.toMillis(5);
 
+  private Flow mFlow = null;
+
   public PourStatusFragment(Tap tap) {
     mTap = tap;
   }
@@ -156,7 +160,8 @@ public class PourStatusFragment extends ListFragment {
       }
     });
 
-    final OnClickListener donePouringListener = new OnClickListener() {
+    mEndButton = ((Button) mView.findViewById(R.id.pourEndButton));
+    mEndButton.setOnClickListener(new OnClickListener() {
       @Override
       public void onClick(View v) {
         final FlowManager flowManager = mCore.getFlowManager();
@@ -166,8 +171,7 @@ public class PourStatusFragment extends ListFragment {
           flowManager.endFlow(flow);
         }
       }
-    };
-    ((Button) mView.findViewById(R.id.pourEndButton)).setOnClickListener(donePouringListener);
+    });
 
     mShoutText = (EditText) mView.findViewById(R.id.shoutText);
     mShoutText.addTextChangedListener(new TextWatcher() {
@@ -228,6 +232,9 @@ public class PourStatusFragment extends ListFragment {
   public void onResume() {
     super.onResume();
     applyTapDetail();
+    if (mFlow != null) {
+      updateWithFlow(mFlow);
+    }
   }
 
   public ImageView getDrinkerImageView() {
@@ -265,15 +272,22 @@ public class PourStatusFragment extends ListFragment {
   }
 
   public void updateWithFlow(final Flow flow) {
-    if (flow == null) {
-      Log.wtf(TAG, "Null flow, wtf?");
+    Preconditions.checkNotNull(flow, "null flow given to updateWithFlow()");
+    mFlow = flow;
+    final Flow.State flowState = flow.getState();
+
+    if (flowState == State.COMPLETED) {
+      setEnded();
       return;
     }
+
     if (mView == null) {
       return;
     }
 
-    final Flow.State flowState = flow.getState();
+    // Buttons.
+    mEndButton.setEnabled(true);
+    mShoutText.setEnabled(true);
 
     // Set volume portion.
     final double ounces = Units.volumeMlToOunces(flow.getVolumeMl());
@@ -299,9 +313,6 @@ public class PourStatusFragment extends ListFragment {
       mStatusLine.setText("Pour automatically ends in " + seconds + " second"
           + ((seconds != 1) ? "s" : "") + ".");
       mStatusLine.setVisibility(View.VISIBLE);
-    } else if (flowState == State.COMPLETED) {
-      mStatusLine.setText("Pour completed!");
-      mStatusLine.setVisibility(View.VISIBLE);
     } else {
       mStatusLine.setVisibility(View.INVISIBLE);
     }
@@ -323,10 +334,13 @@ public class PourStatusFragment extends ListFragment {
     mAppliedUsername = username;
   }
 
-  public void setIdle() {
+  /** Marks the tap as ended (no current flow). */
+  public void setEnded() {
     if (mView != null) {
       mStatusLine.setText("Pour completed!");
       mStatusLine.setVisibility(View.VISIBLE);
+      mEndButton.setEnabled(false);
+      mShoutText.setEnabled(false);
     }
   }
 

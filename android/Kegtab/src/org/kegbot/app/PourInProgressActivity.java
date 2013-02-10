@@ -19,6 +19,7 @@ package org.kegbot.app;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.kegbot.app.camera.CameraFragment;
@@ -27,7 +28,6 @@ import org.kegbot.core.Flow;
 import org.kegbot.core.FlowManager;
 import org.kegbot.core.KegbotCore;
 import org.kegbot.core.Tap;
-import org.kegbot.core.TapManager;
 
 import android.app.ActionBar;
 import android.app.AlertDialog;
@@ -43,32 +43,36 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.PowerManager;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
+/**
+ * Activity shown while a pour is in progress.
+ *
+ * @author mike wakerly (opensource@hoho.com)
+ */
 public class PourInProgressActivity extends CoreActivity {
 
   private static final String TAG = PourInProgressActivity.class.getSimpleName();
 
+  /** Interval between polls for flow status. */
   private static final long FLOW_UPDATE_MILLIS = 500;
 
+  /** Delay after a flow has ended, during which a dialog is show. */
   private static final long FLOW_FINISH_DELAY_MILLIS = TimeUnit.SECONDS.toMillis(1);
 
+  /** Minimum idle seconds before a flow is considered idle for display purposes. */
   private static final long IDLE_SCROLL_TIMEOUT_MILLIS = TimeUnit.SECONDS.toMillis(3);
 
+  /** Constant identifying {@link #mIdleDetectedDialog}. */
   private static final int DIALOG_IDLE_WARNING = 1;
 
   private KegbotCore mCore;
-
   private FlowManager mFlowManager;
-  private TapManager mTapManager;
-
-  private PowerManager.WakeLock mWakeLock;
 
   private CameraFragment mCameraFragment;
 
@@ -87,6 +91,8 @@ public class PourInProgressActivity extends CoreActivity {
   private Tap mCurrentTap;
 
   private List<Tap> mTaps;
+
+  private final List<Tap> mLastActiveTaps = Lists.newArrayList();
 
   private static final boolean DEBUG = false;
 
@@ -168,19 +174,25 @@ public class PourInProgressActivity extends CoreActivity {
 
   public class PouringTapAdapter extends FragmentPagerAdapter {
 
-    private final List<PourStatusFragment> mFragments;
+    private final Map<String, PourStatusFragment> mFrags = Maps.newLinkedHashMap();
 
     public PouringTapAdapter(FragmentManager fm) {
       super(fm);
-      mFragments = Lists.newArrayList();
-      for (final Tap tap : mTapManager.getTaps()) {
-        mFragments.add(new PourStatusFragment(tap));
-      }
     }
 
     @Override
     public Fragment getItem(int position) {
-      return mFragments.get(position);
+      final Tap tap = mTaps.get(position);
+      if (!mFrags.containsKey(tap.getMeterName())) {
+        mFrags.put(tap.getMeterName(), new PourStatusFragment(tap));
+      }
+      return mFrags.get(tap.getMeterName());
+    }
+
+    @Override
+    public int getItemPosition(Object object) {
+      // TODO(mikey): maintain this.
+      return POSITION_NONE;
     }
 
     public Tap getTap(int position) {
@@ -189,11 +201,7 @@ public class PourInProgressActivity extends CoreActivity {
 
     @Override
     public int getCount() {
-      return mFragments.size();
-    }
-
-    public List<PourStatusFragment> getFragments() {
-      return ImmutableList.copyOf(mFragments);
+      return mTaps.size();
     }
   }
 
@@ -217,7 +225,6 @@ public class PourInProgressActivity extends CoreActivity {
 
     mCore = KegbotCore.getInstance(this);
     mFlowManager = mCore.getFlowManager();
-    mTapManager = mCore.getTapManager();
     mPrefs = mCore.getPreferences();
 
     final ActionBar actionBar = getActionBar();
@@ -226,7 +233,8 @@ public class PourInProgressActivity extends CoreActivity {
     }
     setContentView(R.layout.pour_in_progress_activity);
 
-    mTaps = Lists.newArrayList(mTapManager.getTaps());
+    mTaps = mFlowManager.getAllActiveTaps();
+
     if (mTaps.isEmpty()) {
       Log.e(TAG, "No taps!");
       finish();
@@ -262,7 +270,7 @@ public class PourInProgressActivity extends CoreActivity {
 
     mIdleDetectedDialog = builder.create();
 
-    scrollToMostActiveTap();
+    refreshFlows();
   }
 
   private Flow getCurrentlyFocusedFlow() {
@@ -297,11 +305,7 @@ public class PourInProgressActivity extends CoreActivity {
   protected void onResume() {
     super.onResume();
     Log.d(TAG, "onResume");
-    final PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
 
-    mWakeLock = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ON_AFTER_RELEASE
-        | PowerManager.ACQUIRE_CAUSES_WAKEUP, "kegbot-pour");
-    mWakeLock.acquire();
     registerReceiver(mUpdateReceiver, POUR_INTENT_FILTER);
     handleIntent(getIntent());
     if (mCurrentTap != null) {
@@ -321,9 +325,6 @@ public class PourInProgressActivity extends CoreActivity {
   @Override
   protected void onPause() {
     Log.d(TAG, "onPause");
-
-    mWakeLock.release();
-    mWakeLock = null;
     mHandler.removeCallbacks(FLOW_UPDATE_RUNNABLE);
     unregisterReceiver(mUpdateReceiver);
     super.onPause();
@@ -358,6 +359,7 @@ public class PourInProgressActivity extends CoreActivity {
   private Tap getMostActiveTap() {
     Tap tap = mCurrentTap;
     long leastIdle = Long.MAX_VALUE;
+
     for (Flow flow : mFlowManager.getAllActiveFlows()) {
       final Tap flowTap = flow.getTap();
       if (flow.getIdleTimeMs() < leastIdle) {
@@ -369,22 +371,26 @@ public class PourInProgressActivity extends CoreActivity {
   }
 
   private void scrollToMostActiveTap() {
-    final Tap mostActive = getMostActiveTap();
-    if (mostActive == mCurrentTap) {
-      return;
-    }
-
     if (mCurrentTap != null) {
       final Flow currentFlow = mFlowManager.getFlowForTap(mCurrentTap);
       if (currentFlow != null && currentFlow.getIdleTimeMs() < IDLE_SCROLL_TIMEOUT_MILLIS) {
+        // Current flow is active; don't scroll.
         return;
       }
     }
 
-    final Flow candidateFlow = mFlowManager.getFlowForTap(mostActive);
-    if (candidateFlow.getIdleTimeMs() < IDLE_SCROLL_TIMEOUT_MILLIS) {
-      scrollToPosition(mTaps.indexOf(candidateFlow.getTap()));
+    final Tap mostActive = getMostActiveTap();
+
+    if (mostActive == null) {
+      Log.d(TAG, "Could not find an active tap.");
+      return;
+    } else if (mostActive == mCurrentTap) {
+      return;
     }
+
+    final Flow candidateFlow = mFlowManager.getFlowForTap(mostActive);
+    Log.d(TAG, "Scrolling to " + mostActive.getMeterName());
+    scrollToPosition(mTaps.indexOf(candidateFlow.getTap()));
   }
 
   private void scrollToPosition(int position) {
@@ -396,20 +402,23 @@ public class PourInProgressActivity extends CoreActivity {
     }
   }
 
-  private void enableUiComponents(boolean enable) {
-    mCameraFragment.setEnabled(enable);
-  }
-
   private void refreshFlows() {
-    mHandler.removeCallbacks(FLOW_UPDATE_RUNNABLE);
-
     final Collection<Flow> allFlows = mFlowManager.getAllActiveFlows();
 
-    // Fetch all flows.
+    mHandler.removeCallbacks(FLOW_UPDATE_RUNNABLE);
+    mCameraFragment.setEnabled(!allFlows.isEmpty());
+
+    final List<Tap> activeTaps = mFlowManager.getAllActiveTaps();
+
+    for (final Tap tap : activeTaps) {
+      if (!mTaps.contains(tap)) {
+        mTaps.add(tap);
+        Log.d(TAG, "+++ Added newly active tap "  + tap);
+        mPouringTapAdapter.notifyDataSetChanged();
+      }
+    }
+
     long largestIdleTime = Long.MIN_VALUE;
-
-    enableUiComponents(!allFlows.isEmpty());
-
     for (final Flow flow : allFlows) {
       if (DEBUG) {
         Log.d(TAG, "Refreshing with flow: " + flow);
@@ -420,14 +429,20 @@ public class PourInProgressActivity extends CoreActivity {
         largestIdleTime = idleTimeMs;
       }
     }
-    scrollToMostActiveTap();
 
-    for (final PourStatusFragment frag : mPouringTapAdapter.getFragments()) {
+    if (!mLastActiveTaps.equals(activeTaps)) {
+      scrollToMostActiveTap();
+      mLastActiveTaps.clear();
+      mLastActiveTaps.addAll(activeTaps);
+    }
+
+    for (int i=0; i < mPouringTapAdapter.getCount(); i++) {
+      final PourStatusFragment frag = (PourStatusFragment) mPouringTapAdapter.getItem(i);
       final Flow flow = mFlowManager.getFlowForTap(frag.getTap());
       if (flow != null) {
         frag.updateWithFlow(flow);
       } else {
-        frag.setIdle();
+        frag.setEnded();
       }
     }
 
