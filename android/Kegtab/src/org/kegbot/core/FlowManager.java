@@ -32,10 +32,13 @@ import org.kegbot.core.Flow.State;
 
 import android.util.Log;
 
+import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.base.Strings;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
@@ -54,6 +57,13 @@ public class FlowManager extends Manager {
     @Override
     public boolean apply(Flow flow) {
       return flow.isIdle();
+    }
+  };
+
+  public static Function<Flow, Tap> FLOW_TO_TAP = new Function<Flow, Tap>() {
+    @Override
+    public Tap apply(Flow flow) {
+      return flow.getTap();
     }
   };
 
@@ -173,6 +183,10 @@ public class FlowManager extends Manager {
     synchronized (mFlowsByTap) {
       return ImmutableList.copyOf(Iterables.filter(mFlowsByTap.values(), PREDICATE_ACTIVE));
     }
+  }
+
+  public List<Tap> getAllActiveTaps() {
+    return Lists.newArrayList(Collections2.transform(getAllActiveFlows(), FLOW_TO_TAP));
   }
 
   /**
