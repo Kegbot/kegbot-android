@@ -81,9 +81,7 @@ public class SetupActivity extends Activity {
           startValidation();
           break;
         case MESSAGE_VALIDATION_ABORTED:
-          if (mValidatorTask != null) {
-            mValidatorTask.cancel(true);
-          }
+          cancelValidation();
           showAlertDialog("Verification aborted; please try again.");
           break;
         default:
@@ -194,19 +192,21 @@ public class SetupActivity extends Activity {
       }
 
       @Override
-      protected void onCancelled() {
-        hideDialog();
-        onValidationResult("Validation cancelled, please try again.");
-      }
-
-      @Override
       protected void onPostExecute(String result) {
-        hideDialog();
-        onValidationResult(result);
+        if (!isCancelled()) {
+          hideDialog();
+          onValidationResult(result);
+        }
       }
 
     };
     mValidatorTask.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
+  }
+
+  private void cancelValidation() {
+    if (mValidatorTask != null) {
+      mValidatorTask.cancel(true);
+    }
   }
 
   private void onValidationResult(final String result) {
