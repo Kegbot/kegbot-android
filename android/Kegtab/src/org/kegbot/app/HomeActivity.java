@@ -215,9 +215,7 @@ public class HomeActivity extends CoreActivity {
       SettingsActivity.startSettingsActivity(this);
       return true;
     } else if (itemId == R.id.bugreport) {
-      Intent intent = new Intent(this, BugreportActivity.class);
-      intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY | Intent.FLAG_ACTIVITY_NEW_TASK);
-      startActivity(intent);
+      BugreportActivity.startBugreportActivity(this);
       return true;
     } else if (itemId == android.R.id.home) {
       return true;

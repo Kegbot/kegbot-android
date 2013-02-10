@@ -4,14 +4,23 @@
     android:layout_height="match_parent"
     android:gravity="top|center"
     android:orientation="vertical"
-    android:padding="128dip">
+    android:paddingTop="64dp">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Please enter the Manager Pin to continue."
-        android:textSize="24dip"
+        android:textSize="32dip"
         android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/managerPinError"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/manager_pin_error"
+        android:textSize="24dip"
+        android:visibility="invisible"
+        android:layout_marginBottom="32dp"/>
 
     <EditText
         android:id="@+id/managerPin"

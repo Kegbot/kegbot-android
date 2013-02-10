@@ -22,8 +22,6 @@ import java.util.List;
 
 import org.kegbot.app.settings.ThirdPartyLicensesActivity;
 import org.kegbot.app.setup.SetupActivity;
-import org.kegbot.app.util.PreferenceHelper;
-import org.kegbot.core.KegbotCore;
 
 import android.app.ActionBar;
 import android.content.Context;
@@ -36,61 +34,13 @@ import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
-import android.util.Log;
 import android.view.MenuItem;
 
-import com.google.common.base.Strings;
-
 public class SettingsActivity extends PreferenceActivity {
-
-  private static final String TAG = SettingsActivity.class.getSimpleName();
-
-  private static final int REQUEST_PIN = 100;
-
-  private KegbotCore mCore;
-  private PreferenceHelper mPrefs;
-  private boolean mPinValid = false;
-  private boolean mPinChecked = false;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    mCore = KegbotCore.getInstance(this);
-    mPrefs = mCore.getPreferences();
-  }
-
-  @Override
-  protected void onResume() {
-    super.onResume();
-    if (Strings.isNullOrEmpty(mPrefs.getPin())) {
-      mPinValid = true;
-    }
-
-    if (!isFinishing()) {
-      if (!mPinValid) {
-        if (!mPinChecked) {
-          Log.d(TAG, "Checking pin...");
-          final Intent intent = new Intent(this, PinActivity.class);
-          startActivityForResult(intent, REQUEST_PIN);
-          mPinChecked = true;
-        } else {
-          Log.d(TAG, "Pin checked, exiting.");
-          finish();
-        }
-      }
-    }
-  }
-
-  @Override
-  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    if (requestCode == REQUEST_PIN) {
-      Log.d(TAG, "Pin result: " + resultCode);
-      if (resultCode == RESULT_OK) {
-        mPinValid = true;
-      }
-    } else {
-      super.onActivityResult(requestCode, resultCode, data);
-    }
   }
 
   @Override
@@ -99,7 +49,6 @@ public class SettingsActivity extends PreferenceActivity {
   }
 
   public static class GeneralFragment extends PreferenceFragment {
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
@@ -119,9 +68,7 @@ public class SettingsActivity extends PreferenceActivity {
       if (actionBar != null) {
         actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_USE_LOGO);
       }
-
     }
-
   }
 
   public static class KegeratorFragment extends PreferenceFragment {
@@ -166,7 +113,6 @@ public class SettingsActivity extends PreferenceActivity {
       findPreference("version").setSummary(String.format("%s (build #%d)", versionString,
           Integer.valueOf(versionCode)));
     }
-
   }
 
   @Override
@@ -185,7 +131,7 @@ public class SettingsActivity extends PreferenceActivity {
 
   public static void startSettingsActivity(Context context) {
     Intent intent = new Intent(context, SettingsActivity.class);
-    context.startActivity(intent);
+    PinActivity.startThroughPinActivity(context, intent);
   }
 
 }

@@ -23,8 +23,15 @@ import org.kegbot.core.KegbotCore;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
@@ -34,18 +41,18 @@ import android.widget.TextView.OnEditorActionListener;
 import com.google.common.base.Strings;
 
 /**
+ * Pass-through activity which verifies the manager pin.
  *
- * @author mike wakerly (mike@wakerly.com)
+ * @author mike wakerly (opensource@hoho.com)
  */
 public class PinActivity extends Activity {
 
-  private static final int MAX_FAILURES = 3;
+  private static final String TAG = PinActivity.class.getSimpleName();
 
   private PreferenceHelper mPrefs;
   private EditText mPinText;
+  private TextView mErrorText;
   private Button mPinButton;
-
-  private int mFailCount = 0;
 
   @Override
   protected void onStart() {
@@ -53,14 +60,33 @@ public class PinActivity extends Activity {
 
     mPrefs = KegbotCore.getInstance(this).getPreferences();
     if (Strings.isNullOrEmpty(mPrefs.getPin())) {
-      setResult(RESULT_OK);
-      finish();
+      onPinSuccess();
       return;
     }
 
     setContentView(R.layout.enter_pin_activity);
 
     mPinText = (EditText) findViewById(R.id.managerPin);
+
+    mPinText.addTextChangedListener(new TextWatcher() {
+      @Override
+      public void onTextChanged(CharSequence s, int start, int before, int count) {
+        if (mErrorText.getVisibility() == View.VISIBLE) {
+          final Animation out = new AlphaAnimation(1.0f, 0.0f);
+          out.setDuration(1000);
+          mErrorText.setAnimation(out);
+          mErrorText.setVisibility(View.INVISIBLE);
+        }
+      }
+
+      @Override
+      public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+      }
+
+      @Override
+      public void afterTextChanged(Editable s) {
+      }
+    });
 
     mPinText.setOnEditorActionListener(new OnEditorActionListener() {
       @Override
@@ -72,6 +98,8 @@ public class PinActivity extends Activity {
         return false;
       }
     });
+
+    mErrorText = (TextView) findViewById(R.id.managerPinError);
 
     mPinButton = (Button) findViewById(R.id.submitButton);
     mPinButton.setOnClickListener(new View.OnClickListener() {
@@ -85,22 +113,45 @@ public class PinActivity extends Activity {
     if (bar != null) {
       bar.setTitle("");
     }
+  }
 
+  private void onPinSuccess() {
+    setResult(RESULT_OK);
+    final Intent startIntent = getIntent().getParcelableExtra("start_intent");
+    Log.i(TAG, "Pin validated, starting activity.");
+    if (startIntent == null) {
+      Log.wtf(TAG, "Start intent was null");
+      return;
+    }
+    startActivity(startIntent);
+    finish();
+  }
+
+  private void onPinFailure() {
+    mPinText.setText("");
+    mErrorText.setVisibility(View.VISIBLE);
   }
 
   private void verifyPin() {
     final String pinText = mPinText.getText().toString();
     if (mPrefs.getPin().equalsIgnoreCase(pinText)) {
-      setResult(RESULT_OK);
-      finish();
+      onPinSuccess();
     } else {
-      mPinText.setText("");
-      mFailCount++;
-      if (mFailCount >= MAX_FAILURES) {
-        setResult(RESULT_CANCELED);
-        finish();
-      }
+      onPinFailure();
     }
+  }
+
+  /**
+   * Start a new activity with pin verification.
+   *
+   * @param context the context to be used for starting.
+   * @param startIntent the intent which shall be used to start the activity upon success.
+   */
+  public static void startThroughPinActivity(Context context, Intent startIntent) {
+    final Intent intent = new Intent(context, PinActivity.class);
+    intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+    intent.putExtra("start_intent", startIntent);
+    context.startActivity(intent);
   }
 
 }

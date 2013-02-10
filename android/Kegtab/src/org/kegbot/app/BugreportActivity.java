@@ -18,8 +18,10 @@ import java.util.concurrent.Executors;
 
 import org.kegbot.core.KegbotCore;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -82,6 +84,11 @@ public class BugreportActivity extends Activity {
       showBugreportReady();
     } else {
       showIdle();
+    }
+
+    final ActionBar bar = getActionBar();
+    if (bar != null) {
+      bar.setTitle("");
     }
   }
 
@@ -257,6 +264,12 @@ public class BugreportActivity extends Activity {
       showBugreportReady();
     }
 
+  }
+
+  public static void startBugreportActivity(Context context) {
+    Intent intent = new Intent(context, BugreportActivity.class);
+    intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY | Intent.FLAG_ACTIVITY_NEW_TASK);
+    PinActivity.startThroughPinActivity(context, intent);
   }
 
 }

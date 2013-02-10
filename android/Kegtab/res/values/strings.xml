@@ -82,5 +82,7 @@
     <string name="bugreport_button_idle">Collect Bugreport</string>
     <string name="bugreport_button_ready">Send Bugreport</string>
     <string name="bugreport_detail_hint">Describe the problem and any steps leading to it.</string>
+    <string name="manager_pin_title">Please enter the Manager Pin to continue.</string>
+    <string name="manager_pin_error">You have entered an incorrect pin. Please try again.</string>
     
 </resources>
