@@ -36,6 +36,7 @@ public class FlowManagerTest extends TestCase {
   private FlowManager mFlowManager;
   private long mUptimeMillis = 0;
   private final Clock mClock = new Clock() {
+    @Override
     public long currentTimeMillis() {
       return mUptimeMillis;
     }
