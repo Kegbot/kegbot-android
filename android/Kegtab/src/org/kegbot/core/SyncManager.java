@@ -24,7 +24,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiException;
-import org.kegbot.api.KegbotApiImpl;
 import org.kegbot.api.KegbotApiNotFoundError;
 import org.kegbot.app.storage.LocalDbHelper;
 import org.kegbot.app.util.PreferenceHelper;
@@ -70,13 +69,6 @@ public class SyncManager extends BackgroundManager {
 
   private boolean mRunning = true;
 
-  private final KegbotApiImpl.Listener mApiListener = new KegbotApiImpl.Listener() {
-    @Override
-    public void debug(String message) {
-      Log.d("KegbotApiImpl", message);
-    }
-  };
-
   public SyncManager(Context context, KegbotApi api, PreferenceHelper preferences) {
     mApi = api;
     mContext = context;
@@ -88,7 +80,6 @@ public class SyncManager extends BackgroundManager {
     Log.d(TAG, "Opening local database");
     mRunning = true;
     mLocalDbHelper = new LocalDbHelper(mContext);
-    ((KegbotApiImpl) mApi).setListener(mApiListener);
     mRunning = true;
     super.start();
   }

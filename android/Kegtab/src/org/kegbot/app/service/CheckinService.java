@@ -38,7 +38,6 @@ import org.apache.http.util.EntityUtils;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.kegbot.app.R;
-import org.kegbot.app.build.BuildInfo;
 import org.kegbot.app.util.DeviceId;
 import org.kegbot.app.util.PreferenceHelper;
 import org.kegbot.app.util.Utils;
@@ -190,7 +189,7 @@ public class CheckinService extends IntentService {
     final HttpPost request = new HttpPost(CHECKIN_URL);
     final HttpParams requestParams = new BasicHttpParams();
 
-    HttpProtocolParams.setUserAgent(requestParams, Utils.getUserAgent());
+    HttpProtocolParams.setUserAgent(requestParams, Utils.getUserAgent(getApplicationContext()));
     request.setParams(requestParams);
 
     try {

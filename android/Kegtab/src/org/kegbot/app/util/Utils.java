@@ -28,8 +28,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
 
-import org.kegbot.app.build.BuildInfo;
-
+import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.Signature;
 import android.os.Build;
 
@@ -108,10 +109,29 @@ public class Utils {
     return toHexString(md.digest());
   }
 
-  public static String getUserAgent() {
+  public static String getUserAgent(Context context) {
+    PackageInfo pinfo;
+    try {
+      pinfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
+    } catch (NameNotFoundException e) {
+      pinfo = null;
+    }
+
+    final String versionName;
+    final int versionCode;
+    if (pinfo != null) {
+      versionName = pinfo.versionName;
+      versionCode = pinfo.versionCode;
+    } else {
+      versionName = "unknown";
+      versionCode = 0;
+    }
+
     return new StringBuilder()
       .append("Kegtab/")
-      .append(BuildInfo.BUILD_DATE_HUMAN)
+      .append(versionName)
+      .append('-')
+      .append(versionCode)
       .append(" (Android ")
       .append(Build.VERSION.RELEASE)
       .append("/")

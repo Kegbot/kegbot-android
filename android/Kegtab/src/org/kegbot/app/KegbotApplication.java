@@ -24,7 +24,7 @@ public class KegbotApplication extends Application {
     super.onCreate();
     Log.i(TAG, "Kegbot starting.");
 
-    final String userAgent = Utils.getUserAgent();
+    final String userAgent = Utils.getUserAgent(getApplicationContext());
     Log.d(TAG, "Kegtab User-agent: " + userAgent);
     System.setProperty("http.agent", userAgent);
 

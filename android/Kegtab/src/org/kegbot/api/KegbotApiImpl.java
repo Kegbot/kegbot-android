@@ -70,6 +70,8 @@ import org.kegbot.proto.Models.ThermoLog;
 import org.kegbot.proto.Models.ThermoSensor;
 import org.kegbot.proto.Models.User;
 
+import android.util.Log;
+
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -77,6 +79,8 @@ import com.google.protobuf.GeneratedMessage;
 import com.google.protobuf.Message.Builder;
 
 public class KegbotApiImpl implements KegbotApi {
+
+  private static final String TAG = KegbotApiImpl.class.getSimpleName();
 
   private static final String CONTENT_TYPE_JSON = "application/json";
 
@@ -88,12 +92,6 @@ public class KegbotApiImpl implements KegbotApi {
   private HttpParams mHttpParams;
   private DefaultHttpClient mHttpClient;
 
-  public static interface Listener {
-    public void debug(String message);
-  }
-
-  private Listener mListener = null;
-
   public KegbotApiImpl() {
     mBaseUrl = "http://localhost/";
 
@@ -101,7 +99,6 @@ public class KegbotApiImpl implements KegbotApi {
     HttpProtocolParams.setVersion(mHttpParams, HttpVersion.HTTP_1_1);
     HttpProtocolParams.setContentCharset(mHttpParams, HTTP.DEFAULT_CONTENT_CHARSET);
     HttpProtocolParams.setUseExpectContinue(mHttpParams, true);
-    HttpProtocolParams.setUserAgent(mHttpParams, Utils.getUserAgent());
 
     SchemeRegistry registry = new SchemeRegistry();
     registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
@@ -110,10 +107,6 @@ public class KegbotApiImpl implements KegbotApi {
 
     mConnManager = new ThreadSafeClientConnManager(mHttpParams, registry);
     mHttpClient = new DefaultHttpClient(mConnManager, mHttpParams);
-  }
-
-  public synchronized void setListener(Listener listener) {
-    mListener = listener;
   }
 
   private JsonNode toJson(HttpResponse response) throws KegbotApiException {
@@ -290,6 +283,11 @@ public class KegbotApiImpl implements KegbotApi {
   @Override
   public void setApiKey(String apiKey) {
     mApiKey = apiKey;
+  }
+
+  @Override
+  public void setUserAgent(String userAgent) {
+    HttpProtocolParams.setUserAgent(mHttpParams, userAgent);
   }
 
   @Override
@@ -586,9 +584,7 @@ public class KegbotApiImpl implements KegbotApi {
   }
 
   private synchronized void debug(String message) {
-    if (mListener != null) {
-      mListener.debug(message);
-    }
+    Log.d(TAG, message);
   }
 
 }

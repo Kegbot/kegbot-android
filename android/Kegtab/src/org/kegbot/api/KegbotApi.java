@@ -54,6 +54,8 @@ public interface KegbotApi {
    */
   public void setApiKey(String apiKey);
 
+  public void setUserAgent(String userAgent);
+
   public void login(String username, String password) throws KegbotApiException;
 
   public String getApiKey() throws KegbotApiException;
