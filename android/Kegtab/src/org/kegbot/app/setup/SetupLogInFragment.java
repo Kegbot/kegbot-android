@@ -22,7 +22,8 @@ import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiException;
 import org.kegbot.api.KegbotApiImpl;
 import org.kegbot.app.R;
-import org.kegbot.app.util.PreferenceHelper;
+import org.kegbot.app.config.AppConfiguration;
+import org.kegbot.core.KegbotCore;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -39,7 +40,7 @@ public class SetupLogInFragment extends SetupFragment {
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     mView = inflater.inflate(R.layout.setup_log_in_fragment, null);
-    PreferenceHelper prefs = new PreferenceHelper(getActivity());
+    AppConfiguration prefs = KegbotCore.getInstance(getActivity()).getConfiguration();
 
     EditText text = (EditText) mView.findViewById(R.id.apiUsername);
     text.setText(prefs.getUsername());
@@ -69,7 +70,7 @@ public class SetupLogInFragment extends SetupFragment {
       return "Please enter a password";
     }
 
-    PreferenceHelper prefs = new PreferenceHelper(getActivity());
+    AppConfiguration prefs = KegbotCore.getInstance(getActivity()).getConfiguration();
     KegbotApi api = new KegbotApiImpl();
     api.setApiUrl(prefs.getApiUrl());
 

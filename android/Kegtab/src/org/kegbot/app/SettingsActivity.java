@@ -20,6 +20,7 @@ package org.kegbot.app;
 
 import java.util.List;
 
+import org.kegbot.app.service.KegbotCoreService;
 import org.kegbot.app.settings.ThirdPartyLicensesActivity;
 import org.kegbot.app.setup.SetupActivity;
 
@@ -41,6 +42,7 @@ public class SettingsActivity extends PreferenceActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    KegbotCoreService.stopService(this);
   }
 
   @Override

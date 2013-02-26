@@ -30,7 +30,7 @@ import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiException;
 import org.kegbot.api.KegbotApiNotFoundError;
 import org.kegbot.app.KegtabBroadcast;
-import org.kegbot.app.util.PreferenceHelper;
+import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.proto.Models.User;
 
 import android.content.Context;
@@ -54,7 +54,7 @@ public class AuthenticationManager extends Manager {
 
   private final KegbotApi mApi;
 
-  private final PreferenceHelper mPrefsHelper;
+  private final AppConfiguration mConfig;
 
   private final Context mContext;
 
@@ -92,14 +92,14 @@ public class AuthenticationManager extends Manager {
             }
           });
 
-  AuthenticationManager(Context context, KegbotApi api) {
+  AuthenticationManager(Context context, KegbotApi api, AppConfiguration prefs) {
     mContext = context.getApplicationContext();
     mApi = api;
-    mPrefsHelper = new PreferenceHelper(mContext);
+    mConfig = prefs;
   }
 
   public User authenticateToken(AuthenticationToken token) {
-    if (!mPrefsHelper.getCacheCredentials()) {
+    if (!mConfig.getCacheCredentials()) {
       try {
         return fetchUserForToken(token);
       } catch (KegbotApiNotFoundError e) {

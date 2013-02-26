@@ -24,8 +24,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiException;
+import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.app.service.CheckinService;
-import org.kegbot.app.util.PreferenceHelper;
 import org.kegbot.core.AuthenticationManager;
 import org.kegbot.core.KegbotCore;
 import org.kegbot.proto.Models.KegTap;
@@ -78,7 +78,7 @@ public class HomeActivity extends CoreActivity {
   private MyAdapter mTapStatusAdapter;
   private ViewPager mTapStatusPager;
   private SessionStatsFragment mSession;
-  private PreferenceHelper mPrefsHelper;
+  private AppConfiguration mConfig;
   private final Handler mHandler = new Handler();
 
   private final List<KegTap> mTapDetails = Lists.newArrayList();
@@ -117,7 +117,7 @@ public class HomeActivity extends CoreActivity {
 
     mCore = KegbotCore.getInstance(this);
     mApi = mCore.getApi();
-    mPrefsHelper = mCore.getPreferences();
+    mConfig = mCore.getConfiguration();
 
     mTapStatusAdapter = new MyAdapter(getFragmentManager());
 
@@ -165,7 +165,7 @@ public class HomeActivity extends CoreActivity {
       GCMRegistrar.register(this, GCM_SENDER_ID);
     } else {
       Log.v(LOG_TAG, "Already registered");
-      mPrefsHelper.setGcmRegistrationId(regId);
+      mConfig.setGcmRegistrationId(regId);
     }
     // End GCM
 
@@ -179,21 +179,21 @@ public class HomeActivity extends CoreActivity {
 
     boolean showControls = false;
 
-    if (mPrefsHelper.getAllowManualLogin()) {
+    if (mConfig.getAllowManualLogin()) {
       mBeerMeButton.setVisibility(View.VISIBLE);
       showControls = true;
     } else {
       mBeerMeButton.setVisibility(View.GONE);
     }
 
-    if (mPrefsHelper.getAllowRegistration()) {
+    if (mConfig.getAllowRegistration()) {
       mNewDrinkerButton.setVisibility(View.VISIBLE);
       showControls = true;
     } else {
       mNewDrinkerButton.setVisibility(View.GONE);
     }
 
-    if (showControls && mPrefsHelper.getRunCore()) {
+    if (showControls && mConfig.getRunCore()) {
       mControls.setVisibility(View.VISIBLE);
     } else {
       mControls.setVisibility(View.GONE);

@@ -18,7 +18,8 @@
 package org.kegbot.app.setup;
 
 import org.kegbot.app.R;
-import org.kegbot.app.util.PreferenceHelper;
+import org.kegbot.app.config.AppConfiguration;
+import org.kegbot.core.KegbotCore;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -38,7 +39,7 @@ public class SetupRunCoreFragment extends SetupFragment {
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     mView = inflater.inflate(R.layout.setup_run_core_fragment, null);
-    PreferenceHelper prefs = new PreferenceHelper(getActivity());
+    AppConfiguration prefs = KegbotCore.getInstance(getActivity()).getConfiguration();
     CheckBox box = (CheckBox) mView.findViewById(R.id.runCore);
     box.setChecked(prefs.getRunCore());
     mView.setBackgroundDrawable(getResources().getDrawable(R.drawable.shape_rounded_rect));
@@ -52,7 +53,7 @@ public class SetupRunCoreFragment extends SetupFragment {
 
   @Override
   public String validate() {
-    PreferenceHelper prefs = new PreferenceHelper(getActivity());
+    AppConfiguration prefs = KegbotCore.getInstance(getActivity()).getConfiguration();
     prefs.setRunCore(getRunCore());
     return "";
   }

@@ -18,8 +18,8 @@
  */
 package org.kegbot.app;
 
+import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.app.service.KegbotCoreService;
-import org.kegbot.app.util.PreferenceHelper;
 import org.kegbot.core.KegbotCore;
 
 import android.app.ActionBar;
@@ -44,14 +44,14 @@ public class CoreActivity extends Activity {
   private static final String TAG = CoreActivity.class.getSimpleName();
 
   private Menu mMenu;
-  private PreferenceHelper mPrefs;
+  private AppConfiguration mConfig; // TODO(mikey):remove me after moving checkin info elsewhere
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     EasyTracker.getTracker().setContext(this);
     KegbotCoreService.startService(this);
-    mPrefs = KegbotCore.getInstance(this).getPreferences();
+    mConfig = KegbotCore.getInstance(this).getConfiguration();
   }
 
   @Override
@@ -115,7 +115,7 @@ public class CoreActivity extends Activity {
 
   private void updateAlerts() {
     if (mMenu != null) {
-      mMenu.findItem(R.id.alertUpdate).setVisible(mPrefs.getUpdateNeeded());
+      mMenu.findItem(R.id.alertUpdate).setVisible(mConfig.getUpdateNeeded());
     }
   }
 

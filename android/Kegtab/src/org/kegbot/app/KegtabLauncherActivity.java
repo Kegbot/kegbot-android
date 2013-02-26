@@ -18,9 +18,9 @@
  */
 package org.kegbot.app;
 
+import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.app.setup.SetupActivity;
 import org.kegbot.app.setup.SetupTask;
-import org.kegbot.app.util.PreferenceHelper;
 import org.kegbot.core.KegbotCore;
 
 import android.app.Activity;
@@ -39,12 +39,12 @@ public class KegtabLauncherActivity extends Activity {
 
   private static final int REQUEST_START_SETUP = 100;
 
-  PreferenceHelper mPrefs;
+  AppConfiguration mConfig;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    mPrefs = KegbotCore.getInstance(this).getPreferences();
+    mConfig = KegbotCore.getInstance(this).getConfiguration();
   }
 
   @Override
@@ -59,8 +59,8 @@ public class KegtabLauncherActivity extends Activity {
       return;
     }
 
-    final int setupVersion = mPrefs.getSetupVersion();
-    if (mPrefs.getSetupVersion() < SetupTask.SETUP_VERSION) {
+    final int setupVersion = mConfig.getSetupVersion();
+    if (mConfig.getSetupVersion() < SetupTask.SETUP_VERSION) {
       Log.d(TAG, "Setup is not complete, version=" + setupVersion + "current="
           + SetupTask.SETUP_VERSION);
       final Intent setupIntent = new Intent(this, SetupActivity.class);

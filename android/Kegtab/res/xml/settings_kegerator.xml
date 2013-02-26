@@ -21,7 +21,7 @@
 
     <PreferenceCategory android:title="General" >
         <SwitchPreference
-            android:key="run_core"
+            android:key="config:RUN_CORE"
             android:summaryOff="Read-only mode; Kegtab will not monitor sensors"
             android:summaryOn="Kegtab will monitor sensors and record drinks"
             android:title="Run Kegbot Core" />
@@ -29,33 +29,33 @@
     <PreferenceCategory android:title="Pour Processing" >
         <EditTextPreference
             android:defaultValue="10"
-            android:dependency="run_core"
+            android:dependency="config:RUN_CORE"
             android:inputType="number"
-            android:key="minimum_volume_ml"
+            android:key="config:FLOW_MINIMUM_VOLUME_ML"
             android:summary="Pours less than this amount will be ignored"
             android:title="Minimum Volume (mL)" >
         </EditTextPreference>
         <EditTextPreference
             android:defaultValue="60"
-            android:dependency="run_core"
+            android:dependency="config:RUN_CORE"
             android:inputType="number"
-            android:key="idle_warning_seconds"
+            android:key="config:FLOW_IDLE_WARNING_SECONDS"
             android:summary="After this many idle seconds, a warning will be issued"
             android:title="Pour Idle Time Warning" >
         </EditTextPreference>
         <EditTextPreference
             android:defaultValue="90"
-            android:dependency="run_core"
+            android:dependency="config:RUN_CORE"
             android:inputType="number"
-            android:key="idle_timeout_seconds"
+            android:key="config:FLOW_IDLE_TIMEOUT_SECONDS"
             android:summary="After this many idle seconds, a pour will be ended"
             android:title="Pour Maximum Idle Time" >
         </EditTextPreference>
 
         <CheckBoxPreference
             android:defaultValue="true"
-            android:dependency="run_core"
-            android:key="autostart_flows"
+            android:dependency="config:RUN_CORE"
+            android:key="config:ENABLE_AUTOMATIC_FLOW_START"
             android:summaryOff="New pours will only start when a user authenticates"
             android:summaryOn="A new pour will start any time meter activity is detected"
             android:title="Automatically Start Pours" >
@@ -64,24 +64,24 @@
     <PreferenceCategory android:title="User Interface" >
         <CheckBoxPreference
             android:defaultValue="true"
-            android:dependency="run_core"
-            android:key="allow_registration"
+            android:dependency="config:RUN_CORE"
+            android:key="config:ALLOW_REGISTRATION"
             android:summaryOff="New users cannot register from the main screen (check to enable)"
             android:summaryOn="New users can register from the main screen (uncheck to disable)"
             android:title="Allow New User Registration" >
         </CheckBoxPreference>
         <CheckBoxPreference
             android:defaultValue="true"
-            android:dependency="run_core"
-            android:key="allow_manual_login"
+            android:dependency="config:RUN_CORE"
+            android:key="config:ALLOW_MANUAL_LOGIN"
             android:summaryOff="Check to enable the main screen&apos;s &apos;Beer Me&apos; button"
             android:summaryOn="Uncheck to disable the main screen&apos;s &apos;Beer Me&apos; button"
             android:title="Allow Manual Login" >
         </CheckBoxPreference>
         <CheckBoxPreference
             android:defaultValue="true"
-            android:dependency="run_core"
-            android:key="cache_credentials"
+            android:dependency="config:RUN_CORE"
+            android:key="config:CACHE_CREDENTIALS"
             android:summaryOff="Authentication tokens will always be checked against the server"
             android:summaryOn="Authentication tokens will be locally cached"
             android:title="Cache Credentials" >

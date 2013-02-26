@@ -18,7 +18,7 @@
  */
 package org.kegbot.app;
 
-import org.kegbot.app.util.PreferenceHelper;
+import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.core.KegbotCore;
 
 import android.app.ActionBar;
@@ -49,7 +49,7 @@ public class PinActivity extends Activity {
 
   private static final String TAG = PinActivity.class.getSimpleName();
 
-  private PreferenceHelper mPrefs;
+  private AppConfiguration mConfig;
   private EditText mPinText;
   private TextView mErrorText;
   private Button mPinButton;
@@ -58,8 +58,8 @@ public class PinActivity extends Activity {
   protected void onStart() {
     super.onStart();
 
-    mPrefs = KegbotCore.getInstance(this).getPreferences();
-    if (Strings.isNullOrEmpty(mPrefs.getPin())) {
+    mConfig = KegbotCore.getInstance(this).getConfiguration();
+    if (Strings.isNullOrEmpty(mConfig.getPin())) {
       onPinSuccess();
       return;
     }
@@ -134,7 +134,7 @@ public class PinActivity extends Activity {
 
   private void verifyPin() {
     final String pinText = mPinText.getText().toString();
-    if (mPrefs.getPin().equalsIgnoreCase(pinText)) {
+    if (mConfig.getPin().equalsIgnoreCase(pinText)) {
       onPinSuccess();
     } else {
       onPinFailure();

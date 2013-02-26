@@ -38,9 +38,9 @@ import org.apache.http.util.EntityUtils;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.kegbot.app.R;
-import org.kegbot.app.util.DeviceId;
-import org.kegbot.app.util.PreferenceHelper;
+import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.app.util.Utils;
+import org.kegbot.core.KegbotCore;
 
 import android.app.AlarmManager;
 import android.app.IntentService;
@@ -80,7 +80,7 @@ public class CheckinService extends IntentService {
    */
   static final String STATUS_OK = "ok";
 
-  private PreferenceHelper mPrefsHelper;
+  private AppConfiguration mConfig;
 
   private int mKegbotVersion = -1;
   private String mDeviceId;
@@ -95,12 +95,12 @@ public class CheckinService extends IntentService {
   public void onCreate() {
     super.onCreate();
 
-    mPrefsHelper = new PreferenceHelper(this);
+    mConfig = KegbotCore.getInstance(this).getConfiguration();
 
     final PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
     mWakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "kbcheckin");
 
-    mDeviceId = DeviceId.getDeviceId(this);
+    mDeviceId = KegbotCore.getInstance(this).getDeviceId();
     try {
       final PackageInfo pinfo = getPackageManager().getPackageInfo(getPackageName(), 0);
       mKegbotVersion = pinfo.versionCode;
@@ -137,9 +137,9 @@ public class CheckinService extends IntentService {
   protected void dump(FileDescriptor fd, PrintWriter writer, String[] args) {
     super.dump(fd, writer, args);
     writer.println(
-        String.format("Last checkin attempt: %s", new Date(mPrefsHelper.getLastCheckinAttempt())));
+        String.format("Last checkin attempt: %s", new Date(mConfig.getLastCheckinAttempt())));
     writer.println(
-        String.format("Last checkin success: %s", new Date(mPrefsHelper.getLastCheckinSuccess())));
+        String.format("Last checkin success: %s", new Date(mConfig.getLastCheckinSuccess())));
   }
 
   private void registerAlarm() {
@@ -183,7 +183,7 @@ public class CheckinService extends IntentService {
   private void doCheckin() {
     Log.d(TAG, "Performing checkin: " + CHECKIN_URL);
     final long now = System.currentTimeMillis();
-    mPrefsHelper.setLastCheckinAttempt(now);
+    mConfig.setLastCheckinAttempt(now);
 
     final HttpClient client = new DefaultHttpClient();
     final HttpPost request = new HttpPost(CHECKIN_URL);
@@ -199,7 +199,7 @@ public class CheckinService extends IntentService {
       params.add(new BasicNameValuePair("android_device", Build.DEVICE));
       params.add(new BasicNameValuePair("app_package", getPackageName()));
       params.add(new BasicNameValuePair("app_version", String.valueOf(mKegbotVersion)));
-      params.add(new BasicNameValuePair("gcm_reg_id", mPrefsHelper.getGcmRegistrationId()));
+      params.add(new BasicNameValuePair("gcm_reg_id", mConfig.getGcmRegistrationId()));
       request.setEntity(new UrlEncodedFormEntity(params));
 
       final HttpResponse response = client.execute(request);
@@ -208,8 +208,8 @@ public class CheckinService extends IntentService {
       final ObjectMapper mapper = new ObjectMapper();
       final JsonNode rootNode = mapper.readValue(responseBody, JsonNode.class);
       if (response.getStatusLine().getStatusCode() == 200) {
-        mPrefsHelper.setLastCheckinSuccess(now);
-        mPrefsHelper.setIsRegistered(true);
+        mConfig.setLastCheckinSuccess(now);
+        mConfig.setIsRegistered(true);
         processLastCheckinResponse(rootNode);
       }
     } catch (IOException e) {
@@ -253,9 +253,9 @@ public class CheckinService extends IntentService {
       updateRequired = true;
     }
 
-    mPrefsHelper.setLastCheckinStatus(status);
-    mPrefsHelper.setUpdateNeeded(updateNeeded);
-    mPrefsHelper.setUpdateRequired(updateRequired);
+    mConfig.setLastCheckinStatus(status);
+    mConfig.setUpdateNeeded(updateNeeded);
+    mConfig.setUpdateRequired(updateRequired);
 
     if (updateNeeded) {
       Intent notificationIntent = new Intent(Intent.ACTION_VIEW);
@@ -285,14 +285,11 @@ public class CheckinService extends IntentService {
    * @return {@code true} if state was reset.
    */
   private boolean resetCheckinStateIfNeeded() {
-    if (mPrefsHelper.getLastCheckinVersion() == mKegbotVersion) {
-      return false;
-    }
-    mPrefsHelper.setUpdateNeeded(false);
-    mPrefsHelper.setUpdateRequired(false);
-    mPrefsHelper.setLastCheckinAttempt(Long.MIN_VALUE);
-    mPrefsHelper.setLastCheckinSuccess(Long.MIN_VALUE);
-    mPrefsHelper.setLastCheckinStatus("unknown");
+    mConfig.setUpdateNeeded(false);
+    mConfig.setUpdateRequired(false);
+    mConfig.setLastCheckinAttempt(Long.MIN_VALUE);
+    mConfig.setLastCheckinSuccess(Long.MIN_VALUE);
+    mConfig.setLastCheckinStatus("unknown");
     return true;
   }
 

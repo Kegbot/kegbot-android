@@ -25,19 +25,24 @@ import java.util.Set;
 
 import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiImpl;
+import org.kegbot.app.config.AppConfiguration;
+import org.kegbot.app.config.SharedPreferencesConfigurationStore;
+import org.kegbot.app.util.DeviceId;
 import org.kegbot.app.util.ImageDownloader;
 import org.kegbot.app.util.IndentingPrintWriter;
-import org.kegbot.app.util.PreferenceHelper;
 import org.kegbot.app.util.Utils;
 import org.kegbot.core.FlowManager.Clock;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import com.squareup.otto.Bus;
 import com.squareup.otto.ThreadEnforcer;
@@ -56,9 +61,10 @@ public class KegbotCore {
   private final Bus mBus;
   private final Handler mBusHandler = new Handler();
 
-  private final Set<Manager> mManagers = Sets.newLinkedHashSet();
-  private final PreferenceHelper mPreferences;
+  private final SharedPreferences mSharedPreferences;
+  private final AppConfiguration mConfig;
 
+  private final Set<Manager> mManagers = Sets.newLinkedHashSet();
   private final TapManager mTapManager;
   private final FlowManager mFlowManager;
   private final AuthenticationManager mAuthenticationManager;
@@ -89,21 +95,22 @@ public class KegbotCore {
     mContext = context.getApplicationContext();
     mBus = new Bus(ThreadEnforcer.MAIN);
 
-    mPreferences = new PreferenceHelper(context);
+    mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+    mConfig = new AppConfiguration(new SharedPreferencesConfigurationStore(mSharedPreferences));
 
     mApi = new KegbotApiImpl();
-    mApi.setApiUrl(mPreferences.getApiUrl());
-    mApi.setApiKey(mPreferences.getApiKey());
+    mApi.setApiUrl(mConfig.getApiUrl());
+    mApi.setApiKey(mConfig.getApiKey());
 
-    mImageDownloader = new ImageDownloader(context, mPreferences.getKegbotUrl());
+    mImageDownloader = new ImageDownloader(context, mConfig.getKegbotUrl());
 
     mTapManager = new TapManager();
     mManagers.add(mTapManager);
 
-    mFlowManager = new FlowManager(mTapManager, mPreferences, mClock);
+    mFlowManager = new FlowManager(mTapManager, mConfig, mClock);
     mManagers.add(mFlowManager);
 
-    mSyncManager = new SyncManager(context, mApi, mPreferences);
+    mSyncManager = new SyncManager(context, mApi);
     mManagers.add(mSyncManager);
 
     mKegboardManager = new KegboardManager(context);
@@ -112,7 +119,7 @@ public class KegbotCore {
     mHardwareManager = new HardwareManager(context, mKegboardManager);
     mManagers.add(mHardwareManager);
 
-    mAuthenticationManager = new AuthenticationManager(context, mApi);
+    mAuthenticationManager = new AuthenticationManager(context, mApi, mConfig);
     mManagers.add(mAuthenticationManager);
 
     mConfigurationManager = new ConfigurationManager();
@@ -167,8 +174,8 @@ public class KegbotCore {
   /**
    * @return the preferences
    */
-  public PreferenceHelper getPreferences() {
-    return mPreferences;
+  public AppConfiguration getConfiguration() {
+    return mConfig;
   }
 
   /**
@@ -238,59 +245,76 @@ public class KegbotCore {
     return mImageDownloader;
   }
 
+  public synchronized String getDeviceId() {
+    String id = mSharedPreferences.getString("device_id", "");
+    if (Strings.isNullOrEmpty(id)) {
+      id = DeviceId.getDeviceId(mContext);
+      setDeviceId(id);
+    }
+    return id;
+  }
+
+  public synchronized void setDeviceId(String deviceId) {
+    mSharedPreferences.edit().putString("device_id", deviceId).apply();
+  }
+
   public void dump(PrintWriter printWriter) {
     StringWriter baseWriter = new StringWriter();
     IndentingPrintWriter writer = new IndentingPrintWriter(baseWriter, "  ");
 
-    PackageManager pm = mContext.getPackageManager();
-    PackageInfo packageInfo;
     try {
-      packageInfo = pm.getPackageInfo(mContext.getPackageName(), PackageManager.GET_SIGNATURES);
-    } catch (NameNotFoundException e) {
-      throw new RuntimeException("Cannot get own package info.", e);
-    }
+      PackageManager pm = mContext.getPackageManager();
+      PackageInfo packageInfo;
+      try {
+        packageInfo = pm.getPackageInfo(mContext.getPackageName(), PackageManager.GET_SIGNATURES);
+      } catch (NameNotFoundException e) {
+        throw new RuntimeException("Cannot get own package info.", e);
+      }
 
-    writer.println("Package info:");
-    writer.println();
-    writer.increaseIndent();
-    writer.printPair("versionName", packageInfo.versionName).println();
-    writer.printPair("versionCode", String.valueOf(packageInfo.versionCode)).println();
-    writer.printPair("packageName", packageInfo.packageName).println();
-    writer.printPair("installTime", new Date(packageInfo.firstInstallTime)).println();
-    writer.printPair("lastUpdateTime", new Date(packageInfo.lastUpdateTime)).println();
-    writer.printPair("installerPackageName", pm.getInstallerPackageName(mContext.getPackageName()))
-        .println();
-    if (packageInfo.signatures != null && packageInfo.signatures.length > 0) {
-      writer.printPair("signature", Utils.getFingerprintForSignature(packageInfo.signatures[0]))
-          .println();
-    }
-    writer.decreaseIndent();
-    writer.println();
-
-    writer.println("Core info:");
-    writer.println();
-    writer.increaseIndent();
-    writer.printPair("mStarted", Boolean.valueOf(mStarted)).println();
-    writer.printPair("deviceId", mPreferences.getDeviceId()).println();
-    writer.printPair("gcmId", mPreferences.getGcmRegistrationId()).println();
-    writer.printPair("enableFlowAutoStart", Boolean.valueOf(mPreferences.getEnableFlowAutoStart()))
-        .println();
-    writer.printPair("allowManualLogin", Boolean.valueOf(mPreferences.getAllowManualLogin()))
-        .println();
-    writer.printPair("allowRegistration", Boolean.valueOf(mPreferences.getAllowRegistration()))
-        .println();
-    writer.printPair("cacheCredentials", Boolean.valueOf(mPreferences.getCacheCredentials()))
-        .println();
-    writer.println();
-
-    for (final Manager manager : mManagers) {
-      writer.println(String.format("## %s", manager.getName()));
+      writer.println("Package info:");
+      writer.println();
       writer.increaseIndent();
-      manager.dump(writer);
+      writer.printPair("versionName", packageInfo.versionName).println();
+      writer.printPair("versionCode", String.valueOf(packageInfo.versionCode)).println();
+      writer.printPair("packageName", packageInfo.packageName).println();
+      writer.printPair("installTime", new Date(packageInfo.firstInstallTime)).println();
+      writer.printPair("lastUpdateTime", new Date(packageInfo.lastUpdateTime)).println();
+      writer.printPair("installerPackageName", pm.getInstallerPackageName(mContext.getPackageName()))
+          .println();
+      if (packageInfo.signatures != null && packageInfo.signatures.length > 0) {
+        writer.printPair("signature", Utils.getFingerprintForSignature(packageInfo.signatures[0]))
+            .println();
+      }
       writer.decreaseIndent();
       writer.println();
+
+      writer.println("Core info:");
+      writer.println();
+      writer.increaseIndent();
+      writer.printPair("mStarted", Boolean.valueOf(mStarted)).println();
+      writer.printPair("deviceId", getDeviceId()).println();
+      writer.printPair("gcmId", mConfig.getGcmRegistrationId()).println();
+      writer.printPair("enableFlowAutoStart", Boolean.valueOf(mConfig.getEnableFlowAutoStart()))
+          .println();
+      writer.printPair("allowManualLogin", Boolean.valueOf(mConfig.getAllowManualLogin()))
+          .println();
+      writer.printPair("allowRegistration", Boolean.valueOf(mConfig.getAllowRegistration()))
+          .println();
+      writer.printPair("cacheCredentials", Boolean.valueOf(mConfig.getCacheCredentials()))
+          .println();
+      writer.println();
+
+      for (final Manager manager : mManagers) {
+        writer.println(String.format("## %s", manager.getName()));
+        writer.increaseIndent();
+        manager.dump(writer);
+        writer.decreaseIndent();
+        writer.println();
+      }
+      writer.decreaseIndent();
+    } finally {
+      writer.close();
     }
-    writer.decreaseIndent();
     printWriter.write(baseWriter.toString());
   }
 

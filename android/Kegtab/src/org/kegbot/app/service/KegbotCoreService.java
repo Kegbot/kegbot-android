@@ -29,7 +29,7 @@ import org.kegbot.api.KegbotApiException;
 import org.kegbot.app.HomeActivity;
 import org.kegbot.app.KegtabBroadcast;
 import org.kegbot.app.R;
-import org.kegbot.app.util.PreferenceHelper;
+import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.core.AuthenticationManager;
 import org.kegbot.core.AuthenticationToken;
 import org.kegbot.core.ConfigurationManager;
@@ -51,13 +51,10 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
 import android.os.SystemClock;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -76,7 +73,7 @@ public class KegbotCoreService extends Service {
   private FlowManager mFlowManager;
   private TapManager mTapManager;
   private ConfigurationManager mConfigManager;
-  private PreferenceHelper mPreferences;
+  private AppConfiguration mConfig;
 
   private HardwareManager mHardwareManager;
   private SyncManager mApiManager;
@@ -86,16 +83,6 @@ public class KegbotCoreService extends Service {
   private long mLastPourStartUptimeMillis = 0;
 
   private static final long SUPPRESS_POUR_START_MILLIS = 2000;
-
-  private final OnSharedPreferenceChangeListener mPreferenceListener = new OnSharedPreferenceChangeListener() {
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-      if (PreferenceHelper.KEY_API_KEY.equals(key) || PreferenceHelper.KEY_RUN_CORE.equals(key)) {
-        Log.d(TAG, "Shared prefs changed, relaunching core; key=" + key);
-        updateFromPreferences();
-      }
-    }
-  };
 
   private final Runnable mFlowManagerWorker = new Runnable() {
     @Override
@@ -243,11 +230,10 @@ public class KegbotCoreService extends Service {
     mConfigManager = mCore.getConfigurationManager();
     mApiManager = mCore.getSyncManager();
     mHardwareManager = mCore.getHardwareManager();
+    mConfig = mCore.getConfiguration();
 
     // TODO: this should be part of a config update event.
-    mCore.getImageDownloader().setBaseUrl(mCore.getPreferences().getKegbotUrl());
-
-    mPreferences = new PreferenceHelper(getApplicationContext());
+    mCore.getImageDownloader().setBaseUrl(mConfig.getKegbotUrl());
 
     mFlowManager.addFlowListener(mFlowListener);
 
@@ -256,9 +242,6 @@ public class KegbotCoreService extends Service {
     updateFromPreferences();
 
     mCore.start();
-
-    PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
-        .registerOnSharedPreferenceChangeListener(mPreferenceListener);
   }
 
   /**
@@ -285,8 +268,6 @@ public class KegbotCoreService extends Service {
     Log.d(TAG, "onDestroy()");
 
     mFlowManager.removeFlowListener(mFlowListener);
-    PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
-        .unregisterOnSharedPreferenceChangeListener(mPreferenceListener);
     mCore.stop();
 
     super.onDestroy();
@@ -308,7 +289,7 @@ public class KegbotCoreService extends Service {
   }
 
   private void updateFromPreferences() {
-    final boolean runCore = mPreferences.getRunCore();
+    final boolean runCore = mConfig.getRunCore();
     if (runCore) {
       debugNotice("Running core!");
       mFlowManager.addFlowListener(mFlowListener);
@@ -343,6 +324,13 @@ public class KegbotCoreService extends Service {
    * @param ended
    */
   private void recordDrinkForFlow(final Flow ended) {
+    long minVolume = mConfig.getMinimumVolumeMl();
+    if (ended.getVolumeMl() < minVolume) {
+      Log.i(TAG, "Not recording flow: "
+          + "volume (" + ended.getVolumeMl() + " mL) is less than minimum "
+          + "(" + minVolume + " mL)");
+      return;
+    }
     Log.d(TAG, "Recording drink for flow: " + ended);
     Log.d(TAG, "Tap: "  + ended.getTap());
     mApiManager.recordDrinkAsync(ended);
@@ -354,11 +342,11 @@ public class KegbotCoreService extends Service {
    */
   private void configure() throws KegbotApiException {
     Log.d(TAG, "Configuring!");
-    final Uri apiUrl = Uri.parse(mPreferences.getApiUrl());
+    final Uri apiUrl = Uri.parse(mConfig.getApiUrl());
 
     KegbotApi api = mCore.getApi();
     api.setApiUrl(apiUrl.toString());
-    api.setApiKey(mPreferences.getApiKey());
+    api.setApiKey(mConfig.getApiKey());
 
     final List<KegTap> taps = api.getAllTaps();
 

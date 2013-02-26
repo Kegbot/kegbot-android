@@ -27,7 +27,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.http.annotation.GuardedBy;
-import org.kegbot.app.util.PreferenceHelper;
+import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.core.Flow.State;
 
 import android.util.Log;
@@ -68,7 +68,7 @@ public class FlowManager extends Manager {
   };
 
   private final TapManager mTapManager;
-  private final PreferenceHelper mPreferences;
+  private final AppConfiguration mConfig;
   private final Clock mClock;
 
   private int mNextFlowId = 1;
@@ -144,10 +144,10 @@ public class FlowManager extends Manager {
 
   private ScheduledFuture<?> mFuture;
 
-  FlowManager(final TapManager tapManager, final PreferenceHelper preferences, final Clock clock) {
+  FlowManager(final TapManager tapManager, final AppConfiguration preferences, final Clock clock) {
     mTapManager = tapManager;
-    mPreferences = preferences;
     mClock = clock;
+    mConfig = preferences;
   }
 
   private synchronized void startIdleChecker() {
@@ -251,11 +251,11 @@ public class FlowManager extends Manager {
     synchronized (mFlowsByTap) {
       flow = getFlowForTap(tap);
       if (flow == null || flow.getState() != Flow.State.ACTIVE) {
-        if (!mPreferences.getEnableFlowAutoStart()) {
+        if (!mConfig.getEnableFlowAutoStart()) {
           Log.d(TAG, "Not starting new flow: autostart disabled.");
           return null;
         }
-        flow = startFlow(tap, mPreferences.getIdleTimeoutMs());
+        flow = startFlow(tap, mConfig.getIdleTimeoutMs());
         Log.d(TAG, "  started new flow: " + flow);
       } else {
         Log.d(TAG, "  found existing flow: " + flow);
@@ -297,7 +297,7 @@ public class FlowManager extends Manager {
 
     // New flow to replace previous or empty.
     Log.d(TAG, "activateUserAtTap: creating new flow.");
-    flow = startFlow(tap, mPreferences.getIdleTimeoutMs());
+    flow = startFlow(tap, mConfig.getIdleTimeoutMs());
     flow.setUsername(username);
     publishFlowUpdate(flow);
   }

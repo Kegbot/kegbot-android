@@ -18,7 +18,8 @@
 package org.kegbot.app.setup;
 
 import org.kegbot.app.R;
-import org.kegbot.app.util.PreferenceHelper;
+import org.kegbot.app.config.AppConfiguration;
+import org.kegbot.core.KegbotCore;
 
 import android.app.Fragment;
 import android.content.Context;
@@ -211,7 +212,7 @@ public enum SetupTask {
 
     @Override
     public void onExitSuccess(Context context) {
-      PreferenceHelper prefs = new PreferenceHelper(context);
+      AppConfiguration prefs = KegbotCore.getInstance(context).getConfiguration();
       prefs.setSetupVersion(SETUP_VERSION);
     }
 
@@ -223,7 +224,7 @@ public enum SetupTask {
 
   public static final SetupTask FIRST_SETUP_STEP = KEGBOT_URL;
 
-  public static final int SETUP_VERSION = 5;
+  public static final int SETUP_VERSION = 6;
 
   /**
    * Returns the fragment for this task.

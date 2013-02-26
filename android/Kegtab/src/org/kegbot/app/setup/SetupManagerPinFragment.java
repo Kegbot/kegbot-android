@@ -18,8 +18,9 @@
  */
 package org.kegbot.app.setup;
 
-import org.kegbot.app.util.PreferenceHelper;
 import org.kegbot.app.R;
+import org.kegbot.app.config.AppConfiguration;
+import org.kegbot.core.KegbotCore;
 
 import android.os.Bundle;
 import android.text.Editable;
@@ -40,7 +41,7 @@ public class SetupManagerPinFragment extends SetupFragment {
     mView = inflater.inflate(R.layout.setup_manager_pin_fragment, null);
     mView.setBackgroundDrawable(getResources().getDrawable(R.drawable.shape_rounded_rect));
 
-    PreferenceHelper prefs = new PreferenceHelper(getActivity());
+    AppConfiguration prefs = KegbotCore.getInstance(getActivity()).getConfiguration();
 
     mPinText = (EditText) mView.findViewById(R.id.managerPin);
     mPinText.setText(prefs.getPin());
@@ -77,7 +78,7 @@ public class SetupManagerPinFragment extends SetupFragment {
     if (!getPin().equals(getConfirmedPin())) {
       return "Pins do not match.";
     }
-    PreferenceHelper prefs = new PreferenceHelper(getActivity());
+    AppConfiguration prefs = KegbotCore.getInstance(getActivity()).getConfiguration();
     prefs.setPin(getPin());
     return "";
   }

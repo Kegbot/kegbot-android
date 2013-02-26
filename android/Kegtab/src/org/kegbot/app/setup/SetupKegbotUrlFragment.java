@@ -19,8 +19,9 @@
 package org.kegbot.app.setup;
 
 import org.kegbot.app.R;
+import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.app.service.CheckinService;
-import org.kegbot.app.util.PreferenceHelper;
+import org.kegbot.core.KegbotCore;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -40,7 +41,7 @@ public class SetupKegbotUrlFragment extends SetupFragment {
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     mView = inflater.inflate(R.layout.setup_kegbot_url_fragment, null);
-    PreferenceHelper prefs = new PreferenceHelper(getActivity());
+    AppConfiguration prefs = KegbotCore.getInstance(getActivity()).getConfiguration();
     EditText text = (EditText) mView.findViewById(R.id.kegbotUrl);
     final String existingUrl = prefs.getKegbotUrl();
     if (!Strings.isNullOrEmpty(existingUrl)) {
@@ -70,7 +71,7 @@ public class SetupKegbotUrlFragment extends SetupFragment {
 
     Log.d(TAG, "Got base URL: " + baseUrl);
 
-    PreferenceHelper prefs = new PreferenceHelper(getActivity());
+    AppConfiguration prefs = KegbotCore.getInstance(getActivity()).getConfiguration();
     CheckinService.requestImmediateCheckin(getActivity());
     prefs.setKegbotUrl(baseUrl);
     return "";

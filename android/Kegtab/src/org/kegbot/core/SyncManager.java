@@ -26,7 +26,6 @@ import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiException;
 import org.kegbot.api.KegbotApiNotFoundError;
 import org.kegbot.app.storage.LocalDbHelper;
-import org.kegbot.app.util.PreferenceHelper;
 import org.kegbot.proto.Api.RecordDrinkRequest;
 import org.kegbot.proto.Api.RecordTemperatureRequest;
 import org.kegbot.proto.Internal.PendingPour;
@@ -63,16 +62,14 @@ public class SyncManager extends BackgroundManager {
 
   private final KegbotApi mApi;
   private final Context mContext;
-  private final PreferenceHelper mPreferences;
 
   private SQLiteOpenHelper mLocalDbHelper;
 
   private boolean mRunning = true;
 
-  public SyncManager(Context context, KegbotApi api, PreferenceHelper preferences) {
+  public SyncManager(Context context, KegbotApi api) {
     mApi = api;
     mContext = context;
-    mPreferences = preferences;
   }
 
   @Override
@@ -173,19 +170,10 @@ public class SyncManager extends BackgroundManager {
         if (record instanceof PendingPour) {
           final PendingPour pour = (PendingPour) record;
           final RecordDrinkRequest request = pour.getDrinkRequest();
-          final long minVolume = mPreferences.getMinimumVolumeMl();
 
-          final Drink drink;
-          if (request.getVolumeMl() < minVolume) {
-            Log.d(TAG, "Not recording drink: "
-                + "volume (" + request.getVolumeMl() + " mL) is less than minimum "
-                + "(" + minVolume + " mL)");
-            drink = null;
-          } else {
-            Log.d(TAG, "Posting pour");
-            drink = mApi.recordDrink(request);
-            Log.d(TAG, "Drink posted: " + drink);
-          }
+          Log.d(TAG, "Posting pour");
+          final Drink drink = mApi.recordDrink(request);
+          Log.d(TAG, "Drink posted: " + drink);
 
           if (pour.getImagesCount() > 0) {
             Log.d(TAG, "Drink had images, trying to post them..");

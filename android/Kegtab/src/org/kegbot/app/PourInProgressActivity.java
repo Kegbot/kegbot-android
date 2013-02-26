@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.kegbot.app.camera.CameraFragment;
-import org.kegbot.app.util.PreferenceHelper;
+import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.core.Flow;
 import org.kegbot.core.FlowManager;
 import org.kegbot.core.KegbotCore;
@@ -80,7 +80,7 @@ public class PourInProgressActivity extends CoreActivity {
 
   private final Handler mHandler = new Handler();
 
-  private PreferenceHelper mPrefs;
+  private AppConfiguration mConfig;
 
   private PouringTapAdapter mPouringTapAdapter;
 
@@ -205,7 +205,7 @@ public class PourInProgressActivity extends CoreActivity {
     }
   }
 
-  private class PourFinishProgressDialog extends DialogFragment {
+  public static class PourFinishProgressDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
       ProgressDialog dialog = new ProgressDialog(getActivity());
@@ -225,7 +225,7 @@ public class PourInProgressActivity extends CoreActivity {
 
     mCore = KegbotCore.getInstance(this);
     mFlowManager = mCore.getFlowManager();
-    mPrefs = mCore.getPreferences();
+    mConfig = mCore.getConfiguration();
 
     final ActionBar actionBar = getActionBar();
     if (actionBar != null) {
@@ -446,7 +446,7 @@ public class PourInProgressActivity extends CoreActivity {
       }
     }
 
-    if (largestIdleTime >= mPrefs.getIdleWarningMs()) {
+    if (largestIdleTime >= mConfig.getIdleWarningMs()) {
       sendIdleWarning();
     } else {
       cancelIdleWarning();

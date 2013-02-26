@@ -41,13 +41,6 @@ public class DeviceId {
    * @return
    */
   public static String getDeviceId(Context context) {
-    final PreferenceHelper helper = new PreferenceHelper(context);
-    final String savedId = helper.getDeviceId();
-
-    if (!Strings.isNullOrEmpty(savedId)) {
-      return savedId;
-    }
-
     final MessageDigest md;
     try {
       md = MessageDigest.getInstance("SHA-256");
@@ -70,7 +63,6 @@ public class DeviceId {
     final byte[] shortDigest = Arrays.copyOfRange(digest, 0, 8);
 
     final String id = HexDump.toHexString(shortDigest);
-    helper.setDeviceId(id);
     return id;
   }
 
