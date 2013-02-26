@@ -199,7 +199,6 @@ public class CheckinService extends IntentService {
       params.add(new BasicNameValuePair("android_device", Build.DEVICE));
       params.add(new BasicNameValuePair("app_package", getPackageName()));
       params.add(new BasicNameValuePair("app_version", String.valueOf(mKegbotVersion)));
-      params.add(new BasicNameValuePair("app_date", BuildInfo.BUILD_DATE_HUMAN));
       params.add(new BasicNameValuePair("gcm_reg_id", mPrefsHelper.getGcmRegistrationId()));
       request.setEntity(new UrlEncodedFormEntity(params));
 

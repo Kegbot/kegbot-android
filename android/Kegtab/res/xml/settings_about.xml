@@ -25,18 +25,13 @@
         android:title="Version" >
     </Preference>
     <Preference
-        android:key="build_date"
-        android:summary="@string/BUILD_DATE_HUMAN"
-        android:title="Build Date" >
-    </Preference>
-    <Preference
         android:key="third_party"
         android:title="Third Party Software"
         android:summary="License agreements for included open source software." >
     </Preference>
         <Preference
         android:key="copyright"
-        android:summary="Copyright Mike Wakerly 2011-2012."
+        android:summary="Copyright Mike Wakerly 2011-2013."
         android:title="Legal" >
     </Preference>
     
