@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <TextView
+        android:id="@+id/tapLoadingTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Loading Tap Details"
+        android:textSize="48dip"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tapLoadingSubtitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Please stand by..."
+        android:textColor="#888"
+        android:textSize="36dip" />
+
+</RelativeLayout>
