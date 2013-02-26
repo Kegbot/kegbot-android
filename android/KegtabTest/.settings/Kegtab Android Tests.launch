@@ -5,13 +5,17 @@
 <stringAttribute key="com.android.ide.eclipse.adt.instrumentation" value="android.test.InstrumentationTestRunner"/>
 <booleanAttribute key="com.android.ide.eclipse.adt.nobootanim" value="false"/>
 <intAttribute key="com.android.ide.eclipse.adt.speed" value="0"/>
-<booleanAttribute key="com.android.ide.eclipse.adt.target" value="true"/>
+<stringAttribute key="com.android.ide.eclipse.adt.target" value="AUTO"/>
+<stringAttribute key="com.android.ide.eclipse.adt.testSize" value="All Tests"/>
 <booleanAttribute key="com.android.ide.eclipse.adt.wipedata" value="false"/>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
 <listEntry value="/KegtabTest"/>
 </listAttribute>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
 <listEntry value="4"/>
+</listAttribute>
+<listAttribute key="org.eclipse.debug.ui.favoriteGroups">
+<listEntry value="org.eclipse.debug.ui.launchGroup.run"/>
 </listAttribute>
 <stringAttribute key="org.eclipse.jdt.junit.CONTAINER" value="=KegtabTest"/>
 <booleanAttribute key="org.eclipse.jdt.junit.KEEPRUNNING_ATTR" value="false"/>
