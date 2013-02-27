@@ -52,27 +52,31 @@ public class KegboardMessageFactoryTest extends TestCase {
 
     System.out.println(System.getProperty("user.dir"));
     FileInputStream fis = new FileInputStream(mTestDataFile);
-    byte[] buf = new byte[76];
-    while (true) {
-      int amt = fis.read(buf);
-      if (amt < 0) {
-        break;
+    try {
+      byte[] buf = new byte[76];
+      while (true) {
+        int amt = fis.read(buf);
+        if (amt < 0) {
+          break;
+        }
+        messages.addAll(mFactory.addBytes(buf, amt));
       }
-      messages.addAll(mFactory.addBytes(buf, amt));
-    }
 
-    assertEquals(23, messages.size());
-    assertTrue(messages.get(0) instanceof KegboardHelloMessage);
-    assertTrue(messages.get(2) instanceof KegboardMeterStatusMessage);
+      assertEquals(23, messages.size());
+      assertTrue(messages.get(0) instanceof KegboardHelloMessage);
+      assertTrue(messages.get(2) instanceof KegboardMeterStatusMessage);
 
-    KegboardMeterStatusMessage status = (KegboardMeterStatusMessage) messages.get(2);
+      KegboardMeterStatusMessage status = (KegboardMeterStatusMessage) messages.get(2);
 
-    Map<Integer, byte[]> tags = status.mTags;
-    dumpTags(tags);
-    assertEquals(2, tags.size());
+      Map<Integer, byte[]> tags = status.mTags;
+      dumpTags(tags);
+      assertEquals(2, tags.size());
 
-    for (KegboardMessage message : messages) {
-      System.out.println(message);
+      for (KegboardMessage message : messages) {
+        System.out.println(message);
+      }
+    } finally {
+      fis.close();
     }
 
   }

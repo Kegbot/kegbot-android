@@ -154,8 +154,7 @@ public class HomeActivity extends CoreActivity {
     mNewDrinkerButton = (Button) findViewById(R.id.newDrinkerButton);
     mNewDrinkerButton.setOnClickListener(mOnNewDrinkerClickedListener);
 
-    View v = findViewById(R.id.tap_status_pager);
-    v.setSystemUiVisibility(View.STATUS_BAR_HIDDEN);
+    mTapStatusPager.setSystemUiVisibility(View.STATUS_BAR_HIDDEN);
 
     // GCM
     GCMRegistrar.checkDevice(this);

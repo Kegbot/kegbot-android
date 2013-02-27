@@ -318,24 +318,29 @@ public class SoundManager extends Manager {
     FileInputStream fis;
     try {
       fis = new FileInputStream(soundFile);
+      try {
+        mMediaPlayer.setDataSource(fis.getFD());
+        mMediaPlayer.prepare();
+        mMediaPlayer.start();
+      } catch (IllegalArgumentException e) {
+        Log.w(TAG, "Error", e);
+      } catch (IllegalStateException e) {
+        Log.w(TAG, "Error", e);
+
+      } catch (IOException e) {
+        Log.w(TAG, "Error", e);
+      } finally {
+        try {
+          fis.close();
+        } catch (IOException e) {
+          // Close quietly.
+        }
+      }
     } catch (FileNotFoundException e) {
       Log.w(TAG, "Error loading file: " + e.toString(), e);
       return;
     }
-    try {
-      mMediaPlayer.setDataSource(fis.getFD());
-      mMediaPlayer.prepare();
-      mMediaPlayer.start();
-    } catch (IllegalArgumentException e) {
-      Log.w(TAG, "Error", e);
-    } catch (IllegalStateException e) {
-      Log.w(TAG, "Error", e);
 
-    } catch (IOException e) {
-      Log.w(TAG, "Error", e);
-
-    } finally {
-    }
   }
 
   private SoundEventHandler getHandlerForEvent(final Intent intent) {

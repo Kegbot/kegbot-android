@@ -36,8 +36,9 @@ public class KegboardCrcTest extends TestCase {
       System.out.print(" ");
     }
 
-    System.out.println("Expected=" + String.format("0x%04x", expectedCrc & 0x0ffff));
-    System.out.println("Actual=" + String.format("0x%04x", actualCrc & 0x0ffff));
+    System.out.println("Expected="
+        + String.format("0x%04x", Integer.valueOf(expectedCrc & 0x0ffff)));
+    System.out.println("Actual=" + String.format("0x%04x", Integer.valueOf(actualCrc & 0x0ffff)));
 
     assertEquals(expectedCrc, actualCrc);
   }
