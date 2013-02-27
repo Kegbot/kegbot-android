@@ -24,7 +24,6 @@ import org.kegbot.app.util.Units;
 import org.kegbot.app.view.BadgeView;
 import org.kegbot.core.AuthenticationManager;
 import org.kegbot.core.Flow;
-import org.kegbot.core.Flow.State;
 import org.kegbot.core.FlowManager;
 import org.kegbot.core.KegbotCore;
 import org.kegbot.core.Tap;
@@ -274,9 +273,8 @@ public class PourStatusFragment extends ListFragment {
   public void updateWithFlow(final Flow flow) {
     Preconditions.checkNotNull(flow, "null flow given to updateWithFlow()");
     mFlow = flow;
-    final Flow.State flowState = flow.getState();
 
-    if (flowState == State.COMPLETED) {
+    if (mFlow.isFinished()) {
       setEnded();
       return;
     }
@@ -307,8 +305,7 @@ public class PourStatusFragment extends ListFragment {
     }
 
     // Update beer info.
-    if ((flowState == State.ACTIVE || flowState == State.IDLE)
-        && (flow.getIdleTimeMs() >= IDLE_TOOLTIP_MILLIS)) {
+    if (flow.getIdleTimeMs() >= IDLE_TOOLTIP_MILLIS) {
       final long seconds = flow.getMsUntilIdle() / 1000;
       mStatusLine.setText("Pour automatically ends in " + seconds + " second"
           + ((seconds != 1) ? "s" : "") + ".");

@@ -86,7 +86,7 @@ public class KegbotCore {
 
   private final FlowManager.Clock mClock = new Clock() {
     @Override
-    public long currentTimeMillis() {
+    public long elapsedRealtime() {
       return System.currentTimeMillis();
     }
   };

@@ -39,11 +39,12 @@ public class FlowManagerTest extends TestCase {
   private Tap mTap0;
   private Tap mTap1;
   private FlowManager mFlowManager;
-  private long mUptimeMillis = 0;
+  private long mElapsedRealtime = 0;
+
   private final Clock mClock = new Clock() {
     @Override
-    public long currentTimeMillis() {
-      return mUptimeMillis;
+    public long elapsedRealtime() {
+      return mElapsedRealtime;
     }
   };
 
@@ -82,23 +83,6 @@ public class FlowManagerTest extends TestCase {
     mFlowManager.endFlow(flow);
     flows = mFlowManager.getAllActiveFlows();
     assertEquals(0, flows.size());
-  }
-
-  public void testGetIdleFlows() {
-    List<Flow> flows = mFlowManager.getAllActiveFlows();
-    assertEquals(0, flows.size());
-
-    mFlowManager.startFlow(mTap0, 10000);
-    mFlowManager.startFlow(mTap1, 10000);
-    flows = mFlowManager.getAllActiveFlows();
-    assertEquals(2, flows.size());
-    Flow flow0 = flows.get(0);
-    flow0.setState(Flow.State.IDLE);
-
-    flows = mFlowManager.getIdleFlows();
-    assertEquals(1, flows.size());
-    Flow idleFlow = flows.get(0);
-    assertEquals(flow0, idleFlow);
   }
 
   public void testEndFlow() {
@@ -208,10 +192,6 @@ public class FlowManagerTest extends TestCase {
     assertFalse(newFlow.isAnonymous());
     assertTrue(newFlow.isAuthenticated());
     assertEquals("newuser", newFlow.getUsername());
-  }
-
-  public void testFlowListeners() {
-    //fail("Not yet implemented");
   }
 
 }

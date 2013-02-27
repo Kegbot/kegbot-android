@@ -37,7 +37,6 @@ import org.kegbot.api.KegbotApiException;
 import org.kegbot.app.KegtabBroadcast;
 import org.kegbot.app.util.Downloader;
 import org.kegbot.app.util.Units;
-import org.kegbot.core.Flow.State;
 import org.kegbot.proto.Models.SoundEvent;
 
 import android.content.BroadcastReceiver;
@@ -357,7 +356,7 @@ public class SoundManager extends Manager {
       if (flow == null) {
         return null;
       }
-      if (flow.getState() == State.COMPLETED) {
+      if (flow.isFinished()) {
         mThresholds.remove(flow);
         return null;
       }

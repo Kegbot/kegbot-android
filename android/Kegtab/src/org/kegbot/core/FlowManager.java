@@ -17,7 +17,9 @@
  */
 package org.kegbot.core;
 
+import java.util.ArrayDeque;
 import java.util.Collection;
+import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -28,7 +30,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.http.annotation.GuardedBy;
 import org.kegbot.app.config.AppConfiguration;
-import org.kegbot.core.Flow.State;
+import org.kegbot.app.util.IndentingPrintWriter;
 
 import android.util.Log;
 
@@ -46,12 +48,7 @@ public class FlowManager extends Manager {
 
   private static final String TAG = FlowManager.class.getSimpleName();
 
-  public static Predicate<Flow> PREDICATE_ACTIVE = new Predicate<Flow>() {
-    @Override
-    public boolean apply(Flow flow) {
-      return flow.getState() == State.ACTIVE;
-    }
-  };
+  private static final int MAX_RECENT_FLOWS = 10;
 
   public static Predicate<Flow> PREDICATE_IDLE = new Predicate<Flow>() {
     @Override
@@ -71,6 +68,9 @@ public class FlowManager extends Manager {
   private final AppConfiguration mConfig;
   private final Clock mClock;
 
+  /** Cache of current and recent flows, for debugging. */
+  private final Deque<Flow> mRecentFlows = new ArrayDeque<Flow>(MAX_RECENT_FLOWS);
+
   private int mNextFlowId = 1;
 
   /**
@@ -85,7 +85,13 @@ public class FlowManager extends Manager {
   private Collection<Listener> mListeners = Sets.newLinkedHashSet();
 
   public interface Clock {
-    public long currentTimeMillis();
+
+    /**
+     * Returns a strictly increasing monotonic time, such as {@link android.os.SystemClock#elapsedRealtime()}
+     *
+     * @return
+     */
+    public long elapsedRealtime();
   }
 
   /**
@@ -102,8 +108,7 @@ public class FlowManager extends Manager {
     public void onFlowStart(Flow flow);
 
     /**
-     * Called when a flow has been finished by the core, that is, when the
-     * flow's state has changed to {@link Flow.State#COMPLETED}.
+     * Called when a flow has been finished.
      *
      * @param flow
      */
@@ -181,7 +186,7 @@ public class FlowManager extends Manager {
    */
   public List<Flow> getAllActiveFlows() {
     synchronized (mFlowsByTap) {
-      return ImmutableList.copyOf(Iterables.filter(mFlowsByTap.values(), PREDICATE_ACTIVE));
+      return ImmutableList.copyOf(mFlowsByTap.values());
     }
   }
 
@@ -250,7 +255,7 @@ public class FlowManager extends Manager {
     Flow flow = null;
     synchronized (mFlowsByTap) {
       flow = getFlowForTap(tap);
-      if (flow == null || flow.getState() != Flow.State.ACTIVE) {
+      if (flow == null) {
         if (!mConfig.getEnableFlowAutoStart()) {
           Log.d(TAG, "Not starting new flow: autostart disabled.");
           return null;
@@ -362,7 +367,7 @@ public class FlowManager extends Manager {
       Log.w(TAG, "No active flow for flow=" + flow + ", tap=" + flow.getTap());
       return endedFlow;
     }
-    endedFlow.setState(State.COMPLETED);
+    endedFlow.setFinished();
     publishFlowEnd(endedFlow);
 
     return endedFlow;
@@ -371,14 +376,66 @@ public class FlowManager extends Manager {
   public Flow startFlow(final Tap tap, final long maxIdleTimeMs) {
     Log.d(TAG, "Starting flow on tap " + tap);
     final Flow flow = new Flow(mClock, mNextFlowId++, tap, maxIdleTimeMs);
+    mRecentFlows.addLast(flow);
+    if (mRecentFlows.size() > MAX_RECENT_FLOWS) {
+      mRecentFlows.removeFirst();
+    }
     synchronized (mFlowsByTap) {
       mFlowsByTap.put(tap, flow);
-      flow.setState(State.ACTIVE);
       flow.pokeActivity();
       publishFlowStart(flow);
     }
     startIdleChecker();
     return flow;
+  }
+
+  @Override
+  protected void dump(IndentingPrintWriter writer) {
+    List<Flow> activeFlows = getAllActiveFlows();
+    writer.printPair("numActiveFlows", Integer.valueOf(activeFlows.size()))
+        .println();
+    writer.printPair("totalFlowsProcessed", Integer.valueOf(mNextFlowId - 1))
+        .println();
+    writer.println();
+
+    if (!activeFlows.isEmpty()) {
+      writer.println("Active flows:");
+      writer.println();
+      writer.increaseIndent();
+      for (final Flow flow : activeFlows) {
+        dumpFlow(writer, flow);
+      }
+      writer.decreaseIndent();
+      writer.println();
+    }
+
+    List<Flow> recentFlows = Lists.newArrayList(mRecentFlows);
+    if (!recentFlows.isEmpty()) {
+      writer.println("Recent flows:");
+      writer.println();
+      writer.increaseIndent();
+      for (final Flow flow : recentFlows) {
+        if (!flow.isFinished()) {
+          continue;
+        }
+        dumpFlow(writer, flow);
+      }
+      writer.decreaseIndent();
+      writer.println();
+    }
+  }
+
+  private static void dumpFlow(IndentingPrintWriter writer, Flow flow) {
+    writer.printPair("id", Integer.valueOf(flow.getFlowId()))
+        .println();
+    writer.printPair("ticks", Integer.valueOf(flow.getTicks()))
+        .println();
+    writer.printPair("strval", flow.toString())
+        .println();
+    writer.printPair("timeSeries", flow.getTickTimeSeries())
+        .println();
+    writer.println();
+
   }
 
   /**
