@@ -17,10 +17,14 @@
  */
 package org.kegbot.core;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import java.util.List;
 
 import junit.framework.TestCase;
 
+import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.core.FlowManager.Clock;
 
 /**
@@ -31,6 +35,7 @@ import org.kegbot.core.FlowManager.Clock;
 public class FlowManagerTest extends TestCase {
 
   private TapManager mTapManager;
+  private AppConfiguration mConfig;
   private Tap mTap0;
   private Tap mTap1;
   private FlowManager mFlowManager;
@@ -50,7 +55,11 @@ public class FlowManagerTest extends TestCase {
     mTap1 = new Tap("tap1", 1, "kegboard.flow1", null);
     mTapManager.addTap(mTap0);
     mTapManager.addTap(mTap1);
-    mFlowManager = new FlowManager(mTapManager, mClock);
+
+    mConfig = mock(AppConfiguration.class);
+    when(Boolean.valueOf(mConfig.getEnableFlowAutoStart())).thenReturn(Boolean.TRUE);
+
+    mFlowManager = new FlowManager(mTapManager, mConfig, mClock);
   }
 
   @Override
@@ -142,12 +151,6 @@ public class FlowManagerTest extends TestCase {
     assertNull(mFlowManager.getFlowForFlowId(2));
   }
 
-  public void testDefaultIdleTimeMillis() {
-    long currentIdle = mFlowManager.getDefaultIdleTimeMillis();
-    mFlowManager.setDefaultIdleTimeMillis(currentIdle + 1);
-    assertEquals(currentIdle + 1, mFlowManager.getDefaultIdleTimeMillis());
-  }
-
   public void testCreateUpdateReplaceFlow() {
     List<Flow> flows = mFlowManager.getAllActiveFlows();
     assertEquals(0, flows.size());
@@ -190,6 +193,7 @@ public class FlowManagerTest extends TestCase {
     mFlowManager.activateUserAtTap(mTap0, "testuser");
     flows = mFlowManager.getAllActiveFlows();
     assertEquals(1, flows.size());
+
     assertSame(flow, flows.get(0));
     assertFalse(flow.isAnonymous());
     assertTrue(flow.isAuthenticated());
@@ -204,7 +208,6 @@ public class FlowManagerTest extends TestCase {
     assertFalse(newFlow.isAnonymous());
     assertTrue(newFlow.isAuthenticated());
     assertEquals("newuser", newFlow.getUsername());
-
   }
 
   public void testFlowListeners() {

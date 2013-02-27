@@ -281,13 +281,16 @@ public class FlowManager extends Manager {
     Log.d(TAG, "Activating username=" + username + " at tap=" + tap + " current flow=" + flow);
 
     if (flow != null) {
+      // Already a flow at the tap.
       if (!flow.isAuthenticated()) {
         Log.d(TAG, "activateUserAtTap: existing flow is anonymous, taking it over.");
         flow.setUsername(username);
         publishFlowUpdate(flow);
+        return;
       } else {
         if (flow.getUsername().equals(username)) {
           Log.d(TAG, "activateUserAtTap: got same username, nothing to do.");
+          return;
         } else {
           Log.d(TAG, "activateUserAtTap: existing flow is for different user; replacing.");
           endFlow(flow);
