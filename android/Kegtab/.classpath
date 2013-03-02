@@ -20,6 +20,7 @@
 	<classpathentry exported="true" kind="lib" path="libs/gcm/gcm.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/usb-serial-for-android/usb-serial-for-android.v010.jar" sourcepath="libs/usb-serial-for-android/usb-serial-for-android.v010.src.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/otto/square-otto-1.3.2.jar"/>
+	<classpathentry kind="lib" path="libs/jsr305/jsr305-1.3.7.jar"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
