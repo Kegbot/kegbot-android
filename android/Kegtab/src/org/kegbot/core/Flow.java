@@ -20,6 +20,7 @@ package org.kegbot.core;
 
 import java.util.List;
 
+import org.kegbot.app.util.TimeSeries;
 import org.kegbot.core.FlowManager.Clock;
 
 import com.google.common.base.Preconditions;
@@ -78,10 +79,7 @@ public class Flow {
   /** Image files attached to this flow. */
   private final List<String> mImages = Lists.newArrayList();
 
-  /**
-   * Vector of individual meter updates.
-   */
-  private final StringBuilder mTickUpdateVector = new StringBuilder();
+  private final TimeSeries.Builder mTimeSeries = TimeSeries.newBuilder(100, true);
 
   public Flow(Clock clock, int flowId, Tap tap, long maxIdleTimeMs) {
     mClock = clock;
@@ -93,6 +91,7 @@ public class Flow {
     mStartTimeMillis = clock.elapsedRealtime();
     mLastUpdateTimeMillis = clock.elapsedRealtime();
     mLastActivityTimeMillis = mLastUpdateTimeMillis;
+    mTimeSeries.add(clock.elapsedRealtime(), 0);
   }
 
   @Override
@@ -131,14 +130,9 @@ public class Flow {
     mTicks += ticks;
 
     long now = mClock.elapsedRealtime();
-    long timeDeltaMillis = now - mLastUpdateTimeMillis;
-    mTickUpdateVector.append(timeDeltaMillis)
-      .append(':')
-      .append(ticks)
-      .append(' ');
-
     mLastUpdateTimeMillis = now;
     mLastActivityTimeMillis = now;
+    mTimeSeries.add(now, ticks);
   }
 
   public String getUsername() {
@@ -174,6 +168,7 @@ public class Flow {
     Preconditions.checkState(!mIsFinished, "Flow is already finished, cannot finish again.");
     mIsFinished = true;
     mEndTimeMillis = mClock.elapsedRealtime();
+    mTimeSeries.add(mEndTimeMillis, 0);
   }
 
   public boolean isFinished() {
@@ -219,8 +214,8 @@ public class Flow {
     return mShout;
   }
 
-  public String getTickTimeSeries() {
-    return mTickUpdateVector.toString().trim();
+  public TimeSeries getTickTimeSeries() {
+    return mTimeSeries.build();
   }
 
   /**

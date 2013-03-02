@@ -353,7 +353,7 @@ public class FlowManager extends Manager {
    * Ends the given flow.
    *
    * @param flow
-   * @return
+   * @return the ended flow.
    */
   public Flow endFlow(final Flow flow) {
     final Flow endedFlow;
@@ -369,6 +369,8 @@ public class FlowManager extends Manager {
     }
     endedFlow.setFinished();
     publishFlowEnd(endedFlow);
+    Log.d(TAG, String.format("Ended flow: id=%s ticks=[%s]",
+        Integer.valueOf(flow.getFlowId()), flow.getTickTimeSeries().asString()));
 
     return endedFlow;
   }
@@ -432,7 +434,7 @@ public class FlowManager extends Manager {
         .println();
     writer.printPair("strval", flow.toString())
         .println();
-    writer.printPair("timeSeries", flow.getTickTimeSeries())
+    writer.printPair("timeSeries", flow.getTickTimeSeries().asString())
         .println();
     writer.println();
 

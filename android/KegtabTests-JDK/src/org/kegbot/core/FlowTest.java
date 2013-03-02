@@ -19,6 +19,7 @@ package org.kegbot.core;
 
 import junit.framework.TestCase;
 
+import org.kegbot.app.util.TimeSeries;
 import org.kegbot.core.FlowManager.Clock;
 
 /**
@@ -100,7 +101,7 @@ public class FlowTest extends TestCase {
     assertTrue(flow.isFinished());
 
     assertEquals(0, flow.getVolumeMl(), 0.000001);
-    assertEquals("", flow.getTickTimeSeries());
+    assertEquals(TimeSeries.fromString("0:0 100:0"), flow.getTickTimeSeries());
   }
 
   public void testShout() {
@@ -122,19 +123,20 @@ public class FlowTest extends TestCase {
   }
 
   public void testTimeSeries() {
+    mElapsedRealtime = 1000;
     Flow flow = new Flow(mFakeClock, 1, FAKE_TAP, 100);
-    assertEquals("", flow.getTickTimeSeries());
+    assertEquals(TimeSeries.fromString("0:0"), flow.getTickTimeSeries());
 
     flow.addTicks(1);
-    assertEquals("0:1", flow.getTickTimeSeries());
+    assertEquals(TimeSeries.fromString("0:1"), flow.getTickTimeSeries());
 
-    mElapsedRealtime = 10;
+    mElapsedRealtime = 1100;
     flow.addTicks(2);
-    assertEquals("0:1 10:2", flow.getTickTimeSeries());
+    assertEquals(TimeSeries.fromString("0:1 100:2"), flow.getTickTimeSeries());
 
-    mElapsedRealtime = 100;
+    mElapsedRealtime = 1200;
     flow.addTicks(3);
-    assertEquals("0:1 10:2 90:3", flow.getTickTimeSeries());
+    assertEquals(TimeSeries.fromString("0:1 100:2 200:3"), flow.getTickTimeSeries());
 
     assertEquals(flow.getTicks(), 6);
   }
