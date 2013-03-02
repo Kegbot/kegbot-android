@@ -283,6 +283,7 @@ public class SyncManager extends BackgroundManager {
         .setDurationSeconds((int) (ended.getDurationMs() / 1000.0))
         .setSpilled(false)
         .setShout(ended.getShout())
+        .setTickTimeSeries(ended.getTickTimeSeries().asString())
         .buildPartial();
   }
 

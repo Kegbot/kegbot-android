@@ -507,6 +507,11 @@ public class KegbotApiImpl implements KegbotApi {
       params.put("shout", shout);
     }
 
+    final String tickTimeSeries = request.getTickTimeSeries();
+    if (!Strings.isNullOrEmpty(tickTimeSeries)) {
+      params.put("tick_time_series", tickTimeSeries);
+    }
+
     return (Drink) postProto("/taps/" + tapName, Drink.newBuilder(), params);
   }
 
