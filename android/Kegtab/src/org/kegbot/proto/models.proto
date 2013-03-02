@@ -163,6 +163,11 @@ message Drink {
   optional Keg keg = 14;
   optional Session session = 15;
   repeated Image images = 16;
+
+  // Vector of tick updates. Format is: "<time>:<amount> [<time>:<amount> ...]",
+  // where "time" is the delta (in ms) from the previous reading, and "amount"
+  // is the delta in ticks from the previous reading.
+  optional string tick_time_series = 17;
 }
 
 // Describes an image.

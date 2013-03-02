@@ -82,6 +82,9 @@ message RecordDrinkRequest {
 
   // Optional message from the user about the pour.
   optional string shout = 10;
+
+  // See Drink model.
+  optional string tick_time_series = 11;
 }
 
 // Message used for recording a temperature sensor reading on the backend.
