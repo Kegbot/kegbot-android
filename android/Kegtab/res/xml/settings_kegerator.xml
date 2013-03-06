@@ -87,5 +87,16 @@
             android:title="Cache Credentials" >
         </CheckBoxPreference>
     </PreferenceCategory>
+    <PreferenceCategory android:title="Advanced" >
+        <EditTextPreference
+            android:defaultValue="kegboard"
+            android:dependency="config:RUN_CORE"
+            android:inputType="text|textNoSuggestions"
+            android:key="config:KEGBOARD_NAME"
+            android:maxLength="16"
+            android:summary="Name prefixed to all sensor readings"
+            android:title="Kegboard Name" >
+        </EditTextPreference>
+    </PreferenceCategory>
 
 </PreferenceScreen>

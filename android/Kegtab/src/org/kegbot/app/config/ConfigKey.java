@@ -53,6 +53,8 @@ enum ConfigKey {
   LAST_CHECKIN_STATUS(""),
   UPDATE_REQUIRED(FALSE),
   UPDATE_NEEDED(FALSE),
+
+  KEGBOARD_NAME("kegboard"),
   ;
 
   private final String mDefaultValue;

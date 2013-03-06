@@ -211,4 +211,12 @@ public class AppConfiguration {
     return getBoolean(ConfigKey.UPDATE_REQUIRED);
   }
 
+  public String getKegboardName() {
+    return get(ConfigKey.KEGBOARD_NAME);
+  }
+
+  public void setKegboardName(String value) {
+    set(ConfigKey.KEGBOARD_NAME, value);
+  }
+
 }

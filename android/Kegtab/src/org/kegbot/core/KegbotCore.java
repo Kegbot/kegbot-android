@@ -116,7 +116,7 @@ public class KegbotCore {
     mKegboardManager = new KegboardManager(context);
     mManagers.add(mKegboardManager);
 
-    mHardwareManager = new HardwareManager(context, mKegboardManager);
+    mHardwareManager = new HardwareManager(context, mConfig, mKegboardManager);
     mManagers.add(mHardwareManager);
 
     mAuthenticationManager = new AuthenticationManager(context, mApi, mConfig);

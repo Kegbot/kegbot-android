@@ -24,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.http.annotation.GuardedBy;
 import org.kegbot.app.KegtabBroadcast;
+import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.kegboard.KegboardAuthTokenMessage;
 import org.kegbot.kegboard.KegboardAuthTokenMessage.Status;
 import org.kegbot.kegboard.KegboardHelloMessage;
@@ -77,7 +78,8 @@ public class HardwareManager extends Manager {
   private Set<Listener> mListeners = Sets.newLinkedHashSet();
 
   private final Context mContext;
-  private KegboardManager mKegboardManager;
+  private final AppConfiguration mConfig;
+  private final KegboardManager mKegboardManager;
 
   private final Map<String, Long> mLastThermoReadingElapsedRealtime =
     Maps.newLinkedHashMap();
@@ -121,18 +123,10 @@ public class HardwareManager extends Manager {
     }
   };
 
-  /**
-   * Board name prefixed to kegboard events.
-   */
-  private static String BOARD_NAME = "kegboard";
-
-  /** Name prefixed to kegboard relay events. */
-  private static String RELAY_NAME_PREFIX = BOARD_NAME + ".relay";
-
   private final KegboardManager.Listener mKegboardListener = new KegboardManager.Listener() {
     @Override
     public void onTemperatureReadingMessage(KegboardTemperatureReadingMessage message) {
-      final String sensorName = BOARD_NAME + "." + message.getName();
+      final String sensorName = formatWithBoardName(message.getName());
       final Long lastReport = mLastThermoReadingElapsedRealtime.get(sensorName);
       final long now = SystemClock.elapsedRealtime();
       if (lastReport != null) {
@@ -151,7 +145,7 @@ public class HardwareManager extends Manager {
 
     @Override
     public void onMeterStatusMessage(KegboardMeterStatusMessage message) {
-      handleMeterUpdate(BOARD_NAME + "." + message.getMeterName(), message.getMeterReading());
+      handleMeterUpdate(formatWithBoardName(message.getMeterName()), message.getMeterReading());
     }
 
     @Override
@@ -170,8 +164,9 @@ public class HardwareManager extends Manager {
     }
   };
 
-  public HardwareManager(Context context, KegboardManager kegboardManager) {
+  public HardwareManager(Context context, AppConfiguration config, KegboardManager kegboardManager) {
     mContext = context;
+    mConfig = config;
     mKegboardManager = kegboardManager;
   }
 
@@ -198,14 +193,20 @@ public class HardwareManager extends Manager {
       return;
     }
 
-    if (relayName.startsWith(RELAY_NAME_PREFIX) && relayName.length() > RELAY_NAME_PREFIX.length()) {
-      int outputId;
+    String relayPrefix = formatWithBoardName("relay");
+
+    if (relayName.startsWith(relayPrefix) && relayName.length() > relayPrefix.length()) {
+      int outputId = -1;
       try {
-        outputId = Integer.valueOf(relayName.substring(RELAY_NAME_PREFIX.length())).intValue();
+        outputId = Integer.valueOf(relayName.substring(relayPrefix.length())).intValue();
       } catch (NumberFormatException e) {
-        return;
       }
-      mKegboardManager.enableOutput(outputId, enabled);
+
+      if (outputId >= 0) {
+        mKegboardManager.enableOutput(outputId, enabled);
+      } else {
+        Log.w(TAG, String.format("Unparseable relay name: %s", relayName));
+      }
     }
   }
 
@@ -258,6 +259,10 @@ public class HardwareManager extends Manager {
       }
       return mThermoSensors.get(sensorName);
     }
+  }
+
+  private String formatWithBoardName(String sensorName) {
+    return String.format("%s.%s", mConfig.getKegboardName(), sensorName);
   }
 
   public boolean addListener(Listener listener) {
