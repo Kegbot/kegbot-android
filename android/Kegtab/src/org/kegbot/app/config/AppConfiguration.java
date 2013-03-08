@@ -108,7 +108,8 @@ public class AppConfiguration {
   }
 
   public long getMinimumVolumeMl() {
-    return getLong(ConfigKey.FLOW_MINIMUM_VOLUME_ML);
+    // TODO(mikey): Stored as a string due to EditTextPreference stupidity. Fix.
+    return Long.valueOf(get(ConfigKey.FLOW_MINIMUM_VOLUME_ML)).longValue();
   }
 
   public void setRunCore(boolean value) {
@@ -120,11 +121,13 @@ public class AppConfiguration {
   }
 
   public long getIdleTimeoutMs() {
-    return getLong(ConfigKey.FLOW_IDLE_TIMEOUT_SECONDS) * 1000;
+    // TODO(mikey): Stored as a string due to EditTextPreference stupidity. Fix.
+    return Long.valueOf(get(ConfigKey.FLOW_IDLE_TIMEOUT_SECONDS)).longValue() * 1000;
   }
 
   public long getIdleWarningMs() {
-    return getLong(ConfigKey.FLOW_IDLE_WARNING_SECONDS) * 1000;
+    // TODO(mikey): Stored as a string due to EditTextPreference stupidity. Fix.
+    return Long.valueOf(get(ConfigKey.FLOW_IDLE_WARNING_SECONDS)).longValue() * 1000;
   }
 
   public int getSetupVersion() {
