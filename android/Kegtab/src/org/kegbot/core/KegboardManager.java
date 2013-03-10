@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import org.kegbot.app.util.IndentingPrintWriter;
 import org.kegbot.kegboard.KegboardAuthTokenMessage;
 import org.kegbot.kegboard.KegboardHelloMessage;
 import org.kegbot.kegboard.KegboardMessage;
@@ -133,6 +134,7 @@ public class KegboardManager extends BackgroundManager {
   @Override
   public synchronized void start() {
     Log.d(TAG, "onCreate");
+    stateChange(State.IDLE);
 
     final IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
     filter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED); // never fired by framework :-\
@@ -283,8 +285,9 @@ public class KegboardManager extends BackgroundManager {
   private void tryPing() {
     KegboardPingCommand command = new KegboardPingCommand();
     try {
-      mSerialDevice.write(command.toBytes(), 500);
+      mSerialDevice.write(command.toBytes(), 2000);
     } catch (IOException e) {
+      Log.d(TAG, "Error pinging board: " + e, e);
       // Ignore.
     }
   }
@@ -369,5 +372,13 @@ public class KegboardManager extends BackgroundManager {
   private void onUsbDeviceDetached() {
     stateChange(State.STOPPING);
   }
+
+  @Override
+  protected void dump(IndentingPrintWriter writer) {
+    writer.printPair("mState", mState).println();
+    writer.printPair("mSerialDevice", mSerialDevice);
+  }
+
+
 
 }
