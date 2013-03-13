@@ -21,7 +21,6 @@ package org.kegbot.api;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.text.ParseException;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -54,7 +53,7 @@ import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HTTP;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.kegbot.app.util.Utils;
+import org.kegbot.app.util.DateUtils;
 import org.kegbot.proto.Api.RecordDrinkRequest;
 import org.kegbot.proto.Api.RecordTemperatureRequest;
 import org.kegbot.proto.Models.AuthenticationToken;
@@ -480,9 +479,9 @@ public class KegbotApiImpl implements KegbotApi {
       try {
         params.put("record_date", recordDate); // new API
         haveDate = true;
-        final long pourTime = Utils.dateFromIso8601String(recordDate);
+        final long pourTime = DateUtils.dateFromIso8601String(recordDate);
         params.put("pour_time", String.valueOf(pourTime)); // old API
-      } catch (ParseException e) {
+      } catch (IllegalArgumentException e) {
         // Ignore.
       }
     }

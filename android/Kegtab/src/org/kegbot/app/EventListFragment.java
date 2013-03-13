@@ -18,14 +18,12 @@
  */
 package org.kegbot.app;
 
-import java.text.ParseException;
 import java.util.Comparator;
 import java.util.List;
 
 import org.kegbot.api.KegbotApiException;
 import org.kegbot.app.util.ImageDownloader;
 import org.kegbot.app.util.Units;
-import org.kegbot.app.util.Utils;
 import org.kegbot.core.KegbotCore;
 import org.kegbot.proto.Models.Drink;
 import org.kegbot.proto.Models.SystemEvent;
@@ -70,10 +68,10 @@ public class EventListFragment extends ListFragment {
     @Override
     public int compare(SystemEvent object1, SystemEvent object2) {
       try {
-        final long time1 = Utils.dateFromIso8601String(object1.getTime());
-        final long time2 = Utils.dateFromIso8601String(object2.getTime());
+        final long time1 = org.kegbot.app.util.DateUtils.dateFromIso8601String(object1.getTime());
+        final long time2 = org.kegbot.app.util.DateUtils.dateFromIso8601String(object2.getTime());
         return Long.valueOf(time2).compareTo(Long.valueOf(time1));
-      } catch (ParseException e) {
+      } catch (IllegalArgumentException e) {
         Log.wtf(LOG_TAG, "Error parsing times", e);
         return 0;
       }
@@ -132,13 +130,13 @@ public class EventListFragment extends ListFragment {
       TextView dateView = (TextView) view.findViewById(R.id.eventDate);
       String isoTime = event.getTime();
       try {
-        long time = Utils.dateFromIso8601String(isoTime);
+        long time = org.kegbot.app.util.DateUtils.dateFromIso8601String(isoTime);
 
         CharSequence relTime = DateUtils.getRelativeDateTimeString(getContext(), time, 60 * 1000,
             7 * 24 * 60 * 60 * 100, 0);
         dateView.setText(relTime);
         dateView.setVisibility(View.VISIBLE);
-      } catch (ParseException e) {
+      } catch (IllegalArgumentException e) {
         dateView.setVisibility(View.GONE);
       }
 

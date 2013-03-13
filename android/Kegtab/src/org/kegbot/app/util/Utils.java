@@ -23,10 +23,6 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.TimeZone;
 
 import android.content.Context;
 import android.content.pm.PackageInfo;
@@ -36,27 +32,12 @@ import android.os.Build;
 
 public class Utils {
 
-  public static final DateFormat ISO8601_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
   private final static char[] HEX_DIGITS = {
     '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
   };
 
   private Utils() {
     throw new IllegalStateException("Non-instantiable class.");
-  }
-
-  /**
-   * Returns a timestamp, for a the local timezone, given an ISO8601-formatted
-   * UTC timestamp.
-   *
-   * @param isoString
-   * @return
-   * @throws ParseException
-   */
-  public static long dateFromIso8601String(String isoString) throws ParseException {
-    final long dateMillis = ISO8601_FORMAT.parse(isoString).getTime();
-    final TimeZone local = TimeZone.getDefault();
-    return dateMillis + local.getOffset(dateMillis);
   }
 
   public static byte[] readFile(String file) throws IOException {
