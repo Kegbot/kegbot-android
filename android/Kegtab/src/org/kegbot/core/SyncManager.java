@@ -132,9 +132,9 @@ public class SyncManager extends BackgroundManager {
             Log.d(TAG, "No longer running, exiting.");
             break;
           }
-          writeNewRequestsToDb();
-          postPendingRequestsToServer();
         }
+        writeNewRequestsToDb();
+        postPendingRequestsToServer();
         SystemClock.sleep(1000);
       }
     } catch (Throwable e) {
