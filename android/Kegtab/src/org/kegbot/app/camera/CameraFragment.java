@@ -315,7 +315,13 @@ public class CameraFragment extends Fragment {
   }
 
   private void doCameraSetup() {
-    mCamera = Camera.open(mDefaultCameraId);
+    try {
+      mCamera = Camera.open(mDefaultCameraId);
+    } catch (Exception e) {
+      Log.w(TAG, "Error opening camera: %s" + e, e);
+      mCamera = null;
+      return;
+    }
     setCameraDisplayOrientation(getActivity(), mDefaultCameraId, mCamera);
     mPreview.setCamera(mCamera);
     updateState(State.INITIAL);
