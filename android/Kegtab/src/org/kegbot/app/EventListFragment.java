@@ -20,6 +20,7 @@ package org.kegbot.app;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.kegbot.api.KegbotApiException;
 import org.kegbot.app.util.ImageDownloader;
@@ -33,6 +34,7 @@ import android.app.ListFragment;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Html;
 import android.text.format.DateUtils;
 import android.util.Log;
@@ -45,6 +47,7 @@ import android.view.animation.LayoutAnimationController;
 import android.view.animation.TranslateAnimation;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.common.base.Strings;
@@ -58,9 +61,24 @@ public class EventListFragment extends ListFragment {
 
   private static final String LOG_TAG = EventListFragment.class.getSimpleName();
 
+  private static final long REFRESH_INTERVAL_MILLIS = TimeUnit.MINUTES.toMillis(1);
+
   private ArrayAdapter<SystemEvent> mAdapter;
   private KegbotCore mCore;
   private ImageDownloader mImageDownloader;
+  private final Handler mHandler = new Handler();
+
+  /** Refreshes event timestamps by invalidating all ListView children periodically. */
+  private final Runnable mTimeUpdateRunnable = new Runnable() {
+    @Override
+    public void run() {
+      ListView v = getListView();
+      if (v != null) {
+        v.invalidateViews();
+      }
+      mHandler.postDelayed(this, REFRESH_INTERVAL_MILLIS);
+    }
+  };
 
   private int mLastEventId = -1;
 
@@ -255,6 +273,19 @@ public class EventListFragment extends ListFragment {
     getListView().setLayoutAnimation(controller);
     setListAdapter(mAdapter);
   }
+
+  @Override
+  public void onResume() {
+    super.onResume();
+    mHandler.postDelayed(mTimeUpdateRunnable, REFRESH_INTERVAL_MILLIS);
+  }
+
+  @Override
+  public void onPause() {
+    mHandler.removeCallbacks(mTimeUpdateRunnable);
+    super.onPause();
+  }
+
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
