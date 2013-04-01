@@ -1,46 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:gravity="center"
-    android:orientation="vertical" >
-
-    <!-- Header. -->
-
-    <TextView
-        android:id="@+id/sessionSubtitle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Beer Goggles!"
-        android:textColor="#888"
-        android:textSize="24dip"
-        android:visibility="gone"/>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="2dip"
-        android:background="#1FFFFFFF"
-        android:visibility="gone" />
-
-    <!-- Camera. -->
+    android:layout_height="wrap_content" >
 
     <view
         android:id="@+id/cameraPreview"
         android:layout_width="fill_parent"
-        android:layout_height="392dip"
+        android:layout_height="0dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
         class="org.kegbot.app.camera.Preview" />
 
     <Button
         android:id="@+id/cameraTakePictureButton"
+        style="@style/mediumButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/pour_take_picture"
-        android:textSize="32dip" />
+        android:layout_alignBottom="@+id/cameraPreview"
+        android:layout_centerHorizontal="true"
+        android:text="@string/pour_take_picture" />
 
     <LinearLayout
         android:id="@+id/cameraPostPictureButtons"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/cameraPreview"
         android:gravity="center"
         android:orientation="horizontal"
         android:visibility="gone"
@@ -48,19 +32,19 @@
 
         <Button
             android:id="@+id/cameraDiscardPictureButton"
+            style="@style/mediumButton"
             android:layout_width="0dip"
             android:layout_height="wrap_content"
             android:layout_weight="0.5"
-            android:text="@string/camera_discard_picture"
-            android:textSize="32dip" />
+            android:text="@string/camera_discard_picture" />
 
         <Button
             android:id="@+id/cameraTakeAnotherButton"
+            style="@style/mediumButton"
             android:layout_width="0dip"
             android:layout_height="wrap_content"
             android:layout_weight="0.5"
-            android:text="@string/camera_take_another"
-            android:textSize="32dip" />
+            android:text="@string/camera_take_another" />
     </LinearLayout>
 
-</LinearLayout>
+</RelativeLayout>

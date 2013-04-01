@@ -33,22 +33,31 @@ import android.view.View;
 import android.view.ViewGroup;
 
 /**
- * http://developer.android.com/resources/samples/HoneycombGallery/src/com/example/android/hcgallery/CameraFragment.html
- */
-/**
  * A simple wrapper around a Camera and a SurfaceView that renders a centered
  * preview of the Camera to the surface. We need to center the SurfaceView
  * because not all devices have cameras that support preview sizes at the same
  * aspect ratio as the device's display.
+ *
+ * <p/>
+ * Local modifications: when layout height is specified as 0, it is set to
+ * <code>layout_width / {@link #ASPECT_RATIO}</code> in
+ * {@link #onMeasure(int, int)}.
+ *
+ * <p/>
+ * Adapted from:
+ * http://developer.android.com/resources/samples/HoneycombGallery/src/com/example/android/hcgallery/CameraFragment.html
  */
 class Preview extends ViewGroup implements SurfaceHolder.Callback {
   private final String TAG = Preview.class.getSimpleName();
+
+  private static final double ASPECT_RATIO = 4.0/3.0;
 
   SurfaceView mSurfaceView;
   SurfaceHolder mHolder;
   Size mPreviewSize;
   List<Size> mSupportedPreviewSizes;
   Camera mCamera;
+  boolean mLoggedSize = false;
 
   public Preview(Context context) {
     super(context);
@@ -91,19 +100,6 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback {
     }
   }
 
-//  public void switchCamera(Camera camera) {
-//    setCamera(camera);
-//    try {
-//      camera.setPreviewDisplay(mHolder);
-//    } catch (IOException exception) {
-//      Log.e(TAG, "IOException caused by setPreviewDisplay()", exception);
-//    }
-//    Camera.Parameters parameters = camera.getParameters();
-//    parameters.setPreviewSize(mPreviewSize.width, mPreviewSize.height);
-//    parameters.setFlashMode(Parameters.FLASH_MODE_AUTO);
-//    requestLayout();
-//    camera.setParameters(parameters);
-//  }
 
   @Override
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
@@ -111,7 +107,15 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback {
     // wrapper to a SurfaceView that centers the camera preview instead
     // of stretching it.
     final int width = resolveSize(getSuggestedMinimumWidth(), widthMeasureSpec);
-    final int height = resolveSize(getSuggestedMinimumHeight(), heightMeasureSpec);
+    int height = resolveSize(getSuggestedMinimumHeight(), heightMeasureSpec);
+
+    // Special case: adjust height to match width, preserving aspect
+    // ratio, when specified as zero.
+    if (height == 0) {
+      height = (int) (width / ASPECT_RATIO);
+      Log.d(TAG, "adjusted size: " + width + "x" + height);
+    }
+
     setMeasuredDimension(width, height);
 
     if (mSupportedPreviewSizes != null) {
@@ -201,6 +205,14 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback {
         }
       }
     }
+    if (!mLoggedSize) {
+      if (optimalSize != null) {
+        Log.d(TAG, "getOptimalPreviewSize: " + optimalSize.width + " x " + optimalSize.height);
+      } else {
+        Log.d(TAG, "getOptimalPreviewSize: null");
+      }
+      mLoggedSize = true;
+    }
     return optimalSize;
   }
 
@@ -211,7 +223,7 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback {
     Log.d(TAG, "surfaceChanged mCamera=" + mCamera);
 
     if (mCamera == null) {
-      Log.e(TAG, "!!!!!!!!!!!!! surfaceChanged null");
+      Log.e(TAG, "Warning: surfaceChanged: null");
       return;
     }
     Camera.Parameters parameters = mCamera.getParameters();
