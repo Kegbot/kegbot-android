@@ -109,8 +109,8 @@ public class UserDetailListLoader extends AsyncTaskLoader<List<User>> {
    */
   @Override
   protected void onStopLoading() {
-      // Attempt to cancel the current load task if possible.
-      cancelLoad();
+    // Attempt to cancel the current load task if possible.
+    cancelLoad();
   }
 
 }

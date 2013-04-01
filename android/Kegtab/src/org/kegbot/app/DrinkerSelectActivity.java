@@ -18,86 +18,164 @@
  */
 package org.kegbot.app;
 
-import org.kegbot.core.AuthenticationManager;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import org.kegbot.app.util.ImageDownloader;
 import org.kegbot.core.KegbotCore;
 import org.kegbot.proto.Models.User;
 
 import android.app.ActionBar;
-import android.app.ActionBar.Tab;
-import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentTransaction;
+import android.app.LoaderManager.LoaderCallbacks;
 import android.content.Intent;
+import android.content.Loader;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.LayoutAnimationController;
+import android.view.animation.TranslateAnimation;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.GridView;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.google.common.base.Strings;
 
 /**
+ * Shows a list of available drinkers, returning the select username (using
+ * {@link #setResult(int, Intent)}) when one is selected.
  *
- * @author mike wakerly (mike@wakerly.com)
+ * @author mike wakerly (opensource@hoho.com)
  */
-public class DrinkerSelectActivity extends CoreActivity {
+public class DrinkerSelectActivity extends CoreActivity implements LoaderCallbacks<List<User>> {
 
   private static final String TAG = DrinkerSelectActivity.class.getSimpleName();
 
   private static final String EXTRA_USERNAME = "username";
 
-  private KegbotCore mCore;
+  /** Activity will auto-finish after this timeout. */
+  private static final long TIMEOUT_MILLIS = TimeUnit.MINUTES.toMillis(2);
 
-  private String mSelectedUsername = "";
+  private KegbotCore mCore;
+  private GridView mGridView;
+  private ArrayAdapter<User> mAdapter;
+  private ImageDownloader mImageDownloader;
+
+  private final Handler mHandler = new Handler();
+  private final Runnable mTimeoutRunnable = new Runnable() {
+    @Override
+    public void run() {
+      Log.d(TAG, "Timeout, finishing.");
+      finish();
+    }
+  };
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     Log.v(TAG, "onCreate");
-
     mCore = KegbotCore.getInstance(this);
+    mImageDownloader = mCore.getImageDownloader();
 
-    final ActionBar bar = getActionBar();
-    bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-    bar.setDisplayOptions(0, ActionBar.DISPLAY_SHOW_TITLE);
+    setContentView(R.layout.select_drinker_fragment_inner);
+    mGridView = (GridView) findViewById(R.id.drinkerGridView);
 
-    bar.addTab(bar.newTab()
-        .setText("All Drinkers")
-        .setTabListener(new TabListener<DrinkerSelectFragment>(
-                this, "simple", DrinkerSelectFragment.class)));
-
-    final Bundle args = new Bundle();
-    args.putString(DrinkerSelectFragment.LOAD_SOURCE, DrinkerSelectFragment.LOAD_SOURCE_RECENT);
-    bar.addTab(bar.newTab()
-        .setText("Recent Drinkers")
-        .setTabListener(new TabListener<DrinkerSelectFragment>(
-                this, "recent", DrinkerSelectFragment.class, args)));
-
-    bar.setTitle("Select Drinker");
-
-    if (savedInstanceState != null) {
-        bar.setSelectedNavigationItem(savedInstanceState.getInt("tab", 0));
+    ActionBar actionBar = getActionBar();
+    if (actionBar != null) {
+      actionBar.hide();
     }
+
+    mAdapter = new ArrayAdapter<User>(this, R.layout.selectable_drinker,
+        R.id.drinkerName) {
+
+      @Override
+      public View getView(int position, View convertView, ViewGroup parent) {
+        final User userDetail = getItem(position);
+        final View view = super.getView(position, convertView, parent);
+
+        try {
+          applyUser(userDetail, view);
+        } catch (Throwable e) {
+          Log.wtf(TAG, "UNCAUGHT EXCEPTION", e);
+        }
+        view.setBackgroundDrawable(getResources().getDrawable(R.drawable.shape_rounded_rect));
+        return view;
+      }
+
+      private void applyUser(User userDetail, View view) {
+        final ImageView icon = (ImageView) view.findViewById(R.id.drinkerIcon);
+        icon.setImageBitmap(null);
+        icon.setBackgroundDrawable(null);
+
+        final String imageUrl;
+        if (userDetail.hasImage()) {
+          imageUrl = userDetail.getImage().getThumbnailUrl();
+        } else {
+          imageUrl = "";
+        }
+
+        if (!Strings.isNullOrEmpty(imageUrl)) {
+          mImageDownloader.download(imageUrl, icon);
+        } else {
+          mImageDownloader.cancelDownloadForView(icon);
+          icon.setBackgroundResource(R.drawable.unknown_drinker);
+          icon.setAlpha(1.0f);
+        }
+
+        final TextView userName = (TextView) view.findViewById(R.id.drinkerName);
+        final String userNameString = userDetail.getUsername();
+        userName.setText(userNameString);
+      }
+
+    };
+
+    AnimationSet set = new AnimationSet(true);
+
+    Animation animation = new AlphaAnimation(0.0f, 1.0f);
+    animation.setDuration(100);
+    set.addAnimation(animation);
+    animation = new TranslateAnimation(Animation.RELATIVE_TO_SELF, 0.0f,
+        Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF, -1.0f,
+        Animation.RELATIVE_TO_SELF, 0.0f);
+    animation.setDuration(300);
+    set.addAnimation(animation);
+
+    LayoutAnimationController controller = new LayoutAnimationController(set, 0.1f);
+    mGridView.setAdapter(mAdapter);
+    mGridView.setLayoutAnimation(controller);
+
+    mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+      @Override
+      public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
+        final User user = (User) mGridView.getItemAtPosition(position);
+        if (user == null) {
+          Log.wtf(TAG, "Null user selected.");
+          return;
+        }
+        Log.d(TAG, "Clicked on user: " + user);
+        handlerUserSelected(user);
+      }
+    });
+
+    getLoaderManager().initLoader(0, null, this);
   }
 
   @Override
   protected void onResume() {
     super.onResume();
-    final AuthenticationManager am = mCore.getAuthenticationManager();
-
-    if (!am.getAllRecent().isEmpty()) {
-      final ActionBar bar = getActionBar();
-      bar.setSelectedNavigationItem(1);
-    }
-  }
-
-  @Override
-  protected void onSaveInstanceState(Bundle outState) {
-      super.onSaveInstanceState(outState);
-      outState.putInt("tab", getActionBar().getSelectedNavigationIndex());
+    mHandler.postDelayed(mTimeoutRunnable, TIMEOUT_MILLIS);
   }
 
   @Override
   protected void onPause() {
-    final Intent data = new Intent();
-    data.putExtra(KegtabCommon.ACTIVITY_AUTH_DRINKER_RESULT_EXTRA_USERNAME, mSelectedUsername);
-    setResult(RESULT_OK, data);
     super.onPause();
+    mHandler.removeCallbacks(mTimeoutRunnable);
   }
 
   public void handlerUserSelected(User user) {
@@ -107,54 +185,21 @@ public class DrinkerSelectActivity extends CoreActivity {
     finish();
   }
 
-  public static class TabListener<T extends Fragment> implements ActionBar.TabListener {
-    private final Activity mActivity;
-    private final String mTag;
-    private final Class<T> mClass;
-    private final Bundle mArgs;
-    private Fragment mFragment;
+  @Override
+  public Loader<List<User>> onCreateLoader(int id, Bundle args) {
+    return new UserDetailListLoader(this);
+  }
 
-    public TabListener(Activity activity, String tag, Class<T> clz) {
-      this(activity, tag, clz, null);
+  @Override
+  public void onLoadFinished(Loader<List<User>> loader, List<User> userList) {
+    for (final User user : userList) {
+      mAdapter.add(user);
     }
+  }
 
-    public TabListener(Activity activity, String tag, Class<T> clz, Bundle args) {
-      mActivity = activity;
-      mTag = tag;
-      mClass = clz;
-      mArgs = args;
-
-      // Check to see if we already have a fragment for this tab, probably
-      // from a previously saved state. If so, deactivate it, because our
-      // initial state is that a tab isn't shown.
-      mFragment = mActivity.getFragmentManager().findFragmentByTag(mTag);
-      if (mFragment != null && !mFragment.isDetached()) {
-        FragmentTransaction ft = mActivity.getFragmentManager().beginTransaction();
-        ft.detach(mFragment);
-        ft.commit();
-      }
-    }
-
-    @Override
-    public void onTabSelected(Tab tab, FragmentTransaction ft) {
-      if (mFragment == null) {
-        mFragment = Fragment.instantiate(mActivity, mClass.getName(), mArgs);
-        ft.add(android.R.id.content, mFragment, mTag);
-      } else {
-        ft.attach(mFragment);
-      }
-    }
-
-    @Override
-    public void onTabUnselected(Tab tab, FragmentTransaction ft) {
-      if (mFragment != null) {
-        ft.detach(mFragment);
-      }
-    }
-
-    @Override
-    public void onTabReselected(Tab tab, FragmentTransaction ft) {
-    }
+  @Override
+  public void onLoaderReset(Loader<List<User>> loader) {
+    mAdapter.clear();
   }
 
 }
