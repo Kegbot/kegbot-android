@@ -98,6 +98,12 @@ public class AuthenticationManager extends Manager {
     mConfig = prefs;
   }
 
+  @Override
+  protected void stop() {
+    clearCache();
+    super.stop();
+  }
+
   public User authenticateToken(AuthenticationToken token) {
     if (!mConfig.getCacheCredentials()) {
       try {
