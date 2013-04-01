@@ -45,7 +45,15 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -86,6 +94,9 @@ public class PourInProgressActivity extends CoreActivity {
 
   private DialogFragment mProgressDialog;
 
+  private ImageView mDrinkerImage;
+  private TextView mShoutText;
+  private Button mDoneButton;
   private ViewPager mTapPager;
 
   private Tap mCurrentTap;
@@ -245,6 +256,76 @@ public class PourInProgressActivity extends CoreActivity {
     mPouringTapAdapter = new PouringTapAdapter(getFragmentManager());
     mTapPager.setAdapter(mPouringTapAdapter);
     mTapPager.setOnPageChangeListener(mPageChangeListener);
+
+    mDoneButton = (Button) findViewById(R.id.pourEndButton);
+    mDrinkerImage = (ImageView) findViewById(R.id.pourDrinkerImage);
+    mShoutText = (TextView) findViewById(R.id.shoutText);
+
+    mDrinkerImage.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        final Intent intent = KegtabCommon
+            .getAuthDrinkerActivityIntent(PourInProgressActivity.this);
+        //startActivityForResult(intent, AUTH_DRINKER_REQUEST);
+      }
+    });
+
+    /*
+    if (!Strings.isNullOrEmpty(username) && !username.equals(mAppliedUsername)) {
+      final AuthenticationManager authManager = mCore.getAuthenticationManager();
+      final User user = authManager.getUserDetail(username);
+      if (user != null && user.hasImage()) {
+        // NOTE(mikey): Use the full-sized image rather than the thumbnail;
+        // in many cases the former will already be in the cache from
+        // DrinkerSelectActivity.
+        final String thumbnailUrl = user.getImage().getThumbnailUrl();
+        if (!Strings.isNullOrEmpty(thumbnailUrl)) {
+          mImageDownloader.download(thumbnailUrl, mDrinkerImage);
+        }
+      }
+      mDrinkerImage.setOnClickListener(null);
+    }
+*/
+
+    mDoneButton.setOnClickListener(new OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        final FlowManager flowManager = mCore.getFlowManager();
+        final Flow flow = flowManager.getFlowForTap(mCurrentTap);
+
+        if (flow != null) {
+          flowManager.endFlow(flow);
+        }
+      }
+    });
+
+    mShoutText = (EditText) findViewById(R.id.shoutText);
+    mShoutText.addTextChangedListener(new TextWatcher() {
+      @Override
+      public void onTextChanged(CharSequence s, int start, int before, int count) {
+      }
+
+      @Override
+      public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+      }
+
+      @Override
+      public void afterTextChanged(Editable s) {
+        final Tap tap = mCurrentTap;
+        if (tap == null) {
+          Log.w(TAG, "Bad tap.");
+          return;
+        }
+        final Flow flow = mCore.getFlowManager().getFlowForTap(tap);
+        if (flow == null) {
+          Log.w(TAG, "Flow went away, dropping shout.");
+          return;
+        }
+        flow.setShout(s.toString());
+        flow.pokeActivity();
+      }
+    });
+
 
     mCameraFragment = (CameraFragment) getFragmentManager().findFragmentById(R.id.camera);
 

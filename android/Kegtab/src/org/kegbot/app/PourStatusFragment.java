@@ -24,28 +24,22 @@ import org.kegbot.app.util.Units;
 import org.kegbot.app.view.BadgeView;
 import org.kegbot.core.AuthenticationManager;
 import org.kegbot.core.Flow;
-import org.kegbot.core.FlowManager;
 import org.kegbot.core.KegbotCore;
 import org.kegbot.core.Tap;
 import org.kegbot.proto.Models.BeerType;
 import org.kegbot.proto.Models.Keg;
 import org.kegbot.proto.Models.KegTap;
-import org.kegbot.proto.Models.User;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ListFragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -77,11 +71,7 @@ public class PourStatusFragment extends ListFragment {
   private TextView mStatusText;
   private TextView mStatusLine;
 
-  private Button mEndButton;
-  private EditText mShoutText;
-
   private ImageView mBeerImage;
-  private ImageView mDrinkerImage;
 
   private String mAppliedUsername;
 
@@ -120,6 +110,7 @@ public class PourStatusFragment extends ListFragment {
 
   private Flow mFlow = null;
 
+  @SuppressLint("ValidFragment")
   public PourStatusFragment(Tap tap) {
     mTap = tap;
   }
@@ -149,55 +140,6 @@ public class PourStatusFragment extends ListFragment {
     mStatusText = (TextView) mView.findViewById(R.id.tapStatusText);
     mStatusLine = (TextView) mView.findViewById(R.id.tapNotes);
     mBeerImage = (ImageView) mView.findViewById(R.id.tapImage);
-    mDrinkerImage = (ImageView) mView.findViewById(R.id.pourDrinkerImage);
-
-    mDrinkerImage.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        final Intent intent = KegtabCommon.getAuthDrinkerActivityIntent(getActivity());
-        startActivityForResult(intent, AUTH_DRINKER_REQUEST);
-      }
-    });
-
-    mEndButton = ((Button) mView.findViewById(R.id.pourEndButton));
-    mEndButton.setOnClickListener(new OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        final FlowManager flowManager = mCore.getFlowManager();
-        final Flow flow = flowManager.getFlowForTap(getTap());
-
-        if (flow != null) {
-          flowManager.endFlow(flow);
-        }
-      }
-    });
-
-    mShoutText = (EditText) mView.findViewById(R.id.shoutText);
-    mShoutText.addTextChangedListener(new TextWatcher() {
-      @Override
-      public void onTextChanged(CharSequence s, int start, int before, int count) {
-      }
-
-      @Override
-      public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-      }
-
-      @Override
-      public void afterTextChanged(Editable s) {
-        final Tap tap = getTap();
-        if (tap == null) {
-          Log.w(TAG, "Bad tap.");
-          return;
-        }
-        final Flow flow = mCore.getFlowManager().getFlowForTap(tap);
-        if (flow == null) {
-          Log.w(TAG, "Flow went away, dropping shout.");
-          return;
-        }
-        flow.setShout(s.toString());
-        flow.pokeActivity();
-      }
-    });
 
     return mView;
   }
@@ -234,10 +176,6 @@ public class PourStatusFragment extends ListFragment {
     if (mFlow != null) {
       updateWithFlow(mFlow);
     }
-  }
-
-  public ImageView getDrinkerImageView() {
-    return mDrinkerImage;
   }
 
   private void applyTapDetail() {
@@ -283,10 +221,6 @@ public class PourStatusFragment extends ListFragment {
       return;
     }
 
-    // Buttons.
-    mEndButton.setEnabled(true);
-    mShoutText.setEnabled(true);
-
     // Set volume portion.
     final double ounces = Units.volumeMlToOunces(flow.getVolumeMl());
     mTargetVolume = ounces;
@@ -314,20 +248,6 @@ public class PourStatusFragment extends ListFragment {
       mStatusLine.setVisibility(View.INVISIBLE);
     }
 
-    if (!Strings.isNullOrEmpty(username) && !username.equals(mAppliedUsername)) {
-      final AuthenticationManager authManager = mCore.getAuthenticationManager();
-      final User user = authManager.getUserDetail(username);
-      if (user != null && user.hasImage()) {
-        // NOTE(mikey): Use the full-sized image rather than the thumbnail;
-        // in many cases the former will already be in the cache from
-        // DrinkerSelectActivity.
-        final String thumbnailUrl = user.getImage().getThumbnailUrl();
-        if (!Strings.isNullOrEmpty(thumbnailUrl)) {
-          mImageDownloader.download(thumbnailUrl, mDrinkerImage);
-        }
-      }
-      mDrinkerImage.setOnClickListener(null);
-    }
     mAppliedUsername = username;
   }
 
@@ -336,8 +256,6 @@ public class PourStatusFragment extends ListFragment {
     if (mView != null) {
       mStatusLine.setText("Pour completed!");
       mStatusLine.setVisibility(View.VISIBLE);
-      mEndButton.setEnabled(false);
-      mShoutText.setEnabled(false);
     }
   }
 

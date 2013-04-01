@@ -283,8 +283,6 @@ public class CameraFragment extends Fragment {
       }
     });
 
-    view.setBackgroundDrawable(
-        getResources().getDrawable(R.drawable.shape_rounded_rect));
     return view;
   }
 
