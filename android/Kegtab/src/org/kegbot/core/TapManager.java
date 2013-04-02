@@ -179,6 +179,16 @@ public class TapManager extends Manager {
     return ImmutableSet.copyOf(mTaps.values());
   }
 
+  public synchronized Set<KegTap> getTapsWithActiveKeg() {
+    final Set<KegTap> result = Sets.newLinkedHashSet();
+    for (final KegTap tap : mTaps.values()) {
+      if (tap.hasCurrentKeg()) {
+        result.add(tap);
+      }
+    }
+    return result;
+  }
+
   private synchronized void onTapSyncResults(List<KegTap> taps) {
     boolean tapsChanged = false;
 

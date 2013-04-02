@@ -328,26 +328,30 @@ public class FlowManager extends Manager {
    */
   public synchronized void activateUserAmbiguousTap(final String username) {
     final KegTap focusedTap = mTapManager.getFocusedTap();
+    final Set<KegTap> availableTaps = mTapManager.getTapsWithActiveKeg();
+
     final Set<KegTap> activateTaps = Sets.newLinkedHashSet();
     if (focusedTap != null) {
       Log.d(TAG, String.format("activateUserAmbiguousTap: using focused tap: %s", focusedTap));
       activateTaps.add(focusedTap);
     }
 
-    for (final KegTap tap : mTapManager.getTaps()) {
+    for (final KegTap tap : availableTaps) {
       if (tap == focusedTap) {
         continue;
       }
       if (Strings.isNullOrEmpty(tap.getRelayName())) {
-        Log.d(TAG, String.format("activateUserAmbiguousTap: also activating at unmanaged tap: %s",
-            focusedTap));
-        activateTaps.add(tap);
+        if (tap.hasCurrentKeg()) {
+          Log.d(TAG, String.format("activateUserAmbiguousTap: also activating at unmanaged tap: %s",
+              focusedTap));
+          activateTaps.add(tap);
+        }
       }
     }
 
     if (activateTaps.isEmpty()) {
       Log.d(TAG, "activateUserAmbiguousTap: no focused or unmanaged taps; activating on all taps");
-      activateTaps.addAll(mTapManager.getTaps());
+      activateTaps.addAll(availableTaps);
     }
 
     for (final KegTap tap : activateTaps) {
