@@ -68,7 +68,6 @@ public class KegbotCore {
   private final TapManager mTapManager;
   private final FlowManager mFlowManager;
   private final AuthenticationManager mAuthenticationManager;
-  private final ConfigurationManager mConfigurationManager;
   private final SoundManager mSoundManager;
   private final ImageDownloader mImageDownloader;
 
@@ -121,9 +120,6 @@ public class KegbotCore {
 
     mAuthenticationManager = new AuthenticationManager(mBus, context, mApi, mConfig);
     mManagers.add(mAuthenticationManager);
-
-    mConfigurationManager = new ConfigurationManager(mBus);
-    mManagers.add(mConfigurationManager);
 
     mSoundManager = new SoundManager(mBus, context, mApi, mFlowManager);
     mManagers.add(mSoundManager);
@@ -232,13 +228,6 @@ public class KegbotCore {
    */
   public HardwareManager getHardwareManager() {
     return mHardwareManager;
-  }
-
-  /**
-   * @return the configurationManager
-   */
-  public ConfigurationManager getConfigurationManager() {
-    return mConfigurationManager;
   }
 
   public ImageDownloader getImageDownloader() {
