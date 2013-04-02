@@ -24,8 +24,11 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
+import org.kegbot.api.KegbotApi;
 import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.core.FlowManager.Clock;
+
+import com.squareup.otto.Bus;
 
 /**
  * Tests for {@link FlowManager}.
@@ -36,6 +39,8 @@ public class FlowManagerTest extends TestCase {
 
   private TapManager mTapManager;
   private AppConfiguration mConfig;
+  private KegbotApi mApi;
+  private Bus mBus;
   private Tap mTap0;
   private Tap mTap1;
   private FlowManager mFlowManager;
@@ -51,7 +56,11 @@ public class FlowManagerTest extends TestCase {
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-    mTapManager = new TapManager();
+
+    mBus = mock(Bus.class);
+    mApi = mock(KegbotApi.class);
+
+    mTapManager = new TapManager(mBus, mApi);
     mTap0 = new Tap("tap0", 1, "kegboard.flow0", null);
     mTap1 = new Tap("tap1", 1, "kegboard.flow1", null);
     mTapManager.addTap(mTap0);
@@ -60,7 +69,7 @@ public class FlowManagerTest extends TestCase {
     mConfig = mock(AppConfiguration.class);
     when(Boolean.valueOf(mConfig.getEnableFlowAutoStart())).thenReturn(Boolean.TRUE);
 
-    mFlowManager = new FlowManager(mTapManager, mConfig, mClock);
+    mFlowManager = new FlowManager(mBus, mTapManager, mConfig, mClock);
   }
 
   @Override

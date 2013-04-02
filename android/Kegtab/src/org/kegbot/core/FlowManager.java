@@ -43,6 +43,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.squareup.otto.Bus;
 
 public class FlowManager extends Manager {
 
@@ -149,7 +150,9 @@ public class FlowManager extends Manager {
 
   private ScheduledFuture<?> mFuture;
 
-  FlowManager(final TapManager tapManager, final AppConfiguration preferences, final Clock clock) {
+  FlowManager(final Bus bus, final TapManager tapManager, final AppConfiguration preferences,
+      final Clock clock) {
+    super(bus);
     mTapManager = tapManager;
     mClock = clock;
     mConfig = preferences;
@@ -190,6 +193,7 @@ public class FlowManager extends Manager {
     }
   }
 
+  /** @return all taps with an active {@link Flow}.*/
   public List<Tap> getAllActiveTaps() {
     return Lists.newArrayList(Collections2.transform(getAllActiveFlows(), FLOW_TO_TAP));
   }

@@ -104,31 +104,31 @@ public class KegbotCore {
 
     mImageDownloader = new ImageDownloader(context, mConfig.getKegbotUrl());
 
-    mTapManager = new TapManager();
+    mTapManager = new TapManager(mBus, mApi);
     mManagers.add(mTapManager);
 
-    mFlowManager = new FlowManager(mTapManager, mConfig, mClock);
+    mFlowManager = new FlowManager(mBus, mTapManager, mConfig, mClock);
     mManagers.add(mFlowManager);
 
-    mSyncManager = new SyncManager(context, mApi);
+    mSyncManager = new SyncManager(mBus, context, mApi);
     mManagers.add(mSyncManager);
 
-    mKegboardManager = new KegboardManager(context);
+    mKegboardManager = new KegboardManager(mBus, context);
     mManagers.add(mKegboardManager);
 
-    mHardwareManager = new HardwareManager(context, mConfig, mKegboardManager);
+    mHardwareManager = new HardwareManager(mBus, context, mConfig, mKegboardManager);
     mManagers.add(mHardwareManager);
 
-    mAuthenticationManager = new AuthenticationManager(context, mApi, mConfig);
+    mAuthenticationManager = new AuthenticationManager(mBus, context, mApi, mConfig);
     mManagers.add(mAuthenticationManager);
 
-    mConfigurationManager = new ConfigurationManager();
+    mConfigurationManager = new ConfigurationManager(mBus);
     mManagers.add(mConfigurationManager);
 
-    mSoundManager = new SoundManager(context, mApi, mFlowManager);
+    mSoundManager = new SoundManager(mBus, context, mApi, mFlowManager);
     mManagers.add(mSoundManager);
 
-    mBluetoothManager = new BluetoothManager(context);
+    mBluetoothManager = new BluetoothManager(mBus, context);
     mManagers.add(mBluetoothManager);
   }
 

@@ -41,6 +41,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Sets;
+import com.squareup.otto.Bus;
 
 /**
  *
@@ -92,7 +93,8 @@ public class AuthenticationManager extends Manager {
             }
           });
 
-  AuthenticationManager(Context context, KegbotApi api, AppConfiguration prefs) {
+  AuthenticationManager(Bus bus, Context context, KegbotApi api, AppConfiguration prefs) {
+    super(bus);
     mContext = context.getApplicationContext();
     mApi = api;
     mConfig = prefs;

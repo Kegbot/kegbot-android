@@ -42,6 +42,7 @@ import android.util.Log;
 
 import com.google.protobuf.AbstractMessage;
 import com.google.protobuf.InvalidProtocolBufferException;
+import com.squareup.otto.Bus;
 
 /**
  * This service manages a connection to a Kegbot backend, using the Kegbot API.
@@ -67,7 +68,8 @@ public class SyncManager extends BackgroundManager {
 
   private boolean mRunning = true;
 
-  public SyncManager(Context context, KegbotApi api) {
+  public SyncManager(Bus bus, Context context, KegbotApi api) {
+    super(bus);
     mApi = api;
     mContext = context;
   }

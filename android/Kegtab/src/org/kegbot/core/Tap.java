@@ -65,8 +65,14 @@ public class Tap {
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder("[Tap").append(" meterName=").append(mMeterName)
-    .append(" name=").append(mName).append(" mlPerTick=").append(mMlPerTick).append("]");
+    StringBuilder builder = new StringBuilder("[Tap")
+        .append(" meterName=")
+        .append(mMeterName)
+        .append(" name=")
+        .append(mName)
+        .append(" mlPerTick=")
+        .append(mMlPerTick)
+        .append("]");
     return builder.toString();
   }
 

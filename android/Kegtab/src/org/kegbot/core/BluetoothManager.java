@@ -36,6 +36,7 @@ import android.util.Log;
 
 import com.google.common.base.Strings;
 import com.hoho.android.usbserial.util.HexDump;
+import com.squareup.otto.Bus;
 
 /**
  * Listens for bluetooth connections.
@@ -58,7 +59,8 @@ public class BluetoothManager extends BackgroundManager {
     }
   }
 
-  public BluetoothManager(Context context) {
+  public BluetoothManager(Bus bus, Context context) {
+    super(bus);
     mContext = context;
   }
 

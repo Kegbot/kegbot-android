@@ -52,6 +52,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Queues;
 import com.google.common.collect.Sets;
+import com.squareup.otto.Bus;
 
 /**
  *
@@ -149,7 +150,8 @@ public class SoundManager extends Manager {
     INTENT_FILTER.setPriority(1000);
   }
 
-  public SoundManager(Context context, KegbotApi api, FlowManager flowManager) {
+  public SoundManager(Bus bus, Context context, KegbotApi api, FlowManager flowManager) {
+    super(bus);
     mContext = context;
     mApi = api;
     mFlowManager = flowManager;

@@ -18,12 +18,15 @@
  */
 package org.kegbot.core;
 
+import java.util.Map;
 import java.util.Set;
 
+import org.kegbot.api.KegbotApi;
 import org.kegbot.app.util.IndentingPrintWriter;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Sets;
+import com.google.common.collect.Maps;
+import com.squareup.otto.Bus;
 
 /**
  * Tap manager.
@@ -32,7 +35,11 @@ import com.google.common.collect.Sets;
  */
 public class TapManager extends Manager {
 
-  private final Set<Tap> mTaps = Sets.newLinkedHashSet();
+  private static final String TAG = TapManager.class.getSimpleName();
+
+  private final Map<String, Tap> mTaps = Maps.newLinkedHashMap();
+
+  private final KegbotApi mApi;
 
   /**
    * Stores the currently "focused" tap.
@@ -41,18 +48,39 @@ public class TapManager extends Manager {
    */
   private Tap mFocusedTap = null;
 
+  public TapManager(Bus bus, KegbotApi api) {
+    super(bus);
+    mApi = api;
+  }
+
+  /**
+   * Adds a Tap to the system.
+   *
+   * @param newTap
+   *          the new tap object
+   * @return {@code true} if an existing tap was replaced, {@code false}
+   *         otherwise.
+   */
   public synchronized boolean addTap(final Tap newTap) {
     if (mFocusedTap == null) {
       mFocusedTap = newTap;
     }
-    return mTaps.add(newTap);
+    return mTaps.put(newTap.getMeterName(), newTap) != null;
   }
 
+  /**
+   * Removes a tap from the system.
+   *
+   * @param tap
+   *          the tap to remove
+   * @return {@code true} if an existing tap was removed, {@code false}
+   *         otherwise.
+   */
   public synchronized boolean removeTap(final Tap tap) {
     if (mFocusedTap == tap) {
       mFocusedTap = null;
     }
-    return mTaps.remove(tap);
+    return mTaps.remove(tap.getMeterName()) != null;
   }
 
   /**
@@ -73,7 +101,7 @@ public class TapManager extends Manager {
   }
 
   public synchronized Tap getTapForMeterName(final String meterName) {
-    for (final Tap tap : mTaps) {
+    for (final Tap tap : mTaps.values()) {
       if (meterName.equals(tap.getMeterName())) {
         return tap;
       }
@@ -82,7 +110,7 @@ public class TapManager extends Manager {
   }
 
   public synchronized Set<Tap> getTaps() {
-    return ImmutableSet.copyOf(mTaps);
+    return ImmutableSet.copyOf(mTaps.values());
   }
 
   @Override
@@ -95,7 +123,7 @@ public class TapManager extends Manager {
       writer.println("All taps:");
       writer.println();
       writer.increaseIndent();
-      for (final Tap tap : mTaps) {
+      for (final Tap tap : mTaps.values()) {
         writer.printPair("meterName", tap.getMeterName()).println();
         writer.printPair("mlPerTick", Double.valueOf(tap.getMlPerTick())).println();
         writer.printPair("relayName", tap.getRelayName()).println();

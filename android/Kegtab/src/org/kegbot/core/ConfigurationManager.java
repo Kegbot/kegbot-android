@@ -23,6 +23,7 @@ import java.util.Map;
 import org.kegbot.proto.Models.KegTap;
 
 import com.google.common.collect.Maps;
+import com.squareup.otto.Bus;
 
 /**
  *
@@ -35,7 +36,8 @@ public class ConfigurationManager extends Manager {
    */
   private final Map<String, KegTap> mTapConfig = Maps.newLinkedHashMap();
 
-  ConfigurationManager() {
+  ConfigurationManager(Bus bus) {
+    super(bus);
   }
 
   public KegTap getTapDetail(final String tapName) {

@@ -21,6 +21,8 @@ package org.kegbot.core;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.squareup.otto.Bus;
+
 /**
  * A {@link Manager} which automatically executes {@link #runInBackground()}.
  *
@@ -36,6 +38,10 @@ public abstract class BackgroundManager extends Manager {
       runInBackground();
     }
   };
+
+  public BackgroundManager(Bus bus) {
+    super(bus);
+  }
 
   @Override
   protected synchronized void start() {

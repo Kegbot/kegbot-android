@@ -50,6 +50,7 @@ import com.google.common.collect.Sets;
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
 import com.hoho.android.usbserial.driver.UsbSerialProber;
 import com.hoho.android.usbserial.util.HexDump;
+import com.squareup.otto.Bus;
 
 /**
  * Monitors a serial Kegboard device, sending updates to any attached listener.
@@ -127,7 +128,8 @@ public class KegboardManager extends BackgroundManager {
     }
   };
 
-  public KegboardManager(Context context) {
+  public KegboardManager(Bus bus, Context context) {
+    super(bus);
     mContext = context;
   }
 

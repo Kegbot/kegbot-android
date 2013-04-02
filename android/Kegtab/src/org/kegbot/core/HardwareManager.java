@@ -43,6 +43,7 @@ import android.util.Log;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.squareup.otto.Bus;
 
 /**
  * Generic hardware manager. Attaches to hardware-specific managers and exports
@@ -164,7 +165,8 @@ public class HardwareManager extends Manager {
     }
   };
 
-  public HardwareManager(Context context, AppConfiguration config, KegboardManager kegboardManager) {
+  public HardwareManager(Bus bus, Context context, AppConfiguration config, KegboardManager kegboardManager) {
+    super(bus);
     mContext = context;
     mConfig = config;
     mKegboardManager = kegboardManager;
