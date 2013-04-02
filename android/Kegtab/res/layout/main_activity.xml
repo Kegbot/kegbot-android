@@ -54,11 +54,10 @@
             android:orientation="vertical" >
 
             <TextView
+                style="@style/header2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/recent_activity_header"
-                android:textColor="#888"
-                android:textSize="24dip" />
+                android:text="@string/recent_activity_header"/>
 
             <View
                 android:layout_width="match_parent"

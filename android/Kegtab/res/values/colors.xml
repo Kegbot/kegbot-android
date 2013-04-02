@@ -24,5 +24,6 @@
     <color name="green20pct">#20008800</color>
     <color name="gray80pct">#ee000000</color>
     <color name="darkRed">#990000</color>
-  
+    <color name="muted">#888</color>
+    
 </resources>

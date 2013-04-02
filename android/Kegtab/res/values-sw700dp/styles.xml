@@ -3,7 +3,7 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- Buttons -->
-    
+
     <style name="largeButton">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
@@ -18,8 +18,8 @@
         <item name="android:textSize">26sp</item>
     </style>
 
-    <!-- Headers -->
-    
+    <!-- Typography -->
+
     <style name="header">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
@@ -30,15 +30,36 @@
         <item name="android:textStyle">bold</item>
     </style>
 
+    <style name="header2">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:textColor">@color/muted</item>
+    </style>
+
     <style name="subheader">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:ellipsize">end</item>
         <item name="android:singleLine">true</item>
         <item name="android:textSize">24sp</item>
-        <item name="android:textColor">#888</item>
+        <item name="android:textColor">@color/muted</item>
     </style>
 
+    <style name="normalText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">24sp</item>
+    </style>
+    
+    <style name="smallText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+    
     <!-- Badges (BadgeView.java) -->
 
     <style name="badge">
@@ -59,8 +80,8 @@
         <item name="android:textSize">18sp</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textStyle">bold</item>
         <item name="android:textIsSelectable">false</item>
+        <item name="android:textColor">@color/muted</item>
     </style>
 
 </resources>
