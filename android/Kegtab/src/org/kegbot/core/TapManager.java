@@ -42,6 +42,7 @@ import android.util.Log;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Produce;
 import com.squareup.otto.Subscribe;
@@ -86,7 +87,7 @@ public class TapManager extends Manager {
         return null;
       }
       onTapSyncResults(taps);
-      rescheduleSync(false);
+      rescheduleSync(true);
       return null;
     }
   };
@@ -181,8 +182,11 @@ public class TapManager extends Manager {
   private synchronized void onTapSyncResults(List<KegTap> taps) {
     boolean tapsChanged = false;
 
+    Set<String> removedTaps = Sets.newLinkedHashSet(mTaps.keySet());
+
     for (final KegTap tap : taps) {
       final KegTap existingTap = getTapForMeterName(tap.getMeterName());
+      removedTaps.remove(tap.getMeterName());
 
       if (existingTap == null || !existingTap.equals(tap)) {
         Log.i(TAG, "Adding/updating tap " + tap.getMeterName());
@@ -191,7 +195,11 @@ public class TapManager extends Manager {
       }
     }
 
-    // TODO: Remove old taps.
+    for (String tapName : removedTaps) {
+      Log.i(TAG, "Removing tap: " + tapName);
+      removeTap(getTapForMeterName(tapName));
+      tapsChanged = true;
+    }
 
     if (tapsChanged) {
       TapListUpdateEvent event = new TapListUpdateEvent(Lists.newArrayList(mTaps.values()));

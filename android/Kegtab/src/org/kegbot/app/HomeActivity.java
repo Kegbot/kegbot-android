@@ -18,8 +18,10 @@
  */
 package org.kegbot.app;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.kegbot.app.config.AppConfiguration;
@@ -49,6 +51,7 @@ import com.google.android.gcm.GCMRegistrar;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.squareup.otto.Subscribe;
 
 public class HomeActivity extends CoreActivity {
@@ -274,8 +277,12 @@ public class HomeActivity extends CoreActivity {
   @Subscribe
   public void onTapListUpdate(TapListUpdateEvent event) {
     Log.d(LOG_TAG, "Got tap list change event: " + event);
+
+    boolean notifyDataChanged = false;
+    final Set<String> removedTaps = Sets.newLinkedHashSet(mFragMap.keySet());
     for (final KegTap tap : event.getTaps()) {
       final String tapName = tap.getMeterName();
+      removedTaps.remove(tapName);
 
       if (mTapDetails.contains(tap)) {
         Log.d(LOG_TAG, "Skipping unchanged tap: " + tap.getMeterName());
@@ -286,11 +293,28 @@ public class HomeActivity extends CoreActivity {
         Log.d(LOG_TAG, "Adding new tap: " + tapName);
         Log.d(LOG_TAG, "Tap details: " + tap);
         mTapDetails.add(tap);
-        mTapStatusAdapter.notifyDataSetChanged();
       } else {
         Log.d(LOG_TAG, "Updating tap: " + tapName);
         mFragMap.get(tapName).setTapDetail(tap);
       }
+      notifyDataChanged = true;
+    }
+
+    for (final String tapName : removedTaps) {
+      Log.d(LOG_TAG, "Removing tap: " + tapName);
+      mFragMap.remove(tapName);
+      Iterator<KegTap> iter = mTapDetails.iterator();
+      while (iter.hasNext()) {
+        if (iter.next().getMeterName().equals(tapName)) {
+          iter.remove();
+          notifyDataChanged = true;
+          break;
+        }
+      }
+    }
+
+    if (notifyDataChanged) {
+      mTapStatusAdapter.notifyDataSetChanged();
     }
   }
 
