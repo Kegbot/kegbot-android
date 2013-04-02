@@ -113,7 +113,6 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback {
     // ratio, when specified as zero.
     if (height == 0) {
       height = (int) (width / ASPECT_RATIO);
-      Log.d(TAG, "adjusted size: " + width + "x" + height);
     }
 
     setMeasuredDimension(width, height);
