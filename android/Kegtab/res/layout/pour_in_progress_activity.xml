@@ -60,8 +60,6 @@
             <Button
                 android:id="@+id/pourEndButton"
                 style="@style/mediumButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
                 android:layout_below="@+id/shoutText"
                 android:layout_toRightOf="@+id/pourDrinkerImage"
                 android:layout_alignBottom="@+id/pourDrinkerImage"

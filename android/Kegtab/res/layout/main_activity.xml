@@ -31,21 +31,13 @@
 
             <Button
                 android:id="@+id/beerMeButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="16dip"
-                android:text="@string/beer_me_button"
-                android:textSize="36dip"
-                android:textStyle="bold" />
+                style="@style/largeButton"
+                android:text="@string/beer_me_button" />
 
             <Button
                 android:id="@+id/newDrinkerButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="16dip"
-                android:text="@string/new_drinker_button"
-                android:textSize="36dip"
-                android:textStyle="bold" />
+                style="@style/largeButton"
+                android:text="@string/new_drinker_button" />
         </LinearLayout>
 
         <fragment

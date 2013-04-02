@@ -5,11 +5,10 @@
     android:background="@drawable/shape_rounded_rect"
     android:gravity="top"
     android:orientation="vertical"
-    android:paddingTop="12dip"
     android:paddingBottom="12dip"
     android:paddingLeft="24dip"
     android:paddingRight="24dip"
-    >
+    android:paddingTop="12dip" >
 
     <!-- First row: Keg Image and Pour Total. -->
 
@@ -24,6 +23,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="16dip"
+            android:ellipsize="end"
+            android:singleLine="true"
             android:textSize="48dip"
             android:textStyle="bold" />
 
@@ -31,36 +32,31 @@
             android:id="@+id/tapSubtitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:singleLine="true"
             android:textColor="#888"
             android:textSize="24dip" />
     </LinearLayout>
-
-    <TextView
-        android:id="@+id/tapStatusText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="24dip"
-        android:textColor="#888"/>
 
     <View
         android:id="@+id/tap_detail_divider"
         android:layout_width="match_parent"
         android:layout_height="2dip"
-        android:background="#1FFFFFFF"
+        android:layout_marginBottom="5dip"
         android:layout_marginTop="5dip"
-        android:layout_marginBottom="5dip"/>
+        android:background="#1FFFFFFF" />
 
     <RelativeLayout
         android:id="@+id/tapActiveView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center" >
+        android:layout_height="match_parent" >
 
         <org.kegbot.app.view.BadgeView
             android:id="@+id/tapStatsBadge1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
             android:layout_marginLeft="10dip"
             android:layout_toRightOf="@id/controlsBox"
             android:background="@color/black20pct" >
@@ -70,7 +66,7 @@
             android:id="@+id/tapImage"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:layout_below="@id/controlsBox"
+            android:layout_below="@+id/tapStatsBadge1"
             android:layout_centerHorizontal="true"
             android:layout_margin="16dip" />
 
@@ -79,6 +75,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
+            android:layout_below="@+id/tapImage"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="5dip"
             android:textColor="#888"

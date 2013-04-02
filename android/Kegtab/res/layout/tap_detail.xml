@@ -22,18 +22,11 @@
 
         <TextView
             android:id="@+id/tapTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="16dip"
-            android:textSize="48dip"
-            android:textStyle="bold" />
+            style="@style/header" />
 
         <TextView
             android:id="@+id/tapSubtitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="#888"
-            android:textSize="24dip" />
+            style="@style/subheader" />
     </LinearLayout>
 
     <View

@@ -68,7 +68,6 @@ public class PourStatusFragment extends ListFragment {
   private BadgeView mPourVolumeBadge;
   private TextView mTapTitle;
   private TextView mTapSubtitle;
-  private TextView mStatusText;
   private TextView mStatusLine;
 
   private ImageView mBeerImage;
@@ -137,7 +136,6 @@ public class PourStatusFragment extends ListFragment {
     mTapTitle = (TextView) mView.findViewById(R.id.tapTitle);
     mTapSubtitle = (TextView) mView.findViewById(R.id.tapSubtitle);
 
-    mStatusText = (TextView) mView.findViewById(R.id.tapStatusText);
     mStatusLine = (TextView) mView.findViewById(R.id.tapNotes);
     mBeerImage = (ImageView) mView.findViewById(R.id.tapImage);
 
@@ -194,7 +192,7 @@ public class PourStatusFragment extends ListFragment {
 
       // Set beer name.
       if (!Strings.isNullOrEmpty(beerName) && mTapTitle != null) {
-        mStatusText.setText(beerName);
+        mTapTitle.setText(beerName);
       }
 
       // Set beer image.
@@ -204,7 +202,7 @@ public class PourStatusFragment extends ListFragment {
       }
       mTapSubtitle.setText(mTap.getName());
     } else {
-      mTapSubtitle.setText(mTap.getName());
+      mTapTitle.setText(mTap.getName());
     }
   }
 
@@ -231,12 +229,6 @@ public class PourStatusFragment extends ListFragment {
 
     // Set tap title.
     final String username = flow.getUsername();
-    if (!Strings.isNullOrEmpty(username)) {
-      mTapTitle.setText("Hi, " + username + "!");
-    } else {
-      mTapTitle.setText("Guest Pour");
-      mStatusText.setText("Tap drinker image to log in.");
-    }
 
     // Update beer info.
     if (flow.getIdleTimeMs() >= IDLE_TOOLTIP_MILLIS) {
