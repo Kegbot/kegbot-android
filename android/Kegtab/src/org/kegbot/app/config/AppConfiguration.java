@@ -174,6 +174,14 @@ public class AppConfiguration {
     setBoolean(ConfigKey.ENABLE_AUTOMATIC_FLOW_START, value);
   }
 
+  public boolean getEnableAutoTakePhoto() {
+    return getBoolean(ConfigKey.AUTO_TAKE_PHOTOS);
+  }
+
+  public void setEnableAutoTakePhoto(boolean value) {
+    setBoolean(ConfigKey.AUTO_TAKE_PHOTOS, value);
+  }
+
   public long getLastCheckinAttempt() {
     return getLong(ConfigKey.LAST_CHECKIN_ATTEMPT_MILLIS);
   }

@@ -399,7 +399,9 @@ public class PourInProgressActivity extends CoreActivity {
     super.onPostResume();
     final Flow flow = getCurrentlyFocusedFlow();
     if (flow != null && flow.getImages().isEmpty()) {
-      mCameraFragment.schedulePicture();
+      if (mConfig.getEnableAutoTakePhoto()) {
+        mCameraFragment.schedulePicture();
+      }
     }
   }
 

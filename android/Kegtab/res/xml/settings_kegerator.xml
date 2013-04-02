@@ -60,14 +60,22 @@
             android:summaryOn="A new pour will start any time meter activity is detected"
             android:title="Automatically Start Pours" >
         </CheckBoxPreference>
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:dependency="config:RUN_CORE"
+            android:key="config:AUTO_TAKE_PHOTOS"
+            android:summaryOff="Camera will not trigger unless requested"
+            android:summaryOn="Camera will automatically trigger during a pour"
+            android:title="Automatically Take Photos" >
+        </CheckBoxPreference>
     </PreferenceCategory>
     <PreferenceCategory android:title="User Interface" >
         <CheckBoxPreference
             android:defaultValue="true"
             android:dependency="config:RUN_CORE"
             android:key="config:ALLOW_REGISTRATION"
-            android:summaryOff="New users cannot register from the main screen (check to enable)"
-            android:summaryOn="New users can register from the main screen (uncheck to disable)"
+            android:summaryOff="New users cannot register from the main screen"
+            android:summaryOn="New users can register from the main screen"
             android:title="Allow New User Registration" >
         </CheckBoxPreference>
         <CheckBoxPreference
