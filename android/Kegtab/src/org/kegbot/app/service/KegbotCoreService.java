@@ -20,7 +20,6 @@ package org.kegbot.app.service;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -32,18 +31,14 @@ import org.kegbot.app.R;
 import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.core.AuthenticationManager;
 import org.kegbot.core.AuthenticationToken;
-import org.kegbot.core.ConfigurationManager;
 import org.kegbot.core.Flow;
 import org.kegbot.core.FlowManager;
 import org.kegbot.core.FlowMeter;
 import org.kegbot.core.HardwareManager;
 import org.kegbot.core.KegbotCore;
 import org.kegbot.core.SyncManager;
-import org.kegbot.core.Tap;
-import org.kegbot.core.TapManager;
 import org.kegbot.core.ThermoSensor;
 import org.kegbot.proto.Api.RecordTemperatureRequest;
-import org.kegbot.proto.Models.KegTap;
 import org.kegbot.proto.Models.User;
 
 import android.app.Notification;
@@ -71,8 +66,6 @@ public class KegbotCoreService extends Service {
 
   private KegbotCore mCore;
   private FlowManager mFlowManager;
-  private TapManager mTapManager;
-  private ConfigurationManager mConfigManager;
   private AppConfiguration mConfig;
 
   private HardwareManager mHardwareManager;
@@ -225,9 +218,7 @@ public class KegbotCoreService extends Service {
     super.onCreate();
     Log.d(TAG, "onCreate()");
     mCore = KegbotCore.getInstance(this);
-    mTapManager = mCore.getTapManager();
     mFlowManager = mCore.getFlowManager();
-    mConfigManager = mCore.getConfigurationManager();
     mApiManager = mCore.getSyncManager();
     mHardwareManager = mCore.getHardwareManager();
     mConfig = mCore.getConfiguration();
@@ -347,17 +338,6 @@ public class KegbotCoreService extends Service {
     KegbotApi api = mCore.getApi();
     api.setApiUrl(apiUrl.toString());
     api.setApiKey(mConfig.getApiKey());
-
-    final List<KegTap> taps = api.getAllTaps();
-
-    Log.d(TAG, "Found " + taps.size() + " tap(s).");
-    for (final KegTap tapInfo : taps) {
-      Log.d(TAG, "Adding tap: " + tapInfo.getMeterName());
-      final Tap tap = new Tap(tapInfo.getName(), tapInfo.getMlPerTick(), tapInfo
-          .getMeterName(), tapInfo.getRelayName());
-      mTapManager.addTap(tap);
-      mConfigManager.setTapDetail(tap.getMeterName(), tapInfo);
-    }
   }
 
   private void debugNotice(String message) {

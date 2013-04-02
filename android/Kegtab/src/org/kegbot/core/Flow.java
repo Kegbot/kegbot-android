@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.kegbot.app.util.TimeSeries;
 import org.kegbot.core.FlowManager.Clock;
+import org.kegbot.proto.Models.KegTap;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
@@ -37,7 +38,7 @@ public class Flow {
   private final int mFlowId;
 
   /** Tap for this flow. */
-  private final Tap mTap;
+  private final KegTap mTap;
 
   /** Authenticated user for this flow. If unset, the flow is anonymous. */
   private String mUsername;
@@ -81,7 +82,7 @@ public class Flow {
 
   private final TimeSeries.Builder mTimeSeries = TimeSeries.newBuilder(100, true);
 
-  public Flow(Clock clock, int flowId, Tap tap, long maxIdleTimeMs) {
+  public Flow(Clock clock, int flowId, KegTap tap, long maxIdleTimeMs) {
     mClock = clock;
     mFlowId = flowId;
     mTap = tap;
@@ -99,7 +100,7 @@ public class Flow {
     StringBuilder builder = new StringBuilder("Flow")
         .append(" id=").append(mFlowId)
         .append(" finished=").append(mIsFinished)
-        .append(" tap=").append(mTap)
+        .append(" tap=").append(mTap.getMeterName())
         .append(" user=").append(mUsername)
         .append(" ticks=").append(getTicks())
         .append(" volume_ml=").append(getVolumeMl());
@@ -118,12 +119,9 @@ public class Flow {
   }
 
   /**
-   * Increments the flow by the specified number of ticks. The recorded volume
-   * is incremented by the corresponding volume, as returned by
-   * {@link Tap#getVolumeMlForTicks(int)}.
+   * Increments the flow by the specified number of ticks.
    *
-   * @param ticks
-   *          number of ticks to add
+   * @param ticks number of ticks to add
    */
   public void addTicks(int ticks) {
     Preconditions.checkState(!mIsFinished, "Flow is already finished, cannot add ticks.");
@@ -148,12 +146,12 @@ public class Flow {
     return mFlowId;
   }
 
-  public Tap getTap() {
+  public KegTap getTap() {
     return mTap;
   }
 
   public double getVolumeMl() {
-    return mTap.getVolumeMlForTicks(mTicks);
+    return mTicks * mTap.getMlPerTick();
   }
 
   public int getTicks() {

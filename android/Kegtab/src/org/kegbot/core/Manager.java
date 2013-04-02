@@ -19,6 +19,7 @@ package org.kegbot.core;
 
 import org.kegbot.app.util.IndentingPrintWriter;
 
+import android.os.Handler;
 import android.util.Log;
 
 import com.squareup.otto.Bus;
@@ -32,6 +33,7 @@ public abstract class Manager {
 
   private final String mName;
   private final Bus mBus;
+  private final Handler mHandler = new Handler();
 
   public Manager(Bus bus) {
     mBus = bus;
@@ -49,6 +51,7 @@ public abstract class Manager {
    * no-op.
    */
   protected void start() {
+
   }
 
   /**
@@ -68,6 +71,19 @@ public abstract class Manager {
     Log.d(mName, "Reloading (default implementation).");
     stop();
     start();
+  }
+
+  protected Bus getBus() {
+    return mBus;
+  }
+
+  protected void postOnMainThread(final Object event) {
+    mHandler.post(new Runnable() {
+      @Override
+      public void run() {
+        getBus().post(event);
+      }
+    });
   }
 
   /**

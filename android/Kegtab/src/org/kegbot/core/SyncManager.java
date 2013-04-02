@@ -25,6 +25,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiException;
 import org.kegbot.api.KegbotApiNotFoundError;
+import org.kegbot.app.event.DrinkPostedEvent;
 import org.kegbot.app.storage.LocalDbHelper;
 import org.kegbot.proto.Api.RecordDrinkRequest;
 import org.kegbot.proto.Api.RecordTemperatureRequest;
@@ -176,6 +177,7 @@ public class SyncManager extends BackgroundManager {
           Log.d(TAG, "Posting pour");
           final Drink drink = mApi.recordDrink(request);
           Log.d(TAG, "Drink posted: " + drink);
+          postOnMainThread(new DrinkPostedEvent(drink));
 
           if (pour.getImagesCount() > 0) {
             Log.d(TAG, "Drink had images, trying to post them..");

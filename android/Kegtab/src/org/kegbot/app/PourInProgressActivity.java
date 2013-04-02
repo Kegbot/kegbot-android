@@ -27,7 +27,7 @@ import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.core.Flow;
 import org.kegbot.core.FlowManager;
 import org.kegbot.core.KegbotCore;
-import org.kegbot.core.Tap;
+import org.kegbot.proto.Models.KegTap;
 
 import android.app.ActionBar;
 import android.app.AlertDialog;
@@ -99,11 +99,11 @@ public class PourInProgressActivity extends CoreActivity {
   private Button mDoneButton;
   private ViewPager mTapPager;
 
-  private Tap mCurrentTap;
+  private KegTap mCurrentTap;
 
-  private List<Tap> mTaps;
+  private List<KegTap> mTaps;
 
-  private final List<Tap> mLastActiveTaps = Lists.newArrayList();
+  private final List<KegTap> mLastActiveTaps = Lists.newArrayList();
 
   private static final boolean DEBUG = false;
 
@@ -168,7 +168,7 @@ public class PourInProgressActivity extends CoreActivity {
     @Override
     public void onPageSelected(int position) {
       PourStatusFragment frag = (PourStatusFragment) mPouringTapAdapter.getItem(position);
-      final Tap tap = frag.getTap();
+      final KegTap tap = frag.getTap();
       if (tap != mCurrentTap) {
         updateForNewlyFocusedTap(tap);
       }
@@ -193,7 +193,7 @@ public class PourInProgressActivity extends CoreActivity {
 
     @Override
     public Fragment getItem(int position) {
-      final Tap tap = mTaps.get(position);
+      final KegTap tap = mTaps.get(position);
       if (!mFrags.containsKey(tap.getMeterName())) {
         mFrags.put(tap.getMeterName(), new PourStatusFragment(tap));
       }
@@ -206,7 +206,7 @@ public class PourInProgressActivity extends CoreActivity {
       return POSITION_NONE;
     }
 
-    public Tap getTap(int position) {
+    public KegTap getTap(int position) {
       return ((PourStatusFragment) getItem(position)).getTap();
     }
 
@@ -311,7 +311,7 @@ public class PourInProgressActivity extends CoreActivity {
 
       @Override
       public void afterTextChanged(Editable s) {
-        final Tap tap = mCurrentTap;
+        final KegTap tap = mCurrentTap;
         if (tap == null) {
           Log.w(TAG, "Bad tap.");
           return;
@@ -355,7 +355,7 @@ public class PourInProgressActivity extends CoreActivity {
   }
 
   private Flow getCurrentlyFocusedFlow() {
-    final Tap tap = mCurrentTap;
+    final KegTap tap = mCurrentTap;
     if (tap != null) {
       final Flow flow = mFlowManager.getFlowForTap(tap);
       if (flow != null) {
@@ -365,7 +365,7 @@ public class PourInProgressActivity extends CoreActivity {
     return null;
   }
 
-  private void updateForNewlyFocusedTap(final Tap tap) {
+  private void updateForNewlyFocusedTap(final KegTap tap) {
     mCurrentTap = tap;
 
     final Flow flow = mFlowManager.getFlowForTap(tap);
@@ -437,12 +437,12 @@ public class PourInProgressActivity extends CoreActivity {
     }
   }
 
-  private Tap getMostActiveTap() {
-    Tap tap = mCurrentTap;
+  private KegTap getMostActiveTap() {
+    KegTap tap = mCurrentTap;
     long leastIdle = Long.MAX_VALUE;
 
     for (Flow flow : mFlowManager.getAllActiveFlows()) {
-      final Tap flowTap = flow.getTap();
+      final KegTap flowTap = flow.getTap();
       if (flow.getIdleTimeMs() < leastIdle) {
         tap = flowTap;
         leastIdle = flow.getIdleTimeMs();
@@ -460,7 +460,7 @@ public class PourInProgressActivity extends CoreActivity {
       }
     }
 
-    final Tap mostActive = getMostActiveTap();
+    final KegTap mostActive = getMostActiveTap();
 
     if (mostActive == null) {
       Log.d(TAG, "Could not find an active tap.");
@@ -477,7 +477,7 @@ public class PourInProgressActivity extends CoreActivity {
   private void scrollToPosition(int position) {
     Log.d(TAG, "scrollToPosition: " + position);
     mTapPager.setCurrentItem(position, true);
-    final Tap tap = mPouringTapAdapter.getTap(position);
+    final KegTap tap = mPouringTapAdapter.getTap(position);
     if (tap != mCurrentTap) {
       updateForNewlyFocusedTap(tap);
     }
@@ -489,9 +489,9 @@ public class PourInProgressActivity extends CoreActivity {
     mHandler.removeCallbacks(FLOW_UPDATE_RUNNABLE);
     mCameraFragment.setEnabled(!allFlows.isEmpty());
 
-    final List<Tap> activeTaps = mFlowManager.getAllActiveTaps();
+    final List<KegTap> activeTaps = mFlowManager.getAllActiveTaps();
 
-    for (final Tap tap : activeTaps) {
+    for (final KegTap tap : activeTaps) {
       if (!mTaps.contains(tap)) {
         mTaps.add(tap);
         Log.d(TAG, "+++ Added newly active tap "  + tap);

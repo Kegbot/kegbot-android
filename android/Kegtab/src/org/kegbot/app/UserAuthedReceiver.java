@@ -21,8 +21,8 @@ package org.kegbot.app;
 
 import org.kegbot.core.FlowManager;
 import org.kegbot.core.KegbotCore;
-import org.kegbot.core.Tap;
 import org.kegbot.core.TapManager;
+import org.kegbot.proto.Models.KegTap;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -68,7 +68,7 @@ public class UserAuthedReceiver extends BroadcastReceiver {
     final TapManager tapManager = KegbotCore.getInstance(context).getTapManager();
 
     if (!Strings.isNullOrEmpty(tapName)) {
-      final Tap tap = tapManager.getTapForMeterName(tapName);
+      final KegTap tap = tapManager.getTapForMeterName(tapName);
       flowManager.activateUserAtTap(tap, username);
     } else {
       flowManager.activateUserAmbiguousTap(username);

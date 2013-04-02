@@ -22,9 +22,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import org.kegbot.api.KegbotApi;
-import org.kegbot.api.KegbotApiException;
 import org.kegbot.app.config.AppConfiguration;
+import org.kegbot.app.event.TapListUpdateEvent;
 import org.kegbot.app.service.CheckinService;
 import org.kegbot.core.AuthenticationManager;
 import org.kegbot.core.KegbotCore;
@@ -35,7 +34,6 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v13.app.FragmentPagerAdapter;
@@ -51,6 +49,7 @@ import com.google.android.gcm.GCMRegistrar;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.squareup.otto.Subscribe;
 
 public class HomeActivity extends CoreActivity {
 
@@ -67,8 +66,6 @@ public class HomeActivity extends CoreActivity {
   private static final int REQUEST_CREATE_DRINKER = RESULT_FIRST_USER + 1001;
 
   private EventListFragment mEvents;
-
-  private KegbotApi mApi;
 
   private ViewGroup mControls;
   private Button mBeerMeButton;
@@ -89,7 +86,7 @@ public class HomeActivity extends CoreActivity {
     public void run() {
       mEvents.loadEvents();
       mSession.loadCurrentSessionDetail();
-      new TapLoaderTask().execute();
+      //new TapLoaderTask().execute();
       mHandler.postDelayed(this, REFRESH_INTERVAL_MILLIS);
     }
   };
@@ -116,7 +113,6 @@ public class HomeActivity extends CoreActivity {
     setContentView(R.layout.main_activity);
 
     mCore = KegbotCore.getInstance(this);
-    mApi = mCore.getApi();
     mConfig = mCore.getConfiguration();
 
     mTapStatusAdapter = new MyAdapter(getFragmentManager());
@@ -175,6 +171,7 @@ public class HomeActivity extends CoreActivity {
   @Override
   protected void onResume() {
     super.onResume();
+    mCore.getBus().register(this);
 
     boolean showControls = false;
 
@@ -203,6 +200,8 @@ public class HomeActivity extends CoreActivity {
 
   @Override
   protected void onPause() {
+    Log.d(LOG_TAG, "--- unregistering");
+    mCore.getBus().unregister(this);
     mHandler.removeCallbacks(mRefreshRunnable);
     super.onPause();
   }
@@ -272,6 +271,29 @@ public class HomeActivity extends CoreActivity {
     mHandler.post(mRefreshRunnable);
   }
 
+  @Subscribe
+  public void onTapListUpdate(TapListUpdateEvent event) {
+    Log.d(LOG_TAG, "Got tap list change event: " + event);
+    for (final KegTap tap : event.getTaps()) {
+      final String tapName = tap.getMeterName();
+
+      if (mTapDetails.contains(tap)) {
+        Log.d(LOG_TAG, "Skipping unchanged tap: " + tap.getMeterName());
+        continue;
+      }
+
+      if (!mFragMap.containsKey(tapName)) {
+        Log.d(LOG_TAG, "Adding new tap: " + tapName);
+        Log.d(LOG_TAG, "Tap details: " + tap);
+        mTapDetails.add(tap);
+        mTapStatusAdapter.notifyDataSetChanged();
+      } else {
+        Log.d(LOG_TAG, "Updating tap: " + tapName);
+        mFragMap.get(tapName).setTapDetail(tap);
+      }
+    }
+  }
+
   @Override
   public void onConfigurationChanged(Configuration newConfig) {
     super.onConfigurationChanged(newConfig);
@@ -304,42 +326,6 @@ public class HomeActivity extends CoreActivity {
       mFragMap.put(tapName, frag);
     }
     return mFragMap.get(tapName);
-  }
-
-  private class TapLoaderTask extends AsyncTask<Void, Void, List<KegTap>> {
-
-    @Override
-    protected List<KegTap> doInBackground(Void... params) {
-      try {
-        return mApi.getAllTaps();
-      } catch (KegbotApiException e) {
-        Log.e(LOG_TAG, "Api error.", e);
-        return null;
-      }
-    }
-
-    @Override
-    protected void onPostExecute(List<KegTap> result) {
-      if (result == null) {
-        return;
-      }
-      try {
-        for (final KegTap tap : result) {
-          final String tapName = tap.getMeterName();
-          if (!mFragMap.containsKey(tapName)) {
-            Log.d(LOG_TAG, "Adding new tap: " + tapName);
-            Log.d(LOG_TAG, "Tap details: " + tap);
-            mTapDetails.add(tap);
-            mTapStatusAdapter.notifyDataSetChanged();
-          } else {
-            Log.d(LOG_TAG, "Updating tap: " + tapName);
-            mFragMap.get(tapName).setTapDetail(tap);
-          }
-        }
-      } catch (Throwable e) {
-        Log.wtf("TapStatusFragment", "UNCAUGHT EXCEPTION", e);
-      }
-    }
   }
 
 }

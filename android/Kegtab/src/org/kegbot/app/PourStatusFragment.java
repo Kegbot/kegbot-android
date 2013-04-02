@@ -25,8 +25,6 @@ import org.kegbot.app.view.BadgeView;
 import org.kegbot.core.AuthenticationManager;
 import org.kegbot.core.Flow;
 import org.kegbot.core.KegbotCore;
-import org.kegbot.core.Tap;
-import org.kegbot.proto.Models.BeerType;
 import org.kegbot.proto.Models.Keg;
 import org.kegbot.proto.Models.KegTap;
 
@@ -62,7 +60,7 @@ public class PourStatusFragment extends ListFragment {
 
   private ImageDownloader mImageDownloader;
 
-  private final Tap mTap;
+  private final KegTap mTap;
 
   private View mView;
   private BadgeView mPourVolumeBadge;
@@ -110,11 +108,11 @@ public class PourStatusFragment extends ListFragment {
   private Flow mFlow = null;
 
   @SuppressLint("ValidFragment")
-  public PourStatusFragment(Tap tap) {
+  public PourStatusFragment(KegTap tap) {
     mTap = tap;
   }
 
-  public Tap getTap() {
+  public KegTap getTap() {
     return mTap;
   }
 
@@ -177,18 +175,13 @@ public class PourStatusFragment extends ListFragment {
   }
 
   private void applyTapDetail() {
-    final KegTap tapDetail = mCore.getConfigurationManager().getTapDetail(
-        getTap().getMeterName());
-    if (tapDetail == null) {
-      Log.wtf(TAG, "Tap detail is null.");
-      return;
-    }
+    final KegTap tap = getTap();
     mBeerImage.setImageResource(R.drawable.kegbot_unknown_square_2);
 
-    if (tapDetail.hasCurrentKeg()) {
-      final Keg keg = tapDetail.getCurrentKeg();
-      final BeerType type = keg.getType();
-      final String beerName = type.getName();
+    final Keg keg = tap.getCurrentKeg();
+
+    if (keg != null) {
+      final String beerName = keg.getType().getName();
 
       // Set beer name.
       if (!Strings.isNullOrEmpty(beerName) && mTapTitle != null) {
@@ -196,9 +189,8 @@ public class PourStatusFragment extends ListFragment {
       }
 
       // Set beer image.
-      if (type.hasImage()) {
-        final String imageUrl = type.getImage().getUrl();
-        mImageDownloader.download(imageUrl, mBeerImage);
+      if (keg.getType().hasImage()) {
+        mImageDownloader.download(keg.getType().getImage().getUrl(), mBeerImage);
       }
       mTapSubtitle.setText(mTap.getName());
     } else {

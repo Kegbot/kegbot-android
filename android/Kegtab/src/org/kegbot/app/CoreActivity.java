@@ -27,7 +27,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
@@ -58,15 +57,12 @@ public class CoreActivity extends Activity {
   protected void onStart() {
     super.onStart();
     EasyTracker.getTracker().trackActivityStart(this);
-    Log.d(TAG, "Registering with bus.");
-    KegbotCore.getInstance(this).getBus().register(this);
   }
 
   @Override
   protected void onStop() {
     super.onStop();
     EasyTracker.getTracker().trackActivityStop(this);
-    KegbotCore.getInstance(this).getBus().unregister(this);
     mMenu = null;
   }
 

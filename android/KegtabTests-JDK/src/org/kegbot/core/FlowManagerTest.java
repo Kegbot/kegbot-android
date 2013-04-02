@@ -27,6 +27,7 @@ import junit.framework.TestCase;
 import org.kegbot.api.KegbotApi;
 import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.core.FlowManager.Clock;
+import org.kegbot.proto.Models.KegTap;
 
 import com.squareup.otto.Bus;
 
@@ -41,8 +42,8 @@ public class FlowManagerTest extends TestCase {
   private AppConfiguration mConfig;
   private KegbotApi mApi;
   private Bus mBus;
-  private Tap mTap0;
-  private Tap mTap1;
+  private KegTap mTap0;
+  private KegTap mTap1;
   private FlowManager mFlowManager;
   private long mElapsedRealtime = 0;
 
@@ -61,8 +62,8 @@ public class FlowManagerTest extends TestCase {
     mApi = mock(KegbotApi.class);
 
     mTapManager = new TapManager(mBus, mApi);
-    mTap0 = new Tap("tap0", 1, "kegboard.flow0", null);
-    mTap1 = new Tap("tap1", 1, "kegboard.flow1", null);
+    mTap0 = KegTap.newBuilder().setId(1).setName("tap0").setMlPerTick(1).setMeterName("kegboard.flow0").build();
+    mTap1 = KegTap.newBuilder().setId(2).setName("tap1").setMlPerTick(1).setMeterName("kegboard.flow1").build();
     mTapManager.addTap(mTap0);
     mTapManager.addTap(mTap1);
 

@@ -31,6 +31,7 @@ import org.kegbot.kegboard.KegboardHelloMessage;
 import org.kegbot.kegboard.KegboardMeterStatusMessage;
 import org.kegbot.kegboard.KegboardOutputStatusMessage;
 import org.kegbot.kegboard.KegboardTemperatureReadingMessage;
+import org.kegbot.proto.Models.KegTap;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -184,12 +185,13 @@ public class HardwareManager extends Manager {
     mContext.unregisterReceiver(mDebugReceiver);
   }
 
-  public void setTapRelayEnabled(Tap tap, boolean enabled) {
-    Log.d(TAG, "setTapRelayEnabled tap=" + tap + " enabled=" + enabled);
-
+  public void setTapRelayEnabled(KegTap tap, boolean enabled) {
     if (tap == null) {
       return;
     }
+
+    Log.d(TAG, "setTapRelayEnabled tap=" + tap.getMeterName() + " enabled=" + enabled);
+
     final String relayName = tap.getRelayName();
     if (Strings.isNullOrEmpty(relayName)) {
       return;

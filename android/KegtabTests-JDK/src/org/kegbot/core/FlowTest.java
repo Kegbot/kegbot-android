@@ -21,6 +21,7 @@ import junit.framework.TestCase;
 
 import org.kegbot.app.util.TimeSeries;
 import org.kegbot.core.FlowManager.Clock;
+import org.kegbot.proto.Models.KegTap;
 
 /**
  * Tests for {@link Flow}.
@@ -39,8 +40,14 @@ public class FlowTest extends TestCase {
   };
 
   private static final int FAKE_ML_PER_TICK = 3;
-  private static final Tap FAKE_TAP = new Tap("fake-tap", FAKE_ML_PER_TICK, "fake-meter",
-      "fake-relay");
+  private static final KegTap FAKE_TAP = KegTap.newBuilder()
+      .setId(1)
+      .setName("fake-tap")
+      .setMlPerTick(FAKE_ML_PER_TICK)
+      .setMeterName("fake-meter")
+      .setRelayName("fake-relay")
+      .build();
+
 
   @Override
   protected void setUp() throws Exception {
