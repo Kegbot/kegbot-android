@@ -148,6 +148,11 @@ public class PinActivity extends Activity {
    * @param startIntent the intent which shall be used to start the activity upon success.
    */
   public static void startThroughPinActivity(Context context, Intent startIntent) {
+    if (Strings.isNullOrEmpty(KegbotCore.getInstance(context).getConfiguration().getPin())) {
+      // Short circuit: no manager pin.
+      context.startActivity(startIntent);
+      return;
+    }
     final Intent intent = new Intent(context, PinActivity.class);
     intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
     intent.putExtra("start_intent", startIntent);
