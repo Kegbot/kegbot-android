@@ -61,7 +61,7 @@ public class FlowManagerTest extends TestCase {
     mBus = mock(Bus.class);
     mApi = mock(KegbotApi.class);
 
-    mTapManager = new TapManager(mBus, mApi);
+    mTapManager = new TapManager(mBus);
     mTap0 = KegTap.newBuilder().setId(1).setName("tap0").setMlPerTick(1).setMeterName("kegboard.flow0").build();
     mTap1 = KegTap.newBuilder().setId(2).setName("tap1").setMlPerTick(1).setMeterName("kegboard.flow1").build();
     mTapManager.addTap(mTap0);

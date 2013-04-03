@@ -19,7 +19,6 @@
 package org.kegbot.app;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.app.event.TapListUpdateEvent;
@@ -32,9 +31,7 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
@@ -48,11 +45,6 @@ import com.squareup.otto.Subscribe;
 public class HomeActivity extends CoreActivity {
 
   private static final String LOG_TAG = HomeActivity.class.getSimpleName();
-
-  /**
-   * Interval for periodic API polling.
-   */
-  private static final long REFRESH_INTERVAL_MILLIS = TimeUnit.SECONDS.toMillis(30);
 
   private static final String GCM_SENDER_ID = "431392459978";
 
@@ -69,22 +61,12 @@ public class HomeActivity extends CoreActivity {
   private ViewPager mTapStatusPager;
   private AppConfiguration mConfig;
   private TapEditFragment mTapEditor;
-  private final Handler mHandler = new Handler();
 
   /**
    * Shadow copy of tap manager taps. Updated, as needed, in
    * {@link #onTapListUpdate(TapListUpdateEvent)}.
    */
   private final List<KegTap> mTaps = Lists.newArrayList();
-
-  private final Runnable mRefreshRunnable = new Runnable() {
-    @Override
-    public void run() {
-      mEvents.loadEvents();
-      mSession.loadCurrentSessionDetail();
-      mHandler.postDelayed(this, REFRESH_INTERVAL_MILLIS);
-    }
-  };
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
@@ -101,8 +83,8 @@ public class HomeActivity extends CoreActivity {
 
     getFragmentManager().beginTransaction()
         .add(R.id.rightNav, mControls)
-        .add(R.id.rightNav, mEvents)
         .add(R.id.rightNav, mSession)
+        .add(R.id.rightNav, mEvents)
         .disallowAddToBackStack()
         .setTransition(FragmentTransaction.TRANSIT_NONE)
         .commit();
@@ -152,14 +134,12 @@ public class HomeActivity extends CoreActivity {
     super.onResume();
     mCore.getBus().register(this);
     handleIntent();
-    startStatusPolling();
   }
 
   @Override
   protected void onPause() {
     Log.d(LOG_TAG, "--- unregistering");
     mCore.getBus().unregister(this);
-    mHandler.removeCallbacks(mRefreshRunnable);
     super.onPause();
   }
 
@@ -212,11 +192,6 @@ public class HomeActivity extends CoreActivity {
     }
   }
 
-  private void startStatusPolling() {
-    mHandler.removeCallbacks(mRefreshRunnable);
-    mHandler.post(mRefreshRunnable);
-  }
-
   @Subscribe
   public void onTapListUpdate(TapListUpdateEvent event) {
     Log.d(LOG_TAG, "Got tap list change event: " + event);
@@ -258,12 +233,6 @@ public class HomeActivity extends CoreActivity {
     editorIntent.putExtra(EXTRA_METER_NAME, meterName);
     editorIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
     PinActivity.startThroughPinActivity(context, editorIntent);
-  }
-
-  @Override
-  public void onConfigurationChanged(Configuration newConfig) {
-    super.onConfigurationChanged(newConfig);
-    startStatusPolling();
   }
 
   public class MyAdapter extends FragmentStatePagerAdapter {

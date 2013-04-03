@@ -19,18 +19,31 @@
 package org.kegbot.core;
 
 import java.io.File;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
+
+import javax.annotation.Nullable;
 
 import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiException;
 import org.kegbot.api.KegbotApiNotFoundError;
+import org.kegbot.app.event.CurrentSessionChangedEvent;
 import org.kegbot.app.event.DrinkPostedEvent;
+import org.kegbot.app.event.SystemEventListUpdateEvent;
+import org.kegbot.app.event.TapListUpdateEvent;
 import org.kegbot.app.storage.LocalDbHelper;
 import org.kegbot.proto.Api.RecordDrinkRequest;
 import org.kegbot.proto.Api.RecordTemperatureRequest;
 import org.kegbot.proto.Internal.PendingPour;
 import org.kegbot.proto.Models.Drink;
+import org.kegbot.proto.Models.KegTap;
+import org.kegbot.proto.Models.Session;
+import org.kegbot.proto.Models.Stats;
+import org.kegbot.proto.Models.SystemEvent;
 import org.kegbot.proto.Models.ThermoLog;
 
 import android.content.ContentValues;
@@ -41,9 +54,11 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.os.SystemClock;
 import android.util.Log;
 
+import com.google.common.collect.Lists;
 import com.google.protobuf.AbstractMessage;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.squareup.otto.Bus;
+import com.squareup.otto.Produce;
 
 /**
  * This service manages a connection to a Kegbot backend, using the Kegbot API.
@@ -65,9 +80,35 @@ public class SyncManager extends BackgroundManager {
   private final KegbotApi mApi;
   private final Context mContext;
 
+  private List<KegTap> mLastKegTapList = Lists.newArrayList();
+  private List<SystemEvent> mLastSystemEventList = Lists.newArrayList();
+  @Nullable private Session mLastSession = null;
+  @Nullable private Stats mLastSessionStats = null;
+
   private SQLiteOpenHelper mLocalDbHelper;
 
   private boolean mRunning = true;
+  private boolean mSyncImmediate = true;
+
+  private long mNextSyncTime = Long.MIN_VALUE;
+
+  private static final long SYNC_INTERVAL_MILLIS = TimeUnit.MINUTES.toMillis(1);
+  private static final long SYNC_INTERVAL_AGGRESSIVE_MILLIS = TimeUnit.SECONDS.toMillis(10);
+
+  public static Comparator<SystemEvent> EVENTS_DESCENDING = new Comparator<SystemEvent>() {
+    @Override
+    public int compare(SystemEvent object1, SystemEvent object2) {
+      try {
+        final long time1 = org.kegbot.app.util.DateUtils.dateFromIso8601String(object1.getTime());
+        final long time2 = org.kegbot.app.util.DateUtils.dateFromIso8601String(object2.getTime());
+        return Long.valueOf(time2).compareTo(Long.valueOf(time1));
+      } catch (IllegalArgumentException e) {
+        Log.wtf(TAG, "Error parsing times", e);
+        return 0;
+      }
+    }
+  };
+
 
   public SyncManager(Bus bus, Context context, KegbotApi api) {
     super(bus);
@@ -79,14 +120,19 @@ public class SyncManager extends BackgroundManager {
   public synchronized void start() {
     Log.d(TAG, "Opening local database");
     mRunning = true;
+    mSyncImmediate = true;
+    mNextSyncTime = Long.MIN_VALUE;
     mLocalDbHelper = new LocalDbHelper(mContext);
     mRunning = true;
+    getBus().register(this);
     super.start();
   }
 
   @Override
   public synchronized void stop() {
     mRunning = false;
+    getBus().unregister(this);
+    mLastKegTapList.clear();
     super.stop();
   }
 
@@ -136,8 +182,24 @@ public class SyncManager extends BackgroundManager {
             break;
           }
         }
+
         writeNewRequestsToDb();
         postPendingRequestsToServer();
+
+        long now = SystemClock.elapsedRealtime();
+        if (mSyncImmediate == true || now > mNextSyncTime) {
+          Log.d(TAG, "Syncing: syncImmediate=" + mSyncImmediate + " mNextSyncTime=" + mNextSyncTime);
+          mSyncImmediate = false;
+
+          boolean syncError = true;
+          try {
+            syncError = syncNow();
+          } finally {
+            mNextSyncTime = SystemClock.elapsedRealtime() +
+                (syncError ? SYNC_INTERVAL_AGGRESSIVE_MILLIS : SYNC_INTERVAL_MILLIS);
+          }
+
+        }
         SystemClock.sleep(1000);
       }
     } catch (Throwable e) {
@@ -195,6 +257,8 @@ public class SyncManager extends BackgroundManager {
           }
           processed = true;
 
+          // Sync taps, etc, on new drink.
+          mSyncImmediate = true;
         } else if (record instanceof RecordTemperatureRequest) {
           processed = true; // XXX drop even if fail
           Log.d(TAG, "Posting thermo");
@@ -262,6 +326,82 @@ public class SyncManager extends BackgroundManager {
       db.close();
     }
     return inserted;
+  }
+
+  private boolean syncNow() {
+    boolean error = false;
+    // Taps.
+    try {
+      List<KegTap> newTaps = mApi.getAllTaps();
+      if (!newTaps.equals(mLastKegTapList)) {
+        mLastKegTapList = newTaps;
+        postOnMainThread(new TapListUpdateEvent(newTaps));
+      }
+    } catch (KegbotApiException e) {
+      Log.w(TAG, "Error syncing taps: " + e);
+      error = true;
+    }
+
+    // System events.
+    SystemEvent lastEvent = null;
+    if (!mLastSystemEventList.isEmpty()) {
+      lastEvent = mLastSystemEventList.get(0);
+    }
+
+    try {
+      List<SystemEvent> newEvents;
+      if (lastEvent != null) {
+        newEvents = mApi.getRecentEvents(lastEvent.getId());
+      } else {
+        newEvents = mApi.getRecentEvents();
+      }
+      Collections.sort(newEvents, EVENTS_DESCENDING);
+
+      if (!newEvents.isEmpty()) {
+        mLastSystemEventList.clear();
+        mLastSystemEventList.addAll(newEvents);
+        postOnMainThread(new SystemEventListUpdateEvent(mLastSystemEventList));
+      }
+    } catch (KegbotApiException e) {
+      Log.w(TAG, "Error syncing events: " + e);
+      error = true;
+    }
+
+    // Current session
+    try {
+      Session currentSession = mApi.getCurrentSession();
+      if ((currentSession == null && mLastSession != null) ||
+          (mLastSession == null && currentSession != null) ||
+          (currentSession != null && !currentSession.equals(mLastSession))) {
+        Stats stats = null;
+        if (currentSession != null) {
+          stats = mApi.getSessionStats(currentSession.getId());
+        }
+        mLastSession = currentSession;
+        mLastSessionStats = stats;
+        postOnMainThread(new CurrentSessionChangedEvent(currentSession, stats));
+      }
+    } catch (KegbotApiException e) {
+      Log.w(TAG, "Error syncing current session: " + e);
+      error = true;
+    }
+
+    return error;
+  }
+
+  @Produce
+  public TapListUpdateEvent produceTapList() {
+    return new TapListUpdateEvent(Lists.newArrayList(mLastKegTapList));
+  }
+
+  @Produce
+  public SystemEventListUpdateEvent produceSystemEvents() {
+    return new SystemEventListUpdateEvent(Lists.newArrayList(mLastSystemEventList));
+  }
+
+  @Produce
+  public CurrentSessionChangedEvent produceCurrentSession() {
+    return new CurrentSessionChangedEvent(mLastSession, mLastSessionStats);
   }
 
   private int numPendingEntries() {

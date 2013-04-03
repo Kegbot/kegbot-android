@@ -18,21 +18,21 @@
  */
 package org.kegbot.app;
 
-import java.util.Comparator;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.kegbot.api.KegbotApiException;
+import org.kegbot.app.event.SystemEventListUpdateEvent;
 import org.kegbot.app.util.ImageDownloader;
 import org.kegbot.app.util.Units;
 import org.kegbot.core.KegbotCore;
+import org.kegbot.core.SyncManager;
 import org.kegbot.proto.Models.Drink;
 import org.kegbot.proto.Models.SystemEvent;
 
 import android.app.Activity;
 import android.app.ListFragment;
 import android.content.Context;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Html;
@@ -52,6 +52,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
+import com.squareup.otto.Subscribe;
 
 /**
  * Lists recent events.
@@ -60,14 +62,17 @@ import com.google.common.base.Strings;
  */
 public class EventListFragment extends ListFragment {
 
-  private static final String LOG_TAG = EventListFragment.class.getSimpleName();
+  private static final String TAG = EventListFragment.class.getSimpleName();
 
+  /** Maximum number of events to show/retain. */
+  private static final int MAX_EVENTS = 20;
   private static final long REFRESH_INTERVAL_MILLIS = TimeUnit.MINUTES.toMillis(1);
 
   private ArrayAdapter<SystemEvent> mAdapter;
   private KegbotCore mCore;
   private ImageDownloader mImageDownloader;
   private final Handler mHandler = new Handler();
+  private final List<SystemEvent> mCachedEvents = Lists.newArrayList();
 
   /** Refreshes event timestamps by invalidating all ListView children periodically. */
   private final Runnable mTimeUpdateRunnable = new Runnable() {
@@ -78,22 +83,6 @@ public class EventListFragment extends ListFragment {
         v.invalidateViews();
       }
       mHandler.postDelayed(this, REFRESH_INTERVAL_MILLIS);
-    }
-  };
-
-  private int mLastEventId = -1;
-
-  private static Comparator<SystemEvent> EVENTS_DESCENDING = new Comparator<SystemEvent>() {
-    @Override
-    public int compare(SystemEvent object1, SystemEvent object2) {
-      try {
-        final long time1 = org.kegbot.app.util.DateUtils.dateFromIso8601String(object1.getTime());
-        final long time2 = org.kegbot.app.util.DateUtils.dateFromIso8601String(object2.getTime());
-        return Long.valueOf(time2).compareTo(Long.valueOf(time1));
-      } catch (IllegalArgumentException e) {
-        Log.wtf(LOG_TAG, "Error parsing times", e);
-        return 0;
-      }
     }
   };
 
@@ -113,7 +102,7 @@ public class EventListFragment extends ListFragment {
       try {
         formatEvent(eventDetail, view);
       } catch (Throwable e) {
-        Log.wtf(LOG_TAG, "UNCAUGHT EXCEPTION", e);
+        Log.wtf(TAG, "UNCAUGHT EXCEPTION", e);
       }
       return view;
     }
@@ -208,44 +197,6 @@ public class EventListFragment extends ListFragment {
     }
   }
 
-  private class EventLoaderTask extends AsyncTask<Void, Void, List<SystemEvent>> {
-
-    @Override
-    protected List<SystemEvent> doInBackground(Void... params) {
-      try {
-        if (mLastEventId <= 0) {
-          return mCore.getApi().getRecentEvents();
-        } else {
-          return mCore.getApi().getRecentEvents(mLastEventId);
-        }
-      } catch (KegbotApiException e) {
-        Log.w(LOG_TAG, "Could not load events: " + e.toString());
-        return null;
-      }
-    }
-
-    @Override
-    protected void onPostExecute(List<SystemEvent> events) {
-      int greatestEventId = mLastEventId;
-      if (events != null) {
-        for (final SystemEvent event : events) {
-          mAdapter.add(event);
-          final int eventId = event.getId();
-          if (eventId > greatestEventId) {
-            greatestEventId = eventId;
-          }
-        }
-        if (greatestEventId != mLastEventId) {
-          mLastEventId = greatestEventId;
-          Log.d(LOG_TAG, "Events reloaded, most recent event id: " + mLastEventId);
-        }
-        if (!events.isEmpty()) {
-          mAdapter.sort(EVENTS_DESCENDING);
-        }
-      }
-    }
-  }
-
   @Override
   public void onAttach(Activity activity) {
     super.onAttach(activity);
@@ -279,12 +230,34 @@ public class EventListFragment extends ListFragment {
   public void onResume() {
     super.onResume();
     mHandler.postDelayed(mTimeUpdateRunnable, REFRESH_INTERVAL_MILLIS);
+    mCore.getBus().register(this);
   }
 
   @Override
   public void onPause() {
+    mCore.getBus().unregister(this);
     mHandler.removeCallbacks(mTimeUpdateRunnable);
     super.onPause();
+  }
+
+  @Subscribe
+  public void onEventListUpdate(SystemEventListUpdateEvent event) {
+    List<SystemEvent> newEvents = event.getEvents();
+    if (!newEvents.isEmpty()) {
+      Log.d(TAG, "Events updated: " + newEvents.size());
+      for (SystemEvent e : newEvents) {
+        if (!mCachedEvents.contains(e)) {
+          mCachedEvents.add(e);
+        }
+      }
+
+      Collections.sort(mCachedEvents, SyncManager.EVENTS_DESCENDING);
+      while (mCachedEvents.size() > MAX_EVENTS) {
+        mCachedEvents.remove(mCachedEvents.size() - 1);
+      }
+      mAdapter.clear();
+      mAdapter.addAll(mCachedEvents);
+    }
   }
 
   @Override
@@ -298,7 +271,4 @@ public class EventListFragment extends ListFragment {
     mCore = KegbotCore.getInstance(getActivity());
   }
 
-  void loadEvents() {
-    new EventLoaderTask().execute();
-  }
 }

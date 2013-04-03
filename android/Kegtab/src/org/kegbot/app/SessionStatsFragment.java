@@ -22,8 +22,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.kegbot.api.KegbotApi;
-import org.kegbot.api.KegbotApiException;
+import org.kegbot.app.event.CurrentSessionChangedEvent;
 import org.kegbot.app.util.Units;
 import org.kegbot.core.KegbotCore;
 import org.kegbot.proto.Models.Session;
@@ -31,7 +30,6 @@ import org.kegbot.proto.Models.Stats;
 import org.kegbot.proto.Models.Stats.DrinkerVolume;
 
 import android.app.Fragment;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -40,12 +38,16 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.google.common.collect.Lists;
+import com.squareup.otto.Subscribe;
 
 public class SessionStatsFragment extends Fragment {
 
-  private KegbotCore mCore;
+  private static final String TAG = SessionStatsFragment.class.getSimpleName();
 
+  private KegbotCore mCore;
   private View mView;
+  private Session mSession;
+  private Stats mStats;
 
   private final static Comparator<DrinkerVolume> VOLUMES_DESCENDING = new Comparator<DrinkerVolume>() {
     @Override
@@ -63,29 +65,56 @@ public class SessionStatsFragment extends Fragment {
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     mView = inflater.inflate(R.layout.session_detail_fragment_layout, container, false);
+    if (mSession != null) {
+      updateSessionView();
+    }
     return mView;
   }
 
-  private View updateSessionView(View view, Session session) {
-    if (session == null) {
-      view.setVisibility(View.GONE);
-      return view;
-    }
-    view.setVisibility(View.VISIBLE);
+  @Override
+  public void onResume() {
+    mCore.getBus().register(this);
+    super.onResume();
+    updateSessionView();
+  }
 
-    final Stats stats = session.getStats();
-    final List<DrinkerVolume> volumeByDrinker = Lists.newArrayList(stats.getVolumeByDrinkerList());
+  @Override
+  public void onPause() {
+    mCore.getBus().unregister(this);
+    super.onPause();
+  }
+
+  @Subscribe
+  public void handleSessionChange(CurrentSessionChangedEvent event) {
+    mSession = event.getSession();
+    mStats = event.getSessionStats();
+    Log.d(TAG, "Session change: session=" + mSession);
+    updateSessionView();
+  }
+
+  private void updateSessionView() {
+    if (mView == null) {
+      return;
+    }
+
+    if (mSession == null) {
+      mView.setVisibility(View.GONE);
+      return;
+    }
+    mView.setVisibility(View.VISIBLE);
+
+    final List<DrinkerVolume> volumeByDrinker = Lists.newArrayList(mStats.getVolumeByDrinkerList());
     Collections.sort(volumeByDrinker, VOLUMES_DESCENDING);
 
     // Session name.
-    final String sessionName = session.getName();
-    ((TextView) view.findViewById(R.id.sessionTitle)).setText(sessionName);
+    final String sessionName = mSession.getName();
+    ((TextView) mView.findViewById(R.id.sessionTitle)).setText(sessionName);
 
     // Number of drinkers.
     final int numDrinkers = volumeByDrinker.size();
-    ((TextView) view.findViewById(R.id.sessionDetailNumDrinkers)).setText(String
+    ((TextView) mView.findViewById(R.id.sessionDetailNumDrinkers)).setText(String
         .valueOf(numDrinkers));
-    final TextView sessionDetailNumDrinkersHeader = (TextView) view
+    final TextView sessionDetailNumDrinkersHeader = (TextView) mView
         .findViewById(R.id.sessionDetailNumDrinkersHeader);
     if (numDrinkers == 1) {
       sessionDetailNumDrinkersHeader.setText("drinker");
@@ -94,14 +123,14 @@ public class SessionStatsFragment extends Fragment {
     }
 
     // Total volume.
-    final Double volumePints = Double.valueOf(Units.volumeMlToPints(session.getVolumeMl()));
-    ((TextView) view.findViewById(R.id.sessionDetailVolServed)).setText(String.format("%.1f",
+    final Double volumePints = Double.valueOf(Units.volumeMlToPints(mSession.getVolumeMl()));
+    ((TextView) mView.findViewById(R.id.sessionDetailVolServed)).setText(String.format("%.1f",
         volumePints));
 
     final int[] boxes = {R.id.sessionDetailDrinker1, R.id.sessionDetailDrinker2,
         R.id.sessionDetailDrinker3,};
     for (int i = 0; i < boxes.length; i++) {
-      final View box = view.findViewById(boxes[i]);
+      final View box = mView.findViewById(boxes[i]);
       if (i >= numDrinkers) {
         box.setVisibility(View.GONE);
         continue;
@@ -118,48 +147,6 @@ public class SessionStatsFragment extends Fragment {
       final double pints = Units.volumeMlToPints(volumeByDrinker.get(i).getVolumeMl());
       drinkerHeader.setText(String.format("%.1f pints", Double.valueOf(pints)));
     }
-
-    view.setBackgroundDrawable(getResources().getDrawable(R.drawable.shape_rounded_rect));
-
-    return view;
-  }
-
-  public void loadCurrentSessionDetail() {
-    new CurrentSessionDetailLoaderTask().execute();
-  }
-
-  private class CurrentSessionDetailLoaderTask extends AsyncTask<Void, Void, Session> {
-
-    @Override
-    protected Session doInBackground(Void... params) {
-      KegbotApi api = mCore.getApi();
-      try {
-        final Session session = api.getCurrentSession();
-        if (session == null) {
-          return null;
-        }
-
-        if (session.hasStats()) {
-          return session;
-        }
-        final Stats stats = api.getSessionStats(session.getId());
-        return Session.newBuilder(session).setStats(stats).build();
-      } catch (KegbotApiException e) {
-        return null;
-      } catch (RuntimeException e) {
-        return null;
-      }
-    }
-
-    @Override
-    protected void onPostExecute(Session result) {
-      try {
-        updateSessionView(mView, result);
-      } catch (Throwable e) {
-        Log.wtf("CurrentSessionDetailLoaderTask", "UNCAUGHT EXCEPTION", e);
-      }
-    }
-
   }
 
 }

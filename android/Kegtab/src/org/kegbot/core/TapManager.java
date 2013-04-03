@@ -22,18 +22,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.GuardedBy;
-
-import org.kegbot.api.KegbotApi;
-import org.kegbot.api.KegbotApiException;
-import org.kegbot.app.event.DrinkPostedEvent;
 import org.kegbot.app.event.TapListUpdateEvent;
 import org.kegbot.app.util.IndentingPrintWriter;
 import org.kegbot.proto.Models.KegTap;
@@ -44,7 +33,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.squareup.otto.Bus;
-import com.squareup.otto.Produce;
 import com.squareup.otto.Subscribe;
 
 /**
@@ -58,40 +46,6 @@ public class TapManager extends Manager {
 
   private final Map<String, KegTap> mTaps = Maps.newLinkedHashMap();
 
-  /** Normal duration between attempted tap syncs. */
-  private static final long SYNC_INTERVAL_NORMAL_MILLIS = TimeUnit.MINUTES.toMillis(1);
-
-  /**
-   * Aggressive interval between attempted tap syncs, used when the tap list is
-   * empty or when an error is encountered.
-   */
-  private static final long SYNC_INTERVAL_AGGRESSIVE_MILLIS = TimeUnit.SECONDS.toMillis(10);
-
-  private ScheduledExecutorService mExecutorService;
-
-  private final KegbotApi mApi;
-
-  @GuardedBy("this")
-  @Nullable
-  private ScheduledFuture<Void> mScheduledSync;
-
-  private final Callable<Void> mTapSyncRunnable = new Callable<Void>() {
-    @Override
-    public Void call() {
-      final List<KegTap> taps;
-      try {
-        taps = mApi.getAllTaps();
-      } catch (KegbotApiException e) {
-        Log.w(TAG, "Error fetching taps: " + e, e);
-        rescheduleSync(true);
-        return null;
-      }
-      onTapSyncResults(taps);
-      rescheduleSync(false);
-      return null;
-    }
-  };
-
   /**
    * Stores the currently "focused" tap.
    *
@@ -99,22 +53,18 @@ public class TapManager extends Manager {
    */
   private KegTap mFocusedTap = null;
 
-  public TapManager(Bus bus, KegbotApi api) {
+  public TapManager(Bus bus) {
     super(bus);
-    mApi = api;
   }
 
   @Override
   protected synchronized void start() {
-    mExecutorService = Executors.newSingleThreadScheduledExecutor();
-    mExecutorService.submit(mTapSyncRunnable);
     getBus().register(this);
   }
 
   @Override
   protected synchronized void stop() {
     getBus().unregister(this);
-    mExecutorService.shutdown();
     mTaps.clear();
     super.stop();
   }
@@ -189,9 +139,9 @@ public class TapManager extends Manager {
     return result;
   }
 
-  private synchronized void onTapSyncResults(List<KegTap> taps) {
-    boolean tapsChanged = false;
-
+  @Subscribe
+  public synchronized void onTapSyncResults(TapListUpdateEvent event) {
+    List<KegTap> taps = event.getTaps();
     Set<String> removedTaps = Sets.newLinkedHashSet(mTaps.keySet());
 
     for (final KegTap tap : taps) {
@@ -201,52 +151,12 @@ public class TapManager extends Manager {
       if (existingTap == null || !existingTap.equals(tap)) {
         Log.i(TAG, "Adding/updating tap " + tap.getMeterName());
         addTap(tap);
-        tapsChanged = true;
       }
     }
 
     for (String tapName : removedTaps) {
       Log.i(TAG, "Removing tap: " + tapName);
       removeTap(getTapForMeterName(tapName));
-      tapsChanged = true;
-    }
-
-    if (tapsChanged) {
-      TapListUpdateEvent event = new TapListUpdateEvent(Lists.newArrayList(mTaps.values()));
-      Log.d(TAG, "Tap set changed, posting event: " + event);
-      Log.d(TAG, "Posting..");
-      postOnMainThread(event);
-      Log.d(TAG, "Event posted.");
-    }
-  }
-
-  @Produce
-  public TapListUpdateEvent produceTapList() {
-    return new TapListUpdateEvent(Lists.newArrayList(mTaps.values()));
-  }
-
-  @Subscribe
-  public void onNewDrinkPosted(DrinkPostedEvent event) {
-    syncNow();
-  }
-
-  private void syncNow() {
-    synchronized (this) {
-      if (mScheduledSync != null && !mScheduledSync.isCancelled()) {
-        mScheduledSync.cancel(false);
-        mScheduledSync = null;
-      }
-    }
-    Log.d(TAG, "Drink posted, syncing now.");
-    mExecutorService.submit(mTapSyncRunnable);
-  }
-
-  private void rescheduleSync(boolean aggressive) {
-    Log.d(TAG, String.format("Rescheduling sync (aggressive=%s)", Boolean.valueOf(aggressive)));
-    synchronized (this) {
-      mScheduledSync = mExecutorService.schedule(mTapSyncRunnable,
-          aggressive ? SYNC_INTERVAL_AGGRESSIVE_MILLIS : SYNC_INTERVAL_NORMAL_MILLIS,
-          TimeUnit.MILLISECONDS);
     }
   }
 
