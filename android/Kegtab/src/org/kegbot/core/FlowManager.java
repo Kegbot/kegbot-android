@@ -328,7 +328,7 @@ public class FlowManager extends Manager {
    */
   public synchronized void activateUserAmbiguousTap(final String username) {
     final KegTap focusedTap = mTapManager.getFocusedTap();
-    final Set<KegTap> availableTaps = mTapManager.getTapsWithActiveKeg();
+    final Collection<KegTap> availableTaps = mTapManager.getTapsWithActiveKeg();
 
     final Set<KegTap> activateTaps = Sets.newLinkedHashSet();
     if (focusedTap != null) {

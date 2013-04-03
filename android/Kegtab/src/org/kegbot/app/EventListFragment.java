@@ -38,6 +38,7 @@ import android.os.Handler;
 import android.text.Html;
 import android.text.format.DateUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
@@ -286,6 +287,10 @@ public class EventListFragment extends ListFragment {
     super.onPause();
   }
 
+  @Override
+  public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    return inflater.inflate(R.layout.event_list_fragment_layout, container, false);
+  }
 
   @Override
   public void onCreate(Bundle savedInstanceState) {

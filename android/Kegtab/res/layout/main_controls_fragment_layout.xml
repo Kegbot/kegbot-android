@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/mainActivityControls"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/shape_rounded_rect"
+    android:orientation="vertical"
+    android:padding="16dip" >
+
+    <Button
+        android:id="@+id/beerMeButton"
+        style="@style/largeButton"
+        android:text="@string/beer_me_button" />
+
+    <Button
+        android:id="@+id/newDrinkerButton"
+        style="@style/largeButton"
+        android:text="@string/new_drinker_button" />
+</LinearLayout>

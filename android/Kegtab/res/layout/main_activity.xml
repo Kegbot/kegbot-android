@@ -16,62 +16,11 @@
     <!-- Right column: controls + events. -->
 
     <LinearLayout
-        android:layout_width="0dip"
+        android:id="@+id/rightNav"
+        android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="0.4"
-        android:orientation="vertical" >
-
-        <LinearLayout
-            android:id="@+id/mainActivityControls"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/shape_rounded_rect"
-            android:orientation="vertical"
-            android:padding="16dip" >
-
-            <Button
-                android:id="@+id/beerMeButton"
-                style="@style/largeButton"
-                android:text="@string/beer_me_button" />
-
-            <Button
-                android:id="@+id/newDrinkerButton"
-                style="@style/largeButton"
-                android:text="@string/new_drinker_button" />
-        </LinearLayout>
-
-        <fragment
-            android:id="@+id/currentSessionFragment"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            class="org.kegbot.app.SessionStatsFragment"
-            android:visibility="gone" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="fill_parent"
-            android:background="@drawable/shape_rounded_rect"
-            android:orientation="vertical" >
-
-            <TextView
-                style="@style/header2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/recent_activity_header"/>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="2dip"
-                android:layout_marginBottom="5dip"
-                android:layout_marginTop="5dip"
-                android:background="#1FFFFFFF" />
-
-            <fragment
-                android:id="@+id/event_list"
-                android:layout_width="match_parent"
-                android:layout_height="fill_parent"
-                class="org.kegbot.app.EventListFragment" />
-        </LinearLayout>
+        android:layout_weight="0.4" 
+        android:orientation="vertical">
     </LinearLayout>
 
 </LinearLayout>

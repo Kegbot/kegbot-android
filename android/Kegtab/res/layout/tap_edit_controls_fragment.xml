@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/mainActivityControls"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/shape_rounded_rect"
+    android:padding="16dip" >
+
+    <!-- Tap Name Header -->
+
+    <TextView
+        android:id="@+id/editTapTitle"
+        style="@style/header"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:text="Manage Tap" />
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="2dip"
+        android:layout_below="@+id/editTapTitle"
+        android:background="#1FFFFFFF" />
+
+    <Button
+        android:id="@+id/endKegButton"
+        style="@style/largeButton"
+        android:layout_below="@+id/divider"
+        android:text="End Keg" />
+
+    <Button
+        android:id="@+id/newKegButton"
+        style="@style/largeButton"
+        android:layout_below="@+id/endKegButton"
+        android:text="New Keg" />
+
+    <Button
+        android:id="@+id/spillButton"
+        style="@style/largeButton"
+        android:layout_below="@+id/newKegButton"
+        android:text="Spill" />
+
+    <Button
+        android:id="@+id/calibrateButton"
+        style="@style/largeButton"
+        android:layout_below="@+id/spillButton"
+        android:text="Calibrate" />
+
+    <Button
+        android:id="@+id/doneButton"
+        style="@style/largeButton"
+        android:layout_alignParentBottom="true"
+        android:text="Done" />
+
+</RelativeLayout>

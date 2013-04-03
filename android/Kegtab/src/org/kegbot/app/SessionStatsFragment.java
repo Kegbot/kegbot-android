@@ -62,7 +62,7 @@ public class SessionStatsFragment extends Fragment {
 
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    mView = inflater.inflate(R.layout.session_detail_fragment_layout, container);
+    mView = inflater.inflate(R.layout.session_detail_fragment_layout, container, false);
     return mView;
   }
 

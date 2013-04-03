@@ -108,6 +108,14 @@ public class TapStatusFragment extends ListFragment {
     tapNotes.setText("Last synced: " + DateUtils.formatDateTime(activity, System.currentTimeMillis(),
         DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME));
 
+    flipper.setOnLongClickListener(new View.OnLongClickListener() {
+      @Override
+      public boolean onLongClick(View v) {
+        HomeActivity.showTapEditor(getActivity(), mTapDetail.getMeterName());
+        return true;
+      }
+    });
+
     if (tap == null) {
       Log.w(TAG, "Called with empty tap detail.");
       flipper.setDisplayedChild(CHILD_INACTIVE);

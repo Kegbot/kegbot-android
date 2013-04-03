@@ -18,6 +18,7 @@
  */
 package org.kegbot.core;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -39,7 +40,6 @@ import org.kegbot.proto.Models.KegTap;
 
 import android.util.Log;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -59,7 +59,7 @@ public class TapManager extends Manager {
   private final Map<String, KegTap> mTaps = Maps.newLinkedHashMap();
 
   /** Normal duration between attempted tap syncs. */
-  private static final long SYNC_INTERVAL_NORMAL_MILLIS = TimeUnit.MINUTES.toMillis(10);
+  private static final long SYNC_INTERVAL_NORMAL_MILLIS = TimeUnit.MINUTES.toMillis(1);
 
   /**
    * Aggressive interval between attempted tap syncs, used when the tap list is
@@ -87,7 +87,7 @@ public class TapManager extends Manager {
         return null;
       }
       onTapSyncResults(taps);
-      rescheduleSync(true);
+      rescheduleSync(false);
       return null;
     }
   };
@@ -175,11 +175,11 @@ public class TapManager extends Manager {
     return null;
   }
 
-  public synchronized Set<KegTap> getTaps() {
-    return ImmutableSet.copyOf(mTaps.values());
+  public synchronized List<KegTap> getTaps() {
+    return Lists.newArrayList(mTaps.values());
   }
 
-  public synchronized Set<KegTap> getTapsWithActiveKeg() {
+  public synchronized Collection<KegTap> getTapsWithActiveKeg() {
     final Set<KegTap> result = Sets.newLinkedHashSet();
     for (final KegTap tap : mTaps.values()) {
       if (tap.hasCurrentKeg()) {
