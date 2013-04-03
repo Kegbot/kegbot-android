@@ -20,22 +20,16 @@
 
         <TextView
             android:id="@+id/tapTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            style="@style/header"
             android:layout_marginRight="16dip"
             android:ellipsize="end"
-            android:singleLine="true"
-            android:textSize="48dip"
-            android:textStyle="bold" />
+            android:singleLine="true" />
 
         <TextView
             android:id="@+id/tapSubtitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            style="@style/subheader"
             android:ellipsize="end"
-            android:singleLine="true"
-            android:textColor="#888"
-            android:textSize="24dip" />
+            android:singleLine="true" />
     </LinearLayout>
 
     <View
@@ -53,8 +47,7 @@
 
         <org.kegbot.app.view.BadgeView
             android:id="@+id/tapStatsBadge1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            style="@style/badge"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
             android:layout_marginLeft="10dip"
@@ -72,15 +65,13 @@
 
         <TextView
             android:id="@+id/tapNotes"
+            style="@style/smallText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_below="@+id/tapImage"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="5dip"
-            android:textColor="#888"
-            android:textSize="16dip"
-            android:textStyle="italic" />
+            android:layout_marginTop="5dip" />
     </RelativeLayout>
 
     <!--
