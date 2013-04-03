@@ -107,6 +107,15 @@ public interface KegbotApi {
   public Keg getKegDetail(String id) throws KegbotApiException;
 
   /**
+   * Ends the given keg.
+   *
+   * @param id
+   * @return
+   * @throws KegbotApiException
+   */
+  public Keg endKeg(String id) throws KegbotApiException;
+
+  /**
    * @param kegId
    * @return
    * @throws KegbotApiException

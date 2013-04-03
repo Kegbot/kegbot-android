@@ -152,8 +152,10 @@ public class KegbotApiImpl implements KegbotApi {
   private HttpResponse doRawPost(String path, Map<String, String> params) throws KegbotApiException {
     HttpPost request = new HttpPost(getRequestUrl(path));
     List<NameValuePair> pairs = Lists.newArrayList();
-    for (Map.Entry<String, String> entry : params.entrySet()) {
-      pairs.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
+    if (params != null) {
+      for (Map.Entry<String, String> entry : params.entrySet()) {
+        pairs.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
+      }
     }
     try {
       request.setEntity(new UrlEncodedFormEntity(pairs));
@@ -345,6 +347,11 @@ public class KegbotApiImpl implements KegbotApi {
   @Override
   public Keg getKegDetail(String id) throws KegbotApiException {
     return getSingleProto("/kegs/" + id, Keg.newBuilder());
+  }
+
+  @Override
+  public Keg endKeg(String id) throws KegbotApiException {
+    return (Keg) postProto("/kegs/" + id + "/end/", Keg.newBuilder(), null);
   }
 
   @Override
