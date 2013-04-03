@@ -18,12 +18,17 @@
  */
 package org.kegbot.app;
 
+import org.kegbot.api.KegbotApi;
+import org.kegbot.api.KegbotApiException;
+import org.kegbot.core.KegbotCore;
 import org.kegbot.proto.Models.Keg;
 import org.kegbot.proto.Models.KegTap;
 
 import android.app.AlertDialog;
 import android.app.Fragment;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.Spanned;
@@ -163,6 +168,33 @@ public class TapEditFragment extends Fragment {
   }
 
   private void doEndKeg() {
+    final ProgressDialog dialog = new ProgressDialog(getActivity());
+    dialog.setIndeterminate(true);
+    dialog.setCancelable(false);
+    dialog.setTitle("Ending Keg");
+    dialog.setMessage("Please wait ...");
+    dialog.show();
+
+    final int kegId = mTap.getCurrentKeg().getId();
+
+    new AsyncTask<Void, Void, Void>() {
+      @Override
+      protected Void doInBackground(Void... params) {
+        KegbotApi api = KegbotCore.getInstance(getActivity()).getApi();
+        try {
+          api.endKeg(String.valueOf(kegId));
+        } catch (KegbotApiException e) {
+          Log.w(TAG, "Error ending keg: " + e, e);
+        }
+        return null;
+      }
+
+      @Override
+      protected void onPostExecute(Void result) {
+        dialog.dismiss();
+      }
+
+    }.execute();
   }
 
   private void onNewKeg() {
