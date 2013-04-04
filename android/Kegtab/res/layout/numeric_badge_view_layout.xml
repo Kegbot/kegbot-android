@@ -7,7 +7,9 @@
 
     <TextView
         android:id="@+id/badgeValue"
-        style="@style/badgeValue" />
+        style="@style/badgeValue"
+        android:ellipsize="none"
+        android:singleLine="true" />
 
     <View
         style="@style/divider"
@@ -15,6 +17,8 @@
 
     <TextView
         android:id="@+id/badgeCaption"
-        style="@style/badgeCaption" />
+        style="@style/badgeCaption"
+        android:ellipsize="none"
+        android:singleLine="true" />
 
 </LinearLayout>

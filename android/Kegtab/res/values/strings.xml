@@ -85,5 +85,10 @@
     <string name="bugreport_detail_hint">Describe the problem and any steps leading to it.</string>
     <string name="manager_pin_title">Please enter the Manager Pin to continue.</string>
     <string name="manager_pin_error">You have entered an incorrect pin. Please try again.</string>
+    <string name="calibrate_help_text">Pour into a glass or measuring cup with a known volume. Then drag the slider (or tap the volume number) to set the actual amount poured.</string>
+    <string name="calibrate_dialog_no_ticks_title">Please pour first</string>
+    <string name="calibrate_dialog_no_ticks_message">Your meter has not registered any ticks yet. Please pour something before setting a custom volume.</string>
+    <string name="calibrate_dialog_custom_title">Enter actual volume</string>
+    <string name="calibrate_dialog_custom_message">Enter the actual volume of the pour below.</string>
     
 </resources>

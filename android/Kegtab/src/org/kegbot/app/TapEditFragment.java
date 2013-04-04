@@ -28,6 +28,7 @@ import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Html;
@@ -206,7 +207,11 @@ public class TapEditFragment extends Fragment {
   }
 
   private void onCalibrate() {
-
+    final Intent intent =
+        CalibrationActivity.getStartIntent(getActivity(), mTap.getMeterName(), mTap.getRelayName(),
+            mTap.getMlPerTick());
+    getActivity().startActivity(intent);
+    getFragmentManager().popBackStackImmediate();
   }
 
   private void onDone() {

@@ -2,109 +2,131 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="top|center"
-    android:orientation="vertical"
-    android:padding="128dip" >
+    android:keepScreenOn="true" >
 
     <TextView
-        android:id="@+id/calibrateSourceLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/calibrateHeader"
+        style="@style/header"
         android:layout_alignParentTop="true"
-        android:text="Source"
-        android:textSize="24dip"
-        android:textStyle="bold" />
-
-    <Spinner
-        android:id="@+id/calibrateMeterName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/calibrateSourceLabel"
-        android:layout_toRightOf="@+id/calibrateSourceLabel" />
+        android:layout_centerHorizontal="true"
+        android:text="Calibrate Meter" />
 
     <TextView
-        android:id="@+id/ticksLabel"
+        android:id="@+id/calibrateDescription"
+        style="@style/subheader"
+        android:layout_below="@+id/calibrateHeader"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:maxWidth="700dp"
+        android:singleLine="false"
+        android:text="@string/calibrate_help_text" />
+
+    <RelativeLayout
+        android:id="@+id/calibrateControls"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignRight="@+id/calibrateSourceLabel"
-        android:layout_below="@+id/calibrateSourceLabel"
-        android:text="Ticks"
-        android:textSize="24dip"
-        android:textStyle="bold" />
+        android:layout_below="@+id/calibrateDescription"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="32dp"
+        android:layout_marginTop="32dp"
+        android:background="@drawable/shape_rounded_rect" >
 
-    <EditText
-        android:id="@+id/ticks"
-        android:layout_width="256dip"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/ticksLabel"
-        android:layout_toRightOf="@+id/ticksLabel" />
+        <org.kegbot.app.view.BadgeView
+            android:id="@+id/ticksBadge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_margin="10dip"
+            android:background="@color/black20pct" >
+        </org.kegbot.app.view.BadgeView>
 
-    <TextView
-        android:id="@+id/ouncesLabel"
+        <LinearLayout
+            android:id="@+id/seekGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/ticksBadge"
+            android:gravity="center"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/calibratePercent"
+                style="@style/smallText"
+                android:text="50%" />
+
+            <SeekBar
+                android:id="@+id/calibrateSeekBar"
+                android:layout_width="256dp"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <org.kegbot.app.view.BadgeView
+            android:id="@+id/volumeBadge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_margin="10dip"
+            android:layout_toRightOf="@+id/seekGroup"
+            android:background="@color/black20pct" >
+        </org.kegbot.app.view.BadgeView>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/calibrateMetrics"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignRight="@+id/calibrateSourceLabel"
-        android:layout_below="@+id/ticksLabel"
-        android:text="Ounces"
-        android:textSize="24dip"
-        android:textStyle="bold" />
+        android:layout_below="@+id/calibrateControls"
+        android:layout_centerHorizontal="true" >
 
-    <EditText
-        android:id="@+id/ounces"
-        android:layout_width="256dip"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/ouncesLabel"
-        android:layout_toRightOf="@+id/ouncesLabel" />
+        <TextView
+            android:id="@+id/calibratedMlPerTickLabel"
+            style="@style/normalText"
+            android:layout_marginRight="8sp"
+            android:text="Calibrated mL/Tick:"
+            android:textStyle="bold" />
 
-    <TextView
-        android:id="@+id/mlLabel"
+        <TextView
+            android:id="@+id/calibratedMlPerTick"
+            style="@style/normalText"
+            android:layout_toRightOf="@+id/calibratedMlPerTickLabel"
+            android:text="0" />
+
+        <TextView
+            android:id="@+id/originalMlPerTickLabel"
+            style="@style/normalText"
+            android:layout_below="@+id/calibratedMlPerTickLabel"
+            android:layout_marginRight="8sp"
+            android:text="Original mL/Tick:"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/originalMlPerTick"
+            style="@style/normalText"
+            android:layout_below="@+id/calibratedMlPerTickLabel"
+            android:layout_toRightOf="@+id/originalMlPerTickLabel"
+            android:text="0" />
+    </RelativeLayout>
+
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignRight="@+id/calibrateSourceLabel"
-        android:layout_below="@+id/ouncesLabel"
-        android:text="mL"
-        android:textSize="24dip"
-        android:textStyle="bold" />
+        android:layout_below="@+id/calibrateMetrics"
+        android:layout_centerHorizontal="true"
+        android:orientation="horizontal"
+        android:layout_marginTop="32dp">
 
-    <EditText
-        android:id="@+id/ml"
-        android:layout_width="256dip"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/mlLabel"
-        android:layout_toRightOf="@+id/mlLabel" />
+        <Button
+            android:id="@+id/calibrateReset"
+            style="@style/mediumButton"
+            android:layout_width="wrap_content"
+            android:text="Reset Calibration" 
+            android:layout_marginRight="32dp"/>
 
-    <TextView
-        android:id="@+id/mlPerTickLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignRight="@+id/calibrateSourceLabel"
-        android:layout_below="@+id/mlLabel"
-        android:text="mL/Tick"
-        android:textSize="24dip"
-        android:textStyle="bold" />
-
-    <EditText
-        android:id="@+id/mlPerTick"
-        android:layout_width="256dip"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/mlPerTickLabel"
-        android:layout_toRightOf="@+id/mlPerTickLabel" />
-
-    <TextView
-        android:id="@+id/ticksPerLiterLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignRight="@+id/calibrateSourceLabel"
-        android:layout_below="@+id/mlPerTickLabel"
-        android:text="Ticks/Liter"
-        android:textSize="24dip"
-        android:textStyle="bold" />
-
-    <EditText
-        android:id="@+id/ticksPerLiter"
-        android:layout_width="256dip"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/ticksPerLiterLabel"
-        android:layout_toRightOf="@+id/ticksPerLiterLabel" />
+        <Button
+            android:id="@+id/calibrateDone"
+            style="@style/mediumButton"
+            android:layout_width="wrap_content"
+            android:text="Save Calibration" />
+    </LinearLayout>
 
 </RelativeLayout>

@@ -133,7 +133,6 @@ public class HomeActivity extends CoreActivity {
     Log.d(LOG_TAG, "onResume");
     super.onResume();
     mCore.getBus().register(this);
-    handleIntent();
   }
 
   @Override
@@ -165,14 +164,7 @@ public class HomeActivity extends CoreActivity {
 
   @Override
   protected void onNewIntent(Intent intent) {
-    Log.d(LOG_TAG, "onNewIntent");
-    super.onNewIntent(intent);
-    setIntent(intent);
-  }
-
-  private void handleIntent() {
-    final Intent intent = getIntent();
-    Log.d(LOG_TAG, "Got intent: " + intent);
+    Log.d(LOG_TAG, "onNewIntent: Got intent: " + intent);
 
     if (ACTION_SHOW_TAP_EDITOR.equals(intent.getAction())) {
       String meterName = intent.getStringExtra(EXTRA_METER_NAME);
