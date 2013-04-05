@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.http.annotation.GuardedBy;
 import org.kegbot.app.KegtabBroadcast;
 import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.kegboard.KegboardAuthTokenMessage;
@@ -65,13 +64,13 @@ public class HardwareManager extends Manager {
   /**
    * All monitored flow meters.
    */
-  @GuardedBy("mFlowMeters")
+  //@GuardedBy("mFlowMeters")
   private final Map<String, FlowMeter> mFlowMeters = Maps.newLinkedHashMap();
 
   /**
    * All monitored thermo sensors.
    */
-  @GuardedBy("mThermoSensors")
+  //@GuardedBy("mThermoSensors")
   private final Map<String, ThermoSensor> mThermoSensors = Maps.newLinkedHashMap();
 
   /**

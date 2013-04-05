@@ -28,7 +28,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.http.annotation.GuardedBy;
 import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.app.util.IndentingPrintWriter;
 import org.kegbot.proto.Models.KegTap;
@@ -83,7 +82,7 @@ public class FlowManager extends Manager {
   /**
    * All flow listeners.
    */
-  @GuardedBy("mListeners")
+  //@GuardedBy("mListeners")
   private Collection<Listener> mListeners = Sets.newLinkedHashSet();
 
   public interface Clock {
