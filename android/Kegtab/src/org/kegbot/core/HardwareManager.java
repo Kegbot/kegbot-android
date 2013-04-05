@@ -269,10 +269,16 @@ public class HardwareManager extends Manager {
   }
 
   public boolean addListener(Listener listener) {
+    Log.d(TAG, "Adding listener: " + listener);
     return mListeners.add(listener);
   }
 
+  public Set<Listener> getListeners() {
+    return Sets.newLinkedHashSet(mListeners);
+  }
+
   public boolean removeListener(Listener listener) {
+    Log.d(TAG, "Removing listener: " + listener);
     return mListeners.remove(listener);
   }
 

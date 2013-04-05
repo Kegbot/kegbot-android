@@ -18,22 +18,21 @@
  */
 package org.kegbot.app;
 
+import java.util.Set;
+
 import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiException;
 import org.kegbot.api.KegbotApiImpl;
 import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.app.config.SharedPreferencesConfigurationStore;
-import org.kegbot.app.service.KegbotCoreService;
 import org.kegbot.app.util.Units;
 import org.kegbot.app.view.BadgeView;
-import org.kegbot.core.KegboardManager;
-import org.kegbot.kegboard.KegboardAuthTokenMessage;
-import org.kegbot.kegboard.KegboardHelloMessage;
-import org.kegbot.kegboard.KegboardMeterStatusMessage;
-import org.kegbot.kegboard.KegboardOutputStatusMessage;
-import org.kegbot.kegboard.KegboardTemperatureReadingMessage;
+import org.kegbot.core.AuthenticationToken;
+import org.kegbot.core.FlowMeter;
+import org.kegbot.core.HardwareManager;
+import org.kegbot.core.KegbotCore;
+import org.kegbot.core.ThermoSensor;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -49,10 +48,7 @@ import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.squareup.otto.Bus;
-import com.squareup.otto.ThreadEnforcer;
-
-public class CalibrationActivity extends Activity {
+public class CalibrationActivity extends CoreActivity {
 
   private static final String TAG = CalibrationActivity.class.getSimpleName();
   private static final boolean DEBUG = false;
@@ -69,8 +65,7 @@ public class CalibrationActivity extends Activity {
   // b = y - Mx
   private static final double SCALE_B = 1.5 - (SCALE_M * 100);
 
-  private Bus mBus;
-  private KegboardManager mKegboardManager;
+  private HardwareManager mHardwareManager;
 
   private String mMeterName;
   private String mRawMeterName;
@@ -91,42 +86,39 @@ public class CalibrationActivity extends Activity {
   private long mLastReading = Long.MIN_VALUE;
   private long mTicks = 0;
 
-  private KegboardManager.Listener mListener = new KegboardManager.Listener() {
-    @Override
-    public void onTemperatureReadingMessage(KegboardTemperatureReadingMessage message) {
-    }
+  /** Listeners removed from the HardwareManager. */
+  private Set<HardwareManager.Listener> mSwappedListeners;
 
+  /** Our listener, replacing any others while we are active. */
+  private HardwareManager.Listener mHardwareListener = new HardwareManager.Listener() {
     @Override
-    public void onOutputStatusMessage(KegboardOutputStatusMessage message) {
-    }
-
-    @Override
-    public void onMeterStatusMessage(KegboardMeterStatusMessage message) {
-      Log.d(TAG, "Meter update: " + message);
-      if (message.getMeterName().equals(mMeterName)) {
-        handleMeterUpdate(message.getMeterReading());
+    public void onMeterUpdate(FlowMeter meter) {
+      final String name = meter.getName();
+      Log.d(TAG, "Meter update: " + name);
+      if (name.equals(mMeterName)) {
+        handleMeterUpdate(meter.getTicks());
       }
     }
 
     @Override
-    public void onHelloMessage(KegboardHelloMessage message) {
+    public void onThermoSensorUpdate(ThermoSensor sensor) {
     }
 
     @Override
-    public void onAuthTokenMessage(KegboardAuthTokenMessage message) {
+    public void onTokenAttached(AuthenticationToken token, String tapName) {
+    }
+
+    @Override
+    public void onTokenRemoved(AuthenticationToken token, String tapName) {
     }
   };
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    KegbotCoreService.stopService(this);
     setContentView(R.layout.calibration_activity);
 
-    mRawMeterName = mMeterName = getIntent().getStringExtra(EXTRA_METER_NAME);
-    if (mMeterName.contains(".")) {
-      mMeterName = new String(mMeterName.substring(mMeterName.indexOf(".") + 1));
-    }
+    mMeterName = getIntent().getStringExtra(EXTRA_METER_NAME);
     mRelayName = getIntent().getStringExtra(EXTRA_RELAY_NAME);
     mExistingMlPerTick = mMlPerTick = getIntent().getFloatExtra(EXTRA_ML_PER_TICK, 0);
 
@@ -187,26 +179,29 @@ public class CalibrationActivity extends Activity {
       }
     });
 
-    mBus = new Bus(ThreadEnforcer.MAIN);
-    mKegboardManager = new KegboardManager(mBus, this);
-    mKegboardManager.addListener(mListener);
     Log.d(TAG, "Started: meterName=" + mMeterName + " relayName=" + mRelayName);
-
     resetCalibration();
   }
 
   @Override
   protected void onResume() {
     super.onResume();
-    mKegboardManager.start();
-    Log.d(TAG, "Started Kegboard manager.");
+    Log.d(TAG, "onResume, swapping hardware listeners");
+    mHardwareManager = KegbotCore.getInstance(getApplicationContext()).getHardwareManager();
+    mSwappedListeners = mHardwareManager.getListeners();
+    for (HardwareManager.Listener old : mSwappedListeners) {
+      mHardwareManager.removeListener(old);
+    }
+    mHardwareManager.addListener(mHardwareListener);
   }
 
   @Override
   protected void onPause() {
+    mHardwareManager.removeListener(mHardwareListener);
+    for (HardwareManager.Listener old : mSwappedListeners) {
+      mHardwareManager.addListener(old);
+    }
     super.onPause();
-    mKegboardManager.stop();
-    Log.d(TAG, "Stopped Kegboard manager.");
   }
 
   private void handleMeterUpdate(long meterReading) {
@@ -217,6 +212,7 @@ public class CalibrationActivity extends Activity {
     final long delta = meterReading - mLastReading;
     mTicks += delta;
     Log.d(TAG, "Update: delta=" + delta + " ticks=" + mTicks);
+    mLastReading = meterReading;
 
     runOnUiThread(new Runnable() {
       @Override
@@ -245,6 +241,10 @@ public class CalibrationActivity extends Activity {
 
     if (mMlPerTick != mExistingMlPerTick) {
       mResetButton.setEnabled(true);
+      mDoneButton.setEnabled(true);
+    } else {
+      mResetButton.setEnabled(false);
+      mDoneButton.setEnabled(false);
     }
   }
 
@@ -258,7 +258,8 @@ public class CalibrationActivity extends Activity {
 
   private void finishCalibration() {
     if (mExistingMlPerTick == mMlPerTick) {
-      Log.d(TAG, "No changed.");
+      Log.d(TAG, "No change.");
+      finish();
       return;
     }
 
