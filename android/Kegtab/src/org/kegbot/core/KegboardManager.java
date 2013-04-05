@@ -230,6 +230,10 @@ public class KegboardManager extends BackgroundManager {
             Log.wtf(TAG, "Unknown state: " + mState);
             break;
         }
+        if (Thread.currentThread().isInterrupted()) {
+          Log.w(TAG, "Thread interrupted, exiting.");
+          break;
+        }
       }
     } finally {
       Log.d(TAG, "Main loop exiting.");
