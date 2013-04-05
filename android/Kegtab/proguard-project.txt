@@ -27,12 +27,7 @@
 -libraryjars libs/GoogleAnalytics/libGoogleAnalytics.jar
 -libraryjars libs/gcm/gcm.jar
 -libraryjars libs/guava/guava-11.0.2.jar
--libraryjars libs/httpcomponents-client-4.0.3/lib/apache-mime4j-0.6.jar
--libraryjars libs/httpcomponents-client-4.0.3/lib/commons-codec-1.3.jar
--libraryjars libs/httpcomponents-client-4.0.3/lib/commons-logging-1.1.1.jar
--libraryjars libs/httpcomponents-client-4.0.3/lib/httpclient-4.0.3.jar
--libraryjars libs/httpcomponents-client-4.0.3/lib/httpcore-4.0.1.jar
--libraryjars libs/httpcomponents-client-4.0.3/lib/httpmime-4.0.3.jar
+-libraryjars libs/okhttp/okhttp-git-ace08e9f.jar
 -libraryjars libs/jackson/jackson-core-asl-1.7.4.jar
 -libraryjars libs/jackson/jackson-mapper-asl-1.7.4.jar
 -libraryjars libs/joda-time-2.2/joda-time-2.2.jar
