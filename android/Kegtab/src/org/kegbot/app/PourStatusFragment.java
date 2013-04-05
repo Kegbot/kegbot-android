@@ -70,8 +70,6 @@ public class PourStatusFragment extends ListFragment {
 
   private ImageView mBeerImage;
 
-  private String mAppliedUsername;
-
   private Handler mHandler;
 
   private final Runnable mCounterIncrementRunnable = new Runnable() {
@@ -219,9 +217,6 @@ public class PourStatusFragment extends ListFragment {
       mHandler.post(mCounterIncrementRunnable);
     }
 
-    // Set tap title.
-    final String username = flow.getUsername();
-
     // Update beer info.
     if (flow.getIdleTimeMs() >= IDLE_TOOLTIP_MILLIS) {
       final long seconds = flow.getMsUntilIdle() / 1000;
@@ -231,8 +226,6 @@ public class PourStatusFragment extends ListFragment {
     } else {
       mStatusLine.setVisibility(View.INVISIBLE);
     }
-
-    mAppliedUsername = username;
   }
 
   /** Marks the tap as ended (no current flow). */
