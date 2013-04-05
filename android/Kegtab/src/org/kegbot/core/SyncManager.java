@@ -200,7 +200,13 @@ public class SyncManager extends BackgroundManager {
           }
 
         }
-        SystemClock.sleep(1000);
+        try {
+          Thread.sleep(1000);
+        } catch (InterruptedException e) {
+          Log.d(TAG, "Interrupted.");
+          Thread.currentThread().interrupt();
+          break;
+        }
       }
     } catch (Throwable e) {
       Log.wtf(TAG, "Uncaught exception in background.", e);
