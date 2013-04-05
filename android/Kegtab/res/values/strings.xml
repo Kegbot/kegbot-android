@@ -18,11 +18,11 @@
   with Kegtab. If not, see <http://www.gnu.org/licenses/>.
 -->
 <resources>
+
     <string name="authenticating_begin_title">Authenticating...</string>
     <string name="authenticating_fail_title">Access Denied!</string>
     <string name="authenticating_no_access_token">Your access token was not recognized.</string>
     <string name="authenticating_connection_error">Could not contact the Kegbot server.</string>
-    
     <string name="hello">Give me a beer!</string>
     <string name="app_name">Kegbot</string>
     <string name="events_title">recent events</string>
@@ -35,7 +35,6 @@
     <string name="settings_general_header">General</string>
     <string name="settings_kegerator_header">Kegerator</string>
     <string name="settings_about_header">About</string>
-    
     <string name="pour_take_picture">Take Picture</string>
     <string name="picture_countdown_3">3...</string>
     <string name="picture_countdown_2">2...</string>
@@ -90,5 +89,6 @@
     <string name="calibrate_dialog_no_ticks_message">Your meter has not registered any ticks yet. Please pour something before setting a custom volume.</string>
     <string name="calibrate_dialog_custom_title">Enter actual volume</string>
     <string name="calibrate_dialog_custom_message">Enter the actual volume of the pour below.</string>
-    
+    <string name="new_keg_help_text">Enter keg details below.</string>
+
 </resources>

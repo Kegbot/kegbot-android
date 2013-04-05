@@ -25,6 +25,7 @@ import org.kegbot.proto.Models.AuthenticationToken;
 import org.kegbot.proto.Models.Drink;
 import org.kegbot.proto.Models.Image;
 import org.kegbot.proto.Models.Keg;
+import org.kegbot.proto.Models.KegSize;
 import org.kegbot.proto.Models.KegTap;
 import org.kegbot.proto.Models.Session;
 import org.kegbot.proto.Models.SoundEvent;
@@ -106,6 +107,8 @@ public interface KegbotApi {
    */
   public Keg getKegDetail(String id) throws KegbotApiException;
 
+  public List<KegSize> getKegSizes() throws KegbotApiException;
+
   /**
    * Ends the given keg.
    *
@@ -114,6 +117,9 @@ public interface KegbotApi {
    * @throws KegbotApiException
    */
   public Keg endKeg(String id) throws KegbotApiException;
+
+  public KegTap activateKeg(String tapName, String beerName, String brewerName, String styleName,
+      int kegSizeId) throws KegbotApiException;
 
   /**
    * @param kegId

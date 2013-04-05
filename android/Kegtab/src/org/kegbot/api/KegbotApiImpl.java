@@ -39,6 +39,7 @@ import org.kegbot.proto.Models.AuthenticationToken;
 import org.kegbot.proto.Models.Drink;
 import org.kegbot.proto.Models.Image;
 import org.kegbot.proto.Models.Keg;
+import org.kegbot.proto.Models.KegSize;
 import org.kegbot.proto.Models.KegTap;
 import org.kegbot.proto.Models.Session;
 import org.kegbot.proto.Models.SoundEvent;
@@ -247,8 +248,25 @@ public class KegbotApiImpl implements KegbotApi {
   }
 
   @Override
+  public List<KegSize> getKegSizes() throws KegbotApiException {
+    return getProto("/keg-sizes/", KegSize.newBuilder());
+  }
+
+  @Override
   public Keg endKeg(String id) throws KegbotApiException {
     return (Keg) postProto("/kegs/" + id + "/end/", Keg.newBuilder(), null);
+  }
+
+  @Override
+  public KegTap activateKeg(String tapName, String beerName, String brewerName, String styleName,
+      int kegSizeId) throws KegbotApiException {
+    final Request.Builder builder = newRequest("/taps/" + tapName + "/activate/")
+        .setMethod(Http.POST)
+        .addParameter("beer_name", beerName)
+        .addParameter("brewer_name", brewerName)
+        .addParameter("style_name", styleName)
+        .addParameter("keg_size", Integer.valueOf(kegSizeId).toString());
+    return getSingleProto(KegTap.newBuilder(), requestJson(builder.build()).get("object"));
   }
 
   @Override

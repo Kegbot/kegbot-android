@@ -417,6 +417,11 @@ public class SyncManager extends BackgroundManager {
     }
   }
 
+  public void requestSync() {
+    Log.d(TAG, "Immediate sync requested.");
+    mSyncImmediate = true;
+  }
+
   private static RecordDrinkRequest getRequestForFlow(final Flow ended) {
     return RecordDrinkRequest.newBuilder()
         .setTapName(ended.getTap().getMeterName())

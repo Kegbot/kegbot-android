@@ -193,13 +193,15 @@ public class TapEditFragment extends Fragment {
       @Override
       protected void onPostExecute(Void result) {
         dialog.dismiss();
+        KegbotCore.getInstance(getActivity()).getSyncManager().requestSync();
       }
 
     }.execute();
   }
 
   private void onNewKeg() {
-
+    startActivity(NewKegActivity.getStartIntent(getActivity(), mTap.getMeterName()));
+    getFragmentManager().popBackStackImmediate();
   }
 
   private void onSpill() {
@@ -210,7 +212,7 @@ public class TapEditFragment extends Fragment {
     final Intent intent =
         CalibrationActivity.getStartIntent(getActivity(), mTap.getMeterName(), mTap.getRelayName(),
             mTap.getMlPerTick());
-    getActivity().startActivity(intent);
+    startActivity(intent);
     getFragmentManager().popBackStackImmediate();
   }
 
