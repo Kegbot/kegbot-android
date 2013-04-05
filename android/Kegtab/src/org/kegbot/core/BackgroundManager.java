@@ -30,7 +30,7 @@ import com.squareup.otto.Bus;
  */
 public abstract class BackgroundManager extends Manager {
 
-  private ExecutorService mExecutorService;
+  private ExecutorService mExecutorService = null;
 
   private final Runnable mRunnable = new Runnable() {
     @Override
@@ -45,14 +45,18 @@ public abstract class BackgroundManager extends Manager {
 
   @Override
   protected synchronized void start() {
-    mExecutorService = Executors.newSingleThreadExecutor();
-    mExecutorService.execute(mRunnable);
+    if (mExecutorService == null) {
+      mExecutorService = Executors.newSingleThreadExecutor();
+      mExecutorService.execute(mRunnable);
+    }
   }
 
   @Override
   protected synchronized void stop() {
-    mExecutorService.shutdown();
-    mExecutorService = null;
+    if (mExecutorService != null) {
+      mExecutorService.shutdown();
+      mExecutorService = null;
+    }
   }
 
   /**
