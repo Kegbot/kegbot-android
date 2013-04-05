@@ -70,7 +70,7 @@ public class KegboardManager extends BackgroundManager {
 
   private static final long OUTPUT_MAX_AGE_MILLIS = TimeUnit.MINUTES.toMillis(5);
 
-  private static final long IDLE_POLL_INTERVAL_MILLIS = TimeUnit.SECONDS.toMillis(2);
+  private static final long IDLE_POLL_INTERVAL_MILLIS = TimeUnit.SECONDS.toMillis(5);
 
   /**
    * The system's USB service.
@@ -130,12 +130,12 @@ public class KegboardManager extends BackgroundManager {
 
   public KegboardManager(Bus bus, Context context) {
     super(bus);
-    mContext = context;
+    mContext = context.getApplicationContext();
   }
 
   @Override
   public synchronized void start() {
-    Log.d(TAG, "onCreate");
+    Log.d(TAG, "start: " + this);
     stateChange(State.IDLE);
 
     final IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
@@ -148,6 +148,7 @@ public class KegboardManager extends BackgroundManager {
   @Override
   public synchronized void stop() {
     mContext.unregisterReceiver(mUsbReceiver);
+    Log.d(TAG, "stop: " + this);
     stateChange(State.FINISHED);
     super.stop();
   }
@@ -213,6 +214,7 @@ public class KegboardManager extends BackgroundManager {
               stateChange(State.RUNNING);
               tryPing();
             } else {
+              Log.d(TAG, "Waiting for serial device.");
               SystemClock.sleep(IDLE_POLL_INTERVAL_MILLIS);
             }
             break;
@@ -221,6 +223,7 @@ public class KegboardManager extends BackgroundManager {
             break;
           case STOPPING:
             releaseSerialDevice();
+            SystemClock.sleep(IDLE_POLL_INTERVAL_MILLIS);
             stateChange(State.IDLE);
             break;
           case FINISHED:
@@ -228,7 +231,7 @@ public class KegboardManager extends BackgroundManager {
             return;
           default:
             Log.wtf(TAG, "Unknown state: " + mState);
-            break;
+            return;
         }
         if (Thread.currentThread().isInterrupted()) {
           Log.w(TAG, "Thread interrupted, exiting.");
@@ -283,6 +286,7 @@ public class KegboardManager extends BackgroundManager {
         mSerialDevice.close();
       } catch (IOException e) {
         // Ignore
+        Log.w(TAG, "Exception while closing (ignoring)", e);
       }
       mSerialDevice = null;
     }
@@ -325,7 +329,7 @@ public class KegboardManager extends BackgroundManager {
         Arrays.fill(mKegboardReadBuffer, (byte) 0);
       }
     } catch (IOException e) {
-      Log.e(TAG, "IOException reading from serial.");
+      Log.e(TAG, "IOException reading from serial.", e);
       stateChange(State.STOPPING);
       return;
     }
