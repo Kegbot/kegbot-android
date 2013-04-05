@@ -62,6 +62,8 @@ public class SoundManager extends Manager {
 
   private static final String TAG = SoundManager.class.getSimpleName();
 
+  private static final boolean DEBUG = false;
+
   private Context mContext;
   private KegbotApi mApi;
   private FlowManager mFlowManager;
@@ -182,7 +184,7 @@ public class SoundManager extends Manager {
     Log.d(TAG, "Running in background.");
     try {
       final List<SoundEvent> allEvents = mApi.getAllSoundEvents();
-      Log.d(TAG, "Sound events: " + allEvents);
+      if (DEBUG) Log.d(TAG, "Sound events: " + allEvents);
       mSoundEvents.clear();
       mSoundEvents.addAll(allEvents);
       downloadAll();
