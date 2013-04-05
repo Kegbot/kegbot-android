@@ -79,7 +79,12 @@ public class BluetoothManager extends BackgroundManager {
   @Override
   protected void runInBackground() {
     Log.d(TAG, "Running in background.");
-    while (!mQuit) {
+    while (true) {
+      synchronized (this) {
+        if (mQuit) {
+          Log.i(TAG, "Exiting.");
+        }
+      }
       final BluetoothAdapter adapter = getUsableAdapter();
       if (adapter == null) {
         Log.w(TAG, "No usable adapter, exiting.");
