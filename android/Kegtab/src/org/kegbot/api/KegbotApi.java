@@ -180,6 +180,8 @@ public interface KegbotApi {
    */
   public KegTap getTapDetail(String tapName) throws KegbotApiException;
 
+  public KegTap setTapMlPerTick(String tapName, double mlPerTick) throws KegbotApiException;
+
   /**
    * @param sensorId
    * @return

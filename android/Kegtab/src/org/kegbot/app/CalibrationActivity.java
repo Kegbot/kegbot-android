@@ -18,6 +18,11 @@
  */
 package org.kegbot.app;
 
+import org.kegbot.api.KegbotApi;
+import org.kegbot.api.KegbotApiException;
+import org.kegbot.api.KegbotApiImpl;
+import org.kegbot.app.config.AppConfiguration;
+import org.kegbot.app.config.SharedPreferencesConfigurationStore;
 import org.kegbot.app.service.KegbotCoreService;
 import org.kegbot.app.util.Units;
 import org.kegbot.app.view.BadgeView;
@@ -30,10 +35,13 @@ import org.kegbot.kegboard.KegboardTemperatureReadingMessage;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -65,6 +73,7 @@ public class CalibrationActivity extends Activity {
   private KegboardManager mKegboardManager;
 
   private String mMeterName;
+  private String mRawMeterName;
   private String mRelayName;
   private double mMlPerTick;
   private double mExistingMlPerTick;
@@ -114,7 +123,7 @@ public class CalibrationActivity extends Activity {
     KegbotCoreService.stopService(this);
     setContentView(R.layout.calibration_activity);
 
-    mMeterName = getIntent().getStringExtra(EXTRA_METER_NAME);
+    mRawMeterName = mMeterName = getIntent().getStringExtra(EXTRA_METER_NAME);
     if (mMeterName.contains(".")) {
       mMeterName = new String(mMeterName.substring(mMeterName.indexOf(".") + 1));
     }
@@ -253,7 +262,51 @@ public class CalibrationActivity extends Activity {
       return;
     }
 
-    finish();
+    final ProgressDialog dialog = new ProgressDialog(this);
+    dialog.setIndeterminate(true);
+    dialog.setCancelable(false);
+    dialog.setTitle("Calibrating Tap");
+    dialog.setMessage("Please wait ...");
+    dialog.show();
+
+    new AsyncTask<Void, Void, String>() {
+      @Override
+      protected String doInBackground(Void... params) {
+        AppConfiguration config =
+            new AppConfiguration(
+                new SharedPreferencesConfigurationStore(
+                    PreferenceManager.getDefaultSharedPreferences(getApplicationContext())));
+
+        KegbotApi api = new KegbotApiImpl();
+        api.setApiUrl(config.getApiUrl());
+        api.setApiKey(config.getApiKey());
+
+        try {
+          api.setTapMlPerTick(mRawMeterName, mMlPerTick);
+          return "";
+        } catch (KegbotApiException e) {
+          Log.w(TAG, "Error calibrating: " + e, e);
+          return e.toString();
+        }
+      }
+
+      @Override
+      protected void onPostExecute(String result) {
+        dialog.dismiss();
+        if (result.isEmpty()) {
+          Log.d(TAG, "Calibrated successfully!");
+          finish();
+          return;
+        }
+        new AlertDialog.Builder(CalibrationActivity.this)
+          .setCancelable(true)
+          .setNegativeButton("Ok", null)
+          .setTitle("Calibration failed")
+          .setMessage("Calibration failed: " + result)
+          .show();
+      }
+    }.execute();
+
   }
 
   private void onVolumeBadgeClicked() {

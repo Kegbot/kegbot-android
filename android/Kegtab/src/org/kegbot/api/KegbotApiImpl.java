@@ -305,6 +305,14 @@ public class KegbotApiImpl implements KegbotApi {
   }
 
   @Override
+  public KegTap setTapMlPerTick(String tapName, double mlPerTick) throws KegbotApiException {
+    final Request.Builder builder = newRequest("/taps/" + tapName + "/calibrate/")
+        .setMethod(Http.POST)
+        .addParameter("ml_per_tick", Double.valueOf(mlPerTick).toString());
+    return getSingleProto(KegTap.newBuilder(), requestJson(builder.build()).get("object"));
+  }
+
+  @Override
   public List<ThermoLog> getThermoSensorLogs(String sensorId) throws KegbotApiException {
     return getProto("/thermo-sensors/" + sensorId + "/logs/", ThermoLog.newBuilder());
   }
@@ -441,12 +449,7 @@ public class KegbotApiImpl implements KegbotApi {
         .setMethod(Http.POST)
         .addFile("photo", new File(imagePath));
 
-    try {
-      return getSingleProto(Image.newBuilder(),
-          mHttp.requestJson(builder.build()).get("object"));
-    } catch (IOException e) {
-      throw new KegbotApiException(e);
-    }
+    return getSingleProto(Image.newBuilder(), requestJson(builder.build()).get("object"));
   }
 
   @Override
@@ -462,12 +465,7 @@ public class KegbotApiImpl implements KegbotApi {
       builder.addFile("photo", new File(imagePath));
     }
 
-    try {
-      return getSingleProto(User.newBuilder(),
-          mHttp.requestJson(builder.build()).get("object"));
-    } catch (IOException e) {
-      throw new KegbotApiException(e);
-    }
+    return getSingleProto(User.newBuilder(), requestJson(builder.build()).get("object"));
   }
 
   @Override
@@ -478,12 +476,8 @@ public class KegbotApiImpl implements KegbotApi {
         .setMethod(Http.POST)
         .addParameter("username", username);
 
-    try {
-      return getSingleProto(AuthenticationToken.newBuilder(),
-          mHttp.requestJson(builder.build()).get("object"));
-    } catch (IOException e) {
-      throw new KegbotApiException(e);
-    }
+    return getSingleProto(AuthenticationToken.newBuilder(),
+        requestJson(builder.build()).get("object"));
   }
 
   private synchronized void debug(String message) {
