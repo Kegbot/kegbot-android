@@ -39,7 +39,6 @@ import android.util.Pair;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.io.ByteStreams;
-import com.hoho.android.usbserial.util.HexDump;
 import com.squareup.okhttp.OkHttpClient;
 
 /**
@@ -175,7 +174,6 @@ class Http {
     bos.flush();
 
     final byte[] outputBytes = bos.toByteArray();
-    Log.d(TAG, HexDump.dumpHexString(outputBytes, 0, Math.min(1024, outputBytes.length)));
     connection.addRequestProperty("Content-Length", Integer.valueOf(outputBytes.length).toString());
 
     final OutputStream s = connection.getOutputStream();

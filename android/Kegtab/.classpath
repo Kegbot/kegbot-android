@@ -4,14 +4,8 @@
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 	<classpathentry exported="true" kind="lib" path="libs/protobuf/protobuf-java-2.4.1-pre.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/httpcomponents-client-4.0.3/lib/apache-mime4j-0.6.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/GoogleAnalytics/libGoogleAnalytics.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/guava/guava-11.0.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/httpcomponents-client-4.0.3/lib/httpclient-4.0.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/httpcomponents-client-4.0.3/lib/httpcore-4.0.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/httpcomponents-client-4.0.3/lib/httpmime-4.0.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/httpcomponents-client-4.0.3/lib/commons-codec-1.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/httpcomponents-client-4.0.3/lib/commons-logging-1.1.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/EasyTrackerAndroid_1.0/EasyTracker.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/kegbot-api/kegbot-api.jar" sourcepath="libs/kegbot-api/kegbot-api-src.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jackson/jackson-core-asl-1.7.4.jar"/>
@@ -26,6 +20,7 @@
 			<attribute name="javadoc_location" value="jar:platform:/resource/Kegtab/libs/joda-time-2.2/joda-time-2.2-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="libs/okhttp/okhttp-git-ace08e9f.jar"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
