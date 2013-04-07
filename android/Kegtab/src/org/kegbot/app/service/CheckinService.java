@@ -270,8 +270,8 @@ public class CheckinService extends IntentService {
         .setContentTitle(getString(titleRes))
         .setContentText(getString(R.string.checkin_update_description))
         .setContentIntent(contentIntent)
-        .setOngoing(true)
         .setOnlyAlertOnce(true)
+        .setAutoCancel(true)
         .getNotification();
 
       Log.d(TAG, "Posting notification.");
