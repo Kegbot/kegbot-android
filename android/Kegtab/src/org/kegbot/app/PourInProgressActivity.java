@@ -19,7 +19,6 @@ package org.kegbot.app;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.kegbot.app.camera.CameraFragment;
@@ -43,7 +42,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v13.app.FragmentPagerAdapter;
+import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -56,7 +55,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 /**
  * Activity shown while a pour is in progress.
@@ -183,9 +181,7 @@ public class PourInProgressActivity extends CoreActivity {
     }
   };
 
-  public class PouringTapAdapter extends FragmentPagerAdapter {
-
-    private final Map<String, PourStatusFragment> mFrags = Maps.newLinkedHashMap();
+  public class PouringTapAdapter extends FragmentStatePagerAdapter {
 
     public PouringTapAdapter(FragmentManager fm) {
       super(fm);
@@ -194,10 +190,12 @@ public class PourInProgressActivity extends CoreActivity {
     @Override
     public Fragment getItem(int position) {
       final KegTap tap = mTaps.get(position);
-      if (!mFrags.containsKey(tap.getMeterName())) {
-        mFrags.put(tap.getMeterName(), new PourStatusFragment(tap));
+      final PourStatusFragment frag = new PourStatusFragment(tap);
+      final Flow flow = mFlowManager.getFlowForTap(tap);
+      if (flow != null) {
+        frag.updateWithFlow(flow);
       }
-      return mFrags.get(tap.getMeterName());
+      return frag;
     }
 
     @Override
