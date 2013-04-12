@@ -34,6 +34,7 @@ import org.kegbot.proto.Models.KegTap;
 
 import android.util.Log;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.base.Strings;
@@ -58,10 +59,10 @@ public class FlowManager extends Manager {
     }
   };
 
-  public static Function<Flow, KegTap> FLOW_TO_TAP = new Function<Flow, KegTap>() {
+  private Function<Flow, KegTap> FLOW_TO_METER_NAME = new Function<Flow, KegTap>() {
     @Override
     public KegTap apply(Flow flow) {
-      return flow.getTap();
+      return mTapManager.getTapForMeterName(flow.getTap().getMeterName());
     }
   };
 
@@ -75,9 +76,9 @@ public class FlowManager extends Manager {
   private int mNextFlowId = 1;
 
   /**
-   * Records the last reading for each tap.
+   * Records the last reading for each tap, by meter name.
    */
-  private final Map<KegTap, Integer> mLastTapReading = Maps.newLinkedHashMap();
+  private final Map<String, Integer> mLastTapReading = Maps.newLinkedHashMap();
 
   /**
    * All flow listeners.
@@ -127,7 +128,7 @@ public class FlowManager extends Manager {
   /**
    * Map of all flows, keyed by the tap owning the flow.
    */
-  private final Map<KegTap, Flow> mFlowsByTap = Maps.newLinkedHashMap();
+  private final Map<String, Flow> mFlowsByTap = Maps.newLinkedHashMap();
 
   /**
    * Executor that checks for idle flows.
@@ -195,7 +196,7 @@ public class FlowManager extends Manager {
 
   /** @return all taps with an active {@link Flow}.*/
   public List<KegTap> getAllActiveTaps() {
-    return Lists.newArrayList(Collections2.transform(getAllActiveFlows(), FLOW_TO_TAP));
+    return Lists.newArrayList(Collections2.transform(getAllActiveFlows(), FLOW_TO_METER_NAME));
   }
 
   /**
@@ -209,9 +210,10 @@ public class FlowManager extends Manager {
     }
   }
 
-  public Flow getFlowForTap(final KegTap tap) {
+  @VisibleForTesting
+  protected Flow getFlowForTap(final KegTap tap) {
     synchronized (mFlowsByTap) {
-      return mFlowsByTap.get(tap);
+      return mFlowsByTap.get(tap.getMeterName());
     }
   }
 
@@ -235,14 +237,14 @@ public class FlowManager extends Manager {
   }
 
   public Flow handleMeterActivity(final String tapName, final int ticks) {
-    Log.d(TAG, "handleMeterActivity: " + tapName + "=" + ticks);
     final KegTap tap = mTapManager.getTapForMeterName(tapName);
     if (tap == null || tapName == null) {
-      Log.d(TAG, "Dropping activity for unknown tap: " + tapName);
+      Log.d(TAG, String.format("handleMeterActivity: tap=%s ticks=%s: unknown tap, dropping.",
+          tapName, Integer.valueOf(ticks)));
       return null;
     }
 
-    final Integer lastReading = mLastTapReading.get(tap);
+    final Integer lastReading = mLastTapReading.get(tap.getMeterName());
     int delta;
     if (lastReading == null || lastReading.intValue() > ticks) {
       // First report for this meter.
@@ -251,23 +253,26 @@ public class FlowManager extends Manager {
       delta = Math.max(0, ticks - lastReading.intValue());
     }
 
-    mLastTapReading.put(tap, Integer.valueOf(ticks));
+    mLastTapReading.put(tap.getMeterName(), Integer.valueOf(ticks));
 
     Log.d(TAG, "handleMeterActivity: lastReading=" + lastReading + ", ticks=" + ticks + ", delta="
         + delta);
+
+    Log.d(TAG, String.format("handleMeterActivity: tap=%s ticks=%s last=%s delta=%s",
+        tapName, Integer.valueOf(ticks), Integer.valueOf(ticks), Integer.valueOf(delta)));
 
     Flow flow = null;
     synchronized (mFlowsByTap) {
       flow = getFlowForTap(tap);
       if (flow == null) {
         if (!mConfig.getEnableFlowAutoStart()) {
-          Log.d(TAG, "Not starting new flow: autostart disabled.");
+          Log.d(TAG, "  ! not starting new flow, autostart disabled.");
           return null;
         }
         flow = startFlow(tap, mConfig.getIdleTimeoutMs());
-        Log.d(TAG, "  started new flow: " + flow);
+        Log.d(TAG, "  + started new flow: " + flow);
       } else {
-        Log.d(TAG, "  found existing flow: " + flow);
+        Log.d(TAG, "  ~ found existing flow: " + flow);
       }
       flow.addTicks(delta);
       publishFlowUpdate(flow);
@@ -374,7 +379,7 @@ public class FlowManager extends Manager {
   public Flow endFlow(final Flow flow) {
     final Flow endedFlow;
     synchronized (mFlowsByTap) {
-      endedFlow = mFlowsByTap.remove(flow.getTap());
+      endedFlow = mFlowsByTap.remove(flow.getTap().getMeterName());
       if (mFlowsByTap.isEmpty()) {
         stopIdleChecker();
       }
@@ -399,7 +404,7 @@ public class FlowManager extends Manager {
       mRecentFlows.removeFirst();
     }
     synchronized (mFlowsByTap) {
-      mFlowsByTap.put(tap, flow);
+      mFlowsByTap.put(tap.getMeterName(), flow);
       flow.pokeActivity();
       publishFlowStart(flow);
     }

@@ -154,7 +154,6 @@ public class KegbotCoreService extends Service {
       final Runnable r = new Runnable() {
         @Override
         public void run() {
-          Log.d(TAG, "Meter update for meter: " + meter);
           mFlowManager.handleMeterActivity(meter.getName(), (int) meter.getTicks());
         }
       };

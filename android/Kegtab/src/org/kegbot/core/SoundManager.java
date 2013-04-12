@@ -60,7 +60,7 @@ import com.squareup.otto.Subscribe;
 public class SoundManager extends BackgroundManager {
 
   private static final String TAG = SoundManager.class.getSimpleName();
-  private static final boolean DEBUG = true;
+  private static final boolean DEBUG = false;
 
   private static final String EVENT_FLOW_THRESHOLD_OUNCES = "flow.threshold.ounces";
 

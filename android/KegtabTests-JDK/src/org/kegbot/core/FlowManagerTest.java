@@ -24,7 +24,6 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.kegbot.api.KegbotApi;
 import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.core.FlowManager.Clock;
 import org.kegbot.proto.Models.KegTap;
@@ -40,7 +39,6 @@ public class FlowManagerTest extends TestCase {
 
   private TapManager mTapManager;
   private AppConfiguration mConfig;
-  private KegbotApi mApi;
   private Bus mBus;
   private KegTap mTap0;
   private KegTap mTap1;
@@ -59,7 +57,6 @@ public class FlowManagerTest extends TestCase {
     super.setUp();
 
     mBus = mock(Bus.class);
-    mApi = mock(KegbotApi.class);
 
     mTapManager = new TapManager(mBus);
     mTap0 = KegTap.newBuilder().setId(1).setName("tap0").setMlPerTick(1).setMeterName("kegboard.flow0").build();

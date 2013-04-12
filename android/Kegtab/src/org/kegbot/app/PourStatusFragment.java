@@ -184,7 +184,7 @@ public class PourStatusFragment extends ListFragment {
   @Subscribe
   public void onFlowUpdate(FlowUpdateEvent event) {
     final Flow flow = event.getFlow();
-    if (flow.getTap() == mTap) {
+    if (mTap != null && mTap.getMeterName().equals(flow.getTap().getMeterName())) {
       if (flow.isFinished()) {
         setEnded();
       } else {
