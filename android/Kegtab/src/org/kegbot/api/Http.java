@@ -65,29 +65,43 @@ class Http {
     mClient = client;
   }
 
-  public InputStream request(Request request)
-      throws IOException {
+  public InputStream request(Request request) throws IOException {
+    HttpURLConnection connection = null;
+    try {
+      // Prepare parameters and body.
+      String url = request.getUrl();
+      final String method = request.getMethod();
+      final List<Pair<String, String>> params = request.getParameters();
 
-    // Prepare parameters and body.
-    Log.d(TAG, String.format("--> %s %s", request.getMethod(), request.getUrl()));
+      if (GET.equals(method) && !params.isEmpty()) {
+        url = String.format("%s?%s", url, getUrlParamsString(request));
+      }
 
-    String url = request.getUrl();
-    final String method = request.getMethod();
-    final List<Pair<String, String>> params = request.getParameters();
+      connection = mClient.open(new URL(url));
+      for (final Map.Entry<String, String> e : request.getHeaders().entrySet()) {
+        connection.setRequestProperty(e.getKey(), e.getValue());
+      }
+      connection.setRequestMethod(request.getMethod());
 
-    if (GET.equals(method) && !params.isEmpty()) {
-      url = String.format("%s?%s", url, getUrlParamsString(request));
+      // Execute request.
+      buildBody(request, connection);
+      connection.getResponseCode();
+      return connection.getInputStream();
+    } finally {
+      boolean logged = false;
+      if (connection != null) {
+        try {
+          Log.d(TAG, String.format("--> %s %s [%s]", request.getMethod(), request.getUrl(),
+              Integer.valueOf(connection.getResponseCode())));
+          logged = true;
+        } catch (IOException e) {
+          // Ignore;
+        }
+      }
+      if (!logged) {
+        Log.d(TAG, String.format("--> %s %s [ERROR]", request.getMethod(), request.getUrl()));
+      }
     }
-
-    final HttpURLConnection connection = mClient.open(new URL(url));
-    for (final Map.Entry<String, String> e : request.getHeaders().entrySet()) {
-      connection.setRequestProperty(e.getKey(), e.getValue());
-    }
-    connection.setRequestMethod(request.getMethod());
-
-    // Execute request.
-    buildBody(request, connection);
-    return connection.getInputStream();
   }
 
   public JsonNode requestJson(Request request)
