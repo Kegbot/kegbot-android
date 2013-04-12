@@ -68,7 +68,6 @@ public class CalibrationActivity extends CoreActivity {
   private HardwareManager mHardwareManager;
 
   private String mMeterName;
-  private String mRawMeterName;
   private String mRelayName;
   private double mMlPerTick;
   private double mExistingMlPerTick;
@@ -283,7 +282,7 @@ public class CalibrationActivity extends CoreActivity {
         api.setApiKey(config.getApiKey());
 
         try {
-          api.setTapMlPerTick(mRawMeterName, mMlPerTick);
+          api.setTapMlPerTick(mMeterName, mMlPerTick);
           return "";
         } catch (KegbotApiException e) {
           Log.w(TAG, "Error calibrating: " + e, e);
