@@ -28,7 +28,7 @@ import org.kegbot.proto.Models.Stats;
  *
  * @author mike wakerly (opensource@hoho.com)
  */
-public class CurrentSessionChangedEvent {
+public class CurrentSessionChangedEvent implements Event {
 
   @Nullable
   private final Session mSession;

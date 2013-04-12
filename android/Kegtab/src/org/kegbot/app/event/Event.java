@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Mike Wakerly <opensource@hoho.com>.
+ * Copyright 2013 Mike Wakerly <opensource@hoho.com>.
  *
  * This file is part of the Kegtab package from the Kegbot project. For
  * more information on Kegtab or Kegbot, see <http://kegbot.org/>.
@@ -18,25 +18,11 @@
  */
 package org.kegbot.app.event;
 
-import java.util.List;
-
-import org.kegbot.proto.Models.SystemEvent;
-
 /**
- * Event posted when the list of system events has been updated.
+ * Base/marker interface for all internal events.
  *
  * @author mike wakerly (opensource@hoho.com)
  */
-public class SystemEventListUpdateEvent implements Event {
-
-  private final List<SystemEvent> mEvents;
-
-  public SystemEventListUpdateEvent(List<SystemEvent> events) {
-    mEvents = events;
-  }
-
-  public List<SystemEvent> getEvents() {
-    return mEvents;
-  }
+public interface Event {
 
 }

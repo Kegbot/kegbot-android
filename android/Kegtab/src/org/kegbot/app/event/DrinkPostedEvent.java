@@ -25,7 +25,7 @@ import org.kegbot.proto.Models.Drink;
  *
  * @author mike wakerly (opensource@hoho.com)
  */
-public class DrinkPostedEvent {
+public class DrinkPostedEvent implements Event {
 
   private final Drink mDrink;
 
