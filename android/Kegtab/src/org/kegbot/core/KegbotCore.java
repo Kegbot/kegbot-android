@@ -121,7 +121,7 @@ public class KegbotCore {
     mAuthenticationManager = new AuthenticationManager(mBus, context, mApi, mConfig);
     mManagers.add(mAuthenticationManager);
 
-    mSoundManager = new SoundManager(mBus, context, mApi, mFlowManager);
+    mSoundManager = new SoundManager(mBus, context);
     mManagers.add(mSoundManager);
 
     mBluetoothManager = new BluetoothManager(mBus, context);

@@ -22,294 +22,243 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
-import java.util.WeakHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import org.kegbot.api.KegbotApi;
-import org.kegbot.api.KegbotApiException;
-import org.kegbot.app.KegtabBroadcast;
+import org.kegbot.app.event.Event;
+import org.kegbot.app.event.FlowUpdateEvent;
+import org.kegbot.app.event.SoundEventListUpdateEvent;
 import org.kegbot.app.util.Downloader;
+import org.kegbot.app.util.IndentingPrintWriter;
 import org.kegbot.app.util.Units;
 import org.kegbot.proto.Models.SoundEvent;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.util.Log;
 
-import com.google.common.base.Strings;
+import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Queues;
 import com.google.common.collect.Sets;
 import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 
 /**
+ * Plays sounds at specific events.
  *
- * @author mike wakerly (mike@wakerly.com)
+ * @author mike wakerly (opensource@hoho.com)
  */
-public class SoundManager extends Manager {
+public class SoundManager extends BackgroundManager {
 
   private static final String TAG = SoundManager.class.getSimpleName();
+  private static final boolean DEBUG = true;
 
-  private static final boolean DEBUG = false;
+  private static final String EVENT_FLOW_THRESHOLD_OUNCES = "flow.threshold.ounces";
 
-  private Context mContext;
-  private KegbotApi mApi;
-  private FlowManager mFlowManager;
+  /** Queue of Events, shipped from main thread to our background thread. */
+  private final LinkedBlockingQueue<Event> mCommandQueue = Queues.newLinkedBlockingQueue();
 
-  private final LinkedBlockingQueue<Intent> mCommandQueue = Queues.newLinkedBlockingQueue();
-
+  /** All sound events. */
   private final Set<SoundEvent> mSoundEvents = Sets.newLinkedHashSet();
 
-  private final WeakHashMap<Flow, List<Double>> mThresholds = new WeakHashMap<Flow, List<Double>>();
+  /** Map of flows to last observed volume. */
+  private final Map<Flow, Double> mFlowsByLastVolume = Maps.newLinkedHashMap();
 
-  private final Random mRandom = new Random();
-
+  /** Map of URLs to locally-cached files. */
   private final Map<String, File> mFiles = Maps.newLinkedHashMap();
 
+  /** Executor for playing sounds. */
   private final ExecutorService mExecutor = Executors.newFixedThreadPool(3);
 
+  /** Map of volume (mL) to sound event. */
+  private final Map<Double, SoundEvent> mVolumeThresholds = Maps.newLinkedHashMap();
+
+  private Context mContext;
   private MediaPlayer mMediaPlayer;
 
   private boolean mQuit;
 
-  private enum SoundEventHandler {
-    POUR_START {
-      @Override
-      boolean match(SoundEvent event, String username, Flow flow) {
-        if (!"pour_start".equals(event.getEventName())) {
-          return false;
-        }
-        if (!Strings.isNullOrEmpty(username)) {
-          if (event.hasUser() && !event.getUser().equals(username)) {
-            return false;
-          }
-        }
-        return true;
-      }
-    },
-    POUR_UPDATE {
-      @Override
-      boolean match(SoundEvent event, String username, Flow flow) {
-        if (!"flow.threshold.ounces".equals(event.getEventName())) {
-          return false;
-        }
-        if (!event.hasEventPredicate()) {
-          return false;
-        }
-        int ounces;
-        try {
-          ounces = Integer.parseInt(event.getEventPredicate());
-        } catch (NumberFormatException e) {
-          return false;
-        }
-        if (flow.getVolumeMl() >= Units.volumeOuncesToMl(ounces)) {
-          return true;
-        }
-        return false;
-      }
-    },
-    USER_AUTHED {
-      @Override
-      boolean match(SoundEvent event, String username, Flow flow) {
-        if (!"user_authed".equals(event.getEventName())) {
-          return false;
-        }
-
-        if (!event.hasUser()) {
-          return true;
-        }
-        return event.getUser().equals(username);
-      }
-    };
-
-    abstract boolean match(final SoundEvent event, final String username, final Flow flow);
-  }
-
-  private final BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
-    @Override
-    public void onReceive(Context context, Intent intent) {
-      mCommandQueue.add(intent);
-    }
-  };
-
-  private static final IntentFilter INTENT_FILTER = new IntentFilter();
-  static {
-    INTENT_FILTER.addAction(KegtabBroadcast.ACTION_USER_AUTHED);
-    INTENT_FILTER.addAction(KegtabBroadcast.ACTION_POUR_START);
-    INTENT_FILTER.addAction(KegtabBroadcast.ACTION_POUR_UPDATE);
-    INTENT_FILTER.setPriority(1000);
-  }
-
-  public SoundManager(Bus bus, Context context, KegbotApi api, FlowManager flowManager) {
+  public SoundManager(Bus bus, Context context) {
     super(bus);
     mContext = context;
-    mApi = api;
-    mFlowManager = flowManager;
   }
 
   @Override
-  public void start() {
-    mContext.registerReceiver(mBroadcastReceiver, INTENT_FILTER);
+  public synchronized void start() {
     mMediaPlayer = new MediaPlayer();
     mQuit = false;
-    mExecutor.execute(new Runnable() {
-      @Override
-      public void run() {
-        runInBackground();
-      }
-    });
+    getBus().register(this);
+    super.start();
   }
 
   @Override
-  public void stop() {
-    mContext.unregisterReceiver(mBroadcastReceiver);
+  public synchronized void stop() {
     mQuit = true;
     mCommandQueue.clear();
     mMediaPlayer.release();
+    getBus().unregister(this);
+    super.stop();
   }
 
-  private void runInBackground() {
-    Log.d(TAG, "Running in background.");
-    try {
-      final List<SoundEvent> allEvents = mApi.getAllSoundEvents();
-      if (DEBUG) Log.d(TAG, "Sound events: " + allEvents);
-      mSoundEvents.clear();
-      mSoundEvents.addAll(allEvents);
-      downloadAll();
-    } catch (KegbotApiException e) {
-      // Pass.
+  @Override
+  protected void dump(IndentingPrintWriter writer) {
+    writer.printPair("numFlows", Integer.valueOf(mFlowsByLastVolume.size()).toString()).println();
+
+    if (!mFlowsByLastVolume.isEmpty()) {
+      writer.println("Flows:");
+      writer.increaseIndent();
+      for (Map.Entry<Flow, Double> entry : mFlowsByLastVolume.entrySet()) {
+        writer.printPair("flowId", Integer.valueOf(entry.getKey().getFlowId()).toString())
+          .println();
+        writer.printPair("lastVolumeMl", entry.getValue().toString())
+          .println();
+        writer.println();
+      }
     }
+  }
+
+  @Override
+  protected void runInBackground() {
     while (true) {
       synchronized (this) {
         if (mQuit) {
           break;
         }
       }
-      Intent command;
+
+      Event event;
       try {
-        command = mCommandQueue.poll(200, TimeUnit.MILLISECONDS);
+        event = mCommandQueue.poll(200, TimeUnit.MILLISECONDS);
       } catch (InterruptedException e) {
         Thread.currentThread().interrupt();
         continue;
       }
-      if (command == null) {
-        continue;
+      if (event != null) {
+        if (DEBUG) {
+          Log.d(TAG, "Handling event: " + event + " mSoundEvents.size=" + mSoundEvents.size());
+        }
+        if (event instanceof FlowUpdateEvent) {
+          processFlowUpdate(((FlowUpdateEvent) event).getFlow());
+        } else if (event instanceof SoundEventListUpdateEvent) {
+          processSoundEventListUpdateEvent((SoundEventListUpdateEvent) event);
+        } else {
+          if (DEBUG) Log.w(TAG, "Unrecognized event type.");
+        }
       }
-
-      handleCommand(command);
     }
   }
 
-  private void downloadAll() {
-    for (SoundEvent e : mSoundEvents) {
-      final String url = e.getSoundUrl();
+  /** Background callback, handles a flow update. */
+  private void processFlowUpdate(Flow flow) {
+    if (flow.isFinished()) {
+      mFlowsByLastVolume.remove(flow);
+      return;
+    }
 
-      if (mFiles.containsKey(url)) {
-        final File output = mFiles.get(url);
-        if (output.exists()) {
-          continue;
-        } else {
-          mFiles.remove(url);
-        }
+    final Double currentVolume = Double.valueOf(flow.getVolumeMl());
+    Double lastVolume = mFlowsByLastVolume.get(flow);
+    if (lastVolume == null) {
+      lastVolume = Double.valueOf(0);
+    }
+    mFlowsByLastVolume.put(flow, currentVolume);
+
+    if (currentVolume == lastVolume) {
+      return;
+    }
+
+    // Find the next volume threshold, based on lastVolume.
+    List<Double> thresholds = Lists.newArrayList(mVolumeThresholds.keySet());
+    Collections.sort(thresholds);
+    Double threshold = null;
+
+    for (Double v : thresholds) {
+      if (v.doubleValue() > lastVolume.doubleValue()) {
+        threshold = v;
+        break;
       }
-      String[] parts = url.split("/");
-      final String filename = parts[parts.length - 1];
-      final File output = new File(mContext.getCacheDir(), filename);
+    }
 
+    if (threshold == null) {
+      if (DEBUG) Log.d(TAG, "No threshold.");
+      return;
+    }
+
+    if (currentVolume.doubleValue() >= threshold.doubleValue()) {
+      Log.d(TAG, "Tripped threshold: " + threshold);
+      SoundEvent e = mVolumeThresholds.get(threshold);
+      if (e == null) {
+        Log.e(TAG, "No event.");
+        return;
+      }
+      playSound(e);
+    }
+  }
+
+  /** Background callback, handles an updated sound event list. */
+  private void processSoundEventListUpdateEvent(SoundEventListUpdateEvent event) {
+    final Set<SoundEvent> newEvents = Sets.newHashSet(event.getEvents());
+    Log.d(TAG, "Updated sound events: " + Joiner.on(", ").join(newEvents));
+    if (!newEvents.equals(mSoundEvents)) {
+      mSoundEvents.clear();
+      Log.d(TAG, "New/updated sound events: ");
+      for (SoundEvent e : newEvents) {
+        Log.d(TAG, "Event: " + e);
+        downloadEvent(e);
+        mSoundEvents.add(e);
+      }
+    }
+    recomputeVolumeThresholds();
+  }
+
+  /** Downloads a single file. */
+  private void downloadEvent(SoundEvent e) {
+    final String url = e.getSoundUrl();
+
+    if (mFiles.containsKey(url)) {
+      final File output = mFiles.get(url);
       if (output.exists()) {
-        Log.d(TAG, "File exists: " + url + " file=" + output) ;
+        return;
+      } else {
+        mFiles.remove(url);
+      }
+    }
+    String[] parts = url.split("/");
+    final String filename = parts[parts.length - 1];
+    final File output = new File(mContext.getCacheDir(), filename);
+
+    if (output.exists()) {
+      Log.d(TAG, "File exists: " + url + " file=" + output) ;
+      mFiles.put(url, output);
+      return;
+    }
+
+    final Runnable job = new Runnable() {
+      @Override
+      public void run() {
+        Log.d(TAG, "Downloading: " + url);
+        try {
+          Downloader.downloadRaw(url, output);
+        } catch (IOException exc) {
+          Log.w(TAG, "Download failed: " + exc.toString(), exc);
+          return;
+        }
+        Log.d(TAG, "Sucesss: " + url + " file=" + output);
         mFiles.put(url, output);
-        continue;
       }
-
-      final Runnable job = new Runnable() {
-        @Override
-        public void run() {
-          Log.d(TAG, "Downloading: " + url);
-          try {
-            Downloader.downloadRaw(url, output);
-          } catch (IOException exc) {
-            Log.w(TAG, "Download failed: " + exc.toString(), exc);
-            return;
-          }
-          Log.d(TAG, "Sucesss: " + url + " file=" + output);
-          mFiles.put(url, output);
-        }
-      };
-      mExecutor.submit(job);
-    }
+    };
+    mExecutor.submit(job);
   }
 
-  private void handleCommand(final Intent command) {
-    final SoundEventHandler handler = getHandlerForEvent(command);
-    Log.d(TAG, "Handling command: " + command + " mSoundEvents.size=" + mSoundEvents.size());
-
-    if (handler == null) {
-      Log.d(TAG, "No handler.");
-      return;
-    }
-
-    final Flow flow = getFlowForPourIntent(command);
-    String username = "";
-    if (command.hasExtra(KegtabBroadcast.USER_AUTHED_EXTRA_USERNAME)) {
-      username = command.getStringExtra(KegtabBroadcast.USER_AUTHED_EXTRA_USERNAME);
-    } else if (flow != null && flow.isAuthenticated()) {
-      username = flow.getUsername();
-    }
-
-    final List<SoundEvent> userEvents = Lists.newArrayList();
-    final List<SoundEvent> allEvents = Lists.newArrayList();
-    for (final SoundEvent e : mSoundEvents) {
-      if (handler.match(e, username, flow)) {
-        if (e.hasUser()) {
-          userEvents.add(e);
-        } else {
-          allEvents.add(e);
-        }
-      }
-    }
-
-    Log.d(TAG, "Matched userEvents=" + userEvents.size());
-    Log.d(TAG, "Matched allEvents=" + allEvents.size());
-
-    if (!userEvents.isEmpty()) {
-      playRandomSound(userEvents);
-    } else if (!allEvents.isEmpty()) {
-      playRandomSound(allEvents);
-    } else {
-      Log.d(TAG, "Nothing to do.");
-    }
-
-  }
-
-  /**
-   * @param allEvents
-   */
-  private void playRandomSound(List<SoundEvent> events) {
-    if (events.isEmpty()) {
-      Log.w(TAG, "Empty list.");
-      return;
-    }
-    if (events.size() == 1) {
-      playSound(events.get(0));
-    } else {
-      final SoundEvent event = events.get(mRandom.nextInt(events.size()));
-      playSound(event);
-    }
-  }
-
+  /** Plays a single, previously-downloaded sound. */
   private void playSound(SoundEvent event) {
     final String soundUrl = event.getSoundUrl();
     Log.d(TAG, "Playing sound: " + soundUrl);
@@ -346,69 +295,38 @@ public class SoundManager extends Manager {
 
   }
 
-  private SoundEventHandler getHandlerForEvent(final Intent intent) {
-    final String action = intent.getAction();
-    final Flow flow = getFlowForPourIntent(intent);
-
-    if (!mThresholds.containsKey(flow)) {
-      mThresholds.put(flow, getThresholds());
-    }
-
-    if (KegtabBroadcast.ACTION_POUR_START.equals(action)) {
-      return SoundEventHandler.POUR_START;
-    } else if (KegtabBroadcast.ACTION_POUR_UPDATE.equals(action)) {
-      if (flow == null) {
-        return null;
-      }
-      if (flow.isFinished()) {
-        mThresholds.remove(flow);
-        return null;
-      }
-
-      final List<Double> thresholds = mThresholds.get(flow);
-      if (thresholds == null) {
-        return null;
-      }
-      boolean match = false;
-      while (!thresholds.isEmpty()) {
-        if (thresholds.get(0).doubleValue() <= flow.getVolumeMl()) {
-          match = true;
-          thresholds.remove(0);
-        } else {
-          break;
-        }
-      }
-      if (match) {
-        return SoundEventHandler.POUR_UPDATE;
-      }
-    } else if (KegtabBroadcast.ACTION_USER_AUTHED.equals(action)) {
-      return SoundEventHandler.USER_AUTHED;
-    }
-    return null;
+  @Subscribe
+  public void onFlowUpdateEvent(FlowUpdateEvent event) {
+    mCommandQueue.add(event);
   }
 
-  private final List<Double> getThresholds() {
-    final List<Double> result = Lists.newArrayList(
-        Double.valueOf(Units.volumeOuncesToMl(6.0)),
-        Double.valueOf(Units.volumeOuncesToMl(12.0)),
-        Double.valueOf(Units.volumeOuncesToMl(16.0)),
-        Double.valueOf(Units.volumeOuncesToMl(24.0)),
-        Double.valueOf(Units.volumeOuncesToMl(32.0)),
-        Double.valueOf(Units.volumeOuncesToMl(64.0))
-        );
-    return result;
+  @Subscribe
+  public void onSoundEventListUpdateEvent(SoundEventListUpdateEvent event) {
+    mCommandQueue.add(event);
   }
 
-  private Flow getFlowForPourIntent(final Intent intent) {
-    final String tapName = intent.getStringExtra(KegtabBroadcast.POUR_UPDATE_EXTRA_TAP_NAME);
-    if (Strings.isNullOrEmpty(tapName)) {
-      return null;
+  /** Recomputes {@link #mVolumeThresholds} based on {@link #mSoundEvents}. */
+  private void recomputeVolumeThresholds() {
+    final Map<Double, SoundEvent> result = Maps.newLinkedHashMap();
+
+    for (final SoundEvent event : mSoundEvents) {
+      if (!EVENT_FLOW_THRESHOLD_OUNCES.equals(event.getEventName())) {
+        continue;
+      }
+      try {
+        final Double ounces = Double.valueOf(event.getEventPredicate());
+        final Double ml = Double.valueOf(Units.volumeOuncesToMl(ounces.doubleValue()));
+        result.put(ml, event);
+      } catch (NumberFormatException e) {
+        // Ignore
+      }
     }
-    final Flow flow = mFlowManager.getFlowForMeterName(tapName);
-    if (flow == null) {
-      return null;
+
+    if (!result.equals(mVolumeThresholds)) {
+      mVolumeThresholds.clear();
+      mVolumeThresholds.putAll(result);
+      Log.d(TAG, "Updated volume thresholds: " + Joiner.on(", ").join(result.keySet()));
     }
-    return flow;
   }
 
 }

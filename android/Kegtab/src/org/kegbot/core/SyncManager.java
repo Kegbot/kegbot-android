@@ -33,6 +33,7 @@ import org.kegbot.api.KegbotApiException;
 import org.kegbot.api.KegbotApiNotFoundError;
 import org.kegbot.app.event.CurrentSessionChangedEvent;
 import org.kegbot.app.event.DrinkPostedEvent;
+import org.kegbot.app.event.SoundEventListUpdateEvent;
 import org.kegbot.app.event.SystemEventListUpdateEvent;
 import org.kegbot.app.event.TapListUpdateEvent;
 import org.kegbot.app.storage.LocalDbHelper;
@@ -42,6 +43,7 @@ import org.kegbot.proto.Internal.PendingPour;
 import org.kegbot.proto.Models.Drink;
 import org.kegbot.proto.Models.KegTap;
 import org.kegbot.proto.Models.Session;
+import org.kegbot.proto.Models.SoundEvent;
 import org.kegbot.proto.Models.Stats;
 import org.kegbot.proto.Models.SystemEvent;
 import org.kegbot.proto.Models.ThermoLog;
@@ -82,6 +84,7 @@ public class SyncManager extends BackgroundManager {
 
   private List<KegTap> mLastKegTapList = Lists.newArrayList();
   private List<SystemEvent> mLastSystemEventList = Lists.newArrayList();
+  private List<SoundEvent> mLastSoundEventList = Lists.newArrayList();
   @Nullable private Session mLastSession = null;
   @Nullable private Stats mLastSessionStats = null;
 
@@ -109,6 +112,16 @@ public class SyncManager extends BackgroundManager {
     }
   };
 
+  public static Comparator<SoundEvent> SOUND_EVENT_COMPARATOR = new Comparator<SoundEvent>() {
+    @Override
+    public int compare(SoundEvent object1, SoundEvent object2) {
+      int cmp = object1.getEventName().compareTo(object2.getEventName());
+      if (cmp == 0) {
+        cmp = object1.getEventPredicate().compareTo(object2.getEventPredicate());
+      }
+      return cmp;
+    }
+  };
 
   public SyncManager(Bus bus, Context context, KegbotApi api) {
     super(bus);
@@ -392,6 +405,20 @@ public class SyncManager extends BackgroundManager {
       error = true;
     }
 
+    // Sound events
+    try {
+      List<SoundEvent> events = mApi.getAllSoundEvents();
+      Collections.sort(events, SOUND_EVENT_COMPARATOR);
+      if (!events.equals(mLastSoundEventList)) {
+        mLastSoundEventList.clear();
+        mLastSoundEventList.addAll(events);
+        postOnMainThread(new SoundEventListUpdateEvent(mLastSoundEventList));
+      }
+    } catch (KegbotApiException e) {
+      Log.w(TAG, "Error syncing sound events: " + e);
+      error = true;
+    }
+
     return error;
   }
 
@@ -408,6 +435,11 @@ public class SyncManager extends BackgroundManager {
   @Produce
   public CurrentSessionChangedEvent produceCurrentSession() {
     return new CurrentSessionChangedEvent(mLastSession, mLastSessionStats);
+  }
+
+  @Produce
+  public SoundEventListUpdateEvent produceSoundEvents() {
+    return new SoundEventListUpdateEvent(mLastSoundEventList);
   }
 
   private int numPendingEntries() {
