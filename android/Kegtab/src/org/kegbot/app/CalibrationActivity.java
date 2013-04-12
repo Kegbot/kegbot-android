@@ -32,6 +32,7 @@ import org.kegbot.core.FlowMeter;
 import org.kegbot.core.HardwareManager;
 import org.kegbot.core.KegbotCore;
 import org.kegbot.core.ThermoSensor;
+import org.kegbot.proto.Models.KegTap;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -54,7 +55,6 @@ public class CalibrationActivity extends CoreActivity {
   private static final boolean DEBUG = false;
 
   private static final String EXTRA_METER_NAME = "meter_name";
-  private static final String EXTRA_RELAY_NAME = "relay_name";
   private static final String EXTRA_ML_PER_TICK = "ml_per_tick";
 
   // 50% - 150%
@@ -67,8 +67,8 @@ public class CalibrationActivity extends CoreActivity {
 
   private HardwareManager mHardwareManager;
 
+  private KegTap mTap;
   private String mMeterName;
-  private String mRelayName;
   private double mMlPerTick;
   private double mExistingMlPerTick;
 
@@ -118,7 +118,6 @@ public class CalibrationActivity extends CoreActivity {
     setContentView(R.layout.calibration_activity);
 
     mMeterName = getIntent().getStringExtra(EXTRA_METER_NAME);
-    mRelayName = getIntent().getStringExtra(EXTRA_RELAY_NAME);
     mExistingMlPerTick = mMlPerTick = getIntent().getFloatExtra(EXTRA_ML_PER_TICK, 0);
 
     mTicksBadge = (BadgeView) findViewById(R.id.ticksBadge);
@@ -178,7 +177,7 @@ public class CalibrationActivity extends CoreActivity {
       }
     });
 
-    Log.d(TAG, "Started: meterName=" + mMeterName + " relayName=" + mRelayName);
+    Log.d(TAG, "Started: meterName=" + mMeterName);
     resetCalibration();
   }
 
@@ -187,15 +186,21 @@ public class CalibrationActivity extends CoreActivity {
     super.onResume();
     Log.d(TAG, "onResume, swapping hardware listeners");
     mHardwareManager = KegbotCore.getInstance(getApplicationContext()).getHardwareManager();
+    mHardwareManager.setTapRelayEnabled(mTap, true);
     mSwappedListeners = mHardwareManager.getListeners();
     for (HardwareManager.Listener old : mSwappedListeners) {
       mHardwareManager.removeListener(old);
     }
     mHardwareManager.addListener(mHardwareListener);
+
+    mTap = KegbotCore.getInstance(getApplicationContext()).getTapManager().getTapForMeterName(
+        mMeterName);
+    mHardwareManager.setTapRelayEnabled(mTap, true);
   }
 
   @Override
   protected void onPause() {
+    mHardwareManager.setTapRelayEnabled(mTap, false);
     mHardwareManager.removeListener(mHardwareListener);
     for (HardwareManager.Listener old : mSwappedListeners) {
       mHardwareManager.addListener(old);
@@ -387,7 +392,6 @@ public class CalibrationActivity extends CoreActivity {
   static Intent getStartIntent(Context context, String meterName, String relayName, float mlPerTick) {
     final Intent intent = new Intent(context, CalibrationActivity.class);
     intent.putExtra(EXTRA_METER_NAME, meterName);
-    intent.putExtra(EXTRA_RELAY_NAME, relayName);
     intent.putExtra(EXTRA_ML_PER_TICK, mlPerTick);
     intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
     return intent;
