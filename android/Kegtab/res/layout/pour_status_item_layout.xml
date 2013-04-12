@@ -55,23 +55,22 @@
             android:background="@color/black20pct" >
         </org.kegbot.app.view.BadgeView>
 
-        <ImageView
-            android:id="@+id/tapImage"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_below="@+id/tapStatsBadge1"
-            android:layout_centerHorizontal="true"
-            android:layout_margin="16dip" />
-
         <TextView
             android:id="@+id/tapNotes"
             style="@style/smallText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_below="@+id/tapImage"
+            android:layout_below="@+id/tapStatsBadge1"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="5dip" />
+
+        <ImageView
+            android:id="@+id/tapImage"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_below="@+id/tapNotes"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="16dip" />
     </RelativeLayout>
 
     <!--

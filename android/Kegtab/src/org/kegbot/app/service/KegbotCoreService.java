@@ -22,13 +22,16 @@ import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiException;
 import org.kegbot.app.HomeActivity;
 import org.kegbot.app.KegtabBroadcast;
+import org.kegbot.app.PourInProgressActivity;
 import org.kegbot.app.R;
 import org.kegbot.app.config.AppConfiguration;
+import org.kegbot.app.event.FlowUpdateEvent;
 import org.kegbot.core.AuthenticationManager;
 import org.kegbot.core.AuthenticationToken;
 import org.kegbot.core.Flow;
@@ -160,20 +163,27 @@ public class KegbotCoreService extends Service {
   };
 
   private final FlowManager.Listener mFlowListener = new FlowManager.Listener() {
+    private final long ACTIVITY_START_TIMEOUT_MILLIS = TimeUnit.SECONDS.toMillis(5);
+    private long mLastActivityStart = 0;
+
     @Override
     public void onFlowUpdate(final Flow flow) {
       if (flow.isAuthenticated()) {
         mHardwareManager.setTapRelayEnabled(flow.getTap(), true);
       }
-      final Runnable r = new Runnable() {
-        @Override
-        public void run() {
-          Log.d(TAG, "Flow updated: " + flow);
-          final Intent intent = KegtabBroadcast.getPourUpdateBroadcastIntent(flow);
-          sendOrderedBroadcast(intent, null);
+      mCore.postEvent(new FlowUpdateEvent(flow));
+
+      long now = SystemClock.elapsedRealtime();
+      if ((now - mLastActivityStart) > ACTIVITY_START_TIMEOUT_MILLIS) {
+        mLastActivityStart = now;
+        if (!PourInProgressActivity.getIsRunning()) {
+          final Intent intent =
+              PourInProgressActivity.getStartIntent(KegbotCoreService.this, flow.getTap().getMeterName());
+          intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+          Log.d(TAG, "Starting activity");
+          startActivity(intent);
         }
-      };
-      mExecutorService.submit(r);
+      }
     }
 
     @Override
@@ -187,15 +197,7 @@ public class KegbotCoreService extends Service {
 
       if (delta > SUPPRESS_POUR_START_MILLIS) {
         mLastPourStartUptimeMillis = now;
-        final Runnable r = new Runnable() {
-          @Override
-          public void run() {
-            Log.d(TAG, "Flow started: " + flow);
-            final Intent intent = KegtabBroadcast.getPourStartBroadcastIntent(flow);
-            sendOrderedBroadcast(intent, null);
-          }
-        };
-        mExecutorService.submit(r);
+        mCore.postEvent(new FlowUpdateEvent(flow));
       }
     }
 

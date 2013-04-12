@@ -19,6 +19,7 @@ package org.kegbot.app;
 
 import java.util.concurrent.TimeUnit;
 
+import org.kegbot.app.event.FlowUpdateEvent;
 import org.kegbot.app.util.ImageDownloader;
 import org.kegbot.app.util.Units;
 import org.kegbot.app.view.BadgeView;
@@ -43,6 +44,7 @@ import android.widget.TextView;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import com.squareup.otto.Subscribe;
 
 public class PourStatusFragment extends ListFragment {
 
@@ -167,8 +169,27 @@ public class PourStatusFragment extends ListFragment {
   public void onResume() {
     super.onResume();
     applyTapDetail();
+    KegbotCore.getInstance(getActivity()).getBus().register(this);
     if (mFlow != null) {
       updateWithFlow(mFlow);
+    }
+  }
+
+  @Override
+  public void onPause() {
+    KegbotCore.getInstance(getActivity()).getBus().unregister(this);
+    super.onPause();
+  }
+
+  @Subscribe
+  public void onFlowUpdate(FlowUpdateEvent event) {
+    final Flow flow = event.getFlow();
+    if (flow.getTap() == mTap) {
+      if (flow.isFinished()) {
+        setEnded();
+      } else {
+        updateWithFlow(flow);
+      }
     }
   }
 
@@ -229,7 +250,7 @@ public class PourStatusFragment extends ListFragment {
   }
 
   /** Marks the tap as ended (no current flow). */
-  public void setEnded() {
+  private void setEnded() {
     if (mView != null) {
       mStatusLine.setText("Pour completed!");
       mStatusLine.setVisibility(View.VISIBLE);

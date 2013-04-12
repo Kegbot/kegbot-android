@@ -23,12 +23,13 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.kegbot.app.KegtabBroadcast;
 import org.kegbot.app.R;
+import org.kegbot.app.event.PictureDiscardedEvent;
+import org.kegbot.app.event.PictureTakenEvent;
+import org.kegbot.core.KegbotCore;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
@@ -213,11 +214,10 @@ public class CameraFragment extends Fragment {
       super.onPostExecute(result);
       mLastFilename = result;
       updateState(State.TAKEN);
-      final Intent intent = KegtabBroadcast.getPictureTakenBroadcastIntent(result);
 
       final Activity activity = getActivity();
       if (activity != null) {
-        activity.sendBroadcast(intent);
+        KegbotCore.getInstance(activity).postEvent(new PictureTakenEvent(result));
       }
     }
 
@@ -291,8 +291,7 @@ public class CameraFragment extends Fragment {
   }
 
   private void discardLastPicture() {
-    final Intent intent = KegtabBroadcast.getPictureDiscardedBroadcastIntent(mLastFilename);
-    getActivity().sendBroadcast(intent);
+    KegbotCore.getInstance(getActivity()).postEvent(new PictureDiscardedEvent(mLastFilename));
     mLastFilename = "";
     //mPreview.startCameraPreview();
   }

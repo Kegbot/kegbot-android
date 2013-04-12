@@ -17,12 +17,16 @@
  */
 package org.kegbot.app;
 
-import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.kegbot.app.camera.CameraFragment;
 import org.kegbot.app.config.AppConfiguration;
+import org.kegbot.app.event.FlowUpdateEvent;
+import org.kegbot.app.event.PictureDiscardedEvent;
+import org.kegbot.app.event.PictureTakenEvent;
+import org.kegbot.app.service.KegbotCoreService;
 import org.kegbot.core.Flow;
 import org.kegbot.core.FlowManager;
 import org.kegbot.core.KegbotCore;
@@ -35,11 +39,9 @@ import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.ProgressDialog;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v13.app.FragmentStatePagerAdapter;
@@ -54,7 +56,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import com.squareup.otto.Subscribe;
 
 /**
  * Activity shown while a pour is in progress.
@@ -65,8 +68,7 @@ public class PourInProgressActivity extends CoreActivity {
 
   private static final String TAG = PourInProgressActivity.class.getSimpleName();
 
-  /** Interval between polls for flow status. */
-  private static final long FLOW_UPDATE_MILLIS = 500;
+  private static final boolean DEBUG = false;
 
   /** Delay after a flow has ended, during which a dialog is show. */
   private static final long FLOW_FINISH_DELAY_MILLIS = TimeUnit.SECONDS.toMillis(1);
@@ -79,6 +81,7 @@ public class PourInProgressActivity extends CoreActivity {
 
   private KegbotCore mCore;
   private FlowManager mFlowManager;
+  private AppConfiguration mConfig;
 
   private CameraFragment mCameraFragment;
 
@@ -86,12 +89,8 @@ public class PourInProgressActivity extends CoreActivity {
 
   private final Handler mHandler = new Handler();
 
-  private AppConfiguration mConfig;
-
   private PouringTapAdapter mPouringTapAdapter;
-
   private DialogFragment mProgressDialog;
-
   private ImageView mDrinkerImage;
   private TextView mShoutText;
   private Button mDoneButton;
@@ -100,55 +99,48 @@ public class PourInProgressActivity extends CoreActivity {
   private KegTap mCurrentTap;
 
   private List<KegTap> mTaps;
+  private Set<Flow> mActiveFlows = Sets.newLinkedHashSet();
 
-  private final List<KegTap> mLastActiveTaps = Lists.newArrayList();
+  /**
+   * State shared with {@link KegbotCoreService} in order to avoid redundantly
+   * calling startActivity().
+   */
+  private static boolean RUNNING_IN_FOREGROUND = false;
 
-  private static final boolean DEBUG = false;
-
-  private static final IntentFilter POUR_INTENT_FILTER = new IntentFilter(
-      KegtabBroadcast.ACTION_POUR_START);
-  static {
-    POUR_INTENT_FILTER.addAction(KegtabBroadcast.ACTION_POUR_UPDATE);
-    POUR_INTENT_FILTER.addAction(KegtabBroadcast.ACTION_PICTURE_TAKEN);
-    POUR_INTENT_FILTER.addAction(KegtabBroadcast.ACTION_PICTURE_DISCARDED);
-    POUR_INTENT_FILTER.setPriority(100);
+  public static synchronized boolean getIsRunning() {
+    return RUNNING_IN_FOREGROUND;
   }
 
-  private final BroadcastReceiver mUpdateReceiver = new BroadcastReceiver() {
-    @Override
-    public void onReceive(Context context, Intent intent) {
-      final String action = intent.getAction();
-      if (KegtabBroadcast.ACTION_POUR_UPDATE.equals(action)
-          || KegtabBroadcast.ACTION_POUR_START.equals(action)) {
-        handleIntent(intent);
-        abortBroadcast();
-      } else if (KegtabBroadcast.ACTION_PICTURE_TAKEN.equals(action)) {
-        final String filename = intent.getStringExtra(KegtabBroadcast.PICTURE_TAKEN_EXTRA_FILENAME);
-        Log.d(TAG, "Got photo: " + filename);
-        final Flow flow = getCurrentlyFocusedFlow();
-        if (flow != null) {
-          Log.d(TAG, "  - attached to flow: " + flow);
-          flow.addImage(filename);
-        }
-      } else if (KegtabBroadcast.ACTION_PICTURE_DISCARDED.equals(action)) {
-        final String filename = intent
-            .getStringExtra(KegtabBroadcast.PICTURE_DISCARDED_EXTRA_FILENAME);
-        Log.d(TAG, "Discarded photo: " + filename);
-        final Flow flow = getCurrentlyFocusedFlow();
-        if (flow != null) {
-          Log.d(TAG, "  - remove from flow: " + flow);
-          flow.removeImage(filename);
-        }
-      }
-    }
-  };
+  private static synchronized void setIsRunning(boolean value) {
+    RUNNING_IN_FOREGROUND = value;
+  }
 
-  private final Runnable FLOW_UPDATE_RUNNABLE = new Runnable() {
-    @Override
-    public void run() {
-      refreshFlows();
+  @Subscribe
+  public void onPictureTakenEvent(PictureTakenEvent event) {
+    final String filename = event.getFilename();
+    Log.d(TAG, "Got photo: " + filename);
+    final Flow flow = getCurrentlyFocusedFlow();
+    if (flow != null) {
+      Log.d(TAG, "  - attached to flow: " + flow);
+      flow.addImage(filename);
     }
-  };
+  }
+
+  @Subscribe
+  public void onPictureDiscardedEvent(PictureDiscardedEvent event) {
+    final String filename = event.getFilename();
+    Log.d(TAG, "Discarded photo: " + filename);
+    final Flow flow = getCurrentlyFocusedFlow();
+    if (flow != null) {
+      Log.d(TAG, "  - remove from flow: " + flow);
+      flow.removeImage(filename);
+    }
+  }
+
+  @Subscribe
+  public void onFlowUpdatEvent(FlowUpdateEvent event) {
+    refreshFlows();
+  }
 
   private final Runnable FINISH_ACTIVITY_RUNNABLE = new Runnable() {
     @Override
@@ -383,10 +375,11 @@ public class PourInProgressActivity extends CoreActivity {
   @Override
   protected void onResume() {
     super.onResume();
+    setIsRunning(true);
     Log.d(TAG, "onResume");
+    mCore.getBus().register(this);
 
-    registerReceiver(mUpdateReceiver, POUR_INTENT_FILTER);
-    handleIntent(getIntent());
+    refreshFlows();
     if (mCurrentTap != null) {
       updateForNewlyFocusedTap(mCurrentTap);
     }
@@ -406,8 +399,8 @@ public class PourInProgressActivity extends CoreActivity {
   @Override
   protected void onPause() {
     Log.d(TAG, "onPause");
-    mHandler.removeCallbacks(FLOW_UPDATE_RUNNABLE);
-    unregisterReceiver(mUpdateReceiver);
+    setIsRunning(false);
+    mCore.getBus().unregister(this);
     super.onPause();
   }
 
@@ -424,17 +417,7 @@ public class PourInProgressActivity extends CoreActivity {
   protected void onNewIntent(Intent intent) {
     super.onNewIntent(intent);
     setIntent(intent);
-    handleIntent(intent);
-  }
-
-  private void handleIntent(final Intent intent) {
-    final String action = intent.getAction();
-    Log.d(TAG, "Handling intent: " + intent);
-
-    if (KegtabBroadcast.ACTION_POUR_UPDATE.equals(action)
-        || KegtabBroadcast.ACTION_POUR_START.equals(action)) {
-      refreshFlows();
-    }
+    refreshFlows();
   }
 
   private KegTap getMostActiveTap() {
@@ -483,47 +466,32 @@ public class PourInProgressActivity extends CoreActivity {
     }
   }
 
-  private void refreshFlows() {
-    final Collection<Flow> allFlows = mFlowManager.getAllActiveFlows();
+  private synchronized void refreshFlows() {
+    final Set<Flow> activeFlows = Sets.newLinkedHashSet(mFlowManager.getAllActiveFlows());
+    mActiveFlows.addAll(activeFlows);
+    final Set<Flow> oldFlows = Sets.newLinkedHashSet(Sets.difference(mActiveFlows, activeFlows));
+    for (final Flow oldFlow : oldFlows) {
+      Log.d(TAG, "Removing inactive flow: " + oldFlow);
+      mActiveFlows.remove(oldFlow);
+    }
 
-    mHandler.removeCallbacks(FLOW_UPDATE_RUNNABLE);
-    mCameraFragment.setEnabled(!allFlows.isEmpty());
+    mCameraFragment.setEnabled(!mActiveFlows.isEmpty());
 
-    final List<KegTap> activeTaps = mFlowManager.getAllActiveTaps();
-
-    for (final KegTap tap : activeTaps) {
+    long largestIdleTime = Long.MIN_VALUE;
+    for (final Flow flow : mActiveFlows) {
+      if (DEBUG) {
+        Log.d(TAG, "Refreshing with flow: " + flow);
+      }
+      final KegTap tap = flow.getTap();
       if (!mTaps.contains(tap)) {
         mTaps.add(tap);
         Log.d(TAG, "+++ Added newly active tap "  + tap);
         mPouringTapAdapter.notifyDataSetChanged();
       }
-    }
-
-    long largestIdleTime = Long.MIN_VALUE;
-    for (final Flow flow : allFlows) {
-      if (DEBUG) {
-        Log.d(TAG, "Refreshing with flow: " + flow);
-      }
 
       final long idleTimeMs = flow.getIdleTimeMs();
       if (idleTimeMs > largestIdleTime) {
         largestIdleTime = idleTimeMs;
-      }
-    }
-
-    if (!mLastActiveTaps.equals(activeTaps)) {
-      scrollToMostActiveTap();
-      mLastActiveTaps.clear();
-      mLastActiveTaps.addAll(activeTaps);
-    }
-
-    for (int i=0; i < mPouringTapAdapter.getCount(); i++) {
-      final PourStatusFragment frag = (PourStatusFragment) mPouringTapAdapter.getItem(i);
-      final Flow flow = mFlowManager.getFlowForTap(frag.getTap());
-      if (flow != null) {
-        frag.updateWithFlow(flow);
-      } else {
-        frag.setEnded();
       }
     }
 
@@ -533,10 +501,10 @@ public class PourInProgressActivity extends CoreActivity {
       cancelIdleWarning();
     }
 
+    scrollToMostActiveTap();
+
     mHandler.removeCallbacks(FINISH_ACTIVITY_RUNNABLE);
-    if (!allFlows.isEmpty()) {
-      mHandler.postDelayed(FLOW_UPDATE_RUNNABLE, FLOW_UPDATE_MILLIS);
-    } else {
+    if (mActiveFlows.isEmpty()) {
       cancelIdleWarning();
       mProgressDialog = new PourFinishProgressDialog();
       mProgressDialog.show(getFragmentManager(), "finish");
@@ -570,8 +538,6 @@ public class PourInProgressActivity extends CoreActivity {
     final Intent intent = new Intent(context, PourInProgressActivity.class);
     intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
     intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-    intent.setAction(KegtabBroadcast.ACTION_POUR_START);
-    intent.putExtra(KegtabBroadcast.POUR_UPDATE_EXTRA_TAP_NAME, tapName);
     return intent;
   }
 
