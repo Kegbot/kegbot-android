@@ -31,7 +31,7 @@
             android:defaultValue="false"
             android:key="config:VOLUME_UNITS_METRIC"
             android:summaryOff="Volumes will be shown in imperial units (oz, pint)"
-            android:summaryOn="Volumes will be shown in metric units (L, mL))"
+            android:summaryOn="Volumes will be shown in metric units (L, mL)"
             android:title="Use Metric Units" >
         </CheckBoxPreference>
         <CheckBoxPreference
