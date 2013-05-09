@@ -44,6 +44,9 @@
     <uses-feature
         android:name="android.hardware.usb.host"
         android:required="true" />
+    <uses-feature
+        android:name="android.hardware.nfc"
+        android:required="false" />
     <uses-feature android:name="android.hardware.camera"
         android:required="false" />
     <uses-feature
