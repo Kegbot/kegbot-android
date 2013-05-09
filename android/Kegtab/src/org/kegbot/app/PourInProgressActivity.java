@@ -29,7 +29,6 @@ import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.app.event.FlowUpdateEvent;
 import org.kegbot.app.event.PictureDiscardedEvent;
 import org.kegbot.app.event.PictureTakenEvent;
-import org.kegbot.app.service.KegbotCoreService;
 import org.kegbot.core.Flow;
 import org.kegbot.core.FlowManager;
 import org.kegbot.core.KegbotCore;
@@ -112,20 +111,6 @@ public class PourInProgressActivity extends CoreActivity {
   private final Map<String, Integer> mTapIndexMap = Maps.newLinkedHashMap();
 
   private Set<Flow> mActiveFlows = Sets.newLinkedHashSet();
-
-  /**
-   * State shared with {@link KegbotCoreService} in order to avoid redundantly
-   * calling startActivity().
-   */
-  private static boolean RUNNING_IN_FOREGROUND = false;
-
-  public static synchronized boolean getIsRunning() {
-    return RUNNING_IN_FOREGROUND;
-  }
-
-  private static synchronized void setIsRunning(boolean value) {
-    RUNNING_IN_FOREGROUND = value;
-  }
 
   @Subscribe
   public void onPictureTakenEvent(PictureTakenEvent event) {
@@ -386,7 +371,6 @@ public class PourInProgressActivity extends CoreActivity {
   @Override
   protected void onResume() {
     super.onResume();
-    setIsRunning(true);
     Log.d(TAG, "onResume");
     mCore.getBus().register(this);
     refreshFlows();
@@ -407,9 +391,16 @@ public class PourInProgressActivity extends CoreActivity {
   @Override
   protected void onPause() {
     Log.d(TAG, "onPause");
-    setIsRunning(false);
     mCore.getBus().unregister(this);
     super.onPause();
+  }
+
+  @Override
+  protected void onStop() {
+    if (isFinishing()) {
+      endAllFlows();
+    }
+    super.onStop();
   }
 
   @Override
@@ -556,7 +547,7 @@ public class PourInProgressActivity extends CoreActivity {
     dismissDialog(DIALOG_IDLE_WARNING);
   }
 
-  public static Intent getStartIntent(Context context, final String tapName) {
+  public static Intent getStartIntent(Context context) {
     final Intent intent = new Intent(context, PourInProgressActivity.class);
     intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
     intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);

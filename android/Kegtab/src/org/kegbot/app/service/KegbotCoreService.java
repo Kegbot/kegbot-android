@@ -66,6 +66,9 @@ public class KegbotCoreService extends Service {
 
   private static final int NOTIFICATION_FOREGROUND = 1;
 
+  private static final long ACTIVITY_START_TIMEOUT_MILLIS = TimeUnit.SECONDS.toMillis(2);
+  private long mLastPourActivityStart = 0;
+
   private KegbotCore mCore;
   private FlowManager mFlowManager;
   private AppConfiguration mConfig;
@@ -76,10 +79,6 @@ public class KegbotCoreService extends Service {
   private final ExecutorService mExecutorService = Executors.newSingleThreadExecutor();
 
   private final Handler mHandler = new Handler();
-
-  private long mLastPourStartUptimeMillis = 0;
-
-  private static final long SUPPRESS_POUR_START_MILLIS = 2000;
 
   private final Runnable mFlowManagerWorker = new Runnable() {
     @Override
@@ -143,8 +142,16 @@ public class KegbotCoreService extends Service {
   };
 
   private final FlowManager.Listener mFlowListener = new FlowManager.Listener() {
-    private final long ACTIVITY_START_TIMEOUT_MILLIS = TimeUnit.SECONDS.toMillis(5);
-    private long mLastActivityStart = 0;
+
+    @Override
+    public void onFlowStart(final Flow flow) {
+      Log.d(TAG, "onFlowStart: " + flow);
+      if (flow.isAuthenticated()) {
+        mHardwareManager.setTapRelayEnabled(flow.getTap(), true);
+      }
+      startPourActivity();
+      mCore.postEvent(new FlowUpdateEvent(flow));
+    }
 
     @Override
     public void onFlowUpdate(final Flow flow) {
@@ -152,37 +159,11 @@ public class KegbotCoreService extends Service {
         mHardwareManager.setTapRelayEnabled(flow.getTap(), true);
       }
       mCore.postEvent(new FlowUpdateEvent(flow));
-
-      long now = SystemClock.elapsedRealtime();
-      if ((now - mLastActivityStart) > ACTIVITY_START_TIMEOUT_MILLIS) {
-        mLastActivityStart = now;
-        if (!PourInProgressActivity.getIsRunning()) {
-          final Intent intent =
-              PourInProgressActivity.getStartIntent(KegbotCoreService.this, flow.getTap().getMeterName());
-          intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-          Log.d(TAG, "Starting activity");
-          startActivity(intent);
-        }
-      }
-    }
-
-    @Override
-    public void onFlowStart(final Flow flow) {
-      if (flow.isAuthenticated()) {
-        mHardwareManager.setTapRelayEnabled(flow.getTap(), true);
-      }
-
-      final long now = SystemClock.uptimeMillis();
-      final long delta = now - mLastPourStartUptimeMillis;
-
-      if (delta > SUPPRESS_POUR_START_MILLIS) {
-        mLastPourStartUptimeMillis = now;
-        mCore.postEvent(new FlowUpdateEvent(flow));
-      }
     }
 
     @Override
     public void onFlowEnd(final Flow flow) {
+      Log.d(TAG, "onFlowEnd" + flow);
       mHardwareManager.setTapRelayEnabled(flow.getTap(), false);
       final Runnable r = new Runnable() {
         @Override
@@ -194,6 +175,18 @@ public class KegbotCoreService extends Service {
       mExecutorService.submit(r);
     }
   };
+
+  private void startPourActivity() {
+    Log.d(TAG, "startPourActivity");
+    long now = SystemClock.elapsedRealtime();
+    if ((now - mLastPourActivityStart) > ACTIVITY_START_TIMEOUT_MILLIS) {
+      mLastPourActivityStart = now;
+      final Intent intent = PourInProgressActivity.getStartIntent(this);
+      intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+      Log.d(TAG, "Starting pour activity");
+      startActivity(intent);
+    }
+  }
 
   @Override
   public void onCreate() {
@@ -228,7 +221,7 @@ public class KegbotCoreService extends Service {
 
   @Override
   public IBinder onBind(Intent intent) {
-    return null;  // Not bindable.
+    return null; // Not bindable.
   }
 
   @Override
