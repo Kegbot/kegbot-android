@@ -133,6 +133,7 @@ public class AuthenticatingActivity extends Activity {
     final Intent intent = getIntent();
     Log.d(TAG, "Handling intent: " + intent);
 
+    setAuthenticating();
     if (intent.hasExtra(EXTRA_USERNAME)) {
       authenticateUsernameAsync(intent.getStringExtra(EXTRA_USERNAME));
     } else if (intent.hasExtra(EXTRA_AUTH_DEVICE)) {
