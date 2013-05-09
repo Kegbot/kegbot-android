@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.kegbot.app.event.CurrentSessionChangedEvent;
 import org.kegbot.app.util.Units;
+import org.kegbot.app.view.BadgeView;
 import org.kegbot.core.KegbotCore;
 import org.kegbot.proto.Models.Session;
 import org.kegbot.proto.Models.Stats;
@@ -32,6 +33,7 @@ import org.kegbot.proto.Models.Stats.DrinkerVolume;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,6 +51,12 @@ public class SessionStatsFragment extends Fragment {
   private Session mSession;
   private Stats mStats;
 
+  private BadgeView mSessionDrinkersBadge;
+  private BadgeView mSessionVolumeBadge;
+  private BadgeView mDrinker1Badge;
+  private BadgeView mDrinker2Badge;
+  private BadgeView mDrinker3Badge;
+
   private final static Comparator<DrinkerVolume> VOLUMES_DESCENDING = new Comparator<DrinkerVolume>() {
     @Override
     public int compare(DrinkerVolume object1, DrinkerVolume object2) {
@@ -65,6 +73,11 @@ public class SessionStatsFragment extends Fragment {
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     mView = inflater.inflate(R.layout.session_detail_fragment_layout, container, false);
+    mSessionVolumeBadge = (BadgeView) mView.findViewById(R.id.sessionVolumeBadge);
+    mSessionDrinkersBadge = (BadgeView) mView.findViewById(R.id.numDrinkersBadge);
+    mDrinker1Badge = (BadgeView) mView.findViewById(R.id.sessionDrinker1Badge);
+    mDrinker2Badge = (BadgeView) mView.findViewById(R.id.sessionDrinker2Badge);
+    mDrinker3Badge = (BadgeView) mView.findViewById(R.id.sessionDrinker3Badge);
     if (mSession != null) {
       updateSessionView();
     }
@@ -112,40 +125,40 @@ public class SessionStatsFragment extends Fragment {
 
     // Number of drinkers.
     final int numDrinkers = volumeByDrinker.size();
-    ((TextView) mView.findViewById(R.id.sessionDetailNumDrinkers)).setText(String
-        .valueOf(numDrinkers));
-    final TextView sessionDetailNumDrinkersHeader = (TextView) mView
-        .findViewById(R.id.sessionDetailNumDrinkersHeader);
-    if (numDrinkers == 1) {
-      sessionDetailNumDrinkersHeader.setText("drinker");
-    } else {
-      sessionDetailNumDrinkersHeader.setText("drinkers");
-    }
+    mSessionDrinkersBadge.setBadgeValue(Integer.valueOf(numDrinkers).toString());
+    mSessionDrinkersBadge.setBadgeCaption(numDrinkers == 1 ? "Drinker" : "Drinkers");
 
     // Total volume.
-    final Double volumePints = Double.valueOf(Units.volumeMlToPints(mSession.getVolumeMl()));
-    ((TextView) mView.findViewById(R.id.sessionDetailVolServed)).setText(String.format("%.1f",
-        volumePints));
+    final Pair<String, String> qty = Units.localize(mCore.getConfiguration(),
+        mSession.getVolumeMl());
+    mSessionVolumeBadge.setBadgeValue(qty.first);
+    mSessionVolumeBadge.setBadgeCaption(String.format("Total %s",
+        Units.capitalizeUnits(qty.second)));
 
-    final int[] boxes = {R.id.sessionDetailDrinker1, R.id.sessionDetailDrinker2,
-        R.id.sessionDetailDrinker3,};
-    for (int i = 0; i < boxes.length; i++) {
-      final View box = mView.findViewById(boxes[i]);
+    final BadgeView[] badges = {
+        mDrinker1Badge,
+        mDrinker2Badge,
+        mDrinker3Badge
+    };
+
+    for (int i = 0; i < badges.length; i++) {
+      final BadgeView badge = badges[i];
       if (i >= numDrinkers) {
-        box.setVisibility(View.GONE);
+        badge.setVisibility(View.GONE);
         continue;
       }
-      box.setVisibility(View.VISIBLE);
+      badge.setVisibility(View.VISIBLE);
 
-      final TextView drinkerName = (TextView) box.findViewById(R.id.drinkerName);
-      final TextView drinkerHeader = (TextView) box.findViewById(R.id.drinkerHeader);
       String strname = volumeByDrinker.get(i).getUsername();
       if (strname.isEmpty()) {
         strname = "anonymous";
       }
-      drinkerName.setText(strname);
-      final double pints = Units.volumeMlToPints(volumeByDrinker.get(i).getVolumeMl());
-      drinkerHeader.setText(String.format("%.1f pints", Double.valueOf(pints)));
+
+      badge.setBadgeValue(strname);
+      final Pair<String, String> drinkerQty = Units.localize(
+          mCore.getConfiguration(), volumeByDrinker.get(i).getVolumeMl());
+      badge.setBadgeCaption(
+          String.format("%s %s", drinkerQty.first, drinkerQty.second));
     }
   }
 

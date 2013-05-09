@@ -230,4 +230,20 @@ public class AppConfiguration {
     set(ConfigKey.KEGBOARD_NAME, value);
   }
 
+  public void setUseMetric(boolean value) {
+    setBoolean(ConfigKey.VOLUME_UNITS_METRIC, value);
+  }
+
+  public boolean getUseMetric() {
+    return getBoolean(ConfigKey.VOLUME_UNITS_METRIC);
+  }
+
+  public void setTemperaturesCelsius(boolean value) {
+    setBoolean(ConfigKey.TEMPERATURE_UNITS_CELSIUS, value);
+  }
+
+  public boolean getTemperaturesCelsius() {
+    return getBoolean(ConfigKey.TEMPERATURE_UNITS_CELSIUS);
+  }
+
 }

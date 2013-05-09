@@ -32,6 +32,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.format.DateUtils;
 import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -152,36 +153,33 @@ public class TapStatusFragment extends ListFragment {
     // TODO(mikey): proper units support
     // Badge 1: Pints Poured
     final BadgeView badge1 = (BadgeView) mView.findViewById(R.id.tapStatsBadge1);
-    int pintsPoured = (int) Units.volumeMlToPints(keg.getSizeVolumeMl()
-        * (100.0 - keg.getPercentFull()) / 100.0);
-    pintsPoured = Math.max(pintsPoured, 0);
-    badge1.setBadgeValue(String.format("%d", Integer.valueOf(pintsPoured)));
-    if (pintsPoured == 1) {
-      badge1.setBadgeCaption("Pint Poured");
-    } else {
-      badge1.setBadgeCaption("Pints Poured");
-    }
+    double mlPoured = keg.getSizeVolumeMl() * (100.0 - keg.getPercentFull()) / 100.0;
+    Pair<String, String> qtyPoured = Units.localize(mCore.getConfiguration(), mlPoured);
+
+    badge1.setBadgeValue(qtyPoured.first);
+    badge1.setBadgeCaption(Units.capitalizeUnits(qtyPoured.second) + " Poured");
 
     // Badge 2: Pints Remain
     final BadgeView badge2 = (BadgeView) mView.findViewById(R.id.tapStatsBadge2);
-    int pintsRemain = (int) Units.volumeMlToPints(keg.getVolumeMlRemain());
-    pintsRemain = Math.max(pintsRemain, 0);
-    badge2.setBadgeValue(String.format("%d", Integer.valueOf(pintsRemain)));
-    if (pintsRemain == 1) {
-      badge2.setBadgeCaption("Pint Left");
-    } else {
-      badge2.setBadgeCaption("Pints Left");
-    }
+    Pair<String, String> qtyRemain = Units.localize(mCore.getConfiguration(),
+        keg.getVolumeMlRemain());
+
+    badge2.setBadgeValue(qtyRemain.first);
+    badge2.setBadgeCaption(Units.capitalizeUnits(qtyRemain.second) + " Left");
 
     // Badge 3: Temperature
     // TODO(mikey): Preference for C/F
     final BadgeView badge3 = (BadgeView) mView.findViewById(R.id.tapStatsBadge3);
     if (tap.hasLastTemperature()) {
       double lastTemperature = tap.getLastTemperature().getTemperatureC();
-      lastTemperature = Units.temperatureCToF(lastTemperature);
+      String units = "C";
+      if (!mCore.getConfiguration().getTemperaturesCelsius()) {
+        lastTemperature = Units.temperatureCToF(lastTemperature);
+        units = "F";
+      }
       final String tempValue = String.format("%.1f¡", Double.valueOf(lastTemperature));
       badge3.setBadgeValue(tempValue);
-      badge3.setBadgeCaption("Temperature");
+      badge3.setBadgeCaption(String.format("Temperature (%s)", units));
       badge3.setVisibility(View.VISIBLE);
     } else {
       badge3.setVisibility(View.GONE);

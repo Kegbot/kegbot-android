@@ -19,10 +19,28 @@
 -->
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
-    <Preference
-        android:key="run_setup"
-        android:summary="Adjust Kegbot URL, username, etc."
-        android:title="Run Setup Wizard" >
-    </Preference>
+    <PreferenceCategory android:title="Wizard" >
+        <Preference
+            android:key="run_setup"
+            android:summary="Adjust Kegbot URL, username, etc."
+            android:title="Run Setup Wizard" >
+        </Preference>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Look and Feel" >
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="config:VOLUME_UNITS_METRIC"
+            android:summaryOff="Volumes will be shown in imperial units (oz, pint)"
+            android:summaryOn="Volumes will be shown in metric units (L, mL))"
+            android:title="Use Metric Units" >
+        </CheckBoxPreference>
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="config:TEMPERATURE_UNITS_CELSIUS"
+            android:summaryOff="Temperatures will be shown in Fahrenheit"
+            android:summaryOn="Temperatures will be shown in Celsius"
+            android:title="Show Temperatures in Celsius" >
+        </CheckBoxPreference>
+    </PreferenceCategory>
 
 </PreferenceScreen>

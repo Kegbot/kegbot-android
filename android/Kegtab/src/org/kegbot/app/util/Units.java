@@ -23,6 +23,9 @@ import javax.measure.units.NonSI;
 import javax.measure.units.SI;
 
 import org.jscience.physics.measures.Measure;
+import org.kegbot.app.config.AppConfiguration;
+
+import android.util.Pair;
 
 /**
  * Various unit conversion helpers.
@@ -54,5 +57,87 @@ public class Units {
   public static double temperatureCToF(double tempC) {
     return (9.0 / 5.0) * tempC + 32;
   }
+
+  /**
+   * Returns a humanized value for the given units, according to local
+   * preferences. Examples: 3.2 oz, 1.5 L, 33mL, 4.5 pint.
+   *
+   * @param config
+   * @param volumeMl
+   * @return pair of (amount, label)
+   */
+  public static Pair<String, String> localize(AppConfiguration config, double volumeMl) {
+    return localize(config, volumeMl, true);
+  }
+
+  /**
+   * Like {@link #localize(AppConfiguration, double)}, but leaves units in terms
+   * of their smallest measure (mL instead of L, oz instead of Pints).
+   *
+   * @param config
+   * @param volumeMl
+   * @return pair of (amount, label)
+   */
+  public static Pair<String, String> localizeWithoutScaling(AppConfiguration config,
+      double volumeMl) {
+    return localize(config, volumeMl, false);
+  }
+
+  /**
+   * Returns a humanized value for the given units, according to local
+   * preferences. Examples: 3.2 oz, 1.5 L, 33mL, 4.5 pint.
+   *
+   * @param config
+   * @param volumeMl
+   * @param scaleUp whether to scale units up (mL to L, oz to pint) from base unit.
+   * @return
+   */
+  private static Pair<String, String> localize(AppConfiguration config, double volumeMl,
+      boolean scaleUp) {
+    final String amount;
+    final String label;
+
+    if (config.getUseMetric()) {
+      if (Math.abs(volumeMl) < 1000 || !scaleUp) {
+        amount = String.format("%d", Integer.valueOf((int) volumeMl));
+        label = "mL";
+      } else {
+        amount = String.format("%.1f", Double.valueOf(volumeMl / 1000.0));
+        label = amount == "1.0" ? "liter" : "liters";
+      }
+    } else {
+      double ounces = volumeMlToOunces(volumeMl);
+      if (Math.abs(ounces) < 16.0 || !scaleUp) {
+        amount = String.format("%.1f", Double.valueOf(ounces));
+        label = "oz";
+      } else {
+        amount = String.format("%.1f", Double.valueOf(ounces / 16.0));
+        label = amount == "1.0" ? "pint" : "pints";
+      }
+    }
+
+    return Pair.create(amount, label);
+  }
+
+  /**
+   * Returns a capitalized version of a units string, suitable for use in a
+   * header.
+   *
+   * @param units
+   * @return
+   */
+  public static String capitalizeUnits(String units) {
+    if ("pints".equals(units)) {
+      return "Pints";
+    } else if ("pint".equals(units)) {
+      return "Pint";
+    } else if ("liter".equals(units)) {
+      return "Liter";
+    } else if ("liters".equals(units)) {
+      return "Liters";
+    }
+    return units;
+  }
+
 
 }

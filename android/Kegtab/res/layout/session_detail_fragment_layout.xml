@@ -50,188 +50,45 @@
 
             <!-- Num Drinkers -->
 
-            <LinearLayout
+            <org.kegbot.app.view.BadgeView
+                android:id="@+id/numDrinkersBadge"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="15dip"
-                android:background="@color/black20pct"
-                android:gravity="center"
-                android:minHeight="96dip"
-                android:minWidth="96dip"
-                android:orientation="vertical"
-                android:padding="5dip" >
+                android:layout_margin="10dip"
+                android:background="@color/black20pct" >
+            </org.kegbot.app.view.BadgeView>
 
-                <TextView
-                    android:id="@+id/sessionDetailNumDrinkers"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:textSize="22dip"
-                    android:textStyle="bold" />
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dip"
-                    android:layout_margin="5dip"
-                    android:background="#1FFFFFFF" />
-
-                <TextView
-                    android:id="@+id/sessionDetailNumDrinkersHeader"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="drinkers"
-                    android:textColor="#888"
-                    android:textSize="18dip" />
-            </LinearLayout>
-
-            <!-- Num Pints -->
-
-            <LinearLayout
+            <org.kegbot.app.view.BadgeView
+                android:id="@+id/sessionVolumeBadge"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="15dip"
-                android:background="@color/black20pct"
-                android:gravity="center"
-                android:minHeight="96dip"
-                android:minWidth="96dip"
-                android:orientation="vertical"
-                android:padding="5dip" >
+                android:layout_margin="10dip"
+                android:background="@color/black20pct" >
+            </org.kegbot.app.view.BadgeView>
 
-                <TextView
-                    android:id="@+id/sessionDetailVolServed"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:textSize="22dip"
-                    android:textStyle="bold" />
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dip"
-                    android:layout_margin="5dip"
-                    android:background="#1FFFFFFF" />
-
-                <TextView
-                    android:id="@+id/sessionDetailVolServedHeader"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="total pints"
-                    android:textColor="#888"
-                    android:textSize="18dip" />
-            </LinearLayout>
-
-            <!-- Top Drinker -->
-
-            <LinearLayout
-                android:id="@+id/sessionDetailDrinker1"
+            <org.kegbot.app.view.BadgeView
+                android:id="@+id/sessionDrinker1Badge"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="15dip"
-                android:background="@color/black20pct"
-                android:gravity="center"
-                android:minHeight="96dip"
-                android:minWidth="96dip"
-                android:orientation="vertical"
-                android:padding="5dip" >
+                android:layout_margin="10dip"
+                android:background="@color/black20pct" >
+            </org.kegbot.app.view.BadgeView>
 
-                <TextView
-                    android:id="@+id/drinkerName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:textSize="22dip"
-                    android:textStyle="bold" />
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dip"
-                    android:layout_margin="5dip"
-                    android:background="#1FFFFFFF" />
-
-                <TextView
-                    android:id="@+id/drinkerHeader"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:textColor="#888"
-                    android:textSize="18dip" />
-            </LinearLayout>
-
-            <!-- 2nd -->
-
-            <LinearLayout
-                android:id="@+id/sessionDetailDrinker2"
+            <org.kegbot.app.view.BadgeView
+                android:id="@+id/sessionDrinker2Badge"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="15dip"
-                android:background="@color/black20pct"
-                android:gravity="center"
-                android:minHeight="96dip"
-                android:minWidth="96dip"
-                android:orientation="vertical"
-                android:padding="5dip" >
+                android:layout_margin="10dip"
+                android:background="@color/black20pct" >
+            </org.kegbot.app.view.BadgeView>
 
-                <TextView
-                    android:id="@+id/drinkerName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:textSize="22dip"
-                    android:textStyle="bold" />
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dip"
-                    android:layout_margin="5dip"
-                    android:background="#1FFFFFFF" />
-
-                <TextView
-                    android:id="@+id/drinkerHeader"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:textColor="#888"
-                    android:textSize="18dip" />
-            </LinearLayout>
-
-            <!-- 3rd -->
-
-            <LinearLayout
-                android:id="@+id/sessionDetailDrinker3"
+            <org.kegbot.app.view.BadgeView
+                android:id="@+id/sessionDrinker3Badge"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="15dip"
-                android:background="@color/black20pct"
-                android:gravity="center"
-                android:minHeight="96dip"
-                android:minWidth="96dip"
-                android:orientation="vertical"
-                android:padding="5dip" >
-
-                <TextView
-                    android:id="@+id/drinkerName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:textSize="22dip"
-                    android:textStyle="bold" />
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dip"
-                    android:layout_margin="5dip"
-                    android:background="#1FFFFFFF" />
-
-                <TextView
-                    android:id="@+id/drinkerHeader"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:textColor="#888"
-                    android:textSize="18dip" />
-            </LinearLayout>
+                android:layout_margin="10dip"
+                android:background="@color/black20pct" >
+            </org.kegbot.app.view.BadgeView>
         </LinearLayout>
     </HorizontalScrollView>
 

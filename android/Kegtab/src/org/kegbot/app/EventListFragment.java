@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.app.event.SystemEventListUpdateEvent;
 import org.kegbot.app.util.ImageDownloader;
 import org.kegbot.app.util.Units;
@@ -38,6 +39,7 @@ import android.os.Handler;
 import android.text.Html;
 import android.text.format.DateUtils;
 import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -160,8 +162,9 @@ public class EventListFragment extends ListFragment {
       } else if ("keg_tapped".equals(kind)) {
         result = "tapped";
       } else if ("drink_poured".equals(kind)) {
-        double ounces = Units.volumeMlToOunces(drink.getVolumeMl());
-        result = String.format("poured %.1f ounces", Double.valueOf(ounces));
+        final AppConfiguration appConfig = KegbotCore.getInstance(getContext()).getConfiguration();
+        Pair<String, String> qty = Units.localize(appConfig, drink.getVolumeMl());
+        result = String.format("poured %s %s", qty.first, qty.second);
       } else if ("session_joined".equals(kind)) {
         result = "started drinking";
       } else if ("session_started".equals(kind)) {

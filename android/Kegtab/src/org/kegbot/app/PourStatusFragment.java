@@ -36,6 +36,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,7 +51,8 @@ public class PourStatusFragment extends ListFragment {
 
   private static final String TAG = PourStatusFragment.class.getSimpleName();
 
-  private static final double VOLUME_COUNTER_INCREMENT = 0.1;
+  private static final double VOLUME_COUNTER_INCREMENT_IMPERIAL = 0.1;
+  private static final double VOLUME_COUNTER_INCREMENT_METRIC = 10;
   private static final long VOLUME_COUNTER_INCREMENT_DELAY_MILLIS = 20;
 
   private static final int AUTH_DRINKER_REQUEST = 1;
@@ -77,22 +79,16 @@ public class PourStatusFragment extends ListFragment {
   private final Runnable mCounterIncrementRunnable = new Runnable() {
     @Override
     public void run() {
-      if (mCurrentVolume >= mTargetVolume) {
+      final double remain = mTargetVolume - mCurrentVolume;
+      if (remain <= 0) {
         return;
       }
 
-      mCurrentVolume += VOLUME_COUNTER_INCREMENT;
+      final double increment = mCore.getConfiguration().getUseMetric() ?
+          VOLUME_COUNTER_INCREMENT_METRIC : VOLUME_COUNTER_INCREMENT_IMPERIAL;
 
-      final String volumeStr = String.format("%.1f", Double.valueOf(mCurrentVolume));
-      mPourVolumeBadge.setBadgeValue(volumeStr);
-
-      final String units;
-      if (volumeStr == "1.0") {
-        units = "Ounce Poured";
-      } else {
-        units = "Ounces Poured";
-      }
-      mPourVolumeBadge.setBadgeCaption(units);
+      mCurrentVolume += Math.min(remain, increment);
+      setVolumeDisplay(mCurrentVolume);
 
       if (mCurrentVolume < mTargetVolume) {
         mHandler.postDelayed(mCounterIncrementRunnable, VOLUME_COUNTER_INCREMENT_DELAY_MILLIS);
@@ -136,6 +132,8 @@ public class PourStatusFragment extends ListFragment {
 
     mStatusLine = (TextView) mView.findViewById(R.id.tapNotes);
     mBeerImage = (ImageView) mView.findViewById(R.id.tapImage);
+
+    setVolumeDisplay(0);
 
     return mView;
   }
@@ -193,6 +191,13 @@ public class PourStatusFragment extends ListFragment {
     }
   }
 
+  private void setVolumeDisplay(double volumeMl) {
+    final Pair<String, String> qty = Units.localizeWithoutScaling(
+        mCore.getConfiguration(), volumeMl);
+    mPourVolumeBadge.setBadgeValue(qty.first);
+    mPourVolumeBadge.setBadgeCaption(Units.capitalizeUnits(qty.second) + " Poured");
+  }
+
   private void applyTapDetail() {
     final KegTap tap = getTap();
     mBeerImage.setImageResource(R.drawable.kegbot_unknown_square_2);
@@ -231,8 +236,12 @@ public class PourStatusFragment extends ListFragment {
     }
 
     // Set volume portion.
-    final double ounces = Units.volumeMlToOunces(flow.getVolumeMl());
-    mTargetVolume = ounces;
+    if (mCore.getConfiguration().getUseMetric()) {
+      mTargetVolume = flow.getVolumeMl();
+    } else {
+      mTargetVolume = Units.volumeMlToOunces(flow.getVolumeMl());
+    }
+
     if (mCurrentVolume < mTargetVolume) {
       mHandler.removeCallbacks(mCounterIncrementRunnable);
       mHandler.post(mCounterIncrementRunnable);
