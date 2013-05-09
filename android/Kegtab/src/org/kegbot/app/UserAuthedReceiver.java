@@ -19,7 +19,6 @@
  */
 package org.kegbot.app;
 
-import org.kegbot.core.FlowManager;
 import org.kegbot.core.KegbotCore;
 import org.kegbot.core.TapManager;
 import org.kegbot.proto.Models.KegTap;
@@ -43,19 +42,10 @@ public class UserAuthedReceiver extends BroadcastReceiver {
   @Override
   public void onReceive(Context context, Intent intent) {
     final String action = intent.getAction();
-    handleAuthBegin(context, intent);
 
     if (KegtabBroadcast.ACTION_USER_AUTHED.equals(action)) {
       handleUserAuthed(context, intent);
     }
-  }
-
-  private void handleAuthBegin(Context context, Intent intent) {
-    final Intent activityIntent = new Intent(intent);
-    activityIntent.setClass(context, AuthenticatingActivity.class);
-    activityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-    activityIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-    context.startActivity(activityIntent);
   }
 
   private void handleUserAuthed(Context context, Intent intent) {
@@ -64,14 +54,13 @@ public class UserAuthedReceiver extends BroadcastReceiver {
     final String username = intent.getStringExtra(KegtabBroadcast.USER_AUTHED_EXTRA_USERNAME);
     final String tapName = intent.getStringExtra(KegtabBroadcast.DRINKER_SELECT_EXTRA_TAP_NAME);
 
-    final FlowManager flowManager = KegbotCore.getInstance(context).getFlowManager();
     final TapManager tapManager = KegbotCore.getInstance(context).getTapManager();
 
     if (!Strings.isNullOrEmpty(tapName)) {
       final KegTap tap = tapManager.getTapForMeterName(tapName);
-      flowManager.activateUserAtTap(tap, username);
+      AuthenticatingActivity.startAndAuthenticate(context, username, tap);
     } else {
-      flowManager.activateUserAmbiguousTap(username);
+      AuthenticatingActivity.startAndAuthenticate(context, username, (KegTap) null);
     }
   }
 

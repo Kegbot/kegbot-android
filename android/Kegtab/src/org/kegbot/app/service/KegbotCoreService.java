@@ -26,13 +26,12 @@ import java.util.concurrent.TimeUnit;
 
 import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiException;
+import org.kegbot.app.AuthenticatingActivity;
 import org.kegbot.app.HomeActivity;
-import org.kegbot.app.KegtabBroadcast;
 import org.kegbot.app.PourInProgressActivity;
 import org.kegbot.app.R;
 import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.app.event.FlowUpdateEvent;
-import org.kegbot.core.AuthenticationManager;
 import org.kegbot.core.AuthenticationToken;
 import org.kegbot.core.Flow;
 import org.kegbot.core.FlowManager;
@@ -42,7 +41,6 @@ import org.kegbot.core.KegbotCore;
 import org.kegbot.core.SyncManager;
 import org.kegbot.core.ThermoSensor;
 import org.kegbot.proto.Api.RecordTemperatureRequest;
-import org.kegbot.proto.Models.User;
 
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -51,6 +49,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Binder;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.SystemClock;
 import android.util.Log;
@@ -75,6 +74,8 @@ public class KegbotCoreService extends Service {
   private SyncManager mApiManager;
 
   private final ExecutorService mExecutorService = Executors.newSingleThreadExecutor();
+
+  private final Handler mHandler = new Handler();
 
   private long mLastPourStartUptimeMillis = 0;
 
@@ -102,36 +103,16 @@ public class KegbotCoreService extends Service {
     @Override
     public void onTokenAttached(final AuthenticationToken token, final String tapName) {
       Log.d(TAG, "Auth token added: " + token);
-      final Intent intent = KegtabBroadcast.getAuthBeginIntent(token);
-      sendBroadcast(intent);
 
       final Runnable r = new Runnable() {
         @Override
         public void run() {
-          boolean success = false;
-          String message = "";
-          try {
-            Log.d(TAG, "onTokenAttached: running");
-            final AuthenticationManager am = mCore.getAuthenticationManager();
-            User user = am.authenticateToken(token);
-            Log.d(TAG, "Authenticated user: " + user);
-            if (user != null) {
-              success = true;
-              am.authenticateUser(user);
-              mFlowManager.activateUserAmbiguousTap(user.getUsername());
-            } else {
-              message = getString(R.string.authenticating_no_access_token);
-            }
-          } catch (Exception e) {
-            Log.e(TAG, "Exception: " + e, e);
-            message = getString(R.string.authenticating_connection_error);
-          }
-          if (!success) {
-            sendBroadcast(KegtabBroadcast.getAuthFailIntent(token, message));
-          }
+          Log.d(TAG, "onTokenAttached: running");
+          AuthenticatingActivity.startAndAuthenticate(KegbotCoreService.this,
+              token.getAuthDevice(), token.getTokenValue());
         }
       };
-      mExecutorService.submit(r);
+      mHandler.post(r);
     }
 
     @Override

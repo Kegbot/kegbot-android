@@ -18,9 +18,15 @@
 package org.kegbot.app;
 
 import org.kegbot.api.KegbotApiException;
+import org.kegbot.core.AuthenticationManager;
+import org.kegbot.core.AuthenticationToken;
+import org.kegbot.core.FlowManager;
 import org.kegbot.core.KegbotCore;
+import org.kegbot.proto.Models.KegTap;
+import org.kegbot.proto.Models.User;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -33,11 +39,13 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 
 /**
+ * Activity shown while authenticating a user.
  *
- * @author mike wakerly (mike@wakerly.com)
+ * @author mike wakerly (opensource@hoho.com)
  */
 public class AuthenticatingActivity extends Activity {
 
@@ -46,7 +54,14 @@ public class AuthenticatingActivity extends Activity {
   private static final long AUTO_FINISH_DELAY_MILLIS = 10000;
   private static final int REQUEST_SELECT_USER_TO_BIND = 100;
 
+  private static final String EXTRA_USERNAME = "username";
+  private static final String EXTRA_AUTH_DEVICE = "auth_device";
+  private static final String EXTRA_TOKEN_VALUE = "token";
+  private static final String EXTRA_TAP = "tap";
+
   private KegbotCore mCore;
+  private AuthenticationManager mAuthManager;
+  private FlowManager mFlowManager;
 
   private ViewGroup mButtonGroup;
   private TextView mBeginTitle;
@@ -73,6 +88,8 @@ public class AuthenticatingActivity extends Activity {
     setContentView(R.layout.authenticating_activity);
 
     mCore = KegbotCore.getInstance(this);
+    mAuthManager = mCore.getAuthenticationManager();
+    mFlowManager = mCore.getFlowManager();
 
     mBeginTitle = (TextView) findViewById(R.id.authenticatingBeginTitle);
     mFailTitle = (TextView) findViewById(R.id.authenticatingFailTitle);
@@ -107,19 +124,83 @@ public class AuthenticatingActivity extends Activity {
   @Override
   protected void onNewIntent(Intent intent) {
     super.onNewIntent(intent);
+    Log.d(TAG, "onNewIntent: " + intent);
     setIntent(intent);
     handleIntent();
   }
 
   private void handleIntent() {
     final Intent intent = getIntent();
-    final String action = intent.getAction();
-    if (KegtabBroadcast.ACTION_AUTH_FAIL.equals(action)) {
-      setFail();
-    } else if (KegtabBroadcast.ACTION_AUTH_BEGIN.equals(action)) {
-      setAuthenticating();
-    } else if (KegtabBroadcast.ACTION_USER_AUTHED.equals(action)) {
+    Log.d(TAG, "Handling intent: " + intent);
+
+    if (intent.hasExtra(EXTRA_USERNAME)) {
+      authenticateUsernameAsync(intent.getStringExtra(EXTRA_USERNAME));
+    } else if (intent.hasExtra(EXTRA_AUTH_DEVICE)) {
+      authenticateTokenAsync(intent.getStringExtra(EXTRA_AUTH_DEVICE),
+          intent.getStringExtra(EXTRA_TOKEN_VALUE));
+    } else {
+      Log.e(TAG, "Unknown start intent. Aborting.");
       finish();
+    }
+  }
+
+  /**
+   * Processes a launch request from {@link #startAndAuthenticate(Context, String)}.
+   *
+   * @param username
+   */
+  private void authenticateUsernameAsync(final String username) {
+    new AsyncTask<Void, Void, User>() {
+      @Override
+      protected User doInBackground(Void... params) {
+        return mAuthManager.authenticateUsername(username);
+      }
+
+      @Override
+      protected void onPostExecute(User user) {
+        if (user == null) {
+          Log.d(TAG, "Null result from auth manager.");
+          setFail("User not found.");
+        } else {
+          Log.d(TAG, "Auth manager returned " + user.getUsername());
+          activateUser(user.getUsername());
+          finish();
+        }
+      }
+
+    }.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
+  }
+
+  private void authenticateTokenAsync(final String authDevice, final String tokenValue) {
+    final AuthenticationToken authToken = new AuthenticationToken(authDevice, tokenValue);
+    new AsyncTask<Void, Void, User>() {
+      @Override
+      protected User doInBackground(Void... params) {
+        return mAuthManager.authenticateToken(authToken);
+      }
+
+      @Override
+      protected void onPostExecute(User user) {
+        if (user == null) {
+          Log.d(TAG, "Null result from auth manager.");
+          setFail("User not found.");
+        } else {
+          Log.d(TAG, "Auth manager returned " + user.getUsername());
+          activateUser(user.getUsername());
+          finish();
+        }
+      }
+
+    }.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
+  }
+
+  private void activateUser(String username) {
+    final String tapName = getIntent().getStringExtra(EXTRA_TAP);
+    if (tapName != null) {
+      final KegTap tap = mCore.getTapManager().getTapForMeterName(tapName);
+      mFlowManager.activateUserAtTap(tap, username);
+    } else {
+      mFlowManager.activateUserAmbiguousTap(username);
     }
   }
 
@@ -133,16 +214,15 @@ public class AuthenticatingActivity extends Activity {
     mHandler.removeCallbacks(mFinishRunnable);
   }
 
-  private void setFail() {
+  private void setFail(String message) {
     mBeginTitle.setVisibility(View.GONE);
     mFailTitle.setVisibility(View.VISIBLE);
     mProgressBar.setVisibility(View.GONE);
     mButtonGroup.setVisibility(View.VISIBLE);
 
-    final Intent intent = getIntent();
-    if (intent.hasExtra(KegtabBroadcast.AUTH_FAIL_EXTRA_MESSAGE)) {
-      mMessage.setText(intent.getStringExtra(KegtabBroadcast.AUTH_FAIL_EXTRA_MESSAGE));
-      Log.d("AUTH", mMessage.getText().toString());
+    if (!Strings.isNullOrEmpty(message)) {
+      mMessage.setText(message);
+      Log.d(TAG, mMessage.getText().toString());
       mMessage.setVisibility(View.VISIBLE);
     } else {
       mMessage.setVisibility(View.GONE);
@@ -156,11 +236,11 @@ public class AuthenticatingActivity extends Activity {
     mHandler.removeCallbacks(mFinishRunnable);
   }
 
-  private void bindUserAsync(final String username) {
-    final String authDevice = getIntent().getStringExtra(
-        KegtabBroadcast.AUTH_FAIL_EXTRA_AUTH_DEVICE);
-    final String tokenValue = getIntent().getStringExtra(
-        KegtabBroadcast.AUTH_FAIL_EXTRA_TOKEN_VALUE);
+  private void assignUserToTokenAsync(final String username) {
+    final String authDevice = getIntent().getStringExtra(EXTRA_AUTH_DEVICE);
+    final String tokenValue = getIntent().getStringExtra(EXTRA_TOKEN_VALUE);
+    Preconditions.checkNotNull(authDevice);
+    Preconditions.checkNotNull(tokenValue);
 
     setAuthenticating();
 
@@ -175,8 +255,8 @@ public class AuthenticatingActivity extends Activity {
           Log.w(TAG, "Assignment failed!", e);
           return Boolean.FALSE;
         }
-        mCore.getAuthenticationManager().authenticateUsernameAsync(username);
-        finish();
+        Log.w(TAG, "Assignment succeeded, authenticating.");
+        startAndAuthenticate(AuthenticatingActivity.this, username, (KegTap) null);
         return Boolean.TRUE;
       }
 
@@ -185,7 +265,7 @@ public class AuthenticatingActivity extends Activity {
         if (result == Boolean.TRUE) {
           setAuthenticating();
         } else {
-          setFail();
+          setFail("Token assignment failed.");
         }
       }
     }.execute();
@@ -200,13 +280,49 @@ public class AuthenticatingActivity extends Activity {
           final String username = data
               .getStringExtra(KegtabCommon.ACTIVITY_AUTH_DRINKER_RESULT_EXTRA_USERNAME);
           if (!Strings.isNullOrEmpty(username)) {
-            bindUserAsync(username);
+            assignUserToTokenAsync(username);
           }
         }
         break;
       default:
         super.onActivityResult(requestCode, resultCode, data);
     }
+  }
+
+  /**
+   * Starts the authentication activity for the supplied username. Upon
+   * successful authentication, a new flow will be started.
+   *
+   * @param context
+   * @param username
+   * @param tap tap to authenticate against, or {@code null} if ambiguous
+   *
+   */
+  public static void startAndAuthenticate(Context context, String username, KegTap tap) {
+    final Intent intent = new Intent(context, AuthenticatingActivity.class);
+    intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+    intent.putExtra(EXTRA_USERNAME, username);
+    if (tap != null) {
+      intent.putExtra(EXTRA_TAP, tap.getMeterName());
+    }
+    context.startActivity(intent);
+  }
+
+
+  /**
+   * Starts the authentication activity for the supplied token. Upon successful
+   * authentication, a new flow will be started.
+   *
+   * @param context
+   * @param authDevice
+   * @param tokenValue
+   */
+  public static void startAndAuthenticate(Context context, String authDevice, String tokenValue) {
+    final Intent intent = new Intent(context, AuthenticatingActivity.class);
+    intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+    intent.putExtra(EXTRA_AUTH_DEVICE, authDevice);
+    intent.putExtra(EXTRA_TOKEN_VALUE, tokenValue);
+    context.startActivity(intent);
   }
 
 }

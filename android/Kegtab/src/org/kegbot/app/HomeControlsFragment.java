@@ -19,7 +19,6 @@
 package org.kegbot.app;
 
 import org.kegbot.app.config.AppConfiguration;
-import org.kegbot.core.AuthenticationManager;
 import org.kegbot.core.KegbotCore;
 
 import android.app.Activity;
@@ -125,9 +124,8 @@ public class HomeControlsFragment extends Fragment {
           final String username =
               data.getStringExtra(KegtabCommon.ACTIVITY_AUTH_DRINKER_RESULT_EXTRA_USERNAME);
           if (!Strings.isNullOrEmpty(username)) {
-            Log.d(TAG, "Authenticating async.");
-            AuthenticationManager am = mCore.getAuthenticationManager();
-            am.authenticateUsernameAsync(username);
+            AuthenticatingActivity.startAndAuthenticate(getActivity(), username,
+                mCore.getTapManager().getFocusedTap());
           }
         }
         break;
@@ -138,8 +136,8 @@ public class HomeControlsFragment extends Fragment {
               data.getStringExtra(KegtabCommon.ACTIVITY_CREATE_DRINKER_RESULT_EXTRA_USERNAME);
           if (!Strings.isNullOrEmpty(username)) {
             Log.d(TAG, "Authenticating newly-created user.");
-            AuthenticationManager am = mCore.getAuthenticationManager();
-            am.authenticateUsernameAsync(username);
+            AuthenticatingActivity.startAndAuthenticate(getActivity(), username,
+                mCore.getTapManager().getFocusedTap());
           }
         }
         break;

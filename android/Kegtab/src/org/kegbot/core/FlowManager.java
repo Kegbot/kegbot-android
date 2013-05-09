@@ -343,7 +343,8 @@ public class FlowManager extends Manager {
 
     final KegTap focusedTap = mTapManager.getFocusedTap();
     if (focusedTap != null && focusedTap.hasCurrentKeg()) {
-      Log.d(TAG, String.format("activateUserAmbiguousTap: using focused tap: %s", focusedTap));
+      Log.d(TAG, String.format("activateUserAmbiguousTap: using focused tap: %s",
+          focusedTap.getMeterName()));
       activateTaps.add(focusedTap);
     }
 
@@ -354,7 +355,7 @@ public class FlowManager extends Manager {
       if (Strings.isNullOrEmpty(tap.getRelayName())) {
         if (tap.hasCurrentKeg()) {
           Log.d(TAG, String.format("activateUserAmbiguousTap: also activating at unmanaged tap: %s",
-              focusedTap));
+              tap.getMeterName()));
           activateTaps.add(tap);
         }
       }

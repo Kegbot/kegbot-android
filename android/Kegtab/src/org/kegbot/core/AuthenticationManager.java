@@ -29,12 +29,10 @@ import java.util.concurrent.TimeUnit;
 import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiException;
 import org.kegbot.api.KegbotApiNotFoundError;
-import org.kegbot.app.KegtabBroadcast;
 import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.proto.Models.User;
 
 import android.content.Context;
-import android.content.Intent;
 import android.util.Log;
 
 import com.google.common.cache.CacheBuilder;
@@ -133,18 +131,12 @@ public class AuthenticationManager extends Manager {
     }
   }
 
-  public void authenticateUser(User user) {
-    mUserDetailCache.put(user.getUsername(), user);
-    final Intent intent = KegtabBroadcast.getUserAuthedBroadcastIntent(user.getUsername());
-    mContext.sendBroadcast(intent);
-  }
-
   public User authenticateUsername(String username) {
     // TODO(mikey): use pin
     try {
       final User user = mUserDetailCache.get(username);
       if (user != null) {
-        authenticateUser(user);
+        mUserDetailCache.put(user.getUsername(), user);
       }
       return user;
     } catch (ExecutionException e) {
