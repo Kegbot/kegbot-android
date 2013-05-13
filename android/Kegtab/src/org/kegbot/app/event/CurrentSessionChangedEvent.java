@@ -19,8 +19,8 @@ package org.kegbot.app.event;
 
 import javax.annotation.Nullable;
 
+import org.codehaus.jackson.JsonNode;
 import org.kegbot.proto.Models.Session;
-import org.kegbot.proto.Models.Stats;
 
 /**
  * Event posted when a new session is in progress. The session may be
@@ -34,9 +34,9 @@ public class CurrentSessionChangedEvent implements Event {
   private final Session mSession;
 
   @Nullable
-  private final Stats mSessionStats;
+  private final JsonNode mSessionStats;
 
-  public CurrentSessionChangedEvent(@Nullable Session session, @Nullable Stats sessionStats) {
+  public CurrentSessionChangedEvent(@Nullable Session session, @Nullable JsonNode sessionStats) {
     mSession = session;
     mSessionStats = sessionStats;
   }
@@ -47,7 +47,7 @@ public class CurrentSessionChangedEvent implements Event {
   }
 
   @Nullable
-  public Stats getSessionStats() {
+  public JsonNode getSessionStats() {
     return mSessionStats;
   }
 

@@ -139,9 +139,6 @@ message Drink {
   // Duration, in seconds, of the pour.
   optional uint32 duration = 6;
 
-  // Status of the drink.
-  required string status = 7;
-
   // The Keg from which the drink was poured.  May be unset if the drink was
   // not associated with a keg.
   optional uint32 keg_id = 8;
@@ -230,8 +227,8 @@ message Keg {
   // `status` is not 'offline', this value is undefined.
   required string end_time = 9;
 
-  // The keg's current status.  Typically either "online" or "offline".
-  required string status = 10;
+  // True if the Keg is currently online.
+  optional bool online = 10;
 
   // The adminstrator's description of this keg.
   optional string description = 11;
@@ -326,8 +323,6 @@ message Session {
 
   // True if session is currently active.
   optional bool is_active = 8;
-
-  optional Stats stats = 9;
 }
 
 // A log entry for a temperature sensor.
@@ -533,86 +528,4 @@ message SoundEvent {
   // A specific username that this event applies to.
   // Not currently used.
   optional string user = 4;
-}
-
-// A collection of drink statistics.  The stats may cover a particular drinker,
-// keg, session, or the whole system.
-message Stats {
-
-  // The drink these stats were computed against.
-  optional uint32 last_drink_id = 1;
-
-  // Total volume of all pours captured by this instance.
-  optional float total_volume_ml = 2;
-
-  // Total number of drinks poured.
-  optional uint32 total_pours = 3;
-
-  // Average volume of all pours.
-  optional float average_volume_ml = 4;
-
-  // Volume of pour with single greatest volume.
-  optional float greatest_volume_ml = 5;
-
-  // Id for pour with single greatest volume.
-  optional uint32 greatest_volume_id = 6;
-
-  // Container message for the volumes by weekday.
-  message WeekdayVolume {
-    // The day of the week [0 (Sunday), 6]
-    required string weekday = 1;
-
-    // The total volume for this day.
-    required float volume_ml = 2;
-  }
-
-  // Pour volume, grouped by day of the week on which the session started.
-  repeated WeekdayVolume volume_by_day_of_week = 7;
-
-  // Container message for volumes by drinker.
-  message DrinkerVolume {
-    // The drinker.
-    required string username = 1;
-
-    // The total volume for this drinker.
-    required float volume_ml = 2;
-  }
-
-  // Pour volume, grouped by drinker.  Guest/anonymous pours are listed with
-  // an empty "username" field.
-  repeated DrinkerVolume volume_by_drinker = 8;
-
-  // List of all known drinkers.
-  repeated string registered_drinkers = 9;
-
-  // True if these stats include at least one guest pour.
-  optional bool has_guest_pour = 10;
-
-  // Count of all sessions.
-  optional uint32 sessions_count = 11;
-
-  // Container message for volumes by year.
-  message YearlyVolume {
-    // The year.
-    required uint32 year = 1;
-
-    // The volume.
-    required float volume_ml = 2;
-  }
-
-  // Volume by year.
-  repeated YearlyVolume volume_by_year = 12;
-
-  // Container message for sessions by peer.
-  message PeerSessionCount {
-    // The peer.
-    required string peer_name = 1;
-
-    // The count.
-    required uint32 joint_session_count = 2;
-  }
-
-  // Sessions by peer.
-  repeated PeerSessionCount peer_affinities = 13;
-
 }

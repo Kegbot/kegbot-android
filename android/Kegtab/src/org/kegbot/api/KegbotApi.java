@@ -19,6 +19,7 @@ package org.kegbot.api;
 
 import java.util.List;
 
+import org.codehaus.jackson.JsonNode;
 import org.kegbot.proto.Api.RecordDrinkRequest;
 import org.kegbot.proto.Api.RecordTemperatureRequest;
 import org.kegbot.proto.Models.AuthenticationToken;
@@ -29,7 +30,6 @@ import org.kegbot.proto.Models.KegSize;
 import org.kegbot.proto.Models.KegTap;
 import org.kegbot.proto.Models.Session;
 import org.kegbot.proto.Models.SoundEvent;
-import org.kegbot.proto.Models.Stats;
 import org.kegbot.proto.Models.SystemEvent;
 import org.kegbot.proto.Models.ThermoLog;
 import org.kegbot.proto.Models.ThermoSensor;
@@ -175,7 +175,7 @@ public interface KegbotApi {
    */
   public Session getSessionDetail(String id) throws KegbotApiException;
 
-  public Stats getSessionStats(int sessionId) throws KegbotApiException;
+  public JsonNode getSessionStats(int sessionId) throws KegbotApiException;
 
   /**
    * Returns information about a tap.

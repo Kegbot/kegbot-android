@@ -43,7 +43,6 @@ import org.kegbot.proto.Models.KegSize;
 import org.kegbot.proto.Models.KegTap;
 import org.kegbot.proto.Models.Session;
 import org.kegbot.proto.Models.SoundEvent;
-import org.kegbot.proto.Models.Stats;
 import org.kegbot.proto.Models.SystemEvent;
 import org.kegbot.proto.Models.ThermoLog;
 import org.kegbot.proto.Models.ThermoSensor;
@@ -313,8 +312,8 @@ public class KegbotApiImpl implements KegbotApi {
   }
 
   @Override
-  public Stats getSessionStats(int sessionId) throws KegbotApiException {
-    return getSingleProto("/sessions/" + sessionId + "/stats/", Stats.newBuilder());
+  public JsonNode getSessionStats(int sessionId) throws KegbotApiException {
+    return getJson("/sessions/" + sessionId + "/stats/", null).get("object");
   }
 
   @Override

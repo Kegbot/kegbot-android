@@ -18,17 +18,18 @@
  */
 package org.kegbot.app;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.io.IOException;
+import java.util.Map;
 
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.type.TypeReference;
 import org.kegbot.app.event.CurrentSessionChangedEvent;
 import org.kegbot.app.util.Units;
 import org.kegbot.app.view.BadgeView;
 import org.kegbot.core.KegbotCore;
 import org.kegbot.proto.Models.Session;
-import org.kegbot.proto.Models.Stats;
-import org.kegbot.proto.Models.Stats.DrinkerVolume;
 
 import android.app.Fragment;
 import android.os.Bundle;
@@ -39,7 +40,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.google.common.collect.Lists;
+import com.google.common.base.Functions;
+import com.google.common.collect.ImmutableSortedMap;
+import com.google.common.collect.Ordering;
 import com.squareup.otto.Subscribe;
 
 public class SessionStatsFragment extends Fragment {
@@ -49,20 +52,13 @@ public class SessionStatsFragment extends Fragment {
   private KegbotCore mCore;
   private View mView;
   private Session mSession;
-  private Stats mStats;
+  private JsonNode mStats;
 
   private BadgeView mSessionDrinkersBadge;
   private BadgeView mSessionVolumeBadge;
   private BadgeView mDrinker1Badge;
   private BadgeView mDrinker2Badge;
   private BadgeView mDrinker3Badge;
-
-  private final static Comparator<DrinkerVolume> VOLUMES_DESCENDING = new Comparator<DrinkerVolume>() {
-    @Override
-    public int compare(DrinkerVolume object1, DrinkerVolume object2) {
-      return Float.valueOf(object2.getVolumeMl()).compareTo(Float.valueOf(object1.getVolumeMl()));
-    }
-  };
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
@@ -116,15 +112,34 @@ public class SessionStatsFragment extends Fragment {
     }
     mView.setVisibility(View.VISIBLE);
 
-    final List<DrinkerVolume> volumeByDrinker = Lists.newArrayList(mStats.getVolumeByDrinkerList());
-    Collections.sort(volumeByDrinker, VOLUMES_DESCENDING);
+    JsonNode stats = mStats.get("volume_by_drinker");
+    if (stats == null || !stats.isObject()) {
+      Log.w(TAG, "Stats error: " + stats);
+      return;
+    }
+
+    Map<String, Double> volumeMap;
+    try {
+      volumeMap = new ObjectMapper().readValue(stats,
+          new TypeReference<Map<String, Double>>() {});
+    } catch (JsonMappingException e) {
+      Log.w(TAG, "Stats error", e);
+      return;
+    } catch (IOException e) {
+      Log.w(TAG, "Stats error", e);
+      return;
+    }
+
+    final Ordering<String> order = Ordering.natural().reverse()
+        .onResultOf(Functions.forMap(volumeMap));
+    final Map<String, Double> volumeMapSorted = ImmutableSortedMap.copyOf(volumeMap, order);
 
     // Session name.
     final String sessionName = mSession.getName();
     ((TextView) mView.findViewById(R.id.sessionTitle)).setText(sessionName);
 
     // Number of drinkers.
-    final int numDrinkers = volumeByDrinker.size();
+    final int numDrinkers = volumeMapSorted.size();
     mSessionDrinkersBadge.setBadgeValue(Integer.valueOf(numDrinkers).toString());
     mSessionDrinkersBadge.setBadgeCaption(numDrinkers == 1 ? "Drinker" : "Drinkers");
 
@@ -141,25 +156,28 @@ public class SessionStatsFragment extends Fragment {
         mDrinker3Badge
     };
 
-    for (int i = 0; i < badges.length; i++) {
-      final BadgeView badge = badges[i];
-      if (i >= numDrinkers) {
-        badge.setVisibility(View.GONE);
-        continue;
-      }
+    int i = 0;
+    for (Map.Entry<String, Double> entry : volumeMapSorted.entrySet()) {
+      final BadgeView badge = badges[i++];
+
       badge.setVisibility(View.VISIBLE);
 
-      String strname = volumeByDrinker.get(i).getUsername();
+      String strname = entry.getKey();
       if (strname.isEmpty()) {
         strname = "anonymous";
       }
 
       badge.setBadgeValue(strname);
-      final Pair<String, String> drinkerQty = Units.localize(
-          mCore.getConfiguration(), volumeByDrinker.get(i).getVolumeMl());
-      badge.setBadgeCaption(
-          String.format("%s %s", drinkerQty.first, drinkerQty.second));
+      final Pair<String, String> drinkerQty = Units.localize(mCore.getConfiguration(),
+          entry.getValue().doubleValue());
+      badge.setBadgeCaption(String.format("%s %s", drinkerQty.first, drinkerQty.second));
     }
+
+    for (; i < badges.length; i++) {
+      final BadgeView badge = badges[i];
+      badge.setVisibility(View.GONE);
+    }
+
   }
 
 }

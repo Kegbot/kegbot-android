@@ -28,6 +28,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nullable;
 
+import org.codehaus.jackson.JsonNode;
 import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiException;
 import org.kegbot.api.KegbotApiNotFoundError;
@@ -44,7 +45,6 @@ import org.kegbot.proto.Models.Drink;
 import org.kegbot.proto.Models.KegTap;
 import org.kegbot.proto.Models.Session;
 import org.kegbot.proto.Models.SoundEvent;
-import org.kegbot.proto.Models.Stats;
 import org.kegbot.proto.Models.SystemEvent;
 import org.kegbot.proto.Models.ThermoLog;
 
@@ -86,7 +86,7 @@ public class SyncManager extends BackgroundManager {
   private List<SystemEvent> mLastSystemEventList = Lists.newArrayList();
   private List<SoundEvent> mLastSoundEventList = Lists.newArrayList();
   @Nullable private Session mLastSession = null;
-  @Nullable private Stats mLastSessionStats = null;
+  @Nullable private JsonNode mLastSessionStats = null;
 
   private SQLiteOpenHelper mLocalDbHelper;
 
@@ -392,7 +392,7 @@ public class SyncManager extends BackgroundManager {
       if ((currentSession == null && mLastSession != null) ||
           (mLastSession == null && currentSession != null) ||
           (currentSession != null && !currentSession.equals(mLastSession))) {
-        Stats stats = null;
+        JsonNode stats = null;
         if (currentSession != null) {
           stats = mApi.getSessionStats(currentSession.getId());
         }
