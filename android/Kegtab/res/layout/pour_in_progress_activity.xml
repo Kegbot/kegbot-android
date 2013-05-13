@@ -25,8 +25,19 @@
         android:layout_height="wrap_content"
         android:layout_weight="0.4"
         android:gravity="top"
+        android:background="@drawable/shape_rounded_rect"
         android:orientation="vertical" >
-
+        
+        <Button 
+            android:id="@+id/claimPourButton"
+            style="@style/mediumButton"
+            android:text="Claim This Pour"/>
+        
+        <TextView 
+            android:id="@+id/pourDrinkerName"
+            style="@style/header"
+            />        
+            
         <RelativeLayout
             android:id="@+id/controlsBox"
             android:layout_width="match_parent"

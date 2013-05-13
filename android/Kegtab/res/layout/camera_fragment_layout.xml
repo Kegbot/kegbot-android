@@ -16,7 +16,7 @@
         style="@style/mediumButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/cameraPreview"
+        android:layout_below="@+id/cameraPreview"
         android:layout_centerHorizontal="true"
         android:text="@string/pour_take_picture" />
 
@@ -24,7 +24,7 @@
         android:id="@+id/cameraPostPictureButtons"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/cameraPreview"
+        android:layout_below="@+id/cameraPreview"
         android:gravity="center"
         android:orientation="horizontal"
         android:visibility="gone"

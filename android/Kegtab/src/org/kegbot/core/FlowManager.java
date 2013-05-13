@@ -225,6 +225,7 @@ public class FlowManager extends Manager {
     return getFlowForTap(tap);
   }
 
+  /** Returns the active flow with the given id, or {@code null}. */
   public Flow getFlowForFlowId(final long flowId) {
     synchronized (mFlowsByTap) {
       for (final Flow flow : mFlowsByTap.values()) {

@@ -29,10 +29,13 @@ import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.app.event.FlowUpdateEvent;
 import org.kegbot.app.event.PictureDiscardedEvent;
 import org.kegbot.app.event.PictureTakenEvent;
+import org.kegbot.app.util.ImageDownloader;
+import org.kegbot.core.AuthenticationManager;
 import org.kegbot.core.Flow;
 import org.kegbot.core.FlowManager;
 import org.kegbot.core.KegbotCore;
 import org.kegbot.proto.Models.KegTap;
+import org.kegbot.proto.Models.User;
 
 import android.app.ActionBar;
 import android.app.AlertDialog;
@@ -58,6 +61,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -80,12 +84,17 @@ public class PourInProgressActivity extends CoreActivity {
   /** Minimum idle seconds before a flow is considered idle for display purposes. */
   private static final long IDLE_SCROLL_TIMEOUT_MILLIS = TimeUnit.SECONDS.toMillis(3);
 
+  /** Request code. */
+  private static final int REQUEST_AUTH_DRINKER = 100;
+  private static final String EXTRA_FLOW_ID = "flow_id";
+
   /** Constant identifying {@link #mIdleDetectedDialog}. */
   private static final int DIALOG_IDLE_WARNING = 1;
 
   private KegbotCore mCore;
   private FlowManager mFlowManager;
   private AppConfiguration mConfig;
+  private ImageDownloader mImageDownloader;
 
   private CameraFragment mCameraFragment;
 
@@ -95,6 +104,9 @@ public class PourInProgressActivity extends CoreActivity {
 
   private PouringTapAdapter mPouringTapAdapter;
   private DialogFragment mProgressDialog;
+
+  private Button mClaimPourButton;
+  private TextView mDrinkerName;
   private ImageView mDrinkerImage;
   private TextView mShoutText;
   private Button mDoneButton;
@@ -157,6 +169,7 @@ public class PourInProgressActivity extends CoreActivity {
       PourStatusFragment frag = (PourStatusFragment) mPouringTapAdapter.getItem(position);
       final KegTap tap = frag.getTap();
       Log.d(TAG, "Swiped to tap: " + tap.getMeterName());
+      updateControlsForFlow(getCurrentlyFocusedFlow());
     }
 
     @Override
@@ -235,6 +248,7 @@ public class PourInProgressActivity extends CoreActivity {
     mCore = KegbotCore.getInstance(this);
     mFlowManager = mCore.getFlowManager();
     mConfig = mCore.getConfiguration();
+    mImageDownloader = mCore.getImageDownloader();
 
     final ActionBar actionBar = getActionBar();
     if (actionBar != null) {
@@ -247,35 +261,27 @@ public class PourInProgressActivity extends CoreActivity {
     mTapPager.setAdapter(mPouringTapAdapter);
     mTapPager.setOnPageChangeListener(mPageChangeListener);
 
+    mClaimPourButton = (Button) findViewById(R.id.claimPourButton);
+    mDrinkerName = (TextView) findViewById(R.id.pourDrinkerName);
     mDoneButton = (Button) findViewById(R.id.pourEndButton);
     mDrinkerImage = (ImageView) findViewById(R.id.pourDrinkerImage);
     mShoutText = (TextView) findViewById(R.id.shoutText);
 
-    mDrinkerImage.setOnClickListener(new View.OnClickListener() {
+    mClaimPourButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        final Intent intent = KegtabCommon
-            .getAuthDrinkerActivityIntent(PourInProgressActivity.this);
-        //startActivityForResult(intent, AUTH_DRINKER_REQUEST);
+        final Flow flow = getCurrentlyFocusedFlow();
+        if (flow == null || flow.isAuthenticated() || flow.isFinished()) {
+          return;
+        }
+
+        Log.d(TAG, "Attempting to claim flow id=" + flow.getFlowId());
+        final Intent intent = KegtabCommon.getAuthDrinkerActivityIntent(
+            PourInProgressActivity.this);
+        intent.putExtra(EXTRA_FLOW_ID, flow.getFlowId());
+        startActivityForResult(intent, REQUEST_AUTH_DRINKER);
       }
     });
-
-    /*
-    if (!Strings.isNullOrEmpty(username) && !username.equals(mAppliedUsername)) {
-      final AuthenticationManager authManager = mCore.getAuthenticationManager();
-      final User user = authManager.getUserDetail(username);
-      if (user != null && user.hasImage()) {
-        // NOTE(mikey): Use the full-sized image rather than the thumbnail;
-        // in many cases the former will already be in the cache from
-        // DrinkerSelectActivity.
-        final String thumbnailUrl = user.getImage().getThumbnailUrl();
-        if (!Strings.isNullOrEmpty(thumbnailUrl)) {
-          mImageDownloader.download(thumbnailUrl, mDrinkerImage);
-        }
-      }
-      mDrinkerImage.setOnClickListener(null);
-    }
-*/
 
     mDoneButton.setOnClickListener(new OnClickListener() {
       @Override
@@ -309,7 +315,6 @@ public class PourInProgressActivity extends CoreActivity {
         flow.pokeActivity();
       }
     });
-
 
     mCameraFragment = (CameraFragment) getFragmentManager().findFragmentById(R.id.camera);
 
@@ -360,6 +365,45 @@ public class PourInProgressActivity extends CoreActivity {
     }
   }
 
+  private void updateControlsForFlow(Flow flow) {
+    if (flow == null) {
+      mClaimPourButton.setEnabled(false);
+      return;
+    }
+
+    boolean imageWasReplaced = false;
+    mClaimPourButton.setEnabled(true);
+    if (flow.isAnonymous()) {
+      mClaimPourButton.setVisibility(View.VISIBLE);
+      mDrinkerName.setVisibility(View.GONE);
+    } else {
+      final String username = flow.getUsername();
+      mClaimPourButton.setVisibility(View.GONE);
+      mDrinkerName.setVisibility(View.VISIBLE);
+      mDrinkerName.setText("Pouring: " + username);
+
+      final AuthenticationManager authManager = mCore.getAuthenticationManager();
+      final User user = authManager.getUserDetail(username);
+      if (user != null && user.hasImage()) {
+        // NOTE(mikey): Use the full-sized image rather than the thumbnail;
+        // in many cases the former will already be in the cache from
+        // DrinkerSelectActivity.
+        final String thumbnailUrl = user.getImage().getThumbnailUrl();
+        if (!Strings.isNullOrEmpty(thumbnailUrl)) {
+          mImageDownloader.download(thumbnailUrl, mDrinkerImage);
+          imageWasReplaced = true;
+        }
+      } else {
+        Log.d(TAG, "No user info.");
+      }
+    }
+
+    if (!imageWasReplaced) {
+      mDrinkerImage.setImageBitmap(null);
+      mDrinkerImage.setBackgroundDrawable(getResources().getDrawable(R.drawable.unknown_drinker));
+    }
+  }
+
   @Override
   protected Dialog onCreateDialog(int id) {
     if (id == DIALOG_IDLE_WARNING) {
@@ -381,9 +425,12 @@ public class PourInProgressActivity extends CoreActivity {
     super.onPostResume();
     final Flow flow = getCurrentlyFocusedFlow();
     Log.d(TAG, "onPostResume: focusedFlow: " + flow);
-    if (flow != null && flow.getImages().isEmpty()) {
-      if (mConfig.getEnableAutoTakePhoto()) {
-        mCameraFragment.schedulePicture();
+    if (flow != null) {
+      updateControlsForFlow(flow);
+      if (flow.getImages().isEmpty()) {
+        if (mConfig.getEnableAutoTakePhoto()) {
+          mCameraFragment.schedulePicture();
+        }
       }
     }
   }
@@ -417,6 +464,30 @@ public class PourInProgressActivity extends CoreActivity {
     super.onNewIntent(intent);
     setIntent(intent);
     refreshFlows();
+  }
+
+  @Override
+  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    switch (requestCode) {
+      case REQUEST_AUTH_DRINKER:
+        String username = data.getStringExtra(
+            KegtabCommon.ACTIVITY_AUTH_DRINKER_RESULT_EXTRA_USERNAME);
+        if (Strings.isNullOrEmpty(username)) {
+          Log.i(TAG, "No user selected.");
+          return;
+        }
+        int flowId = data.getIntExtra(EXTRA_FLOW_ID, 0);
+        final Flow flow = mFlowManager.getFlowForFlowId(flowId);
+        if (flow == null) {
+          Log.w(TAG, "No flow for id " + flowId);
+          return;
+        }
+        Log.i(TAG, "Flow " + flowId + " claimed by: " + username);
+        flow.setUsername(username);
+        return;
+      default:
+        super.onActivityResult(requestCode, resultCode, data);
+    }
   }
 
   private KegTap getMostActiveTap() {

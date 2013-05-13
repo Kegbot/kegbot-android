@@ -180,6 +180,7 @@ public class DrinkerSelectActivity extends CoreActivity implements LoaderCallbac
 
   public void handlerUserSelected(User user) {
     Intent resultData = new Intent();
+    resultData.putExtras(getIntent());
     resultData.putExtra(EXTRA_USERNAME, user.getUsername());
     setResult(RESULT_OK, resultData);
     finish();
