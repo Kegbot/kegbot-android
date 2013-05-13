@@ -3,7 +3,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
-	<classpathentry exported="true" kind="lib" path="libs/protobuf/protobuf-java-2.4.1-pre.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/GoogleAnalytics/libGoogleAnalytics.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/guava/guava-11.0.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/EasyTrackerAndroid_1.0/EasyTracker.jar"/>
@@ -21,6 +20,7 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="libs/okhttp/okhttp-git-ace08e9f.jar"/>
+	<classpathentry kind="lib" path="libs/protobuf/protobuf-java-2.5.0.jar"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
