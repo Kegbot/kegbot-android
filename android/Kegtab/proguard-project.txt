@@ -34,7 +34,7 @@
 -libraryjars libs/jscience/jscience-vm14.jar
 -libraryjars libs/kegbot-api/kegbot-api.jar
 -libraryjars libs/otto/square-otto-1.3.2.jar
--libraryjars libs/protobuf/protobuf-java-2.4.1-pre.jar
+-libraryjars libs/protobuf/protobuf-java-2.5.0.jar
 -libraryjars libs/usb-serial-for-android/usb-serial-for-android.v010.jar
 
 -dontwarn net.sourceforge.retroweaver.runtime.java.**    # jscience
