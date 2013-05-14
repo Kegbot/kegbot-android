@@ -195,7 +195,8 @@ public class PourInProgressActivity extends CoreActivity {
         tap = mTaps.get(position);
       }
 
-      final PourStatusFragment frag = new PourStatusFragment(tap);
+      final PourStatusFragment frag = new PourStatusFragment();
+      frag.setTap(tap);
       final Flow flow = mFlowManager.getFlowForMeterName(tap.getMeterName());
       if (flow != null) {
         frag.updateWithFlow(flow);

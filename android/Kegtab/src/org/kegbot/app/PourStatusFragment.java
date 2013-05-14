@@ -29,7 +29,6 @@ import org.kegbot.core.KegbotCore;
 import org.kegbot.proto.Models.Keg;
 import org.kegbot.proto.Models.KegTap;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ListFragment;
 import android.content.Intent;
@@ -51,20 +50,19 @@ public class PourStatusFragment extends ListFragment {
 
   private static final String TAG = PourStatusFragment.class.getSimpleName();
 
-  private static final double VOLUME_COUNTER_INCREMENT_IMPERIAL = 0.1;
-  private static final double VOLUME_COUNTER_INCREMENT_METRIC = 10;
+  private static final double VOLUME_COUNTER_INCREMENT_ML = 10;
   private static final long VOLUME_COUNTER_INCREMENT_DELAY_MILLIS = 20;
 
   private static final int AUTH_DRINKER_REQUEST = 1;
 
-  private double mTargetVolume = 0.0;
-  private double mCurrentVolume = 0.0;
+  private double mTargetVolumeMl = 0.0;
+  private double mCurrentVolumeMl = 0.0;
 
   private KegbotCore mCore;
 
   private ImageDownloader mImageDownloader;
 
-  private final KegTap mTap;
+  private KegTap mTap;  // final after setTap
 
   private View mView;
   private BadgeView mPourVolumeBadge;
@@ -79,18 +77,15 @@ public class PourStatusFragment extends ListFragment {
   private final Runnable mCounterIncrementRunnable = new Runnable() {
     @Override
     public void run() {
-      final double remain = mTargetVolume - mCurrentVolume;
+      final double remain = mTargetVolumeMl - mCurrentVolumeMl;
       if (remain <= 0) {
         return;
       }
 
-      final double increment = mCore.getConfiguration().getUseMetric() ?
-          VOLUME_COUNTER_INCREMENT_METRIC : VOLUME_COUNTER_INCREMENT_IMPERIAL;
+      mCurrentVolumeMl += Math.min(remain, VOLUME_COUNTER_INCREMENT_ML);
+      setVolumeDisplay(mCurrentVolumeMl);
 
-      mCurrentVolume += Math.min(remain, increment);
-      setVolumeDisplay(mCurrentVolume);
-
-      if (mCurrentVolume < mTargetVolume) {
+      if (mCurrentVolumeMl < mTargetVolumeMl) {
         mHandler.postDelayed(mCounterIncrementRunnable, VOLUME_COUNTER_INCREMENT_DELAY_MILLIS);
       }
     }
@@ -103,8 +98,8 @@ public class PourStatusFragment extends ListFragment {
 
   private Flow mFlow = null;
 
-  @SuppressLint("ValidFragment")
-  public PourStatusFragment(KegTap tap) {
+  public void setTap(KegTap tap) {
+    Preconditions.checkState(mTap == null, "tap already set");
     mTap = tap;
   }
 
@@ -236,13 +231,8 @@ public class PourStatusFragment extends ListFragment {
     }
 
     // Set volume portion.
-    if (mCore.getConfiguration().getUseMetric()) {
-      mTargetVolume = flow.getVolumeMl();
-    } else {
-      mTargetVolume = Units.volumeMlToOunces(flow.getVolumeMl());
-    }
-
-    if (mCurrentVolume < mTargetVolume) {
+    mTargetVolumeMl = flow.getVolumeMl();
+    if (mCurrentVolumeMl < mTargetVolumeMl) {
       mHandler.removeCallbacks(mCounterIncrementRunnable);
       mHandler.post(mCounterIncrementRunnable);
     }
