@@ -131,7 +131,8 @@ public class SessionStatsFragment extends Fragment {
     }
 
     final Ordering<String> order = Ordering.natural().reverse()
-        .onResultOf(Functions.forMap(volumeMap));
+        .onResultOf(Functions.forMap(volumeMap))
+        .compound(Ordering.<String> natural());
     final Map<String, Double> volumeMapSorted = ImmutableSortedMap.copyOf(volumeMap, order);
 
     // Session name.
