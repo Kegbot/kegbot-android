@@ -299,8 +299,10 @@ public class PourInProgressActivity extends CoreActivity {
         // exist, assume those were started optimistically and finish them
         // now.
         if (flow.getVolumeMl() > 0) {
+          final AppConfiguration config = mCore.getConfiguration();
+          final long minVolume = config.getMinimumVolumeMl();
           for (final Flow suspectFlow : flowManager.getAllActiveFlows()) {
-            if (suspectFlow.getTicks() == 0) {
+            if (suspectFlow.getVolumeMl() < minVolume) {
               Log.d(TAG, "Also ending dormant flow: " + suspectFlow.getFlowId());
               flowManager.endFlow(suspectFlow);
             }
