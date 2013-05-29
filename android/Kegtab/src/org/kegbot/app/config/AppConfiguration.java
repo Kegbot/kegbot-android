@@ -246,4 +246,12 @@ public class AppConfiguration {
     return getBoolean(ConfigKey.TEMPERATURE_UNITS_CELSIUS);
   }
 
+  public boolean stayAwake() {
+    return getBoolean(ConfigKey.STAY_AWAKE);
+  }
+
+  public boolean keepScreenOn() {
+    return getBoolean(ConfigKey.KEEP_SCREEN_ON);
+  }
+
 }

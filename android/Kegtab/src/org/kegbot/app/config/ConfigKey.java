@@ -59,6 +59,8 @@ enum ConfigKey {
   TEMPERATURE_UNITS_CELSIUS(FALSE),
 
   KEGBOARD_NAME("kegboard"),
+  STAY_AWAKE(TRUE),
+  KEEP_SCREEN_ON(TRUE),
   ;
 
   private final String mDefaultValue;

@@ -69,7 +69,9 @@ public class CoreActivity extends Activity {
   @Override
   protected void onResume() {
     setupActionBar();
-    getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+    if (mConfig.keepScreenOn()) {
+      getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+    }
     KegbotCoreService.startService(this);
     updateAlerts();
     super.onResume();

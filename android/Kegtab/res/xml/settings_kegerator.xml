@@ -96,7 +96,23 @@
         </CheckBoxPreference>
     </PreferenceCategory>
     <PreferenceCategory android:title="Advanced" >
-        <EditTextPreference
+         <CheckBoxPreference
+            android:defaultValue="true"
+            android:dependency="config:RUN_CORE"
+            android:key="config:STAY_AWAKE"
+            android:summaryOff="The device will go to sleep even if Kegbot is running"
+            android:summaryOn="The device will stay awake when Kegbot is running"
+            android:title="Stay Awake" >
+        </CheckBoxPreference>
+         <CheckBoxPreference
+            android:defaultValue="true"
+            android:dependency="config:STAY_AWAKE"
+            android:key="config:KEEP_SCREEN_ON"
+            android:summaryOff="The screen will turn off when idle"
+            android:summaryOn="The screen will stay on"
+            android:title="Keep Screen On" >
+        </CheckBoxPreference>
+         <EditTextPreference
             android:defaultValue="kegboard"
             android:dependency="config:RUN_CORE"
             android:inputType="text|textNoSuggestions"

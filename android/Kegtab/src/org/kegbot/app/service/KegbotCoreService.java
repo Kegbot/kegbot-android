@@ -51,6 +51,7 @@ import android.net.Uri;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.os.SystemClock;
 import android.util.Log;
 import android.widget.Toast;
@@ -75,6 +76,7 @@ public class KegbotCoreService extends Service {
 
   private HardwareManager mHardwareManager;
   private SyncManager mApiManager;
+  private PowerManager.WakeLock mWakeLock;
 
   private final ExecutorService mExecutorService = Executors.newSingleThreadExecutor();
 
@@ -208,6 +210,17 @@ public class KegbotCoreService extends Service {
     updateFromPreferences();
 
     mCore.start();
+
+    if (mConfig.stayAwake()) {
+      // CoreActivity will keep the screen on when a Kegbot activity is
+      // in the foregroun; we only need to worry about holding a partial
+      // wakelock.
+      PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+      mWakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "kegbot-core");
+      mWakeLock.acquire();
+    } else {
+      mWakeLock = null;
+    }
   }
 
   /**
@@ -235,6 +248,10 @@ public class KegbotCoreService extends Service {
 
     mFlowManager.removeFlowListener(mFlowListener);
     mCore.stop();
+    if (mWakeLock != null) {
+      mWakeLock.release();
+      mWakeLock = null;
+    }
 
     super.onDestroy();
   }
