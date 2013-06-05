@@ -159,6 +159,9 @@ public class SessionStatsFragment extends Fragment {
 
     int i = 0;
     for (Map.Entry<String, Double> entry : volumeMapSorted.entrySet()) {
+      if (i >= badges.length) {
+        break;
+      }
       final BadgeView badge = badges[i++];
 
       badge.setVisibility(View.VISIBLE);
