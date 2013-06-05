@@ -29,19 +29,10 @@ import org.kegbot.proto.Models.KegTap;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.IntentFilter.MalformedMimeTypeException;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
-import android.nfc.tech.IsoDep;
-import android.nfc.tech.MifareClassic;
-import android.nfc.tech.MifareUltralight;
-import android.nfc.tech.NfcA;
-import android.nfc.tech.NfcB;
-import android.nfc.tech.NfcF;
 import android.os.Bundle;
 import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -73,7 +64,6 @@ public class HomeActivity extends CoreActivity {
   private ViewPager mTapStatusPager;
   private AppConfiguration mConfig;
   private TapEditFragment mTapEditor;
-  private NfcAdapter mNfcAdapter;
 
   /**
    * Shadow copy of tap manager taps. Updated, as needed, in
@@ -145,7 +135,6 @@ public class HomeActivity extends CoreActivity {
   protected void onResume() {
     Log.d(LOG_TAG, "onResume");
     super.onResume();
-    registerNfcDispatch();
     mCore.getBus().register(this);
   }
 
@@ -153,7 +142,6 @@ public class HomeActivity extends CoreActivity {
   protected void onPause() {
     Log.d(LOG_TAG, "--- unregistering");
     mCore.getBus().unregister(this);
-    unregisterNfcDispatch();
     super.onPause();
   }
 
@@ -174,43 +162,6 @@ public class HomeActivity extends CoreActivity {
         return true;
       default:
         return super.onOptionsItemSelected(item);
-    }
-  }
-
-  private void registerNfcDispatch() {
-    mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
-    if (mNfcAdapter == null) {
-      Log.d(LOG_TAG, "NFC is not available.");
-      return;
-    }
-
-    final IntentFilter intentFilter = new IntentFilter(NfcAdapter.ACTION_NDEF_DISCOVERED);
-    try {
-      intentFilter.addDataType("*/*");
-    } catch (MalformedMimeTypeException e) {
-        throw new RuntimeException("Error creating NFC filter", e);
-    }
-
-    final String[][] techLists =new String[][] {
-        new String[] { IsoDep.class.getName() },
-        new String[] { MifareClassic.class.getName() },
-        new String[] { MifareUltralight.class.getName() },
-        new String[] { NfcA.class.getName() },
-        new String[] { NfcB.class.getName() },
-        new String[] { NfcF.class.getName() }
-    };
-
-    final Intent intent = new Intent(this, HomeActivity.class);
-    intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-    final PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
-    mNfcAdapter.enableForegroundDispatch(this, pendingIntent, null, techLists);
-    Log.d(LOG_TAG, "NFC dispatch registered.");
-  }
-
-  private void unregisterNfcDispatch() {
-    if (mNfcAdapter != null) {
-      mNfcAdapter.disableForegroundDispatch(this);
-      mNfcAdapter = null;
     }
   }
 

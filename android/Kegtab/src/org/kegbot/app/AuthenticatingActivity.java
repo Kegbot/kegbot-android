@@ -28,6 +28,8 @@ import org.kegbot.proto.Models.User;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.nfc.NfcAdapter;
+import android.nfc.Tag;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -41,6 +43,7 @@ import android.widget.TextView;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import com.hoho.android.usbserial.util.HexDump;
 
 /**
  * Activity shown while authenticating a user.
@@ -134,7 +137,18 @@ public class AuthenticatingActivity extends Activity {
     Log.d(TAG, "Handling intent: " + intent);
 
     setAuthenticating();
-    if (intent.hasExtra(EXTRA_USERNAME)) {
+    if (intent.hasExtra(NfcAdapter.EXTRA_TAG)) {
+      Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+      byte[] id = tag.getId();
+      if (id != null && id.length > 0) {
+        String tagId = HexDump.toHexString(id).toLowerCase();
+        Log.d(TAG, "Read NFC tag with id: " + tagId);
+        // TODO: use tag technology as part of id?
+        authenticateTokenAsync("nfc", tagId);
+      } else {
+        setFail("Unknown NFC tag.");
+      }
+    } else if (intent.hasExtra(EXTRA_USERNAME)) {
       authenticateUsernameAsync(intent.getStringExtra(EXTRA_USERNAME));
     } else if (intent.hasExtra(EXTRA_AUTH_DEVICE)) {
       authenticateTokenAsync(intent.getStringExtra(EXTRA_AUTH_DEVICE),
@@ -324,6 +338,13 @@ public class AuthenticatingActivity extends Activity {
     intent.putExtra(EXTRA_AUTH_DEVICE, authDevice);
     intent.putExtra(EXTRA_TOKEN_VALUE, tokenValue);
     context.startActivity(intent);
+  }
+
+  public static Intent getStartForNfcIntent(Context context) {
+    final Intent intent = new Intent(context, AuthenticatingActivity.class);
+    intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+    intent.putExtra(EXTRA_AUTH_DEVICE, "nfc");
+    return intent;
   }
 
 }

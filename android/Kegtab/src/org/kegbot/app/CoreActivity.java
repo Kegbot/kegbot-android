@@ -24,9 +24,20 @@ import org.kegbot.core.KegbotCore;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.PendingIntent;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.IntentFilter.MalformedMimeTypeException;
 import android.net.Uri;
+import android.nfc.NfcAdapter;
+import android.nfc.tech.IsoDep;
+import android.nfc.tech.MifareClassic;
+import android.nfc.tech.MifareUltralight;
+import android.nfc.tech.NfcA;
+import android.nfc.tech.NfcB;
+import android.nfc.tech.NfcF;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
@@ -44,6 +55,7 @@ public class CoreActivity extends Activity {
 
   private Menu mMenu;
   private AppConfiguration mConfig; // TODO(mikey):remove me after moving checkin info elsewhere
+  private NfcAdapter mNfcAdapter;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -72,9 +84,16 @@ public class CoreActivity extends Activity {
     if (mConfig.keepScreenOn()) {
       getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
+    registerNfcDispatch();
     KegbotCoreService.startService(this);
     updateAlerts();
     super.onResume();
+  }
+
+  @Override
+  protected void onPause() {
+    unregisterNfcDispatch();
+    super.onPause();
   }
 
   protected void setupActionBar() {
@@ -116,5 +135,42 @@ public class CoreActivity extends Activity {
       mMenu.findItem(R.id.alertUpdate).setVisible(mConfig.getUpdateNeeded());
     }
   }
+
+  private void registerNfcDispatch() {
+    mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
+    if (mNfcAdapter == null) {
+      Log.d(TAG, "NFC is not available.");
+      return;
+    }
+
+    final IntentFilter intentFilter = new IntentFilter(NfcAdapter.ACTION_NDEF_DISCOVERED);
+    try {
+      intentFilter.addDataType("*/*");
+    } catch (MalformedMimeTypeException e) {
+        throw new RuntimeException("Error creating NFC filter", e);
+    }
+
+    final String[][] techLists = new String[][] {
+        new String[] { IsoDep.class.getName() },
+        new String[] { MifareClassic.class.getName() },
+        new String[] { MifareUltralight.class.getName() },
+        new String[] { NfcA.class.getName() },
+        new String[] { NfcB.class.getName() },
+        new String[] { NfcF.class.getName() }
+    };
+
+    final Intent intent = AuthenticatingActivity.getStartForNfcIntent(getApplicationContext());
+    final PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+    mNfcAdapter.enableForegroundDispatch(this, pendingIntent, null, techLists);
+    Log.d(TAG, "NFC dispatch registered.");
+  }
+
+  private void unregisterNfcDispatch() {
+    if (mNfcAdapter != null) {
+      mNfcAdapter.disableForegroundDispatch(this);
+      mNfcAdapter = null;
+    }
+  }
+
 
 }
