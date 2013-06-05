@@ -209,9 +209,14 @@ public class TapEditFragment extends Fragment {
   }
 
   private void onCalibrate() {
+    final KegTap tap = mTap;
+    if (tap == null) {
+      // TODO(mikey): synchronize with button click listeners, etc
+      return;
+    }
     final Intent intent =
-        CalibrationActivity.getStartIntent(getActivity(), mTap.getMeterName(), mTap.getRelayName(),
-            mTap.getMlPerTick());
+        CalibrationActivity.getStartIntent(getActivity(), tap.getMeterName(), tap.getRelayName(),
+            tap.getMlPerTick());
     startActivity(intent);
     getFragmentManager().popBackStackImmediate();
   }
