@@ -264,6 +264,10 @@ public class SoundManager extends BackgroundManager {
     Log.d(TAG, "Playing sound: " + soundUrl);
 
     final File soundFile = mFiles.get(soundUrl);
+    if (soundFile == null) {
+      Log.w(TAG, String.format("Can't find cached file for url: %s", soundUrl));
+      return;
+    }
     mMediaPlayer.reset();
     mMediaPlayer.setAudioStreamType(AudioManager.STREAM_NOTIFICATION);
 
