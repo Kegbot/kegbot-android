@@ -42,7 +42,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
 
-import com.google.android.apps.analytics.easytracking.EasyTracker;
+import com.google.analytics.tracking.android.EasyTracker;
 
 /**
  * An activity which starts the core service on create and resume.
@@ -60,7 +60,7 @@ public class CoreActivity extends Activity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    EasyTracker.getTracker().setContext(this);
+    EasyTracker.getInstance().setContext(this);
     KegbotCoreService.startService(this);
     mConfig = KegbotCore.getInstance(this).getConfiguration();
   }
@@ -68,14 +68,14 @@ public class CoreActivity extends Activity {
   @Override
   protected void onStart() {
     super.onStart();
-    EasyTracker.getTracker().trackActivityStart(this);
+    EasyTracker.getInstance().activityStart(this);
   }
 
   @Override
   protected void onStop() {
-    super.onStop();
-    EasyTracker.getTracker().trackActivityStop(this);
+    EasyTracker.getInstance().activityStop(this);
     mMenu = null;
+    super.onStop();
   }
 
   @Override

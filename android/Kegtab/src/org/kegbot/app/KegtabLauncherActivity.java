@@ -25,8 +25,11 @@ import org.kegbot.core.KegbotCore;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+
+import com.google.analytics.tracking.android.EasyTracker;
 
 /**
  * Main launcher activity.
@@ -50,6 +53,7 @@ public class KegtabLauncherActivity extends Activity {
   @Override
   protected void onStart() {
     super.onStart();
+    EasyTracker.getInstance().setContext(this);
   }
 
   @Override
@@ -60,9 +64,26 @@ public class KegtabLauncherActivity extends Activity {
     }
 
     final int setupVersion = mConfig.getSetupVersion();
-    if (mConfig.getSetupVersion() < SetupTask.SETUP_VERSION) {
+    if (setupVersion < SetupTask.SETUP_VERSION) {
       Log.d(TAG, "Setup is not complete, version=" + setupVersion + "current="
           + SetupTask.SETUP_VERSION);
+
+      try {
+        if (setupVersion == 0) {
+          EasyTracker.getTracker().sendEvent("FirstInstall", "true", "", Long.valueOf(0));
+          EasyTracker.getTracker().sendEvent("FirstInstall", "product", Build.PRODUCT,
+              Long.valueOf(0));
+          EasyTracker.getTracker().sendEvent("FirstInstall", "device", Build.DEVICE,
+              Long.valueOf(0));
+        } else {
+          EasyTracker.getTracker().sendEvent("Upgrade",
+              String.format("ToVersion %s", Integer.valueOf(SetupTask.SETUP_VERSION)),
+              "", Long.valueOf(0));
+        }
+      } catch (Exception e) {
+        // Ignore any stupid analytics crashes.
+      }
+
       final Intent setupIntent = new Intent(this, SetupActivity.class);
       if (setupVersion > 0) {
         setupIntent.putExtra(SetupActivity.EXTRA_REASON, SetupActivity.EXTRA_REASON_UPGRADE);

@@ -23,8 +23,7 @@
 -dontshrink
 
 -libraryjars libs/android-support-v13.jar
--libraryjars libs/EasyTrackerAndroid_1.0/EasyTracker.jar
--libraryjars libs/GoogleAnalytics/libGoogleAnalytics.jar
+-libraryjars libs/GoogleAnalytics/libGoogleAnalyticsV2.jar
 -libraryjars libs/gcm/gcm.jar
 -libraryjars libs/guava/guava-11.0.2.jar
 -libraryjars libs/okhttp/okhttp-git-ace08e9f.jar

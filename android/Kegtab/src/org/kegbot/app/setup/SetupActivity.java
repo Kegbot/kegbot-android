@@ -40,7 +40,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
-import com.google.android.apps.analytics.easytracking.EasyTracker;
+import com.google.analytics.tracking.android.EasyTracker;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
@@ -113,7 +113,7 @@ public class SetupActivity extends Activity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    EasyTracker.getTracker().setContext(this);
+    EasyTracker.getInstance().setContext(this);
     setContentView(R.layout.setup_activity);
 
     KegbotCoreService.stopService(this);
@@ -185,7 +185,8 @@ public class SetupActivity extends Activity {
           final SetupFragment setupFragment = (SetupFragment) fragment;
           result = setupFragment.validate();
           if (Strings.isNullOrEmpty(result)) {
-            EasyTracker.getTracker().trackEvent("SetupTask", mCurrentTask.toString(), "", 1);
+            EasyTracker.getTracker().sendEvent("SetupTask", mCurrentTask.toString(), "",
+                Long.valueOf(1));
           }
         }
         return result;
@@ -281,14 +282,14 @@ public class SetupActivity extends Activity {
   @Override
   protected void onStart() {
     super.onStart();
-    EasyTracker.getTracker().trackActivityStart(this);
+    EasyTracker.getInstance().activityStart(this);
   }
 
   @Override
   protected void onStop() {
     super.onStop();
     KegbotCoreService.startService(this);
-    EasyTracker.getTracker().trackActivityStop(this);
+    EasyTracker.getInstance().activityStop(this);
   }
 
 }
