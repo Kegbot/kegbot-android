@@ -197,7 +197,7 @@ public class SyncManager extends BackgroundManager {
         }
 
         writeNewRequestsToDb();
-        postPendingRequestsToServer();
+        boolean requestsPosted = postPendingRequestsToServer();
 
         long now = SystemClock.elapsedRealtime();
         if (mSyncImmediate == true || now > mNextSyncTime) {
@@ -213,6 +213,12 @@ public class SyncManager extends BackgroundManager {
           }
 
         }
+
+        if (requestsPosted) {
+          // Skip sleep; keep posting.
+          continue;
+        }
+
         try {
           Thread.sleep(1000);
         } catch (InterruptedException e) {
@@ -226,15 +232,16 @@ public class SyncManager extends BackgroundManager {
     }
   }
 
-  private void postPendingRequestsToServer() {
+  private boolean postPendingRequestsToServer() {
     final int numPending = numPendingEntries();
     if (numPending > 0) {
       Log.d(TAG, "Posting pending requests: " + numPending);
-      processRequestFromDb();
+      return processRequestFromDb();
     }
+    return false;
   }
 
-  private void processRequestFromDb() {
+  private boolean processRequestFromDb() {
     final SQLiteDatabase db = mLocalDbHelper.getWritableDatabase();
 
     // Fetch most recent entry.
@@ -244,7 +251,7 @@ public class SyncManager extends BackgroundManager {
     try {
       if (cursor.getCount() == 0) {
         //Log.i(TAG, "processRequestFromDb: empty result set, exiting");
-        return;
+        return false;
       }
       cursor.moveToFirst();
 
@@ -302,6 +309,7 @@ public class SyncManager extends BackgroundManager {
         final int deleteResult = LocalDbHelper.deleteCurrentRow(db, cursor);
         Log.d(TAG, "Deleted row, result = " + deleteResult);
       }
+      return processed;
     } finally {
       cursor.close();
       db.close();
