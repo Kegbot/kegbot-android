@@ -144,6 +144,7 @@ public class AuthenticatingActivity extends Activity {
         String tagId = HexDump.toHexString(id).toLowerCase();
         Log.d(TAG, "Read NFC tag with id: " + tagId);
         // TODO: use tag technology as part of id?
+        intent.putExtra(EXTRA_TOKEN_VALUE, tagId);  // needed by onActivityResult
         authenticateTokenAsync("nfc", tagId);
       } else {
         setFail("Unknown NFC tag.");
