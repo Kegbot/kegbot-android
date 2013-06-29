@@ -22,8 +22,8 @@ import java.io.File;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nullable;
@@ -46,13 +46,14 @@ import org.kegbot.proto.Models.KegTap;
 import org.kegbot.proto.Models.Session;
 import org.kegbot.proto.Models.SoundEvent;
 import org.kegbot.proto.Models.SystemEvent;
-import org.kegbot.proto.Models.ThermoLog;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.SystemClock;
 import android.util.Log;
 
@@ -69,15 +70,6 @@ import com.squareup.otto.Produce;
 public class SyncManager extends BackgroundManager {
 
   private static String TAG = SyncManager.class.getSimpleName();
-
-  /**
-   * All pending asynchronous requests. They will be serviced in order in the
-   * background thread.
-   *
-   * TODO(mikey): fix capacity appropriately.
-   */
-  private final BlockingQueue<AbstractMessage> mPendingRequests =
-    new LinkedBlockingQueue<AbstractMessage>(10);
 
   private final KegbotApi mApi;
   private final Context mContext;
@@ -97,6 +89,8 @@ public class SyncManager extends BackgroundManager {
 
   private static final long SYNC_INTERVAL_MILLIS = TimeUnit.MINUTES.toMillis(1);
   private static final long SYNC_INTERVAL_AGGRESSIVE_MILLIS = TimeUnit.SECONDS.toMillis(10);
+
+  private ExecutorService mApiExecutorService;
 
   public static Comparator<SystemEvent> EVENTS_DESCENDING = new Comparator<SystemEvent>() {
     @Override
@@ -135,6 +129,7 @@ public class SyncManager extends BackgroundManager {
     mRunning = true;
     mSyncImmediate = true;
     mNextSyncTime = Long.MIN_VALUE;
+    mApiExecutorService = Executors.newSingleThreadExecutor();
     mLocalDbHelper = new LocalDbHelper(mContext);
     mRunning = true;
     getBus().register(this);
@@ -146,27 +141,45 @@ public class SyncManager extends BackgroundManager {
     mRunning = false;
     getBus().unregister(this);
     mLastKegTapList.clear();
+    mApiExecutorService.shutdown();
     super.stop();
   }
 
-  /**
-   * Schedules a drink to be recorded asynchronously.
-   * @param flow
-   */
-  public void recordDrinkAsync(final Flow flow) {
+  /** Schedules a drink to be recorded asynchronously. */
+  public synchronized void recordDrinkAsync(final Flow flow) {
+    if (!mRunning) {
+      Log.e(TAG, "Record drink request while not running.");
+      return;
+    }
     final RecordDrinkRequest request = getRequestForFlow(flow);
     final PendingPour pour = PendingPour.newBuilder()
         .setDrinkRequest(request)
         .addAllImages(flow.getImages())
         .build();
 
-    Log.d(TAG, ">>> Enqueuing pour: " + pour);
-    if (mPendingRequests.remainingCapacity() == 0) {
-      // Drop head when full.
-      mPendingRequests.poll();
-    }
-    mPendingRequests.add(pour);
-    Log.d(TAG, "<<< Pour enqueued.");
+    postDeferredPoursAsync();
+    mApiExecutorService.submit(new Runnable() {
+      @Override
+      public void run() {
+        try {
+          postPour(pour);
+        } catch (KegbotApiException e) {
+          Log.d(TAG, "Caught exception posting pour: " + e);
+          deferPostPour(pour);
+        } catch (Exception e) {
+          Log.w(TAG, "Error posting pour: " + e, e);
+        }
+      }
+    });
+  }
+
+  private void postDeferredPoursAsync() {
+    mApiExecutorService.submit(new Runnable() {
+      @Override
+      public void run() {
+        postDeferredPours();
+      }
+    });
   }
 
   /**
@@ -174,13 +187,47 @@ public class SyncManager extends BackgroundManager {
    *
    * @param request
    */
-  public void recordTemperatureAsync(final RecordTemperatureRequest request) {
-    Log.d(TAG, "Recording temperature: " + request);
-    if (mPendingRequests.remainingCapacity() == 0) {
-      // Drop head when full.
-      mPendingRequests.poll();
+  public synchronized void recordTemperatureAsync(final RecordTemperatureRequest request) {
+    if (!mRunning) {
+      Log.e(TAG, "Record thermo request while not running.");
+      return;
     }
-    mPendingRequests.add(request);
+    mApiExecutorService.submit(new Runnable() {
+      @Override
+      public void run() {
+        try {
+          postThermoLog(request);
+        } catch (KegbotApiException e) {
+          // Don't both retrying.
+          Log.w(TAG, String.format("Error posting thermo, dropping: %s", e));
+        }
+      }
+    });
+  }
+
+  public synchronized void requestSync() {
+    Log.d(TAG, "Immediate sync requested.");
+    mSyncImmediate = true;
+  }
+
+  @Produce
+  public TapListUpdateEvent produceTapList() {
+    return new TapListUpdateEvent(Lists.newArrayList(mLastKegTapList));
+  }
+
+  @Produce
+  public SystemEventListUpdateEvent produceSystemEvents() {
+    return new SystemEventListUpdateEvent(Lists.newArrayList(mLastSystemEventList));
+  }
+
+  @Produce
+  public CurrentSessionChangedEvent produceCurrentSession() {
+    return new CurrentSessionChangedEvent(mLastSession, mLastSessionStats);
+  }
+
+  @Produce
+  public SoundEventListUpdateEvent produceSoundEvents() {
+    return new SoundEventListUpdateEvent(mLastSoundEventList);
   }
 
   @Override
@@ -195,9 +242,6 @@ public class SyncManager extends BackgroundManager {
             break;
           }
         }
-
-        writeNewRequestsToDb();
-        boolean requestsPosted = postPendingRequestsToServer();
 
         long now = SystemClock.elapsedRealtime();
         if (mSyncImmediate == true || now > mNextSyncTime) {
@@ -214,11 +258,6 @@ public class SyncManager extends BackgroundManager {
 
         }
 
-        if (requestsPosted) {
-          // Skip sleep; keep posting.
-          continue;
-        }
-
         try {
           Thread.sleep(1000);
         } catch (InterruptedException e) {
@@ -232,16 +271,73 @@ public class SyncManager extends BackgroundManager {
     }
   }
 
-  private boolean postPendingRequestsToServer() {
-    final int numPending = numPendingEntries();
-    if (numPending > 0) {
-      Log.d(TAG, "Posting pending requests: " + numPending);
-      return processRequestFromDb();
-    }
-    return false;
+  private void deferPostPour(PendingPour pour) {
+    Log.d(TAG, "Deferring pour: " + pour);
+    addSingleRequestToDb(pour);
   }
 
-  private boolean processRequestFromDb() {
+  /**
+   * Synchronously posts a single pour to the remote backend. This method is
+   * guaranteed to have succeeded on non-exceptional return.
+   */
+  private void postPour(final PendingPour pour) throws KegbotApiException {
+    final RecordDrinkRequest request = pour.getDrinkRequest();
+    Log.d(TAG, ">>> Posting pour: tap=" + request.getTapName() + " ticks=" + request.getTicks());
+
+    if (!isConnected()) {
+      throw new KegbotApiException("Not connected.");
+    }
+
+    final Drink drink;
+    try {
+      drink = mApi.recordDrink(request);
+    } catch (KegbotApiNotFoundError e) {
+      Log.w(TAG, "Tap does not exist, dropping pour.");
+      return;
+    }
+
+    Log.d(TAG, "<<< Success, drink posted: " + drink);
+    postOnMainThread(new DrinkPostedEvent(drink));
+
+    if (pour.getImagesCount() > 0) {
+      // TODO(mikey): Single image everywhere.
+      final String imagePath = pour.getImagesList().get(0);
+      Log.d(TAG, "Drink had image, trying to post it.");
+      try {
+        if (drink != null) {
+          Log.d(TAG, "Uploading image: " + imagePath);
+          try {
+            mApi.uploadDrinkImage(drink.getId(), imagePath);
+          } catch (KegbotApiException e) {
+            // Discard image, no retry.
+            Log.w(TAG, String.format("Error uploading image %s: %s", imagePath, e));
+          }
+        }
+      } finally {
+        for (final String image : pour.getImagesList()) {
+          if (new File(image).delete()) {
+            Log.d(TAG, "Deleted " + image);
+          }
+        }
+      }
+    }
+  }
+
+  /**
+   * Synchronously posts a single thermo log to the remote backend. This method
+   * is guaranteed to have succeeded on non-exceptional return.
+   */
+  private void postThermoLog(final RecordTemperatureRequest request) throws KegbotApiException {
+    Log.d(TAG, ">>> Posting thermo log: tap=" + request.getSensorName() + " value=" + request.getTempC());
+    if (!isConnected()) {
+      throw new KegbotApiException("Not connected.");
+    }
+    mApi.recordTemperature(request);
+    Log.d(TAG, "<<< Success.");
+  }
+
+  /** Posts any queued requests to the api service. */
+  private void postDeferredPours() {
     final SQLiteDatabase db = mLocalDbHelper.getWritableDatabase();
 
     // Fetch most recent entry.
@@ -249,82 +345,40 @@ public class SyncManager extends BackgroundManager {
       db.query(LocalDbHelper.TABLE_NAME,
           null, null, null, null, null, LocalDbHelper.COLUMN_NAME_ADDED_DATE + " ASC", "1");
     try {
-      if (cursor.getCount() == 0) {
-        //Log.i(TAG, "processRequestFromDb: empty result set, exiting");
-        return false;
+      final int numPending = cursor.getCount();
+      if (numPending == 0) {
+        return;
       }
+
+      Log.d(TAG, String.format("Processing %s deferred pour%s.",
+          Integer.valueOf(numPending), numPending == 1 ? "" : "s"));
       cursor.moveToFirst();
 
-      boolean processed = false;
+      boolean deleteRow = true;
       try {
         final AbstractMessage record = LocalDbHelper.getCurrentRow(db, cursor);
         if (record instanceof PendingPour) {
-          final PendingPour pour = (PendingPour) record;
-          final RecordDrinkRequest request = pour.getDrinkRequest();
-
-          Log.d(TAG, "Posting pour");
-          final Drink drink = mApi.recordDrink(request);
-          Log.d(TAG, "Drink posted: " + drink);
-          postOnMainThread(new DrinkPostedEvent(drink));
-
-          if (pour.getImagesCount() > 0) {
-            Log.d(TAG, "Drink had images, trying to post them..");
-            for (final String imagePath : pour.getImagesList()) {
-              try {
-                if (drink != null) {
-                  Log.d(TAG, "Uploading image: " + imagePath);
-                  mApi.uploadDrinkImage(drink.getId(), imagePath);
-                }
-              } finally {
-                new File(imagePath).delete();
-                Log.d(TAG, "Deleted " + imagePath);
-              }
-            }
+          try {
+            postPour((PendingPour) record);
+          } catch (KegbotApiException e) {
+            // Try later.
+            deleteRow = false;
           }
-          processed = true;
-
           // Sync taps, etc, on new drink.
           mSyncImmediate = true;
-        } else if (record instanceof RecordTemperatureRequest) {
-          processed = true; // XXX drop even if fail
-          Log.d(TAG, "Posting thermo");
-          final ThermoLog log = mApi.recordTemperature((RecordTemperatureRequest) record);
-          Log.d(TAG, "ThermoLog posted: " + log);
-        } else {
-          Log.w(TAG, "Unknown row type.");
         }
-
       } catch (InvalidProtocolBufferException e) {
         Log.w(TAG, "Error processing column: " + e);
-        processed = true;
-      } catch (KegbotApiNotFoundError e) {
-        Log.w(TAG, "Tap not found, dropping record");
-        processed = true;
-      } catch (KegbotApiException e) {
-        Log.w(TAG, "Error processing column: " + e);
-        processed = true;
       }
 
-      if (processed) {
+      if (deleteRow) {
         final int deleteResult = LocalDbHelper.deleteCurrentRow(db, cursor);
         Log.d(TAG, "Deleted row, result = " + deleteResult);
       }
-      return processed;
     } finally {
       cursor.close();
       db.close();
     }
-  }
-
-  private int writeNewRequestsToDb() {
-    AbstractMessage message;
-    int result = 0;
-    while ((message = mPendingRequests.poll()) != null) {
-      if (addSingleRequestToDb(message)) {
-        result++;
-      }
-    }
-    return result;
   }
 
   private boolean addSingleRequestToDb(AbstractMessage message) {
@@ -355,8 +409,27 @@ public class SyncManager extends BackgroundManager {
     return inserted;
   }
 
+  private boolean isConnected() {
+    final ConnectivityManager cm =
+        (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+    final NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+    if (activeNetwork == null || !activeNetwork.isConnected()) {
+      return false;
+    }
+    return true;
+  }
+
   private boolean syncNow() {
     boolean error = false;
+
+    if (!isConnected()) {
+      error = true;
+      Log.d(TAG, "Network not connected.");
+      return error;
+    }
+
+    postDeferredPoursAsync();
+
     // Taps.
     try {
       List<KegTap> newTaps = mApi.getAllTaps();
@@ -428,44 +501,6 @@ public class SyncManager extends BackgroundManager {
     }
 
     return error;
-  }
-
-  @Produce
-  public TapListUpdateEvent produceTapList() {
-    return new TapListUpdateEvent(Lists.newArrayList(mLastKegTapList));
-  }
-
-  @Produce
-  public SystemEventListUpdateEvent produceSystemEvents() {
-    return new SystemEventListUpdateEvent(Lists.newArrayList(mLastSystemEventList));
-  }
-
-  @Produce
-  public CurrentSessionChangedEvent produceCurrentSession() {
-    return new CurrentSessionChangedEvent(mLastSession, mLastSessionStats);
-  }
-
-  @Produce
-  public SoundEventListUpdateEvent produceSoundEvents() {
-    return new SoundEventListUpdateEvent(mLastSoundEventList);
-  }
-
-  private int numPendingEntries() {
-    final String[] columns = {LocalDbHelper.COLUMN_NAME_ID};
-    final SQLiteDatabase db = mLocalDbHelper.getReadableDatabase();
-    final Cursor cursor =
-      db.query(LocalDbHelper.TABLE_NAME, columns, null, null, null, null, null);
-    try {
-      return cursor.getCount();
-    } finally {
-      cursor.close();
-      db.close();
-    }
-  }
-
-  public void requestSync() {
-    Log.d(TAG, "Immediate sync requested.");
-    mSyncImmediate = true;
   }
 
   private static RecordDrinkRequest getRequestForFlow(final Flow ended) {
