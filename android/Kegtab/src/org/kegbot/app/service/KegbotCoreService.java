@@ -45,8 +45,12 @@ import org.kegbot.proto.Api.RecordTemperatureRequest;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.Handler;
@@ -79,6 +83,10 @@ public class KegbotCoreService extends Service {
   private PowerManager.WakeLock mWakeLock;
 
   private final ExecutorService mExecutorService = Executors.newSingleThreadExecutor();
+
+  private final IntentFilter mIntentFilter =
+      new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+  private BroadcastReceiver mBroadcastReceiver;
 
   private final Handler mHandler = new Handler();
 
@@ -200,6 +208,25 @@ public class KegbotCoreService extends Service {
     mHardwareManager = mCore.getHardwareManager();
     mConfig = mCore.getConfiguration();
 
+    mBroadcastReceiver = new BroadcastReceiver() {
+      @Override
+      public void onReceive(Context context, Intent intent) {
+        // TODO(mikey): Refactor with similar method in syncManager.
+        final ConnectivityManager cm =
+            (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        final NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+
+        if (activeNetwork == null || !activeNetwork.isConnected()) {
+          Log.d(TAG, "Network not connected.");
+          return;
+        }
+
+        Log.d(TAG, "Connectivity established, requesting sync.");
+        mCore.getSyncManager().requestSync();
+      }
+    };
+    registerReceiver(mBroadcastReceiver, mIntentFilter);
+
     // TODO: this should be part of a config update event.
     mCore.getImageDownloader().setBaseUrl(mConfig.getKegbotUrl());
 
@@ -213,7 +240,7 @@ public class KegbotCoreService extends Service {
 
     if (mConfig.stayAwake()) {
       // CoreActivity will keep the screen on when a Kegbot activity is
-      // in the foregroun; we only need to worry about holding a partial
+      // in the foreground; we only need to worry about holding a partial
       // wakelock.
       PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
       mWakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "kegbot-core");
@@ -245,6 +272,7 @@ public class KegbotCoreService extends Service {
   @Override
   public void onDestroy() {
     Log.d(TAG, "onDestroy()");
+    unregisterReceiver(mBroadcastReceiver);
 
     mFlowManager.removeFlowListener(mFlowListener);
     mCore.stop();
