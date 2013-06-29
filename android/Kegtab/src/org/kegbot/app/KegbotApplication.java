@@ -3,6 +3,7 @@
  */
 package org.kegbot.app;
 
+import com.crashlytics.android.Crashlytics;
 import org.kegbot.app.service.CheckinService;
 import org.kegbot.app.util.Utils;
 import org.kegbot.core.KegbotCore;
@@ -22,6 +23,7 @@ public class KegbotApplication extends Application {
   @Override
   public void onCreate() {
     super.onCreate();
+    Crashlytics.start(this);
     Log.i(TAG, "Kegbot starting.");
 
     final String userAgent = Utils.getUserAgent(getApplicationContext());

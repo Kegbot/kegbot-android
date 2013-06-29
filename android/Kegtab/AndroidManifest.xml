@@ -252,6 +252,7 @@
         <service android:name=".service.KegbotCoreService" />
         <service android:name=".service.CheckinService" />
         <service android:name=".GCMIntentService" />
+        <meta-data android:name="com.crashlytics.ApiKey" android:value="ba357635725e4d9077107ee8df6b7da3ade3cd6c"/>
         
     </application>
 
