@@ -22,10 +22,13 @@ import java.io.File;
 import java.io.IOException;
 import java.net.CookieHandler;
 import java.net.CookieManager;
+import java.security.GeneralSecurityException;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import javax.net.ssl.SSLContext;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -76,6 +79,17 @@ public class KegbotApiImpl implements KegbotApi {
     mBaseUrl = "http://localhost/";
     mCookieManager = new CookieManager();
     mClient = new OkHttpClient();
+
+    //https://github.com/square/okhttp/issues/184
+    SSLContext sslContext;
+    try {
+      sslContext = SSLContext.getInstance("TLS");
+      sslContext.init(null, null, null);
+    } catch (GeneralSecurityException e) {
+      throw new AssertionError(); // The system has no TLS. Just give up.
+    }
+    mClient.setSslSocketFactory(sslContext.getSocketFactory());
+
     mClient.setCookieHandler(mCookieManager);
     CookieHandler.setDefault(mCookieManager);
     mHttp = new Http(mClient);
@@ -98,6 +112,9 @@ public class KegbotApiImpl implements KegbotApi {
     try {
       root = mHttp.requestJson(request);
     } catch (IOException e) {
+      throw new KegbotApiException(e);
+    } catch (NullPointerException e) {
+      // TODO(mikey): Figure out why OkHttp NPE's.
       throw new KegbotApiException(e);
     }
     if (!root.has("meta")) {

@@ -17,9 +17,9 @@
 			<attribute name="javadoc_location" value="jar:platform:/resource/Kegtab/libs/joda-time-2.2/joda-time-2.2-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="libs/okhttp/okhttp-git-ace08e9f.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/protobuf/protobuf-java-2.5.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/GoogleAnalytics/libGoogleAnalyticsV2.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/okhttp/okhttp-1.1.1.jar"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
