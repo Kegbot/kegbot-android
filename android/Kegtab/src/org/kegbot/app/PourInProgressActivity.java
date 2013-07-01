@@ -610,6 +610,11 @@ public class PourInProgressActivity extends CoreActivity {
       mProgressDialog = new PourFinishProgressDialog();
       mProgressDialog.show(getFragmentManager(), "finish");
       mHandler.postDelayed(FINISH_ACTIVITY_RUNNABLE, FLOW_FINISH_DELAY_MILLIS);
+    } else {
+      if (mProgressDialog != null) {
+        mProgressDialog.dismiss();
+        mProgressDialog = null;
+      }
     }
   }
 
