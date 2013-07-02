@@ -18,11 +18,8 @@
  */
 package org.kegbot.app;
 
-import android.content.Intent;
-
 /**
- *
- * @author mike wakerly (mike@wakerly.com)
+ * Constants involving broadcasts.
  */
 public class KegtabBroadcast {
 
@@ -43,25 +40,8 @@ public class KegtabBroadcast {
   public static final String TOKEN_ADDED_EXTRA_AUTH_DEVICE = "auth_device";
   public static final String TOKEN_ADDED_EXTRA_TOKEN_VALUE = "token";
 
-  /**
-   * Non-instantiable.
-   */
   private KegtabBroadcast() {
-    assert (false);
-  }
-
-  public static Intent getThermoUpdateBroadcastIntent(final String sensorName, final double tempC) {
-    final Intent intent = new Intent(ACTION_THERMO_UPDATE);
-    intent.putExtra(THERMO_UPDATE_EXTRA_SENSOR_NAME, sensorName);
-    intent.putExtra(THERMO_UPDATE_EXTRA_TEMP_C, tempC);
-    return intent;
-  }
-
-  public static Intent getTokenAddedIntent(String authDevice, String tokenValue) {
-    final Intent intent = new Intent(ACTION_TOKEN_ADDED);
-    intent.putExtra(TOKEN_ADDED_EXTRA_AUTH_DEVICE, authDevice);
-    intent.putExtra(TOKEN_ADDED_EXTRA_TOKEN_VALUE, tokenValue);
-    return intent;
+    throw new IllegalStateException("Non-instantiable class.");
   }
 
 }

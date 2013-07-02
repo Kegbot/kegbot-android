@@ -24,13 +24,12 @@ import java.util.UUID;
 
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.kegbot.app.KegtabBroadcast;
+import org.kegbot.app.AuthenticatingActivity;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Binder;
 import android.util.Log;
 
@@ -83,6 +82,7 @@ public class BluetoothManager extends BackgroundManager {
       synchronized (this) {
         if (mQuit) {
           Log.i(TAG, "Exiting.");
+          break;
         }
       }
       final BluetoothAdapter adapter = getUsableAdapter();
@@ -93,6 +93,9 @@ public class BluetoothManager extends BackgroundManager {
       try {
         handleOneConnection(adapter);
       } catch (IOException e) {
+        Log.w(TAG, "Connection failed: " + e.toString(), e);
+        break;
+      } catch (SecurityException e) {
         Log.w(TAG, "Connection failed: " + e.toString(), e);
         break;
       }
@@ -180,9 +183,8 @@ public class BluetoothManager extends BackgroundManager {
         Log.d(TAG, "Kegnet BT malformed auth command.");
         return;
       }
-      final Intent intent = KegtabBroadcast.getTokenAddedIntent(authDevice.getTextValue(), tokenValue.getTextValue());
-      Log.d(TAG, "Issuing broadcast: " + intent);
-      mContext.sendBroadcast(intent);
+      AuthenticatingActivity.startAndAuthenticate(
+          mContext, authDevice.getTextValue(), tokenValue.getTextValue());
     }
   }
 
