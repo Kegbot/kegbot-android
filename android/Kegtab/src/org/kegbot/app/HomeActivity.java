@@ -42,6 +42,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.google.android.gcm.GCMRegistrar;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.hoho.android.usbserial.util.HexDump;
 import com.squareup.otto.Subscribe;
@@ -130,6 +131,15 @@ public class HomeActivity extends CoreActivity {
 
     CheckinService.requestImmediateCheckin(this);
 
+  }
+
+  @Override
+  protected void onDestroy() {
+    final String regId = GCMRegistrar.getRegistrationId(this);
+    if (!Strings.isNullOrEmpty(regId)) {
+      GCMRegistrar.unregister(this);
+    }
+    super.onDestroy();
   }
 
   @Override
