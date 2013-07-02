@@ -21,6 +21,7 @@ package org.kegbot.app;
 import java.util.List;
 
 import org.kegbot.app.config.AppConfiguration;
+import org.kegbot.app.event.ConnectivityChangedEvent;
 import org.kegbot.app.event.TapListUpdateEvent;
 import org.kegbot.app.service.CheckinService;
 import org.kegbot.core.KegbotCore;
@@ -217,6 +218,11 @@ public class HomeActivity extends CoreActivity {
     if (!mTaps.isEmpty()) {
       setFocusedTap(mTaps.get(mTapStatusPager.getCurrentItem()));
     }
+  }
+
+  @Subscribe
+  public void onConnectivityChangedEvent(ConnectivityChangedEvent event) {
+    updateConnectivityAlert(event.isConnected());
   }
 
   private void setFocusedTap(KegTap tap) {

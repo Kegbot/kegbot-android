@@ -136,6 +136,12 @@ public class CoreActivity extends Activity {
     }
   }
 
+  protected void updateConnectivityAlert(boolean isConnected) {
+    if (mMenu != null) {
+      mMenu.findItem(R.id.alertNetwork).setVisible(!isConnected);
+    }
+  }
+
   private void registerNfcDispatch() {
     mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
     if (mNfcAdapter == null) {

@@ -32,6 +32,7 @@ import org.codehaus.jackson.JsonNode;
 import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiException;
 import org.kegbot.api.KegbotApiNotFoundError;
+import org.kegbot.app.event.ConnectivityChangedEvent;
 import org.kegbot.app.event.CurrentSessionChangedEvent;
 import org.kegbot.app.event.DrinkPostedEvent;
 import org.kegbot.app.event.SoundEventListUpdateEvent;
@@ -62,6 +63,7 @@ import com.google.protobuf.AbstractMessage;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Produce;
+import com.squareup.otto.Subscribe;
 
 /**
  * This service manages a connection to a Kegbot backend, using the Kegbot API.
@@ -228,6 +230,16 @@ public class SyncManager extends BackgroundManager {
   @Produce
   public SoundEventListUpdateEvent produceSoundEvents() {
     return new SoundEventListUpdateEvent(mLastSoundEventList);
+  }
+
+  @Subscribe
+  public void handleConnectivityChangedEvent(ConnectivityChangedEvent event) {
+    if (event.isConnected()) {
+      Log.d(TAG, "Connection is up, requesting sync.");
+      requestSync();
+    } else {
+      Log.d(TAG, "Connection is down.");
+    }
   }
 
   @Override

@@ -31,6 +31,7 @@ import org.kegbot.app.HomeActivity;
 import org.kegbot.app.PourInProgressActivity;
 import org.kegbot.app.R;
 import org.kegbot.app.config.AppConfiguration;
+import org.kegbot.app.event.ConnectivityChangedEvent;
 import org.kegbot.app.event.FlowUpdateEvent;
 import org.kegbot.core.AuthenticationToken;
 import org.kegbot.core.Flow;
@@ -208,25 +209,6 @@ public class KegbotCoreService extends Service {
     mHardwareManager = mCore.getHardwareManager();
     mConfig = mCore.getConfiguration();
 
-    mBroadcastReceiver = new BroadcastReceiver() {
-      @Override
-      public void onReceive(Context context, Intent intent) {
-        // TODO(mikey): Refactor with similar method in syncManager.
-        final ConnectivityManager cm =
-            (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        final NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-
-        if (activeNetwork == null || !activeNetwork.isConnected()) {
-          Log.d(TAG, "Network not connected.");
-          return;
-        }
-
-        Log.d(TAG, "Connectivity established, requesting sync.");
-        mCore.getSyncManager().requestSync();
-      }
-    };
-    registerReceiver(mBroadcastReceiver, mIntentFilter);
-
     // TODO: this should be part of a config update event.
     mCore.getImageDownloader().setBaseUrl(mConfig.getKegbotUrl());
 
@@ -237,6 +219,29 @@ public class KegbotCoreService extends Service {
     updateFromPreferences();
 
     mCore.start();
+
+    mBroadcastReceiver = new BroadcastReceiver() {
+      @Override
+      public void onReceive(Context context, Intent intent) {
+        // TODO(mikey): Refactor with similar method in syncManager.
+        final ConnectivityManager cm =
+            (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        final NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+
+        final boolean connected;
+        final String message;
+        if (activeNetwork != null && activeNetwork.isConnected()) {
+          connected = true;
+          message = String.format("Connected to %s", activeNetwork.getTypeName());
+        } else {
+          connected = false;
+          message = "Network not connected.";
+        }
+        mCore.postEvent(new ConnectivityChangedEvent(connected, message));
+      }
+    };
+    registerReceiver(mBroadcastReceiver, mIntentFilter);
+
 
     if (mConfig.stayAwake()) {
       // CoreActivity will keep the screen on when a Kegbot activity is
