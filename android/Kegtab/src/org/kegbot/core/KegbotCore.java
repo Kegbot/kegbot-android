@@ -38,6 +38,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.os.Build;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -251,6 +252,17 @@ public class KegbotCore {
     StringWriter baseWriter = new StringWriter();
     IndentingPrintWriter writer = new IndentingPrintWriter(baseWriter, "  ");
 
+    writer.println("## System info");
+    writer.increaseIndent();
+    writer.printPair("fingerprint", Build.FINGERPRINT).println();
+    writer.printPair("board", Build.BOARD).println();
+    writer.printPair("device", Build.DEVICE).println();
+    writer.printPair("model", Build.MODEL).println();
+    writer.printPair("manufacturer", Build.MANUFACTURER).println();
+    writer.printPair("sdk", Build.VERSION.SDK).println();
+    writer.decreaseIndent();
+    writer.println();
+
     try {
       PackageManager pm = mContext.getPackageManager();
       PackageInfo packageInfo;
@@ -260,7 +272,7 @@ public class KegbotCore {
         throw new RuntimeException("Cannot get own package info.", e);
       }
 
-      writer.println("Package info:");
+      writer.println("## Package info");
       writer.println();
       writer.increaseIndent();
       writer.printPair("versionName", packageInfo.versionName).println();
@@ -277,7 +289,7 @@ public class KegbotCore {
       writer.decreaseIndent();
       writer.println();
 
-      writer.println("Core info:");
+      writer.println("## Core info");
       writer.println();
       writer.increaseIndent();
       writer.printPair("mStarted", Boolean.valueOf(mStarted)).println();

@@ -118,14 +118,20 @@ public class HomeActivity extends CoreActivity {
     mTapStatusPager.setSystemUiVisibility(View.STATUS_BAR_HIDDEN);
 
     // GCM
-    GCMRegistrar.checkDevice(this);
-    GCMRegistrar.checkManifest(this);
-    final String regId = GCMRegistrar.getRegistrationId(this);
-    if (regId.equals("")) {
-      GCMRegistrar.register(this, GCM_SENDER_ID);
-    } else {
-      Log.v(LOG_TAG, "Already registered");
-      mConfig.setGcmRegistrationId(regId);
+    try {
+      GCMRegistrar.checkDevice(this);
+      GCMRegistrar.checkManifest(this);
+      final String regId = GCMRegistrar.getRegistrationId(this);
+      if (regId.equals("")) {
+        GCMRegistrar.register(this, GCM_SENDER_ID);
+      } else {
+        Log.v(LOG_TAG, "Already registered");
+        mConfig.setGcmRegistrationId(regId);
+      }
+    } catch (UnsupportedOperationException e) {
+      // Kindly thrown by GCM when com.google.android.gsf is not available :-P
+      Log.w(LOG_TAG, "GCM not supported");
+      mConfig.setGcmRegistrationId("");
     }
     // End GCM
 
