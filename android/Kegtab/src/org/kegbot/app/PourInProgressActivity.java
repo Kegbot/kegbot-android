@@ -455,6 +455,7 @@ public class PourInProgressActivity extends CoreActivity {
   @Override
   protected void onPause() {
     Log.d(TAG, "onPause");
+    mHandler.removeCallbacks(FINISH_ACTIVITY_RUNNABLE);
     mCore.getBus().unregister(this);
     super.onPause();
   }
@@ -487,6 +488,10 @@ public class PourInProgressActivity extends CoreActivity {
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     switch (requestCode) {
       case REQUEST_AUTH_DRINKER:
+        if (data == null) {
+          Log.i(TAG, "No user selected.");
+          return;
+        }
         String username = data.getStringExtra(
             KegtabCommon.ACTIVITY_AUTH_DRINKER_RESULT_EXTRA_USERNAME);
         if (Strings.isNullOrEmpty(username)) {
