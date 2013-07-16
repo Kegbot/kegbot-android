@@ -200,6 +200,10 @@ public class TapEditFragment extends Fragment {
   }
 
   private void onNewKeg() {
+    if (mTap == null) {
+      // TODO(mikey): Clean up.
+      return;
+    }
     startActivity(NewKegActivity.getStartIntent(getActivity(), mTap.getMeterName()));
     getFragmentManager().popBackStackImmediate();
   }
