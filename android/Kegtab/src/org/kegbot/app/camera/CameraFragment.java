@@ -55,9 +55,9 @@ public class CameraFragment extends Fragment {
   private static final long CAMERA_SETUP_DELAY_MILLIS = 200;
 
   private Preview mPreview;
-  Camera mCamera;
-  int mNumberOfCameras;
-  int mRotation = 0;
+  private Camera mCamera;
+  private int mNumberOfCameras;
+  private int mRotation = 0;
 
   private Button mPictureButton;
   private Button mDiscardButton;
@@ -69,7 +69,7 @@ public class CameraFragment extends Fragment {
   private String mLastFilename = "";
 
   private enum State {
-    INITIAL, IN_PROGRESS, TAKEN, COMPLETE;
+    INITIAL, IN_PROGRESS, TAKEN, COMPLETE, DISABLED;
   }
 
   private State mState = State.INITIAL;
@@ -150,6 +150,11 @@ public class CameraFragment extends Fragment {
         mPictureButton.setText("Pour Complete");
         setEnabled(false);
         break;
+      case DISABLED:
+        mPostButtons.setVisibility(View.GONE);
+        mPictureButton.setVisibility(View.VISIBLE);
+        setEnabled(false);
+        break;
     }
   }
 
@@ -169,7 +174,11 @@ public class CameraFragment extends Fragment {
       }
     };
 
-    takePicture(shutterCallback, null, jpegCallback);
+    if (mCamera == null || mState == State.DISABLED) {
+      Log.d(TAG, "Not taking picture: disabled.");
+    }
+
+    doTakePicture(shutterCallback, null, jpegCallback);
   }
 
 
@@ -237,8 +246,12 @@ public class CameraFragment extends Fragment {
     }
   }
 
-  private void takePicture(final ShutterCallback shutter, final PictureCallback raw,
+  private void doTakePicture(final ShutterCallback shutter, final PictureCallback raw,
       final PictureCallback jpeg) {
+    if (mCamera == null || mState == State.DISABLED) {
+      Log.wtf(TAG, "doTakePicture called in disabled state.");
+      return;
+    }
     mCamera.cancelAutoFocus();
     mCamera.autoFocus(new Camera.AutoFocusCallback() {
       @Override
@@ -266,6 +279,11 @@ public class CameraFragment extends Fragment {
     mDiscardButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
+        if (mState == State.DISABLED) {
+          // Paranoia; should not be reachable.
+          Log.d(TAG, "Skipping discard: disabled.");
+          return;
+        }
         discardLastPicture();
         mCamera.startPreview();
         updateState(State.INITIAL);
@@ -276,6 +294,11 @@ public class CameraFragment extends Fragment {
     mRetakeButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
+        if (mState == State.DISABLED) {
+          // Paranoia; should not be reachable.
+          Log.d(TAG, "Skipping retake: disabled.");
+          return;
+        }
         discardLastPicture();
         mCamera.startPreview();
         updateState(State.INITIAL);
@@ -319,8 +342,10 @@ public class CameraFragment extends Fragment {
     } catch (Exception e) {
       Log.w(TAG, "Error opening camera: %s" + e, e);
       mCamera = null;
+      updateState(State.DISABLED);
       return;
     }
+
     setCameraDisplayOrientation(getActivity(), mDefaultCameraId, mCamera);
     mPreview.setCamera(mCamera);
     updateState(State.INITIAL);
