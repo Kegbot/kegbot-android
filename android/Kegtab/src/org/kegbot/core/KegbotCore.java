@@ -91,7 +91,7 @@ public class KegbotCore {
     }
   };
 
-  public KegbotCore(Context context) {
+  private KegbotCore(Context context) {
     mContext = context.getApplicationContext();
     mBus = new Bus(ThreadEnforcer.MAIN);
 

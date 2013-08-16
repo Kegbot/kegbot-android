@@ -32,7 +32,8 @@ import android.util.Log;
 import com.google.analytics.tracking.android.EasyTracker;
 
 /**
- * Main launcher activity.
+ * Main launcher activity; simply redirects to {@link SetupActivity} or
+ * {@link HomeActivity} depending on state.
  *
  * @author mike wakerly (mike@wakerly.com)
  */

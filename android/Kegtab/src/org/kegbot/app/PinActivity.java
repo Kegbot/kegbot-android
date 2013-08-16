@@ -41,7 +41,10 @@ import android.widget.TextView.OnEditorActionListener;
 import com.google.common.base.Strings;
 
 /**
- * Pass-through activity which verifies the manager pin.
+ * Pass-through activity which verifies the manager pin. PIN-verified activities
+ * need no special awareness of the PIN. Use
+ * {@link #startThroughPinActivity(Context, Intent)} to launch PIN-verified
+ * activities.
  *
  * @author mike wakerly (opensource@hoho.com)
  */
@@ -71,6 +74,7 @@ public class PinActivity extends Activity {
     mPinText.addTextChangedListener(new TextWatcher() {
       @Override
       public void onTextChanged(CharSequence s, int start, int before, int count) {
+        // Fade out error text after pin is re-typed.
         if (mErrorText.getVisibility() == View.VISIBLE) {
           final Animation out = new AlphaAnimation(1.0f, 0.0f);
           out.setDuration(1000);

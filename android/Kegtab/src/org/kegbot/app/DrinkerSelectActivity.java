@@ -57,8 +57,6 @@ public class DrinkerSelectActivity extends CoreActivity implements LoaderCallbac
 
   private static final String TAG = DrinkerSelectActivity.class.getSimpleName();
 
-  private static final String EXTRA_USERNAME = "username";
-
   /** Activity will auto-finish after this timeout. */
   private static final long TIMEOUT_MILLIS = TimeUnit.MINUTES.toMillis(2);
 
@@ -181,7 +179,7 @@ public class DrinkerSelectActivity extends CoreActivity implements LoaderCallbac
   public void handlerUserSelected(User user) {
     Intent resultData = new Intent();
     resultData.putExtras(getIntent());
-    resultData.putExtra(EXTRA_USERNAME, user.getUsername());
+    resultData.putExtra(KegtabCommon.ACTIVITY_AUTH_DRINKER_RESULT_EXTRA_USERNAME, user.getUsername());
     setResult(RESULT_OK, resultData);
     finish();
   }
