@@ -23,8 +23,6 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import android.media.AudioManager;
-import android.media.SoundPool;
 import org.kegbot.app.R;
 import org.kegbot.app.event.PictureDiscardedEvent;
 import org.kegbot.app.event.PictureTakenEvent;
@@ -40,6 +38,8 @@ import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
 import android.hardware.Camera.PictureCallback;
 import android.hardware.Camera.ShutterCallback;
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -67,7 +67,7 @@ public class CameraFragment extends Fragment {
   private ViewGroup mPostButtons;
   private int mPictureSeconds = 0;
   private final Handler mHandler = new Handler();
-  private static SoundPool mSoundPool;
+  private SoundPool mSoundPool;
   private int mCountdownBeepSoundId;
   private int mCountdownBeepSoundLastId;
 
@@ -122,6 +122,13 @@ public class CameraFragment extends Fragment {
     mSoundPool = new SoundPool(2, AudioManager.STREAM_MUSIC, 100);
     mCountdownBeepSoundId = mSoundPool.load(getActivity(), R.raw.countdown_beep, 1);
     mCountdownBeepSoundLastId = mSoundPool.load(getActivity(), R.raw.countdown_beep_last, 1);
+  }
+
+  @Override
+  public void onDestroy() {
+    mSoundPool.release();
+    mSoundPool = null;
+    super.onDestroy();
   }
 
   public void setEnabled(boolean enabled) {
