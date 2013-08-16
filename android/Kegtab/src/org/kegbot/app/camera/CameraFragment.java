@@ -42,8 +42,6 @@ import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
 import android.hardware.Camera.PictureCallback;
 import android.hardware.Camera.ShutterCallback;
-import android.media.AudioManager;
-import android.media.SoundPool;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -95,12 +93,14 @@ public class CameraFragment extends Fragment {
         mPictureButton.setClickable(false);
         mPictureButton.setText(mPictureSeconds + " ...");
         mPictureSeconds -= 1;
-        if (mConfig.getEnableCameraSounds())
+        if (mConfig.getEnableCameraSounds()) {
           mSoundPool.play(mCountdownBeepSoundId, 1, 1, 1, 0, 1);
+        }
         mHandler.postDelayed(PICTURE_COUNTDOWN_RUNNABLE, 1000);
       } else {
-        if (mConfig.getEnableCameraSounds())
+        if (mConfig.getEnableCameraSounds()) {
           mSoundPool.play(mCountdownBeepSoundLastId, 1, 1, 1, 0, 1);
+        }
         takePicture();
       }
     }
@@ -375,8 +375,9 @@ public class CameraFragment extends Fragment {
       updateState(State.DISABLED);
       return;
     }
-    if (mConfig.getEnableCameraSounds())
+    if (mConfig.getEnableCameraSounds()) {
       enableShutterSound(true, mDefaultCameraId, mCamera);
+    }
 
     setCameraDisplayOrientation(getActivity(), mDefaultCameraId, mCamera);
     mPreview.setCamera(mCamera);
