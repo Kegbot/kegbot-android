@@ -23,7 +23,11 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import android.media.AudioManager;
+import android.media.SoundPool;
+import android.os.Build;
 import org.kegbot.app.R;
+import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.app.event.PictureDiscardedEvent;
 import org.kegbot.app.event.PictureTakenEvent;
 import org.kegbot.core.KegbotCore;
@@ -55,6 +59,8 @@ public class CameraFragment extends Fragment {
   private static final String TAG = CameraFragment.class.getSimpleName();
 
   private static final long CAMERA_SETUP_DELAY_MILLIS = 200;
+
+  AppConfiguration mConfig;
 
   private Preview mPreview;
   private Camera mCamera;
@@ -89,10 +95,12 @@ public class CameraFragment extends Fragment {
         mPictureButton.setClickable(false);
         mPictureButton.setText(mPictureSeconds + " ...");
         mPictureSeconds -= 1;
-        mSoundPool.play(mCountdownBeepSoundId, 1, 1, 1, 0, 1);
+        if (mConfig.getEnableCameraSounds())
+          mSoundPool.play(mCountdownBeepSoundId, 1, 1, 1, 0, 1);
         mHandler.postDelayed(PICTURE_COUNTDOWN_RUNNABLE, 1000);
       } else {
-        mSoundPool.play(mCountdownBeepSoundLastId, 1, 1, 1, 0, 1);
+        if (mConfig.getEnableCameraSounds())
+          mSoundPool.play(mCountdownBeepSoundLastId, 1, 1, 1, 0, 1);
         takePicture();
       }
     }
@@ -108,6 +116,10 @@ public class CameraFragment extends Fragment {
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+
+    KegbotCore core = KegbotCore.getInstance(getActivity());
+    mConfig = core.getConfiguration();
+
     mNumberOfCameras = Camera.getNumberOfCameras();
 
     // Find the ID of the default camera
@@ -363,6 +375,8 @@ public class CameraFragment extends Fragment {
       updateState(State.DISABLED);
       return;
     }
+    if (mConfig.getEnableCameraSounds())
+      enableShutterSound(true, mDefaultCameraId, mCamera);
 
     setCameraDisplayOrientation(getActivity(), mDefaultCameraId, mCamera);
     mPreview.setCamera(mCamera);
@@ -380,6 +394,17 @@ public class CameraFragment extends Fragment {
       mPreview.setCamera(null);
       mCamera.release();
       mCamera = null;
+    }
+  }
+
+  public void enableShutterSound(boolean enable, int cameraId, Camera camera) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+      Camera.CameraInfo info = new android.hardware.Camera.CameraInfo();
+      Camera.getCameraInfo(cameraId, info);
+
+      if (info.canDisableShutterSound) {
+        camera.enableShutterSound(enable);
+      }
     }
   }
 
