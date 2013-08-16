@@ -176,7 +176,7 @@ public class BugreportActivity extends Activity {
   }
 
   private String takeBugreport() {
-    File bugreportDir = getExternalFilesDir(null);
+    File bugreportDir = getFilesDir();
     mBugDate = new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date());
 
     File bugreportFile = new File(bugreportDir, "kegbot-bugreport-" + mBugDate + ".txt");

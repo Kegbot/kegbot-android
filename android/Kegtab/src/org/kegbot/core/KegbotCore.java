@@ -25,6 +25,7 @@ import java.util.Set;
 
 import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiImpl;
+import org.kegbot.app.KegbotApplication;
 import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.app.config.SharedPreferencesConfigurationStore;
 import org.kegbot.app.util.DeviceId;
@@ -37,7 +38,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Build;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -254,6 +254,7 @@ public class KegbotCore {
 
     writer.println("## System info");
     writer.increaseIndent();
+    writer.printPair("userAgent", System.getProperty("http.agent")).println();
     writer.printPair("fingerprint", Build.FINGERPRINT).println();
     writer.printPair("board", Build.BOARD).println();
     writer.printPair("device", Build.DEVICE).println();
@@ -264,28 +265,31 @@ public class KegbotCore {
     writer.println();
 
     try {
-      PackageManager pm = mContext.getPackageManager();
-      PackageInfo packageInfo;
-      try {
-        packageInfo = pm.getPackageInfo(mContext.getPackageName(), PackageManager.GET_SIGNATURES);
-      } catch (NameNotFoundException e) {
-        throw new RuntimeException("Cannot get own package info.", e);
-      }
+      final PackageInfo packageInfo = Utils.getOwnPackageInfo(mContext);
 
       writer.println("## Package info");
       writer.println();
       writer.increaseIndent();
-      writer.printPair("versionName", packageInfo.versionName).println();
-      writer.printPair("versionCode", String.valueOf(packageInfo.versionCode)).println();
-      writer.printPair("packageName", packageInfo.packageName).println();
-      writer.printPair("installTime", new Date(packageInfo.firstInstallTime)).println();
-      writer.printPair("lastUpdateTime", new Date(packageInfo.lastUpdateTime)).println();
+
+      writer.printPair("releaseBuild",
+          Boolean.valueOf(((KegbotApplication) mContext.getApplicationContext()).isReleaseBuild()))
+              .println();
+      if (packageInfo != null) {
+        writer.printPair("versionName", packageInfo.versionName).println();
+        writer.printPair("versionCode", String.valueOf(packageInfo.versionCode)).println();
+        writer.printPair("packageName", packageInfo.packageName).println();
+        writer.printPair("installTime", new Date(packageInfo.firstInstallTime)).println();
+        writer.printPair("lastUpdateTime", new Date(packageInfo.lastUpdateTime)).println();
+        if (packageInfo.signatures != null && packageInfo.signatures.length > 0) {
+          writer.printPair("signature", Utils.getFingerprintForSignature(packageInfo.signatures[0]))
+              .println();
+        }
+      }
+
+      final PackageManager pm = mContext.getPackageManager();
       writer.printPair("installerPackageName", pm.getInstallerPackageName(mContext.getPackageName()))
           .println();
-      if (packageInfo.signatures != null && packageInfo.signatures.length > 0) {
-        writer.printPair("signature", Utils.getFingerprintForSignature(packageInfo.signatures[0]))
-            .println();
-      }
+
       writer.decreaseIndent();
       writer.println();
 

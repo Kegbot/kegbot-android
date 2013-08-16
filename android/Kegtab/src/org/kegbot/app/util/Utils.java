@@ -26,6 +26,7 @@ import java.security.NoSuchAlgorithmException;
 
 import android.content.Context;
 import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.Signature;
 import android.os.Build;
@@ -125,6 +126,24 @@ public class Utils {
       .append(Build.FINGERPRINT)
       .append(")")
       .toString();
+  }
+
+  public static PackageInfo getOwnPackageInfo(Context context) {
+    PackageManager pm = context.getPackageManager();
+    PackageInfo packageInfo;
+    try {
+      packageInfo = pm.getPackageInfo(context.getPackageName(), PackageManager.GET_SIGNATURES);
+    } catch (NameNotFoundException e) {
+      return null;
+    }
+    return packageInfo;
+  }
+
+  public static boolean packageMatchesFingerprint(PackageInfo info, String fingerprint) {
+    if (info.signatures == null || info.signatures.length < 1) {
+      return false;
+    }
+    return getFingerprintForSignature(info.signatures[0]).equals(fingerprint);
   }
 
 }
