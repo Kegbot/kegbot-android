@@ -68,6 +68,14 @@
             android:summaryOn="Camera will automatically trigger during a pour"
             android:title="Automatically Take Photos" >
         </CheckBoxPreference>
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:dependency="config:RUN_CORE"
+            android:key="config:ENABLE_CAMERA_SOUNDS"
+            android:summaryOff="Sounds will not be played when taking photos"
+            android:summaryOn="Sounds will be played when taking photos"
+            android:title="Enable Camera Sounds" >
+        </CheckBoxPreference>
     </PreferenceCategory>
     <PreferenceCategory android:title="User Interface" >
         <CheckBoxPreference
