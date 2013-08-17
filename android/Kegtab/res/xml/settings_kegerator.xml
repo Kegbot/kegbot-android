@@ -94,6 +94,14 @@
             android:summaryOn="Authentication tokens will be locally cached"
             android:title="Cache Credentials" >
         </CheckBoxPreference>
+        <CheckBoxPreference
+                android:defaultValue="true"
+                android:dependency="config:RUN_CORE"
+                android:key="config:ATTRACT_MODE"
+                android:summaryOff="Taps on the main screen will not be auto rotated"
+                android:summaryOn="When left alone Kegbot will cycle taps on the main screen."
+                android:title="Attract Mode" >
+        </CheckBoxPreference>
     </PreferenceCategory>
     <PreferenceCategory android:title="Advanced" >
          <CheckBoxPreference

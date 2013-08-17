@@ -155,10 +155,13 @@ public class HomeActivity extends CoreActivity {
     Log.d(LOG_TAG, "onResume");
     super.onResume();
     mCore.getBus().register(this);
-    if (mAttractTimer == null) {
-      mAttractTimer = new AttractModeTimer();
+
+    if (mConfig.getEnableAttractMode()) {
+      if (mAttractTimer == null) {
+        mAttractTimer = new AttractModeTimer();
+      }
+      mAttractTimer.userInteracted();
     }
-    mAttractTimer.userInteracted();
   }
 
   @Override
@@ -166,8 +169,11 @@ public class HomeActivity extends CoreActivity {
     Log.d(LOG_TAG, "--- unregistering");
     mCore.getBus().unregister(this);
     super.onPause();
-    mAttractTimer.cancel();
-    mAttractTimer = null;
+
+    if (mAttractTimer != null) {
+      mAttractTimer.cancel();
+      mAttractTimer = null;
+    }
   }
 
   @Override
