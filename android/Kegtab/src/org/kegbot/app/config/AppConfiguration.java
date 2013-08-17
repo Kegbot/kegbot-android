@@ -182,6 +182,14 @@ public class AppConfiguration {
     setBoolean(ConfigKey.AUTO_TAKE_PHOTOS, value);
   }
 
+  public boolean getEnableCameraSounds() {
+      return getBoolean(ConfigKey.ENABLE_CAMERA_SOUNDS);
+  }
+
+  public void setEnableCameraSounds(boolean value) {
+      setBoolean(ConfigKey.ENABLE_CAMERA_SOUNDS, value);
+  }
+
   public long getLastCheckinAttempt() {
     return getLong(ConfigKey.LAST_CHECKIN_ATTEMPT_MILLIS);
   }
