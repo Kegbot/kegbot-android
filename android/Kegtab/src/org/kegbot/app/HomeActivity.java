@@ -18,15 +18,6 @@
  */
 package org.kegbot.app;
 
-import java.util.List;
-
-import org.kegbot.app.config.AppConfiguration;
-import org.kegbot.app.event.ConnectivityChangedEvent;
-import org.kegbot.app.event.TapListUpdateEvent;
-import org.kegbot.app.service.CheckinService;
-import org.kegbot.core.KegbotCore;
-import org.kegbot.proto.Models.KegTap;
-
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -40,12 +31,21 @@ import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-
 import com.google.android.gcm.GCMRegistrar;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.hoho.android.usbserial.util.HexDump;
 import com.squareup.otto.Subscribe;
+import org.kegbot.app.config.AppConfiguration;
+import org.kegbot.app.event.ConnectivityChangedEvent;
+import org.kegbot.app.event.TapListUpdateEvent;
+import org.kegbot.app.service.CheckinService;
+import org.kegbot.core.KegbotCore;
+import org.kegbot.proto.Models.KegTap;
+
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class HomeActivity extends CoreActivity {
 
@@ -61,6 +61,8 @@ public class HomeActivity extends CoreActivity {
   private EventListFragment mEvents;
 
   private KegbotCore mCore;
+
+  AttractModeTimer mAttractTimer;
 
   private MyAdapter mTapStatusAdapter;
   private ViewPager mTapStatusPager;
@@ -153,6 +155,13 @@ public class HomeActivity extends CoreActivity {
     Log.d(LOG_TAG, "onResume");
     super.onResume();
     mCore.getBus().register(this);
+
+    if (mConfig.getEnableAttractMode()) {
+      if (mAttractTimer == null) {
+        mAttractTimer = new AttractModeTimer();
+      }
+      mAttractTimer.userInteracted();
+    }
   }
 
   @Override
@@ -160,6 +169,11 @@ public class HomeActivity extends CoreActivity {
     Log.d(LOG_TAG, "--- unregistering");
     mCore.getBus().unregister(this);
     super.onPause();
+
+    if (mAttractTimer != null) {
+      mAttractTimer.cancel();
+      mAttractTimer = null;
+    }
   }
 
   @Override
@@ -259,6 +273,54 @@ public class HomeActivity extends CoreActivity {
     editorIntent.putExtra(EXTRA_METER_NAME, meterName);
     editorIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
     PinActivity.startThroughPinActivity(context, editorIntent);
+  }
+
+  @Override
+  public void onUserInteraction(){
+    mAttractTimer.userInteracted();
+  }
+
+  class AttractModeTimer extends Timer {
+    AttractModeTimerTask task;
+    long userInactiveTime = 10 * 60 * 1000;
+    long rotationPauseTime = 12 * 1000;
+    boolean rotating = false;
+
+    public void userInteracted() {
+      if (task != null) {
+        task.cancel();
+      }
+      rotating = false;
+
+      task = new AttractModeTimerTask();
+      schedule(task, getDelay());
+    }
+
+    private long getDelay() {
+      return rotating ? rotationPauseTime : userInactiveTime;
+    }
+
+    class AttractModeTimerTask extends TimerTask {
+      public void run() {
+        rotating = true;
+
+        runOnUiThread(new Runnable() {
+          @Override
+          public void run() {
+            int currentItem = mTapStatusPager.getCurrentItem();
+            if (currentItem >= mTapStatusAdapter.getCount() - 1) {
+              mTapStatusPager.setCurrentItem(0);
+            }
+            else {
+              mTapStatusPager.setCurrentItem(++currentItem);
+            }
+
+            task = new AttractModeTimerTask();
+            schedule(task, getDelay());
+          }
+        });
+      }
+    };
   }
 
   public class MyAdapter extends FragmentStatePagerAdapter {
