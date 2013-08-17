@@ -177,7 +177,7 @@ public class TapStatusFragment extends ListFragment {
         lastTemperature = Units.temperatureCToF(lastTemperature);
         units = "F";
       }
-      final String tempValue = String.format("%.1f¡", Double.valueOf(lastTemperature));
+      final String tempValue = String.format("%.1f\u00B0", Double.valueOf(lastTemperature));
       badge3.setBadgeValue(tempValue);
       badge3.setBadgeCaption(String.format("Temperature (%s)", units));
       badge3.setVisibility(View.VISIBLE);
