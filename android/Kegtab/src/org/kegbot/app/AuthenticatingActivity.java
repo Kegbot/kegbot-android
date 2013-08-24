@@ -18,6 +18,7 @@
 package org.kegbot.app;
 
 import org.kegbot.api.KegbotApiException;
+import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.core.AuthenticationManager;
 import org.kegbot.core.AuthenticationToken;
 import org.kegbot.core.FlowManager;
@@ -63,6 +64,7 @@ public class AuthenticatingActivity extends Activity {
   private static final String EXTRA_TAP = "tap";
 
   private KegbotCore mCore;
+  private AppConfiguration mConfig;
   private AuthenticationManager mAuthManager;
   private FlowManager mFlowManager;
 
@@ -91,6 +93,7 @@ public class AuthenticatingActivity extends Activity {
     setContentView(R.layout.authenticating_activity);
 
     mCore = KegbotCore.getInstance(this);
+    mConfig = mCore.getConfiguration();
     mAuthManager = mCore.getAuthenticationManager();
     mFlowManager = mCore.getFlowManager();
 
@@ -109,15 +112,20 @@ public class AuthenticatingActivity extends Activity {
     });
 
     mAssignButton = (Button) findViewById(R.id.assignButton);
-    mAssignButton.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        final Intent intent = KegtabCommon
-            .getAuthDrinkerActivityIntent(AuthenticatingActivity.this);
-        Log.d(TAG, "Starting auth drinker activity");
-        startActivityForResult(intent, REQUEST_SELECT_USER_TO_BIND);
-      }
-    });
+
+    if (mConfig.getAllowRegistration()) {
+      mAssignButton.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+          final Intent intent = KegtabCommon
+              .getAuthDrinkerActivityIntent(AuthenticatingActivity.this);
+          Log.d(TAG, "Starting auth drinker activity");
+          startActivityForResult(intent, REQUEST_SELECT_USER_TO_BIND);
+        }
+      });
+    } else {
+      mAssignButton.setVisibility(View.GONE);
+    }
 
     // getWindow().setBackgroundDrawable(new ColorDrawable(0));
 
