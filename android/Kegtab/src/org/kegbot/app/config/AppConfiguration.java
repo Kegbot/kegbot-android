@@ -190,6 +190,14 @@ public class AppConfiguration {
       setBoolean(ConfigKey.ENABLE_CAMERA_SOUNDS, value);
   }
 
+  public boolean getEnableAttractMode() {
+    return getBoolean(ConfigKey.ATTRACT_MODE);
+  }
+
+  public void setEnableAttractMode(boolean value) {
+    setBoolean(ConfigKey.ATTRACT_MODE, value);
+  }
+
   public long getLastCheckinAttempt() {
     return getLong(ConfigKey.LAST_CHECKIN_ATTEMPT_MILLIS);
   }
