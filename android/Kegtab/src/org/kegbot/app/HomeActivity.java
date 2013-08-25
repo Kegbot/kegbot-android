@@ -18,15 +18,6 @@
  */
 package org.kegbot.app;
 
-import java.util.List;
-
-import org.kegbot.app.config.AppConfiguration;
-import org.kegbot.app.event.ConnectivityChangedEvent;
-import org.kegbot.app.event.TapListUpdateEvent;
-import org.kegbot.app.service.CheckinService;
-import org.kegbot.core.KegbotCore;
-import org.kegbot.proto.Models.KegTap;
-
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -35,6 +26,8 @@ import android.content.Intent;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
@@ -47,6 +40,16 @@ import com.google.common.collect.Lists;
 import com.hoho.android.usbserial.util.HexDump;
 import com.squareup.otto.Subscribe;
 
+import org.kegbot.app.config.AppConfiguration;
+import org.kegbot.app.event.ConnectivityChangedEvent;
+import org.kegbot.app.event.TapListUpdateEvent;
+import org.kegbot.app.service.CheckinService;
+import org.kegbot.core.KegbotCore;
+import org.kegbot.proto.Models.KegTap;
+
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 public class HomeActivity extends CoreActivity {
 
   private static final String LOG_TAG = HomeActivity.class.getSimpleName();
@@ -55,6 +58,20 @@ public class HomeActivity extends CoreActivity {
 
   private static final String ACTION_SHOW_TAP_EDITOR = "show_editor";
   private static final String EXTRA_METER_NAME = "meter_name";
+
+  /**
+   * Idle timeout which triggers "attract mode".
+   *
+   * @see #mAttractModeRunnable
+   */
+  private static final long IDLE_TIMEOUT_MILLIS = TimeUnit.MINUTES.toMillis(10);
+
+  /**
+   * Pause interval between rotated screens in "attract mode".
+   *
+   * @see #mAttractModeRunnable
+   */
+  private static final long ROTATE_INTERVAL_MILLIS = TimeUnit.SECONDS.toMillis(12);
 
   private HomeControlsFragment mControls;
   private SessionStatsFragment mSession;
@@ -72,6 +89,24 @@ public class HomeActivity extends CoreActivity {
    * {@link #onTapListUpdate(TapListUpdateEvent)}.
    */
   private final List<KegTap> mTaps = Lists.newArrayList();
+
+  /** Main thread handler for managing {@link #mAttractModeRunnable}. */
+  private final Handler mAttractModeHandler = new Handler(Looper.getMainLooper());
+
+  /**
+   * Rotates through view pager when idle.
+   *
+   * @see #startAttractMode()
+   * @see #resetAttractMode()
+   * @see #cancelAttractMode()
+   */
+  private final Runnable mAttractModeRunnable = new Runnable() {
+    @Override
+    public void run() {
+      rotateDisplay();
+      mAttractModeHandler.postDelayed(mAttractModeRunnable, ROTATE_INTERVAL_MILLIS);
+    }
+  };
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
@@ -136,7 +171,6 @@ public class HomeActivity extends CoreActivity {
     // End GCM
 
     CheckinService.requestImmediateCheckin(this);
-
   }
 
   @Override
@@ -153,12 +187,14 @@ public class HomeActivity extends CoreActivity {
     Log.d(LOG_TAG, "onResume");
     super.onResume();
     mCore.getBus().register(this);
+    startAttractMode();
   }
 
   @Override
   protected void onPause() {
     Log.d(LOG_TAG, "--- unregistering");
     mCore.getBus().unregister(this);
+    cancelAttractMode();
     super.onPause();
   }
 
@@ -259,6 +295,32 @@ public class HomeActivity extends CoreActivity {
     editorIntent.putExtra(EXTRA_METER_NAME, meterName);
     editorIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
     PinActivity.startThroughPinActivity(context, editorIntent);
+  }
+
+  @Override
+  public void onUserInteraction() {
+    resetAttractMode();
+  }
+
+  private void rotateDisplay() {
+    final int nextItem = (mTapStatusPager.getCurrentItem() + 1) % mTapStatusAdapter.getCount();
+    mTapStatusPager.setCurrentItem(nextItem);
+  }
+
+  private void startAttractMode() {
+    cancelAttractMode();
+    if (mConfig.getEnableAttractMode()) {
+      mAttractModeHandler.postDelayed(mAttractModeRunnable, IDLE_TIMEOUT_MILLIS);
+    }
+  }
+
+  private void resetAttractMode() {
+    cancelAttractMode();
+    startAttractMode();
+  }
+
+  private void cancelAttractMode() {
+    mAttractModeHandler.removeCallbacks(mAttractModeRunnable);
   }
 
   public class MyAdapter extends FragmentStatePagerAdapter {
