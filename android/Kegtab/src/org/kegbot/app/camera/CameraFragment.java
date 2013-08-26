@@ -23,15 +23,13 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import android.media.AudioManager;
-import android.media.SoundPool;
-import android.os.Build;
 import org.kegbot.app.R;
 import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.app.event.PictureDiscardedEvent;
 import org.kegbot.app.event.PictureTakenEvent;
 import org.kegbot.core.KegbotCore;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Fragment;
 import android.graphics.Bitmap;
@@ -42,7 +40,10 @@ import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
 import android.hardware.Camera.PictureCallback;
 import android.hardware.Camera.ShutterCallback;
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -71,9 +72,11 @@ public class CameraFragment extends Fragment {
   private ViewGroup mPostButtons;
   private int mPictureSeconds = 0;
   private final Handler mHandler = new Handler();
+
   private SoundPool mSoundPool;
   private int mCountdownBeepSoundId;
   private int mCountdownBeepSoundLastId;
+  private boolean mPlaySounds = true;
 
   private String mLastFilename = "";
 
@@ -93,12 +96,12 @@ public class CameraFragment extends Fragment {
         mPictureButton.setClickable(false);
         mPictureButton.setText(mPictureSeconds + " ...");
         mPictureSeconds -= 1;
-        if (mConfig.getEnableCameraSounds()) {
+        if (mPlaySounds) {
           mSoundPool.play(mCountdownBeepSoundId, 1, 1, 1, 0, 1);
         }
         mHandler.postDelayed(PICTURE_COUNTDOWN_RUNNABLE, 1000);
       } else {
-        if (mConfig.getEnableCameraSounds()) {
+        if (mPlaySounds) {
           mSoundPool.play(mCountdownBeepSoundLastId, 1, 1, 1, 0, 1);
         }
         takePicture();
@@ -363,6 +366,7 @@ public class CameraFragment extends Fragment {
   public void onResume() {
     super.onResume();
     Log.d(TAG, "onResume()");
+    mPlaySounds = mConfig.getEnableCameraSounds();
     mHandler.postDelayed(CAMERA_SETUP_RUNNABLE, CAMERA_SETUP_DELAY_MILLIS);
   }
 
@@ -375,9 +379,8 @@ public class CameraFragment extends Fragment {
       updateState(State.DISABLED);
       return;
     }
-    if (mConfig.getEnableCameraSounds()) {
-      enableShutterSound(true, mDefaultCameraId, mCamera);
-    }
+
+    enableShutterSound(mPlaySounds, mDefaultCameraId, mCamera);
 
     setCameraDisplayOrientation(getActivity(), mDefaultCameraId, mCamera);
     mPreview.setCamera(mCamera);
@@ -398,6 +401,7 @@ public class CameraFragment extends Fragment {
     }
   }
 
+  @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
   public void enableShutterSound(boolean enable, int cameraId, Camera camera) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
       Camera.CameraInfo info = new android.hardware.Camera.CameraInfo();
