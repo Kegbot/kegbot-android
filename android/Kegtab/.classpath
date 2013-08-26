@@ -8,7 +8,6 @@
 	<classpathentry exported="true" kind="lib" path="libs/jackson/jackson-core-asl-1.7.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jackson/jackson-mapper-asl-1.7.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jscience/jscience-vm14.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/gcm/gcm.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/usb-serial-for-android/usb-serial-for-android.v010.jar" sourcepath="libs/usb-serial-for-android/usb-serial-for-android.v010.src.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/otto/square-otto-1.3.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jsr305/jsr305-1.3.7.jar"/>
@@ -21,7 +20,8 @@
 	<classpathentry exported="true" kind="lib" path="libs/GoogleAnalytics/libGoogleAnalyticsV2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/okhttp/okhttp-1.1.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/android-support-v13.jar"/>
-	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
+	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/GooglePlayServices"/>
 	<classpathentry kind="lib" path="libs/crashlytics.jar"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.DEPENDENCIES"/>
 	<classpathentry kind="output" path="bin/classes"/>

@@ -47,3 +47,9 @@
     @com.squareup.otto.Subscribe public *;
     @com.squareup.otto.Produce public *;
 }
+
+# Google Play Services
+-keep class * extends java.util.ListResourceBundle {
+    protected Object[][] getContents();
+}
+

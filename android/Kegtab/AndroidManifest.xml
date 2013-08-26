@@ -28,19 +28,18 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.NFC" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+    <uses-permission android:name="org.kegbot.app.permission.C2D_MESSAGE" />
     
     <permission
         android:name="org.kegbot.app.permission.C2D_MESSAGE"
         android:protectionLevel="signature" />
-
-    <uses-permission android:name="org.kegbot.app.permission.C2D_MESSAGE" />
-    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
     
     <uses-feature
         android:name="android.hardware.usb.host"
@@ -216,11 +215,6 @@
         <!-- BROADCAST RECEIVERS -->
         <!-- ################### -->
 
-        <receiver android:name=".PourInProgressReceiver" >
-            <intent-filter android:priority="1" >
-                <action android:name="org.kegbot.action.POUR_START" />
-            </intent-filter>
-        </receiver>
         <receiver android:name=".UserAuthedReceiver" >
             <intent-filter android:priority="1" >
                 <action android:name="org.kegbot.action.AUTH_BEGIN" />
@@ -230,17 +224,17 @@
         </receiver>
         
         <receiver
-            android:name="com.google.android.gcm.GCMBroadcastReceiver"
+            android:name=".service.GCMBroadcastReceiver"
             android:permission="com.google.android.c2dm.permission.SEND" >
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-                <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
                 <category android:name="org.kegbot.app" />
             </intent-filter>
         </receiver>
         
         <receiver 
-            android:name=".service.CheckinBroadcastReceiver">
+            android:name=".service.CheckinBroadcastReceiver"
+            android:exported="true">
             <intent-filter>
                 <action android:name="org.kegbot.app.CHECKIN" />
             </intent-filter>
@@ -252,7 +246,7 @@
 
         <service android:name=".service.KegbotCoreService" />
         <service android:name=".service.CheckinService" />
-        <service android:name=".GCMIntentService" />
+        <service android:name="org.kegbot.app.service.GCMService" />
         <meta-data android:name="com.crashlytics.ApiKey" android:value="ba357635725e4d9077107ee8df6b7da3ade3cd6c"/>
         
     </application>

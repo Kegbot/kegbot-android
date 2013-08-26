@@ -25,6 +25,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -34,7 +35,9 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.google.android.gcm.GCMRegistrar;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.hoho.android.usbserial.util.HexDump;
@@ -44,9 +47,11 @@ import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.app.event.ConnectivityChangedEvent;
 import org.kegbot.app.event.TapListUpdateEvent;
 import org.kegbot.app.service.CheckinService;
+import org.kegbot.app.util.Utils;
 import org.kegbot.core.KegbotCore;
 import org.kegbot.proto.Models.KegTap;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -54,7 +59,8 @@ public class HomeActivity extends CoreActivity {
 
   private static final String LOG_TAG = HomeActivity.class.getSimpleName();
 
-  private static final String GCM_SENDER_ID = "431392459978";
+  private static final int REQUEST_PLAY_SERVICES_UPDATE = 100;
+  private static final String GCM_SENDER_ID = "209039242857";
 
   private static final String ACTION_SHOW_TAP_EDITOR = "show_editor";
   private static final String EXTRA_METER_NAME = "meter_name";
@@ -152,33 +158,11 @@ public class HomeActivity extends CoreActivity {
 
     mTapStatusPager.setSystemUiVisibility(View.STATUS_BAR_HIDDEN);
 
-    // GCM
-    try {
-      GCMRegistrar.checkDevice(this);
-      GCMRegistrar.checkManifest(this);
-      final String regId = GCMRegistrar.getRegistrationId(this);
-      if (regId.equals("")) {
-        GCMRegistrar.register(this, GCM_SENDER_ID);
-      } else {
-        Log.v(LOG_TAG, "Already registered");
-        mConfig.setGcmRegistrationId(regId);
-      }
-    } catch (UnsupportedOperationException e) {
-      // Kindly thrown by GCM when com.google.android.gsf is not available :-P
-      Log.w(LOG_TAG, "GCM not supported");
-      mConfig.setGcmRegistrationId("");
-    }
-    // End GCM
-
     CheckinService.requestImmediateCheckin(this);
   }
 
   @Override
   protected void onDestroy() {
-    final String regId = GCMRegistrar.getRegistrationId(this);
-    if (!Strings.isNullOrEmpty(regId)) {
-      GCMRegistrar.unregister(this);
-    }
     super.onDestroy();
   }
 
@@ -188,6 +172,10 @@ public class HomeActivity extends CoreActivity {
     super.onResume();
     mCore.getBus().register(this);
     startAttractMode();
+
+    if (checkPlayServices()) {
+      doGcmRegistration();
+    }
   }
 
   @Override
@@ -322,6 +310,55 @@ public class HomeActivity extends CoreActivity {
   private void cancelAttractMode() {
     mAttractModeHandler.removeCallbacks(mAttractModeRunnable);
   }
+
+  private void doGcmRegistration() {
+    final int versionCode = Utils.getOwnPackageInfo(getApplicationContext()).versionCode;
+    final int registeredVersionCode = mConfig.getGcmRegistrationAppVersion();
+    final String currentRegId = mConfig.getGcmRegistrationId();
+
+    // Fast path: reuse saved id.
+    if (versionCode == registeredVersionCode && !Strings.isNullOrEmpty(currentRegId)) {
+      return;
+    }
+
+    // Destroy stale regid, if any.
+    mConfig.setGcmRegistrationId("");
+
+    new AsyncTask<Void, Void, Void>() {
+      @Override
+      protected Void doInBackground(Void... params) {
+        Log.d(LOG_TAG, "Registering for GCM ...");
+        final GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(HomeActivity.this);
+        final String gcmId;
+        try {
+          gcmId = gcm.register(GCM_SENDER_ID);
+        } catch (IOException e) {
+          Log.w(LOG_TAG, "GCM registration failed.", e);
+          return null;
+        }
+        mConfig.setGcmRegistrationId(gcmId);
+        mConfig.setGcmRegistrationAppVersion(versionCode);
+        CheckinService.requestImmediateCheckin(getApplicationContext());
+        Log.d(LOG_TAG, "GCM registration success, id=" + gcmId);
+
+        return null;
+      }
+    }.execute(null, null, null);
+  }
+
+  private boolean checkPlayServices() {
+    int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+    if (resultCode != ConnectionResult.SUCCESS) {
+        if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
+            GooglePlayServicesUtil.getErrorDialog(resultCode, this,
+                REQUEST_PLAY_SERVICES_UPDATE).show();
+        } else {
+            Log.i(LOG_TAG, "GCM not supported.");
+        }
+        return false;
+    }
+    return true;
+}
 
   public class MyAdapter extends FragmentStatePagerAdapter {
     public MyAdapter(FragmentManager fm) {

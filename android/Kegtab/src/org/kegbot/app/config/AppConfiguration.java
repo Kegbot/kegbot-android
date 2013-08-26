@@ -166,6 +166,14 @@ public class AppConfiguration {
     set(ConfigKey.GCM_REGISTRATION_ID, regId);
   }
 
+  public void setGcmRegistrationAppVersion(int versionCode) {
+    setInteger(ConfigKey.GCM_REGISTRATION_APP_VERSION, versionCode);
+  }
+
+  public int getGcmRegistrationAppVersion() {
+    return getInteger(ConfigKey.GCM_REGISTRATION_APP_VERSION);
+  }
+
   public boolean getEnableFlowAutoStart() {
     return getBoolean(ConfigKey.ENABLE_AUTOMATIC_FLOW_START);
   }
