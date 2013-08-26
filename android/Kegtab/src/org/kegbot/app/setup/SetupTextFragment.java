@@ -20,6 +20,7 @@ package org.kegbot.app.setup;
 
 import org.kegbot.app.R;
 
+import android.annotation.SuppressLint;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -32,6 +33,7 @@ import android.widget.TextView;
  *
  * @author mike wakerly (opensource@hoho.com)
  */
+@SuppressLint("ValidFragment")  // TODO(mikey): Remove ctor arguments
 public class SetupTextFragment extends Fragment {
 
   final String mTitle;

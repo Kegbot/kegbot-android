@@ -22,8 +22,8 @@
   <solid
     android:color="#20ffffff" />
   <stroke
-    android:width="3dp"
-    color="#40ffffff" />
+    android:width="2dp"
+    android:color="#10ffffff" />
   <corners
     android:radius="30dp" />
   <padding
