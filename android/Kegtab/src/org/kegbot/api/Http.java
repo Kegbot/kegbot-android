@@ -23,9 +23,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 
@@ -119,7 +121,11 @@ class Http {
   private static String getUrlParamsString(Request request) {
     final List<String> parts = Lists.newArrayList();
     for (Pair<String, String> part : request.getParameters()) {
-      parts.add(String.format("%s=%s", URLEncoder.encode(part.first), URLEncoder.encode(part.second)));
+        try {
+          parts.add(String.format("%s=%s", URLEncoder.encode(part.first,Charset.defaultCharset().name()), URLEncoder.encode(part.second, Charset.defaultCharset().name())));
+        } catch (UnsupportedEncodingException e) {
+          Log.wtf(TAG, "UNCAUGHT EXCEPTION", e);
+        }
     }
     return Joiner.on('&').join(parts);
   }
