@@ -22,6 +22,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import org.kegbot.app.R;
 import org.kegbot.app.config.AppConfiguration;
@@ -224,7 +225,7 @@ public class CameraFragment extends Fragment {
 
       final File imageDir = getActivity().getCacheDir();
       final Date pourDate = new Date(System.currentTimeMillis());
-      final SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd-HHmmss");
+      final SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd-HHmmss", Locale.US);
       final String baseName = "pour-" + format.format(pourDate);
 
       File imageFile = new File(imageDir, baseName + ".jpg");
