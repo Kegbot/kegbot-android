@@ -53,6 +53,7 @@ import org.kegbot.proto.Models.KegTap;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 public class HomeActivity extends CoreActivity {
@@ -156,7 +157,7 @@ public class HomeActivity extends CoreActivity {
       }
     });
 
-    mTapStatusPager.setSystemUiVisibility(View.STATUS_BAR_HIDDEN);
+    mTapStatusPager.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
 
     CheckinService.requestImmediateCheckin(this);
   }
@@ -229,7 +230,7 @@ public class HomeActivity extends CoreActivity {
       Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
       byte[] id = tag.getId();
       if (id != null && id.length > 0) {
-        String tagId = HexDump.toHexString(id).toLowerCase();
+        String tagId = HexDump.toHexString(id).toLowerCase(Locale.US);
         Log.d(LOG_TAG, "Read NFC tag with id: " + tagId);
         // TODO: use tag technology as part of id?
         AuthenticatingActivity.startAndAuthenticate(this, "nfc", tagId);
