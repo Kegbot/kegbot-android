@@ -30,6 +30,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.app.util.IndentingPrintWriter;
+import org.kegbot.app.util.DateUtilInterfaces.Clock;
 import org.kegbot.proto.Models.KegTap;
 
 import android.util.Log;
@@ -85,16 +86,6 @@ public class FlowManager extends Manager {
    */
   //@GuardedBy("mListeners")
   private Collection<Listener> mListeners = Sets.newLinkedHashSet();
-
-  public interface Clock {
-
-    /**
-     * Returns a strictly increasing monotonic time, such as {@link android.os.SystemClock#elapsedRealtime()}
-     *
-     * @return
-     */
-    public long elapsedRealtime();
-  }
 
   /**
    * Listener interfaces for updates to managed flows.

@@ -21,7 +21,7 @@ package org.kegbot.core;
 import java.util.List;
 
 import org.kegbot.app.util.TimeSeries;
-import org.kegbot.core.FlowManager.Clock;
+import org.kegbot.app.util.DateUtilInterfaces.Clock;
 import org.kegbot.proto.Models.KegTap;
 
 import com.google.common.base.Preconditions;
