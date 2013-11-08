@@ -25,7 +25,7 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import org.kegbot.app.config.AppConfiguration;
-import org.kegbot.core.FlowManager.Clock;
+import org.kegbot.app.util.DateUtilInterfaces.Clock;
 import org.kegbot.proto.Models.KegTap;
 
 import com.squareup.otto.Bus;
@@ -43,14 +43,8 @@ public class FlowManagerTest extends TestCase {
   private KegTap mTap0;
   private KegTap mTap1;
   private FlowManager mFlowManager;
-  private long mElapsedRealtime = 0;
 
-  private final Clock mClock = new Clock() {
-    @Override
-    public long elapsedRealtime() {
-      return mElapsedRealtime;
-    }
-  };
+  private final Clock mClock = mock(Clock.class);
 
   @Override
   protected void setUp() throws Exception {

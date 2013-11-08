@@ -20,8 +20,11 @@ package org.kegbot.core;
 import junit.framework.TestCase;
 
 import org.kegbot.app.util.TimeSeries;
-import org.kegbot.core.FlowManager.Clock;
+import org.kegbot.app.util.DateUtilInterfaces.Clock;
 import org.kegbot.proto.Models.KegTap;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Tests for {@link Flow}.
@@ -29,15 +32,7 @@ import org.kegbot.proto.Models.KegTap;
  * @author mike wakerly (opensource@hoho.com)
  */
 public class FlowTest extends TestCase {
-
-  private long mElapsedRealtime = 0;
-
-  private final Clock mFakeClock = new Clock() {
-    @Override
-    public long elapsedRealtime() {
-      return mElapsedRealtime;
-    }
-  };
+  private final Clock mFakeClock = mock(Clock.class);
 
   private static final int FAKE_ML_PER_TICK = 3;
   private static final KegTap FAKE_TAP = KegTap.newBuilder()
@@ -52,7 +47,7 @@ public class FlowTest extends TestCase {
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-    mElapsedRealtime = 0;
+    when(mFakeClock.elapsedRealtime()).thenReturn((long) 0);
   }
 
   @Override
@@ -95,11 +90,11 @@ public class FlowTest extends TestCase {
 
     assertEquals(0, flow.getDurationMs());
     assertFalse(flow.isIdle());
-    mElapsedRealtime = 10;
+    when(mFakeClock.elapsedRealtime()).thenReturn((long) 10);
     assertEquals(10, flow.getDurationMs());
     assertFalse(flow.isIdle());
 
-    mElapsedRealtime = 100;
+    when(mFakeClock.elapsedRealtime()).thenReturn((long) 100);
     assertEquals(100, flow.getDurationMs());
     assertTrue(flow.isIdle());
 
@@ -130,18 +125,18 @@ public class FlowTest extends TestCase {
   }
 
   public void testTimeSeries() {
-    mElapsedRealtime = 1000;
+    when(mFakeClock.elapsedRealtime()).thenReturn((long) 1000);
     Flow flow = new Flow(mFakeClock, 1, FAKE_TAP, 100);
     assertEquals(TimeSeries.fromString("0:0"), flow.getTickTimeSeries());
 
     flow.addTicks(1);
     assertEquals(TimeSeries.fromString("0:1"), flow.getTickTimeSeries());
 
-    mElapsedRealtime = 1100;
+    when(mFakeClock.elapsedRealtime()).thenReturn((long) 1100);
     flow.addTicks(2);
     assertEquals(TimeSeries.fromString("0:1 100:2"), flow.getTickTimeSeries());
 
-    mElapsedRealtime = 1200;
+    when(mFakeClock.elapsedRealtime()).thenReturn((long) 1200);
     flow.addTicks(3);
     assertEquals(TimeSeries.fromString("0:1 100:2 200:3"), flow.getTickTimeSeries());
 
