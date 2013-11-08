@@ -17,23 +17,25 @@
  */
 package org.kegbot.core;
 
+import static org.mockito.Mockito.when;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import junit.framework.TestCase;
 
+import org.junit.runner.RunWith;
+import org.kegbot.app.util.DateUtils;
 import org.kegbot.app.util.TimeSeries;
-import org.kegbot.app.util.DateUtilInterfaces.Clock;
 import org.kegbot.proto.Models.KegTap;
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 /**
  * Tests for {@link Flow}.
  *
  * @author mike wakerly (opensource@hoho.com)
  */
+@RunWith(PowerMockRunner.class)
+@PrepareForTest({DateUtils.class})
 public class FlowTest extends TestCase {
-  private final Clock mFakeClock = mock(Clock.class);
-
   private static final int FAKE_ML_PER_TICK = 3;
   private static final KegTap FAKE_TAP = KegTap.newBuilder()
       .setId(1)
@@ -47,7 +49,9 @@ public class FlowTest extends TestCase {
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-    when(mFakeClock.elapsedRealtime()).thenReturn((long) 0);
+    mockStatic(DateUtils.class);
+    when(DateUtils.currentEpochTime()).thenReturn((long) 0);
+    assertEquals(0,DateUtils.currentEpochTime(),0);
   }
 
   @Override
@@ -56,7 +60,7 @@ public class FlowTest extends TestCase {
   }
 
   public void testTickKeeping() {
-    Flow flow = new Flow(mFakeClock, 1, FAKE_TAP, 100);
+    Flow flow = new Flow(1, FAKE_TAP, 100);
 
     assertEquals(0, flow.getTicks());
     assertEquals(0, flow.getVolumeMl(), 0.000001);
@@ -86,15 +90,15 @@ public class FlowTest extends TestCase {
   }
 
   public void testTimeKeeping() {
-    Flow flow = new Flow(mFakeClock, 1, FAKE_TAP, 100);
+    Flow flow = new Flow(1, FAKE_TAP, 100);
 
     assertEquals(0, flow.getDurationMs());
     assertFalse(flow.isIdle());
-    when(mFakeClock.elapsedRealtime()).thenReturn((long) 10);
+    when(DateUtils.currentEpochTime()).thenReturn((long) 10);
     assertEquals(10, flow.getDurationMs());
     assertFalse(flow.isIdle());
 
-    when(mFakeClock.elapsedRealtime()).thenReturn((long) 100);
+    when(DateUtils.currentEpochTime()).thenReturn((long) 100);
     assertEquals(100, flow.getDurationMs());
     assertTrue(flow.isIdle());
 
@@ -107,7 +111,7 @@ public class FlowTest extends TestCase {
   }
 
   public void testShout() {
-    Flow flow = new Flow(mFakeClock, 1, FAKE_TAP, 100);
+    Flow flow = new Flow(1, FAKE_TAP, 100);
 
     assertEquals("", flow.getShout());
     flow.setShout("Foo");
@@ -125,18 +129,18 @@ public class FlowTest extends TestCase {
   }
 
   public void testTimeSeries() {
-    when(mFakeClock.elapsedRealtime()).thenReturn((long) 1000);
-    Flow flow = new Flow(mFakeClock, 1, FAKE_TAP, 100);
+    when(DateUtils.currentEpochTime()).thenReturn((long) 1000);
+    Flow flow = new Flow(1, FAKE_TAP, 100);
     assertEquals(TimeSeries.fromString("0:0"), flow.getTickTimeSeries());
 
     flow.addTicks(1);
     assertEquals(TimeSeries.fromString("0:1"), flow.getTickTimeSeries());
 
-    when(mFakeClock.elapsedRealtime()).thenReturn((long) 1100);
+    when(DateUtils.currentEpochTime()).thenReturn((long) 1100);
     flow.addTicks(2);
     assertEquals(TimeSeries.fromString("0:1 100:2"), flow.getTickTimeSeries());
 
-    when(mFakeClock.elapsedRealtime()).thenReturn((long) 1200);
+    when(DateUtils.currentEpochTime()).thenReturn((long) 1200);
     flow.addTicks(3);
     assertEquals(TimeSeries.fromString("0:1 100:2 200:3"), flow.getTickTimeSeries());
 

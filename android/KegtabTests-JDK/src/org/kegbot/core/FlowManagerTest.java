@@ -25,7 +25,6 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import org.kegbot.app.config.AppConfiguration;
-import org.kegbot.app.util.DateUtilInterfaces.Clock;
 import org.kegbot.proto.Models.KegTap;
 
 import com.squareup.otto.Bus;
@@ -44,8 +43,6 @@ public class FlowManagerTest extends TestCase {
   private KegTap mTap1;
   private FlowManager mFlowManager;
 
-  private final Clock mClock = mock(Clock.class);
-
   @Override
   protected void setUp() throws Exception {
     super.setUp();
@@ -61,7 +58,7 @@ public class FlowManagerTest extends TestCase {
     mConfig = mock(AppConfiguration.class);
     when(Boolean.valueOf(mConfig.getEnableFlowAutoStart())).thenReturn(Boolean.TRUE);
 
-    mFlowManager = new FlowManager(mBus, mTapManager, mConfig, mClock);
+    mFlowManager = new FlowManager(mBus, mTapManager, mConfig);
   }
 
   @Override

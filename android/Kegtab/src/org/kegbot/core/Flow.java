@@ -21,7 +21,7 @@ package org.kegbot.core;
 import java.util.List;
 
 import org.kegbot.app.util.TimeSeries;
-import org.kegbot.app.util.DateUtilInterfaces.Clock;
+import org.kegbot.app.util.DateUtils;
 import org.kegbot.proto.Models.KegTap;
 
 import com.google.common.base.Preconditions;
@@ -30,9 +30,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
 public class Flow {
-
-  /** Clock instance, used for updating timekeeping. */
-  private Clock mClock;
 
   /** Flow id for this instance. */
   private final int mFlowId;
@@ -46,11 +43,11 @@ public class Flow {
   /** Current volume record, in flow meter ticks. */
   private int mTicks = 0;
 
-  /** Time the flow was started, in {@link Clock#elapsedRealtime()}. */
+  /** Time the flow was started, in {@link DateUtils#currentEpochTime()}. */
   private final long mStartTimeMillis;
 
   /**
-   * Time the flow was ended, in {@link Clock#elapsedRealtime()}.
+   * Time the flow was ended, in {@link DateUtils#currentEpochTime()}.
    *
    * Only meaningful when {@link #mIsFinished} is {@code true}.
    */
@@ -82,17 +79,16 @@ public class Flow {
 
   private final TimeSeries.Builder mTimeSeries = TimeSeries.newBuilder(100, true);
 
-  public Flow(Clock clock, int flowId, KegTap tap, long maxIdleTimeMs) {
-    mClock = clock;
+  public Flow(int flowId, KegTap tap, long maxIdleTimeMs) {
     mFlowId = flowId;
     mTap = tap;
     mMaxIdleTimeMillis = maxIdleTimeMs;
     mUsername = "";
     mTicks = 0;
-    mStartTimeMillis = clock.elapsedRealtime();
-    mLastUpdateTimeMillis = clock.elapsedRealtime();
+    mStartTimeMillis = DateUtils.currentEpochTime();
+    mLastUpdateTimeMillis = DateUtils.currentEpochTime();
     mLastActivityTimeMillis = mLastUpdateTimeMillis;
-    mTimeSeries.add(clock.elapsedRealtime(), 0);
+    mTimeSeries.add(DateUtils.currentEpochTime(), 0);
   }
 
   @Override
@@ -115,7 +111,7 @@ public class Flow {
 
   /** Resets the flow's idle time. */
   public void pokeActivity() {
-    mLastActivityTimeMillis = mClock.elapsedRealtime();
+    mLastActivityTimeMillis = DateUtils.currentEpochTime();
   }
 
   /**
@@ -127,7 +123,7 @@ public class Flow {
     Preconditions.checkState(!mIsFinished, "Flow is already finished, cannot add ticks.");
     mTicks += ticks;
 
-    long now = mClock.elapsedRealtime();
+    long now = DateUtils.currentEpochTime();
     mLastUpdateTimeMillis = now;
     mLastActivityTimeMillis = now;
     mTimeSeries.add(now, ticks);
@@ -165,7 +161,7 @@ public class Flow {
   public void setFinished() {
     Preconditions.checkState(!mIsFinished, "Flow is already finished, cannot finish again.");
     mIsFinished = true;
-    mEndTimeMillis = mClock.elapsedRealtime();
+    mEndTimeMillis = DateUtils.currentEpochTime();
     mTimeSeries.add(mEndTimeMillis, 0);
   }
 
@@ -175,13 +171,13 @@ public class Flow {
 
   public long getDurationMs() {
     if (!mIsFinished) {
-      return mClock.elapsedRealtime() - mStartTimeMillis;
+      return DateUtils.currentEpochTime() - mStartTimeMillis;
     }
     return mEndTimeMillis - mStartTimeMillis;
   }
 
   public long getIdleTimeMs() {
-    return mClock.elapsedRealtime() - mLastActivityTimeMillis;
+    return DateUtils.currentEpochTime() - mLastActivityTimeMillis;
   }
 
   public long getMsUntilIdle() {

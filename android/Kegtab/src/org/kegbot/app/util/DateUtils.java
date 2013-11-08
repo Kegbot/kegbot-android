@@ -24,10 +24,6 @@ import java.util.TimeZone;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
-import org.kegbot.app.util.DateUtilInterfaces.Clock;
-import org.kegbot.app.util.DateUtilInterfaces.Calendar;
-
-
 /**
  * Date-related utility functions.
  *
@@ -36,63 +32,24 @@ import org.kegbot.app.util.DateUtilInterfaces.Calendar;
  *
  * @author mike wakerly (opensource@hoho.com)
  */
-public class DateUtils  implements Clock, Calendar {
-  private static DateUtils mInstance = new DateUtils();
-  
+public class DateUtils {
   private DateUtils() {}
   
-  ////////////////////
-  // Calendar interface implementation
-  ////////////////////
-  
-  @Override
-  public Date getDate() {
+  /**
+   * Returns the current Date and Time as a Date object.
+   * @return The current Date with millisecond accuracy. 
+   */
+  public static Date getDate() {
     return new Date();
   }
   
-  ////////////////////
-  // Clock interface implementation
-  ////////////////////
-  
   /**
-   * Get the current time in milliseconds.
+   * Get the current epoch time in milliseconds.
    * @see System#currentTimeMillis
-   * @return milliseconds from the January 1, 1970 00:00:00.0 UTC
+   * @return milliseconds from the January 1, 1970 00:00:00.0 UTC  
    */
-  @Override
-  public long currentTimeMillis() {
+  public static long currentEpochTime() {
     return System.currentTimeMillis();
-  }
-  
-  /**
-   * Returns the current time in milliseconds.
-   * Deprecated in favor of currentTimeMillis().
-   * @return
-   */
-  @Deprecated
-  @Override
-  public long elapsedRealtime() {
-    return currentTimeMillis();
-  }
-
-  ///////////////////////
-  // Static Public Methods
-  ///////////////////////
-  
-  /**
-   * An accessor for the Clock singleton instance.
-   * @return
-   */
-  public static Clock getInstance() {
-    return mInstance;
-  }
-  
-  /**
-   * A shorter accessor method for the Clock instance.
-   * @return
-   */
-  public static Clock i() {
-    return mInstance;
   }
   
   /**
