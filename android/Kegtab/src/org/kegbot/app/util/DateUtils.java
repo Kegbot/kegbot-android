@@ -18,6 +18,7 @@
  */
 package org.kegbot.app.util;
 
+import java.util.Date;
 import java.util.TimeZone;
 
 import org.joda.time.DateTime;
@@ -32,7 +33,25 @@ import org.joda.time.DateTimeZone;
  * @author mike wakerly (opensource@hoho.com)
  */
 public class DateUtils {
-
+  private DateUtils() {}
+  
+  /**
+   * Returns the current Date and Time as a Date object.
+   * @return The current Date with millisecond accuracy. 
+   */
+  public static Date getDate() {
+    return new Date();
+  }
+  
+  /**
+   * Get the current epoch time in milliseconds.
+   * @see System#currentTimeMillis
+   * @return milliseconds from the January 1, 1970 00:00:00.0 UTC  
+   */
+  public static long currentEpochTime() {
+    return System.currentTimeMillis();
+  }
+  
   /**
    * Returns a timestamp <em>in the local timezone</em> given an
    * ISO8601-formatted timestamp.

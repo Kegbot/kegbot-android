@@ -32,7 +32,6 @@ import org.kegbot.app.util.DeviceId;
 import org.kegbot.app.util.ImageDownloader;
 import org.kegbot.app.util.IndentingPrintWriter;
 import org.kegbot.app.util.Utils;
-import org.kegbot.core.FlowManager.Clock;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -84,13 +83,6 @@ public class KegbotCore {
 
   private boolean mStarted = false;
 
-  private final FlowManager.Clock mClock = new Clock() {
-    @Override
-    public long elapsedRealtime() {
-      return System.currentTimeMillis();
-    }
-  };
-
   private KegbotCore(Context context) {
     mContext = context.getApplicationContext();
     mBus = new Bus(ThreadEnforcer.MAIN);
@@ -107,7 +99,7 @@ public class KegbotCore {
     mTapManager = new TapManager(mBus);
     mManagers.add(mTapManager);
 
-    mFlowManager = new FlowManager(mBus, mTapManager, mConfig, mClock);
+    mFlowManager = new FlowManager(mBus, mTapManager, mConfig);
     mManagers.add(mFlowManager);
 
     mSyncManager = new SyncManager(mBus, context, mApi);

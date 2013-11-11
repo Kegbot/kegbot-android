@@ -68,7 +68,6 @@ public class FlowManager extends Manager {
 
   private final TapManager mTapManager;
   private final AppConfiguration mConfig;
-  private final Clock mClock;
 
   /** Cache of current and recent flows, for debugging. */
   private final Deque<Flow> mRecentFlows = new ArrayDeque<Flow>(MAX_RECENT_FLOWS);
@@ -85,16 +84,6 @@ public class FlowManager extends Manager {
    */
   //@GuardedBy("mListeners")
   private Collection<Listener> mListeners = Sets.newLinkedHashSet();
-
-  public interface Clock {
-
-    /**
-     * Returns a strictly increasing monotonic time, such as {@link android.os.SystemClock#elapsedRealtime()}
-     *
-     * @return
-     */
-    public long elapsedRealtime();
-  }
 
   /**
    * Listener interfaces for updates to managed flows.
@@ -151,11 +140,9 @@ public class FlowManager extends Manager {
 
   private ScheduledFuture<?> mFuture;
 
-  FlowManager(final Bus bus, final TapManager tapManager, final AppConfiguration preferences,
-      final Clock clock) {
+  FlowManager(final Bus bus, final TapManager tapManager, final AppConfiguration preferences) {
     super(bus);
     mTapManager = tapManager;
-    mClock = clock;
     mConfig = preferences;
   }
 
@@ -400,7 +387,7 @@ public class FlowManager extends Manager {
 
   public Flow startFlow(final KegTap tap, final long maxIdleTimeMs) {
     Log.d(TAG, "Starting flow on tap " + tap.getMeterName());
-    final Flow flow = new Flow(mClock, mNextFlowId++, tap, maxIdleTimeMs);
+    final Flow flow = new Flow(mNextFlowId++, tap, maxIdleTimeMs);
     mRecentFlows.addLast(flow);
     if (mRecentFlows.size() > MAX_RECENT_FLOWS) {
       mRecentFlows.removeFirst();
