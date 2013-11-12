@@ -77,8 +77,6 @@ public class PourInProgressActivity extends CoreActivity {
 
   private static final String TAG = PourInProgressActivity.class.getSimpleName();
 
-  private static final boolean DEBUG = false;
-
   /** Delay after a flow has ended, during which a dialog is show. */
   private static final long FLOW_FINISH_DELAY_MILLIS = TimeUnit.SECONDS.toMillis(1);
 
@@ -573,7 +571,7 @@ public class PourInProgressActivity extends CoreActivity {
 
     long largestIdleTime = Long.MIN_VALUE;
     for (final Flow flow : mActiveFlows) {
-      if (DEBUG) {
+      if (Log.isLoggable(TAG, Log.DEBUG)) {
         Log.d(TAG, "Refreshing with flow: " + flow);
       }
 
