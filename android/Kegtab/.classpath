@@ -8,7 +8,7 @@
 	<classpathentry exported="true" kind="lib" path="libs/jackson/jackson-core-asl-1.7.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jackson/jackson-mapper-asl-1.7.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jscience/jscience-vm14.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/usb-serial-for-android/usb-serial-for-android.v010.jar" sourcepath="libs/usb-serial-for-android/usb-serial-for-android.v010.src.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/usb-serial-for-android/usb-serial-for-android.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/otto/square-otto-1.3.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jsr305/jsr305-1.3.7.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/joda-time-2.2/joda-time-2.2.jar" sourcepath="libs/joda-time-2.2/joda-time-2.2-sources.jar">
