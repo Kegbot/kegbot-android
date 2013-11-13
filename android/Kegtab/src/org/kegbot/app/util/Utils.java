@@ -24,12 +24,15 @@ import java.io.RandomAccessFile;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.Signature;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.view.View;
 
 public class Utils {
 
@@ -144,6 +147,16 @@ public class Utils {
       return false;
     }
     return getFingerprintForSignature(info.signatures[0]).equals(fingerprint);
+  }
+  
+  @SuppressWarnings("deprecation")
+  @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+  public static void setBackground(View view, Drawable background) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+      view.setBackground(background);
+    } else {
+      view.setBackgroundDrawable(background);
+    }
   }
 
 }

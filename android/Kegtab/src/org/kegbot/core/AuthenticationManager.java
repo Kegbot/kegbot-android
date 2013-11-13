@@ -18,20 +18,6 @@
  */
 package org.kegbot.core;
 
-import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-
-import org.kegbot.api.KegbotApi;
-import org.kegbot.api.KegbotApiException;
-import org.kegbot.api.KegbotApiNotFoundError;
-import org.kegbot.app.config.AppConfiguration;
-import org.kegbot.proto.Models.User;
-
 import android.content.Context;
 import android.util.Log;
 
@@ -40,6 +26,20 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Sets;
 import com.squareup.otto.Bus;
+
+import org.kegbot.api.KegbotApi;
+import org.kegbot.api.KegbotApiException;
+import org.kegbot.api.KegbotApiNotFoundError;
+import org.kegbot.app.config.AppConfiguration;
+import org.kegbot.proto.Models.User;
+
+import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 /**
  *
@@ -54,8 +54,6 @@ public class AuthenticationManager extends Manager {
   private final KegbotApi mApi;
 
   private final AppConfiguration mConfig;
-
-  private final Context mContext;
 
   private final ExecutorService mExecutorService = Executors.newSingleThreadExecutor();
 
@@ -93,7 +91,6 @@ public class AuthenticationManager extends Manager {
 
   AuthenticationManager(Bus bus, Context context, KegbotApi api, AppConfiguration prefs) {
     super(bus);
-    mContext = context.getApplicationContext();
     mApi = api;
     mConfig = prefs;
   }

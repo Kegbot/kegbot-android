@@ -19,7 +19,7 @@
 -->
 <resources>
 
-    <string name="authenticating_begin_title">Authenticating...</string>
+    <string name="authenticating_begin_title">Authenticating&#8230;</string>
     <string name="authenticating_fail_title">Access Denied!</string>
     <string name="authenticating_no_access_token">Your access token was not recognized.</string>
     <string name="authenticating_connection_error">Could not contact the Kegbot server.</string>
@@ -36,9 +36,9 @@
     <string name="settings_kegerator_header">Kegerator</string>
     <string name="settings_about_header">About</string>
     <string name="pour_take_picture">Take Picture</string>
-    <string name="picture_countdown_3">3...</string>
-    <string name="picture_countdown_2">2...</string>
-    <string name="picture_countdown_1">1...</string>
+    <string name="picture_countdown_3">3&#8230;</string>
+    <string name="picture_countdown_2">2&#8230;</string>
+    <string name="picture_countdown_1">1&#8230;</string>
     <string name="setup_welcome_title">Welcome to Kegbot!</string>
     <string name="setup_welcome_description">Looks like this is your first time running Kegbot. Cool!\n\nWe\'re going to need a little information to get started. Tap the &quot;Next&quot; button below to continue.</string>
     <string name="setup_upgrade_title">Upgrade Kegbot</string>
@@ -47,8 +47,8 @@
     <string name="setup_kegbot_url_description">We need to talk to your Kegbot system in order to load drinkers, tap status, and other information. Please enter the URL of your Kegbot system.</string>
     <string name="setup_kegbot_url_url_name">Kegbot URL</string>
     <string name="setup_kegbot_url_url_description">Enter the main URL.</string>
-    <string name="setup_dialog_validate_title">Verifying ...</string>
-    <string name="setup_dialog_validate_description">Verifying information, please wait ...</string>
+    <string name="setup_dialog_validate_title">Verifying&#8230;</string>
+    <string name="setup_dialog_validate_description">Verifying information, please wait&#8230;</string>
     <string name="setup_log_in_title">Log In</string>
     <string name="setup_log_in_description">In order to talk to your Kegbot server, the Kegtab application needs an API key.\n\nPlease log in with a manager account in order to accquire an API key for this application. Your password will not be saved.</string>
     <string name="setup_finished_title">Done!</string>
@@ -67,7 +67,7 @@
     <string name="license_agreement_description">By continuing, you agree to be bound by the terms of the Kegtab license agreement at kegbot.org/android/license</string>
     <string name="privacy_policy_agreement">By continuing, you agree to the terms of the Kegbot privacy policy at kegbot.org/about/privacy</string>
     <string name="checkbox_agree_text">I Agree</string>
-    <string name="setup_license_title">Before You Continue...</string>
+    <string name="setup_license_title">Before You Continue&#8230;</string>
     <string name="setup_license_description">You\'re free to use this app, but your use is governed by the License Agreement and Privacy Policy linked at left.</string>
     <string name="checkin_update_available_title">Kegbot update available</string>
     <string name="checkin_update_required_title">Kegbot update required</string>
@@ -77,7 +77,7 @@
     <string name="menu_bugreport">Bugreport</string>
     <string name="bugreport_title">Create Bugreport</string>
     <string name="bugreport_message_idle">Tap to build a bugreport.</string>
-    <string name="bugreport_message_running">Collecting bugreport data...</string>
+    <string name="bugreport_message_running">Collecting bugreport data&#8230;</string>
     <string name="bugreport_message_ready">Bugreport collected. Please add detail below, and tap the button to launch your e-mail app.</string>
     <string name="bugreport_button_idle">Collect Bugreport</string>
     <string name="bugreport_button_ready">Send Bugreport</string>
@@ -90,5 +90,14 @@
     <string name="calibrate_dialog_custom_title">Enter actual volume</string>
     <string name="calibrate_dialog_custom_message">Enter the actual volume of the pour below.</string>
     <string name="new_keg_help_text">Enter keg details below.</string>
-
+    <string name="confirm_pin">Enter keg details below.</string>
+    <string name="manager_pin_title">Manager PIN</string>
+    <string name="manager_pin_description">Secret PIN for manager access.</string>
+    <string name="example_url">http://kegbot.example.com</string>
+    <string name="license_agreement_title">License</string>
+    <string name="password_title">Password</string>
+    <string name="password_description">Your Kegbot account password.</string>
+    <string name="privacy_policy_title">Privacy Policy</string>
+    <string name="username_title">Username</string>
+    <string name="username_description">Your Kegbot account name.</string>
 </resources>

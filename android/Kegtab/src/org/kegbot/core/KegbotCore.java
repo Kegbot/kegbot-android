@@ -260,7 +260,7 @@ public class KegbotCore {
     writer.printPair("device", Build.DEVICE).println();
     writer.printPair("model", Build.MODEL).println();
     writer.printPair("manufacturer", Build.MANUFACTURER).println();
-    writer.printPair("sdk", Build.VERSION.SDK).println();
+    writer.printPair("sdk", Integer.valueOf(Build.VERSION.SDK_INT)).println();
     writer.decreaseIndent();
     writer.println();
 

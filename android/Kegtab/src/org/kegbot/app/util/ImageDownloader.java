@@ -16,6 +16,22 @@
 
 package org.kegbot.app.util;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
+
+import com.google.common.collect.Sets;
+import com.hoho.android.usbserial.util.HexDump;
+
+import org.kegbot.app.R;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FilterInputStream;
@@ -34,21 +50,6 @@ import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import org.kegbot.app.R;
-
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.Handler;
-import android.os.Message;
-import android.util.Log;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.ImageView;
-
-import com.google.common.collect.Sets;
-import com.hoho.android.usbserial.util.HexDump;
 
 /**
  * This helper class download images from the Internet and binds those with the
@@ -89,6 +90,7 @@ public class ImageDownloader {
 
   private File mCacheDir;
 
+  @SuppressLint("HandlerLeak")
   private final Handler mHandler = new Handler() {
 
     @Override
@@ -201,7 +203,7 @@ public class ImageDownloader {
 
   private void applyBitmapToImageView(Bitmap bitmap, ImageView imageView) {
     if (DEBUG) Log.d(TAG, "Assigning bitmap=" + bitmap + " imageView=" + imageView);
-    imageView.setBackgroundDrawable(null);
+    Utils.setBackground(imageView, null);
     imageView.setImageBitmap(bitmap);
     imageView.setAlpha(1.0f);
   }

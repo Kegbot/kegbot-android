@@ -18,13 +18,6 @@
  */
 package org.kegbot.app.setup;
 
-import org.kegbot.api.KegbotApi;
-import org.kegbot.api.KegbotApiException;
-import org.kegbot.api.KegbotApiImpl;
-import org.kegbot.app.R;
-import org.kegbot.app.config.AppConfiguration;
-import org.kegbot.core.KegbotCore;
-
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,6 +25,13 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 
 import com.google.common.base.Strings;
+
+import org.kegbot.api.KegbotApi;
+import org.kegbot.api.KegbotApiException;
+import org.kegbot.api.KegbotApiImpl;
+import org.kegbot.app.R;
+import org.kegbot.app.config.AppConfiguration;
+import org.kegbot.core.KegbotCore;
 
 public class SetupLogInFragment extends SetupFragment {
 
@@ -44,8 +44,6 @@ public class SetupLogInFragment extends SetupFragment {
 
     EditText text = (EditText) mView.findViewById(R.id.apiUsername);
     text.setText(prefs.getUsername());
-
-    mView.setBackgroundDrawable(getResources().getDrawable(R.drawable.shape_rounded_rect));
     return mView;
   }
 

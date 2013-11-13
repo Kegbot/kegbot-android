@@ -53,6 +53,7 @@ import org.kegbot.app.event.FlowUpdateEvent;
 import org.kegbot.app.event.PictureDiscardedEvent;
 import org.kegbot.app.event.PictureTakenEvent;
 import org.kegbot.app.util.ImageDownloader;
+import org.kegbot.app.util.Utils;
 import org.kegbot.core.AuthenticationManager;
 import org.kegbot.core.Flow;
 import org.kegbot.core.FlowManager;
@@ -417,7 +418,7 @@ public class PourInProgressActivity extends CoreActivity {
 
     if (!imageWasReplaced) {
       mDrinkerImage.setImageBitmap(null);
-      mDrinkerImage.setBackgroundDrawable(getResources().getDrawable(R.drawable.unknown_drinker));
+      Utils.setBackground(mDrinkerImage, getResources().getDrawable(R.drawable.unknown_drinker));
     }
   }
 

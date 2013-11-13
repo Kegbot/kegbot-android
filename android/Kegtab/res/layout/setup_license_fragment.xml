@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent" >
+    android:layout_height="fill_parent"
+    android:background="@drawable/shape_rounded_rect">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:gravity="center|left"
         android:orientation="vertical" >
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="License"
-            android:textSize="24dip"
+            android:text="@string/license_agreement_title"
+            android:textSize="24sp"
             android:textStyle="bold" />
 
         <TextView
@@ -22,7 +23,7 @@
             android:autoLink="web"
             android:text="@string/license_agreement_description"
             android:textColor="@android:color/darker_gray"
-            android:textSize="18dip" />
+            android:textSize="18sp" />
 
         <CheckBox
             android:id="@+id/agreeLicense"
@@ -30,14 +31,14 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="32dip"
             android:text="@string/checkbox_agree_text"
-            android:textSize="24dip"
+            android:textSize="24sp"
             android:textStyle="bold" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Privacy Policy"
-            android:textSize="24dip"
+            android:text="@string/privacy_policy_title"
+            android:textSize="24sp"
             android:textStyle="bold" />
 
         <TextView
@@ -46,14 +47,14 @@
             android:autoLink="web"
             android:text="@string/privacy_policy_agreement"
             android:textColor="@android:color/darker_gray"
-            android:textSize="18dip" />
+            android:textSize="18sp" />
 
         <CheckBox
             android:id="@+id/agreePrivacy"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/checkbox_agree_text"
-            android:textSize="24dip"
+            android:textSize="24sp"
             android:textStyle="bold" />
     </LinearLayout>
 
