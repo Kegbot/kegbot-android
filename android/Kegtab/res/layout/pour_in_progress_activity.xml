@@ -31,7 +31,7 @@
         <Button 
             android:id="@+id/claimPourButton"
             style="@style/mediumButton"
-            android:text="Claim This Pour"/>
+            android:text="@string/claim_pour_button_label"/>
         
         <TextView 
             android:id="@+id/pourDrinkerName"
@@ -53,7 +53,8 @@
                 android:layout_margin="5dip"
                 android:adjustViewBounds="true"
                 android:scaleType="centerCrop"
-                android:src="@drawable/unknown_drinker" />
+                android:src="@drawable/unknown_drinker"
+                android:contentDescription="@string/pour_drinker_image_description" />
 
             <org.kegbot.app.util.SoftMultiLineEditText
                 android:id="@+id/shoutText"
@@ -61,7 +62,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
                 android:layout_toRightOf="@+id/pourDrinkerImage"
-                android:hint="Shout something! (optional)"
+                android:hint="@string/shout_hint_text"
                 android:imeOptions="actionDone"
                 android:inputType="textCapSentences|textShortMessage|textMultiLine"
                 android:lines="3"
@@ -74,7 +75,7 @@
                 android:layout_below="@+id/shoutText"
                 android:layout_toRightOf="@+id/pourDrinkerImage"
                 android:layout_alignBottom="@+id/pourDrinkerImage"
-                android:text="Done Pouring!"/>
+                android:text="@string/end_pour_btn_label"/>
         </RelativeLayout>
 
         <fragment

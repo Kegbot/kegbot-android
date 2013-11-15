@@ -105,4 +105,9 @@
     <string name="register_username_description">Pick a username. It\'s public and permanent!</string>
     <string name="register_photo_description">Almost there! How about a mugshot? (It\'s optional.)</string>
     <string name="register_email_description">We need your e-mail address!</string>
+    <string name="claim_pour_button_label">Claim This Pour</string>
+    <string name="pour_drinker_image_description">Pour Drinker Image</string>
+    <string name="shout_hint_text">Shout something! (optional)</string>
+    <string name="end_pour_btn_label">Done Pouring!</string>
+
 </resources>
