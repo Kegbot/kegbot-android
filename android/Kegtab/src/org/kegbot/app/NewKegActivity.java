@@ -18,17 +18,6 @@
  */
 package org.kegbot.app;
 
-import java.util.Collections;
-import java.util.List;
-
-import org.kegbot.api.KegbotApi;
-import org.kegbot.api.KegbotApiException;
-import org.kegbot.api.KegbotApiImpl;
-import org.kegbot.app.config.AppConfiguration;
-import org.kegbot.app.config.SharedPreferencesConfigurationStore;
-import org.kegbot.app.service.KegbotCoreService;
-import org.kegbot.proto.Models.KegSize;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -51,6 +40,17 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.common.collect.Lists;
+
+import org.kegbot.api.KegbotApi;
+import org.kegbot.api.KegbotApiException;
+import org.kegbot.api.KegbotApiImpl;
+import org.kegbot.app.config.AppConfiguration;
+import org.kegbot.app.config.SharedPreferencesConfigurationStore;
+import org.kegbot.app.service.KegbotCoreService;
+import org.kegbot.proto.Models.KegSize;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  *
@@ -87,9 +87,7 @@ public class NewKegActivity extends Activity {
     AppConfiguration config = new AppConfiguration(new SharedPreferencesConfigurationStore(
         PreferenceManager.getDefaultSharedPreferences(getApplicationContext())));
 
-    mApi = new KegbotApiImpl();
-    mApi.setApiUrl(config.getApiUrl());
-    mApi.setApiKey(config.getApiKey());
+    mApi = new KegbotApiImpl(config.getApiUrl(), config.getApiKey());
 
     mName = (AutoCompleteTextView) findViewById(R.id.newKegBeerName);
     mBrewerName = (AutoCompleteTextView) findViewById(R.id.newKegBrewer);

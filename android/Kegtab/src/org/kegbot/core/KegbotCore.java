@@ -18,22 +18,6 @@
  */
 package org.kegbot.core;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.Date;
-import java.util.Set;
-
-import org.kegbot.api.KegbotApi;
-import org.kegbot.api.KegbotApiImpl;
-import org.kegbot.app.KegbotApplication;
-import org.kegbot.app.config.AppConfiguration;
-import org.kegbot.app.config.SharedPreferencesConfigurationStore;
-import org.kegbot.app.util.DeviceId;
-import org.kegbot.app.util.ImageDownloader;
-import org.kegbot.app.util.IndentingPrintWriter;
-import org.kegbot.app.util.Utils;
-import org.kegbot.core.FlowManager.Clock;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
@@ -47,6 +31,22 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import com.squareup.otto.Bus;
 import com.squareup.otto.ThreadEnforcer;
+
+import org.kegbot.api.KegbotApi;
+import org.kegbot.api.KegbotApiImpl;
+import org.kegbot.app.KegbotApplication;
+import org.kegbot.app.config.AppConfiguration;
+import org.kegbot.app.config.SharedPreferencesConfigurationStore;
+import org.kegbot.app.util.DeviceId;
+import org.kegbot.app.util.ImageDownloader;
+import org.kegbot.app.util.IndentingPrintWriter;
+import org.kegbot.app.util.Utils;
+import org.kegbot.core.FlowManager.Clock;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.Date;
+import java.util.Set;
 
 /**
  * Top-level class implementing the Kegbot core.
@@ -98,9 +98,7 @@ public class KegbotCore {
     mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
     mConfig = new AppConfiguration(new SharedPreferencesConfigurationStore(mSharedPreferences));
 
-    mApi = new KegbotApiImpl();
-    mApi.setApiUrl(mConfig.getApiUrl());
-    mApi.setApiKey(mConfig.getApiKey());
+    mApi = new KegbotApiImpl(mConfig.getApiUrl(), mConfig.getApiKey());
 
     mImageDownloader = new ImageDownloader(context, mConfig.getKegbotUrl());
 

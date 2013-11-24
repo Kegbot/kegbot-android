@@ -26,7 +26,6 @@ import android.widget.EditText;
 
 import com.google.common.base.Strings;
 
-import org.kegbot.api.KegbotApi;
 import org.kegbot.api.KegbotApiException;
 import org.kegbot.api.KegbotApiImpl;
 import org.kegbot.app.R;
@@ -69,8 +68,7 @@ public class SetupLogInFragment extends SetupFragment {
     }
 
     AppConfiguration prefs = KegbotCore.getInstance(getActivity()).getConfiguration();
-    KegbotApi api = new KegbotApiImpl();
-    api.setApiUrl(prefs.getApiUrl());
+    KegbotApiImpl api = new KegbotApiImpl(prefs.getApiUrl(), "");
 
     try {
       api.login(username, password);

@@ -18,22 +18,17 @@
  */
 package org.kegbot.api;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.CookieHandler;
-import java.net.CookieManager;
-import java.security.GeneralSecurityException;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import android.util.Log;
 
-import javax.net.ssl.SSLContext;
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.protobuf.GeneratedMessage;
+import com.google.protobuf.Message.Builder;
+import com.squareup.okhttp.OkHttpClient;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.params.HttpParams;
-import org.apache.http.params.HttpProtocolParams;
 import org.codehaus.jackson.JsonNode;
 import org.kegbot.app.util.DateUtils;
 import org.kegbot.proto.Api.RecordDrinkRequest;
@@ -51,32 +46,32 @@ import org.kegbot.proto.Models.ThermoLog;
 import org.kegbot.proto.Models.ThermoSensor;
 import org.kegbot.proto.Models.User;
 
-import android.util.Log;
+import java.io.File;
+import java.io.IOException;
+import java.net.CookieHandler;
+import java.net.CookieManager;
+import java.security.GeneralSecurityException;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.protobuf.GeneratedMessage;
-import com.google.protobuf.Message.Builder;
-import com.squareup.okhttp.OkHttpClient;
+import javax.net.ssl.SSLContext;
 
 public class KegbotApiImpl implements KegbotApi {
 
   private static final String TAG = KegbotApiImpl.class.getSimpleName();
 
-  //private static final String CONTENT_TYPE_JSON = "application/json";
-
-  private String mBaseUrl;
+  private final String mBaseUrl;
   private String mApiKey;
-
-  private HttpParams mHttpParams;
 
   private final CookieManager mCookieManager;
   private final OkHttpClient mClient;
   private final Http mHttp;
 
-  public KegbotApiImpl() {
-    mBaseUrl = "http://localhost/";
+  public KegbotApiImpl(String baseUrl, String apiKey) {
+    mBaseUrl = baseUrl;
+    mApiKey = apiKey;
     mCookieManager = new CookieManager();
     mClient = new OkHttpClient();
 
@@ -190,22 +185,6 @@ public class KegbotApiImpl implements KegbotApi {
     return getSingleProto(builder, result.get("object"));
   }
 
-  @Override
-  public void setApiUrl(String apiUrl) {
-    mBaseUrl = apiUrl;
-  }
-
-  @Override
-  public void setApiKey(String apiKey) {
-    mApiKey = apiKey;
-  }
-
-  @Override
-  public void setUserAgent(String userAgent) {
-    HttpProtocolParams.setUserAgent(mHttpParams, userAgent);
-  }
-
-  @Override
   public void login(String username, String password) throws KegbotApiException {
     Map<String, String> params = Maps.newLinkedHashMap();
     params.put("username", username);
@@ -214,7 +193,6 @@ public class KegbotApiImpl implements KegbotApi {
     postJson("/login/", params);
   }
 
-  @Override
   public String getApiKey() throws KegbotApiException {
     final JsonNode result = getJson("/get-api-key/", null);
     final JsonNode rootNode = result.get("object");
@@ -227,11 +205,12 @@ public class KegbotApiImpl implements KegbotApi {
       throw new KegbotApiServerError("Invalid response.");
     }
 
-    debug("Got api key:" + keyNode.getValueAsText());
-    return keyNode.getValueAsText();
+    final String apiKey = keyNode.getValueAsText();
+    debug("Got api key:" + apiKey);
+    mApiKey = apiKey;
+    return mApiKey;
   }
 
-  @Override
   public List<Keg> getAllKegs() throws KegbotApiException {
     return getProto("/kegs/", Keg.newBuilder());
   }
@@ -253,12 +232,10 @@ public class KegbotApiImpl implements KegbotApi {
         AuthenticationToken.newBuilder());
   }
 
-  @Override
   public Drink getDrinkDetail(String id) throws KegbotApiException {
     return getSingleProto("/drinks/" + id, Drink.newBuilder());
   }
 
-  @Override
   public Keg getKegDetail(String id) throws KegbotApiException {
     return getSingleProto("/kegs/" + id, Keg.newBuilder());
   }
@@ -285,28 +262,18 @@ public class KegbotApiImpl implements KegbotApi {
     return getSingleProto(KegTap.newBuilder(), requestJson(builder.build()).get("object"));
   }
 
-  @Override
   public List<Drink> getKegDrinks(String kegId) throws KegbotApiException {
     return getProto("/kegs/" + kegId + "/drinks/", Drink.newBuilder());
   }
 
-  @Override
   public List<SystemEvent> getKegEvents(String kegId) throws KegbotApiException {
     return getProto("/keg/" + kegId + "/events/", SystemEvent.newBuilder());
   }
 
-  @Override
   public List<Session> getKegSessions(String kegId) throws KegbotApiException {
     return getProto("/kegs/" + kegId + "/sessions/", Session.newBuilder());
   }
 
-  @Override
-  public String getLastDrinkId() throws KegbotApiException {
-    JsonNode root = getJson("/last-drink-id/", null);
-    return root.get("id").getTextValue();
-  }
-
-  @Override
   public List<Drink> getRecentDrinks() throws KegbotApiException {
     return getProto("/last-drinks/", Drink.newBuilder());
   }
@@ -323,7 +290,6 @@ public class KegbotApiImpl implements KegbotApi {
     return getProto("/events/", SystemEvent.newBuilder(), params);
   }
 
-  @Override
   public Session getSessionDetail(String id) throws KegbotApiException {
     return getSingleProto("/sessions/" + id, Session.newBuilder());
   }
@@ -333,7 +299,6 @@ public class KegbotApiImpl implements KegbotApi {
     return getJson("/sessions/" + sessionId + "/stats/", null).get("object");
   }
 
-  @Override
   public KegTap getTapDetail(String tapName) throws KegbotApiException {
     return getSingleProto("/taps/" + tapName, KegTap.newBuilder());
   }
@@ -346,12 +311,10 @@ public class KegbotApiImpl implements KegbotApi {
     return getSingleProto(KegTap.newBuilder(), requestJson(builder.build()).get("object"));
   }
 
-  @Override
   public List<ThermoLog> getThermoSensorLogs(String sensorId) throws KegbotApiException {
     return getProto("/thermo-sensors/" + sensorId + "/logs/", ThermoLog.newBuilder());
   }
 
-  @Override
   public List<ThermoSensor> getThermoSensors() throws KegbotApiException {
     return getProto("/thermo-sensors/", ThermoSensor.newBuilder());
   }
@@ -361,12 +324,10 @@ public class KegbotApiImpl implements KegbotApi {
     return getSingleProto("/users/" + username, User.newBuilder());
   }
 
-  @Override
   public List<Drink> getUserDrinks(String username) throws KegbotApiException {
     return getProto("/users/" + username + "/drinks/", Drink.newBuilder());
   }
 
-  @Override
   public List<SystemEvent> getUserEvents(String username) throws KegbotApiException {
     return getProto("/users/" + username + "/events/", SystemEvent
         .newBuilder());
