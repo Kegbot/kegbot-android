@@ -216,12 +216,12 @@ public class KegbotApiImpl implements KegbotApi {
   }
 
   @Override
-  public List<SoundEvent> getAllSoundEvents() throws KegbotApiException {
+  public List<SoundEvent> getSoundEvents() throws KegbotApiException {
     return getProto("/sound-events/", SoundEvent.newBuilder());
   }
 
   @Override
-  public List<KegTap> getAllTaps() throws KegbotApiException {
+  public List<KegTap> getTaps() throws KegbotApiException {
     return getProto("/taps/", KegTap.newBuilder());
   }
 
@@ -246,12 +246,12 @@ public class KegbotApiImpl implements KegbotApi {
   }
 
   @Override
-  public Keg endKeg(String id) throws KegbotApiException {
-    return (Keg) postProto("/kegs/" + id + "/end/", Keg.newBuilder(), null);
+  public Keg endKeg(int kegId) throws KegbotApiException {
+    return (Keg) postProto("/kegs/" + kegId + "/end/", Keg.newBuilder(), null);
   }
 
   @Override
-  public KegTap activateKeg(String tapName, String beerName, String brewerName, String styleName,
+  public KegTap startKeg(String tapName, String beerName, String brewerName, String styleName,
       int kegSizeId) throws KegbotApiException {
     final Request.Builder builder = newRequest("/taps/" + tapName + "/activate/")
         .setMethod(Http.POST)
@@ -279,12 +279,12 @@ public class KegbotApiImpl implements KegbotApi {
   }
 
   @Override
-  public List<SystemEvent> getRecentEvents() throws KegbotApiException {
+  public List<SystemEvent> getEvents() throws KegbotApiException {
     return getProto("/events/", SystemEvent.newBuilder());
   }
 
   @Override
-  public List<SystemEvent> getRecentEvents(final long sinceEventId) throws KegbotApiException {
+  public List<SystemEvent> getEventsSince(final long sinceEventId) throws KegbotApiException {
     final List<NameValuePair> params = Lists.newArrayList();
     params.add(new BasicNameValuePair("since", String.valueOf(sinceEventId)));
     return getProto("/events/", SystemEvent.newBuilder(), params);
@@ -320,7 +320,7 @@ public class KegbotApiImpl implements KegbotApi {
   }
 
   @Override
-  public User getUserDetail(String username) throws KegbotApiException {
+  public User getUser(String username) throws KegbotApiException {
     return getSingleProto("/users/" + username, User.newBuilder());
   }
 
@@ -437,7 +437,7 @@ public class KegbotApiImpl implements KegbotApi {
   }
 
   @Override
-  public Image uploadDrinkImage(int drinkId, String imagePath) throws KegbotApiException {
+  public Image attachPictureToDrink(int drinkId, String imagePath) throws KegbotApiException {
     final String url = String.format("/drinks/%s/add-photo/", Integer.valueOf(drinkId));
 
     final Request.Builder builder = newRequest(url)
@@ -448,7 +448,7 @@ public class KegbotApiImpl implements KegbotApi {
   }
 
   @Override
-  public User register(String username, String email, String password, String imagePath)
+  public User createUser(String username, String email, String password, String imagePath)
       throws KegbotApiException {
     final Request.Builder builder = newRequest("/new-user/")
         .setMethod(Http.POST)

@@ -64,7 +64,7 @@ public class DrinkerRegistrationActivity extends CoreActivity {
       Log.d(TAG, "Registering...");
       final String imagePath = mCameraFragment.getLastFilename();
       try {
-        return api.register(mUsername.getText().toString(), mEmail.getText().toString(),
+        return api.createUser(mUsername.getText().toString(), mEmail.getText().toString(),
             mPassword.getText().toString(), imagePath);
       } catch (KegbotApiException e) {
         Log.w(TAG, "Registration failed: " + e.toString() + " errors=" + e.getErrors());

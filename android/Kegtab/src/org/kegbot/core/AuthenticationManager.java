@@ -85,7 +85,7 @@ public class AuthenticationManager extends Manager {
             @Override
             public User load(String username) throws Exception {
               Log.d(TAG, "Loading user: " + username);
-              return mApi.getUserDetail(username);
+              return mApi.getUser(username);
             }
           });
 

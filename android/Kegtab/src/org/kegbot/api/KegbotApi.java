@@ -15,6 +15,7 @@
  * You should have received a copy of the GNU General Public License along with
  * Kegtab. If not, see <http://www.gnu.org/licenses/>.
  */
+
 package org.kegbot.api;
 
 import org.codehaus.jackson.JsonNode;
@@ -39,86 +40,80 @@ import java.util.List;
  */
 public interface KegbotApi {
 
-  /**
-   * @return
-   * @throws KegbotApiException
-   */
-  public List<SoundEvent> getAllSoundEvents() throws KegbotApiException;
+  /** Activates a new keg on the specified tap. */
+  public KegTap startKeg(String tapName, String beerName, String brewerName, String styleName,
+      int kegSizeId) throws KegbotApiException;
+
+  /** Assigns an authentication token to a user. */
+  public AuthenticationToken assignToken(String authDevice, String tokenValue, String username)
+      throws KegbotApiException;
+
+  /** Attaches a picture to a drink record. */
+  public Image attachPictureToDrink(int drinkId, String imagePath) throws KegbotApiException;
+
+  /** Creates a new user. */
+  public User createUser(String username, String email, String password, String imagePath)
+      throws KegbotApiException;
+
+  /** Ends the given keg. */
+  public Keg endKeg(int kegId) throws KegbotApiException;
 
   /**
-   * @return
-   * @throws KegbotApiException
-   */
-  public List<KegTap> getAllTaps() throws KegbotApiException;
-
-  /**
-   * @param authDevice
-   * @param tokenValue
-   * @return
-   * @throws KegbotApiException
+   * Returns the authentication token record for the given token.
+   *
+   * @return the token record
+   * @throws KegbotApiNotFoundError if there is no record for this token.
    */
   public AuthenticationToken getAuthToken(String authDevice, String tokenValue)
       throws KegbotApiException;
 
-  public List<KegSize> getKegSizes() throws KegbotApiException;
-
   /**
-   * Ends the given keg.
+   * Returns the currently-active drinking session.
    *
-   * @param id
-   * @return
-   * @throws KegbotApiException
-   */
-  public Keg endKeg(String id) throws KegbotApiException;
-
-  public KegTap activateKeg(String tapName, String beerName, String brewerName, String styleName,
-      int kegSizeId) throws KegbotApiException;
-
-  /**
-   * Returns recent system events.
-   *
-   * @return the events
-   * @throws KegbotApiException
-   */
-  public List<SystemEvent> getRecentEvents() throws KegbotApiException;
-
-  public List<SystemEvent> getRecentEvents(final long sinceEventId) throws KegbotApiException;
-
-  public JsonNode getSessionStats(int sessionId) throws KegbotApiException;
-
-  public KegTap setTapMlPerTick(String tapName, double mlPerTick) throws KegbotApiException;
-
-  /**
-   * Returns details for a single user.
-   *
-   * @param username
-   * @return the {@link User}
-   * @throws KegbotApiException
-   */
-  public User getUserDetail(String username) throws KegbotApiException;
-
-  public Drink recordDrink(final RecordDrinkRequest request) throws KegbotApiException;
-
-  public ThermoLog recordTemperature(final RecordTemperatureRequest request)
-      throws KegbotApiException;
-
-  public List<User> getUsers() throws KegbotApiException;
-
-  public AuthenticationToken assignToken(String authDevice, String tokenValue, String username) throws KegbotApiException;
-
-  /**
-   * Returns the currently-active drinking session, or {@code null} if none is
-   * active.
-   *
-   * @return
-   * @throws KegbotApiException
+   * @return the active session
+   * @throws KegbotApiNotFoundError if there is no active session.
    */
   public Session getCurrentSession() throws KegbotApiException;
 
-  public Image uploadDrinkImage(final int drinkId, final String imagePath)
+  /** Returns the most recent system events. The list may be empty. */
+  public List<SystemEvent> getEvents() throws KegbotApiException;
+
+  /** Returns the most recent since the given event. The list may be empty. */
+  public List<SystemEvent> getEventsSince(long sinceEventId) throws KegbotApiException;
+
+  /** Returns defined keg sizes. The list may be empty. */
+  public List<KegSize> getKegSizes() throws KegbotApiException;
+
+  /** Returns statistics for the given session. */
+  public JsonNode getSessionStats(int sessionId) throws KegbotApiException;
+
+  /** Returns any defined sound events. The list may be empty. */
+  public List<SoundEvent> getSoundEvents() throws KegbotApiException;
+
+  /** Returns all defined taps. The list may be empty. */
+  public List<KegTap> getTaps() throws KegbotApiException;
+
+  /**
+   * Retrieves information about a single user.
+   *
+   * @param username the username to query
+   * @return the {@link User}
+   * @throws KegbotApiNotFoundError if the user does not exist
+   */
+  public User getUser(String username) throws KegbotApiException;
+
+  /** Retrieves a full user list for this system. The list may be empty. */
+  public List<User> getUsers() throws KegbotApiException;
+
+  /** Saves a new drink record. */
+  public Drink recordDrink(RecordDrinkRequest request) throws KegbotApiException;
+
+  /** Saves a new temperature sensor record. */
+  public ThermoLog recordTemperature(RecordTemperatureRequest request)
       throws KegbotApiException;
 
-  public User register(final String username, final String email, final String password,
-      final String imagePath) throws KegbotApiException;
+  /** Sets the meter calibration factor. */
+  public KegTap setTapMlPerTick(String tapName, double mlPerTick)
+      throws KegbotApiException;
 
 }

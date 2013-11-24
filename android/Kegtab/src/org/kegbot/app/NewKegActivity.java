@@ -192,7 +192,7 @@ public class NewKegActivity extends Activity {
       @Override
       protected String doInBackground(Void... params) {
         try {
-          mApi.activateKeg(mMeterName, mName.getText().toString(),
+          mApi.startKeg(mMeterName, mName.getText().toString(),
               mBrewerName.getText().toString(), mStyle.getText().toString(), mSizeId);
           return "";
         } catch (KegbotApiException e) {

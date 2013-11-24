@@ -319,7 +319,7 @@ public class SyncManager extends BackgroundManager {
         if (drink != null) {
           Log.d(TAG, "Uploading image: " + imagePath);
           try {
-            mApi.uploadDrinkImage(drink.getId(), imagePath);
+            mApi.attachPictureToDrink(drink.getId(), imagePath);
           } catch (KegbotApiException e) {
             // Discard image, no retry.
             Log.w(TAG, String.format("Error uploading image %s: %s", imagePath, e));
@@ -444,7 +444,7 @@ public class SyncManager extends BackgroundManager {
 
     // Taps.
     try {
-      List<KegTap> newTaps = mApi.getAllTaps();
+      List<KegTap> newTaps = mApi.getTaps();
       if (!newTaps.equals(mLastKegTapList)) {
         mLastKegTapList = newTaps;
         postOnMainThread(new TapListUpdateEvent(newTaps));
@@ -463,9 +463,9 @@ public class SyncManager extends BackgroundManager {
     try {
       List<SystemEvent> newEvents;
       if (lastEvent != null) {
-        newEvents = mApi.getRecentEvents(lastEvent.getId());
+        newEvents = mApi.getEventsSince(lastEvent.getId());
       } else {
-        newEvents = mApi.getRecentEvents();
+        newEvents = mApi.getEvents();
       }
       Collections.sort(newEvents, EVENTS_DESCENDING);
 
@@ -500,7 +500,7 @@ public class SyncManager extends BackgroundManager {
 
     // Sound events
     try {
-      List<SoundEvent> events = mApi.getAllSoundEvents();
+      List<SoundEvent> events = mApi.getSoundEvents();
       Collections.sort(events, SOUND_EVENT_COMPARATOR);
       if (!events.equals(mLastSoundEventList)) {
         mLastSoundEventList.clear();
