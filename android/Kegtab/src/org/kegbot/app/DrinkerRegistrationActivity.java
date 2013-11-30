@@ -18,15 +18,6 @@
  */
 package org.kegbot.app;
 
-import java.util.regex.Pattern;
-
-import org.kegbot.api.KegbotApi;
-import org.kegbot.api.KegbotApiException;
-import org.kegbot.app.camera.CameraFragment;
-import org.kegbot.app.setup.SetupProgressDialogFragment;
-import org.kegbot.core.KegbotCore;
-import org.kegbot.proto.Models.User;
-
 import android.app.ActionBar;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
@@ -39,6 +30,15 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+
+import org.kegbot.app.camera.CameraFragment;
+import org.kegbot.app.setup.SetupProgressDialogFragment;
+import org.kegbot.backend.Backend;
+import org.kegbot.backend.BackendException;
+import org.kegbot.core.KegbotCore;
+import org.kegbot.proto.Models.User;
+
+import java.util.regex.Pattern;
 
 public class DrinkerRegistrationActivity extends CoreActivity {
 
@@ -60,14 +60,15 @@ public class DrinkerRegistrationActivity extends CoreActivity {
 
     @Override
     protected User doInBackground(Void... params) {
-      KegbotApi api = mCore.getApi();
+      Backend api = mCore.getBackend();
       Log.d(TAG, "Registering...");
       final String imagePath = mCameraFragment.getLastFilename();
       try {
         return api.createUser(mUsername.getText().toString(), mEmail.getText().toString(),
             mPassword.getText().toString(), imagePath);
-      } catch (KegbotApiException e) {
-        Log.w(TAG, "Registration failed: " + e.toString() + " errors=" + e.getErrors());
+      } catch (BackendException e) {
+        // TODO: Highlight field errors.
+        Log.w(TAG, "Registration failed: " + e.toString());
       }
       return null;
     }

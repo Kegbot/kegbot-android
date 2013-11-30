@@ -18,22 +18,22 @@
  */
 package org.kegbot.app;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import org.kegbot.api.KegbotApi;
-import org.kegbot.api.KegbotApiException;
-import org.kegbot.core.KegbotCore;
-import org.kegbot.proto.Models.User;
-
 import android.content.AsyncTaskLoader;
 import android.content.Context;
 import android.os.SystemClock;
 import android.util.Log;
 
 import com.google.common.collect.Lists;
+
+import org.kegbot.backend.Backend;
+import org.kegbot.backend.BackendException;
+import org.kegbot.core.KegbotCore;
+import org.kegbot.proto.Models.User;
+
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  *
@@ -43,7 +43,7 @@ public class UserDetailListLoader extends AsyncTaskLoader<List<User>> {
 
   private static final String TAG = UserDetailListLoader.class.getSimpleName();
 
-  private KegbotApi mApi;
+  private Backend mApi;
 
   private final List<User> mUsers = Lists.newArrayList();
 
@@ -64,7 +64,7 @@ public class UserDetailListLoader extends AsyncTaskLoader<List<User>> {
    */
   public UserDetailListLoader(Context context) {
     super(context);
-    mApi = KegbotCore.getInstance(context).getApi();
+    mApi = KegbotCore.getInstance(context).getBackend();
   }
 
   @Override
@@ -76,7 +76,7 @@ public class UserDetailListLoader extends AsyncTaskLoader<List<User>> {
       mUsers.addAll(result);
       Collections.sort(mUsers, USERS_ALPHABETIC);
       return mUsers;
-    } catch (KegbotApiException e) {
+    } catch (BackendException e) {
       // TODO(mikey): retry?
       Log.d(TAG, "Error loading. ", e);
       return Lists.newArrayList();

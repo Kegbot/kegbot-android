@@ -18,36 +18,6 @@
  */
 package org.kegbot.core;
 
-import java.io.File;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-
-import javax.annotation.Nullable;
-
-import org.codehaus.jackson.JsonNode;
-import org.kegbot.api.KegbotApi;
-import org.kegbot.api.KegbotApiException;
-import org.kegbot.api.KegbotApiNotFoundError;
-import org.kegbot.app.event.ConnectivityChangedEvent;
-import org.kegbot.app.event.CurrentSessionChangedEvent;
-import org.kegbot.app.event.DrinkPostedEvent;
-import org.kegbot.app.event.SoundEventListUpdateEvent;
-import org.kegbot.app.event.SystemEventListUpdateEvent;
-import org.kegbot.app.event.TapListUpdateEvent;
-import org.kegbot.app.storage.LocalDbHelper;
-import org.kegbot.proto.Api.RecordDrinkRequest;
-import org.kegbot.proto.Api.RecordTemperatureRequest;
-import org.kegbot.proto.Internal.PendingPour;
-import org.kegbot.proto.Models.Drink;
-import org.kegbot.proto.Models.KegTap;
-import org.kegbot.proto.Models.Session;
-import org.kegbot.proto.Models.SoundEvent;
-import org.kegbot.proto.Models.SystemEvent;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -65,15 +35,46 @@ import com.squareup.otto.Bus;
 import com.squareup.otto.Produce;
 import com.squareup.otto.Subscribe;
 
+import org.codehaus.jackson.JsonNode;
+import org.kegbot.api.KegbotApiException;
+import org.kegbot.app.event.ConnectivityChangedEvent;
+import org.kegbot.app.event.CurrentSessionChangedEvent;
+import org.kegbot.app.event.DrinkPostedEvent;
+import org.kegbot.app.event.SoundEventListUpdateEvent;
+import org.kegbot.app.event.SystemEventListUpdateEvent;
+import org.kegbot.app.event.TapListUpdateEvent;
+import org.kegbot.app.storage.LocalDbHelper;
+import org.kegbot.backend.Backend;
+import org.kegbot.backend.BackendException;
+import org.kegbot.backend.NotFoundException;
+import org.kegbot.proto.Api.RecordDrinkRequest;
+import org.kegbot.proto.Api.RecordTemperatureRequest;
+import org.kegbot.proto.Internal.PendingPour;
+import org.kegbot.proto.Models.Drink;
+import org.kegbot.proto.Models.KegTap;
+import org.kegbot.proto.Models.Session;
+import org.kegbot.proto.Models.SoundEvent;
+import org.kegbot.proto.Models.SystemEvent;
+
+import java.io.File;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
+import javax.annotation.Nullable;
+
 /**
  * This service manages a connection to a Kegbot backend, using the Kegbot API.
- * It implements the {@link KegbotApi} interface, potentially employing caching.
+ * It implements the {@link Backend} interface, potentially employing caching.
  */
 public class SyncManager extends BackgroundManager {
 
   private static String TAG = SyncManager.class.getSimpleName();
 
-  private final KegbotApi mApi;
+  private final Backend mApi;
   private final Context mContext;
 
   private List<KegTap> mLastKegTapList = Lists.newArrayList();
@@ -119,7 +120,7 @@ public class SyncManager extends BackgroundManager {
     }
   };
 
-  public SyncManager(Bus bus, Context context, KegbotApi api) {
+  public SyncManager(Bus bus, Context context, Backend api) {
     super(bus);
     mApi = api;
     mContext = context;
@@ -199,7 +200,7 @@ public class SyncManager extends BackgroundManager {
       public void run() {
         try {
           postThermoLog(request);
-        } catch (KegbotApiException e) {
+        } catch (BackendException e) {
           // Don't both retrying.
           Log.w(TAG, String.format("Error posting thermo, dropping: %s", e));
         }
@@ -303,8 +304,12 @@ public class SyncManager extends BackgroundManager {
     final Drink drink;
     try {
       drink = mApi.recordDrink(request);
-    } catch (KegbotApiNotFoundError e) {
+    } catch (NotFoundException e) {
       Log.w(TAG, "Tap does not exist, dropping pour.");
+      return;
+    } catch (BackendException e) {
+      // TODO: Handle error.
+      Log.w(TAG, "Other error.");
       return;
     }
 
@@ -320,7 +325,7 @@ public class SyncManager extends BackgroundManager {
           Log.d(TAG, "Uploading image: " + imagePath);
           try {
             mApi.attachPictureToDrink(drink.getId(), imagePath);
-          } catch (KegbotApiException e) {
+          } catch (BackendException e) {
             // Discard image, no retry.
             Log.w(TAG, String.format("Error uploading image %s: %s", imagePath, e));
           }
@@ -339,7 +344,7 @@ public class SyncManager extends BackgroundManager {
    * Synchronously posts a single thermo log to the remote backend. This method
    * is guaranteed to have succeeded on non-exceptional return.
    */
-  private void postThermoLog(final RecordTemperatureRequest request) throws KegbotApiException {
+  private void postThermoLog(final RecordTemperatureRequest request) throws BackendException {
     Log.d(TAG, ">>> Posting thermo log: tap=" + request.getSensorName() + " value=" + request.getTempC());
     if (!isConnected()) {
       throw new KegbotApiException("Not connected.");
@@ -449,7 +454,7 @@ public class SyncManager extends BackgroundManager {
         mLastKegTapList = newTaps;
         postOnMainThread(new TapListUpdateEvent(newTaps));
       }
-    } catch (KegbotApiException e) {
+    } catch (BackendException e) {
       Log.w(TAG, "Error syncing taps: " + e);
       error = true;
     }
@@ -474,7 +479,7 @@ public class SyncManager extends BackgroundManager {
         mLastSystemEventList.addAll(newEvents);
         postOnMainThread(new SystemEventListUpdateEvent(mLastSystemEventList));
       }
-    } catch (KegbotApiException e) {
+    } catch (BackendException e) {
       Log.w(TAG, "Error syncing events: " + e);
       error = true;
     }
@@ -493,7 +498,7 @@ public class SyncManager extends BackgroundManager {
         mLastSessionStats = stats;
         postOnMainThread(new CurrentSessionChangedEvent(currentSession, stats));
       }
-    } catch (KegbotApiException e) {
+    } catch (BackendException e) {
       Log.w(TAG, "Error syncing current session: " + e);
       error = true;
     }
@@ -507,7 +512,7 @@ public class SyncManager extends BackgroundManager {
         mLastSoundEventList.addAll(events);
         postOnMainThread(new SoundEventListUpdateEvent(mLastSoundEventList));
       }
-    } catch (KegbotApiException e) {
+    } catch (BackendException e) {
       Log.w(TAG, "Error syncing sound events: " + e);
       error = true;
     }

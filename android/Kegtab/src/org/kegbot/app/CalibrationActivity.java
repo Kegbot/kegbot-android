@@ -33,13 +33,13 @@ import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import org.kegbot.api.KegbotApi;
-import org.kegbot.api.KegbotApiException;
 import org.kegbot.api.KegbotApiImpl;
 import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.app.config.SharedPreferencesConfigurationStore;
 import org.kegbot.app.util.Units;
 import org.kegbot.app.view.BadgeView;
+import org.kegbot.backend.Backend;
+import org.kegbot.backend.BackendException;
 import org.kegbot.core.AuthenticationToken;
 import org.kegbot.core.FlowMeter;
 import org.kegbot.core.HardwareManager;
@@ -282,12 +282,12 @@ public class CalibrationActivity extends CoreActivity {
                 new SharedPreferencesConfigurationStore(
                     PreferenceManager.getDefaultSharedPreferences(getApplicationContext())));
 
-        KegbotApi api = new KegbotApiImpl(config.getApiUrl(), config.getApiKey());
+        Backend api = new KegbotApiImpl(config.getApiUrl(), config.getApiKey());
 
         try {
           api.setTapMlPerTick(mMeterName, mMlPerTick);
           return "";
-        } catch (KegbotApiException e) {
+        } catch (BackendException e) {
           Log.w(TAG, "Error calibrating: " + e, e);
           return e.toString();
         }

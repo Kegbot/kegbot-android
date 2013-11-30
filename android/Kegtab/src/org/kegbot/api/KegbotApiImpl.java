@@ -31,6 +31,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.codehaus.jackson.JsonNode;
 import org.kegbot.app.util.DateUtils;
+import org.kegbot.backend.Backend;
 import org.kegbot.proto.Api.RecordDrinkRequest;
 import org.kegbot.proto.Api.RecordTemperatureRequest;
 import org.kegbot.proto.Models.AuthenticationToken;
@@ -58,7 +59,7 @@ import java.util.Map;
 
 import javax.net.ssl.SSLContext;
 
-public class KegbotApiImpl implements KegbotApi {
+public class KegbotApiImpl implements Backend {
 
   private static final String TAG = KegbotApiImpl.class.getSimpleName();
 
@@ -340,21 +341,17 @@ public class KegbotApiImpl implements KegbotApi {
 
   @Override
   public Session getCurrentSession() throws KegbotApiException {
-    try {
-      final List<NameValuePair> params = Lists.newArrayList();
-      params.add(new BasicNameValuePair("limit", "1"));
-      final List<Session> sessions = getProto("/sessions/", Session.newBuilder(), params);
-      if (sessions.isEmpty()) {
-        return null;
-      }
-      final Session sess = sessions.get(0);
-      if (sess.getIsActive()) {
-        return sess;
-      }
-      return null;
-    } catch (KegbotApiNotFoundError e) {
+    final List<NameValuePair> params = Lists.newArrayList();
+    params.add(new BasicNameValuePair("limit", "1"));
+    final List<Session> sessions = getProto("/sessions/", Session.newBuilder(), params);
+    if (sessions.isEmpty()) {
       return null;
     }
+    final Session sess = sessions.get(0);
+    if (sess.getIsActive()) {
+      return sess;
+    }
+    return null;
   }
 
   @Override

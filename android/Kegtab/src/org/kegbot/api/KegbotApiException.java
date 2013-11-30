@@ -19,11 +19,13 @@
 package org.kegbot.api;
 
 import org.codehaus.jackson.JsonNode;
+import org.kegbot.backend.Backend;
+import org.kegbot.backend.BackendException;
 
 /**
- * Base exception for {@link KegbotApi} methods.
+ * Base exception for {@link Backend} methods.
  */
-public class KegbotApiException extends Exception {
+public class KegbotApiException extends BackendException {
 
   private final JsonNode mErrors;
 

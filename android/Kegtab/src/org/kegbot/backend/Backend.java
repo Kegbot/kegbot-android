@@ -16,7 +16,7 @@
  * Kegtab. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.kegbot.api;
+package org.kegbot.backend;
 
 import org.codehaus.jackson.JsonNode;
 import org.kegbot.proto.Api.RecordDrinkRequest;
@@ -36,84 +36,84 @@ import org.kegbot.proto.Models.User;
 import java.util.List;
 
 /**
- * High-level Kegbot API interface.
+ * High-level Kegbot backend interface.
  */
-public interface KegbotApi {
+public interface Backend {
 
   /** Activates a new keg on the specified tap. */
   public KegTap startKeg(String tapName, String beerName, String brewerName, String styleName,
-      int kegSizeId) throws KegbotApiException;
+      int kegSizeId) throws BackendException;
 
   /** Assigns an authentication token to a user. */
   public AuthenticationToken assignToken(String authDevice, String tokenValue, String username)
-      throws KegbotApiException;
+      throws BackendException;
 
   /** Attaches a picture to a drink record. */
-  public Image attachPictureToDrink(int drinkId, String imagePath) throws KegbotApiException;
+  public Image attachPictureToDrink(int drinkId, String imagePath) throws BackendException;
 
   /** Creates a new user. */
   public User createUser(String username, String email, String password, String imagePath)
-      throws KegbotApiException;
+      throws BackendException;
 
   /** Ends the given keg. */
-  public Keg endKeg(int kegId) throws KegbotApiException;
+  public Keg endKeg(int kegId) throws BackendException;
 
   /**
    * Returns the authentication token record for the given token.
    *
    * @return the token record
-   * @throws KegbotApiNotFoundError if there is no record for this token.
+   * @throws NotFoundException if there is no record for this token.
    */
   public AuthenticationToken getAuthToken(String authDevice, String tokenValue)
-      throws KegbotApiException;
+      throws BackendException;
 
   /**
    * Returns the currently-active drinking session.
    *
    * @return the active session
-   * @throws KegbotApiNotFoundError if there is no active session.
+   * @throws NotFoundException if there is no active session.
    */
-  public Session getCurrentSession() throws KegbotApiException;
+  public Session getCurrentSession() throws BackendException;
 
   /** Returns the most recent system events. The list may be empty. */
-  public List<SystemEvent> getEvents() throws KegbotApiException;
+  public List<SystemEvent> getEvents() throws BackendException;
 
   /** Returns the most recent since the given event. The list may be empty. */
-  public List<SystemEvent> getEventsSince(long sinceEventId) throws KegbotApiException;
+  public List<SystemEvent> getEventsSince(long sinceEventId) throws BackendException;
 
   /** Returns defined keg sizes. The list may be empty. */
-  public List<KegSize> getKegSizes() throws KegbotApiException;
+  public List<KegSize> getKegSizes() throws BackendException;
 
   /** Returns statistics for the given session. */
-  public JsonNode getSessionStats(int sessionId) throws KegbotApiException;
+  public JsonNode getSessionStats(int sessionId) throws BackendException;
 
   /** Returns any defined sound events. The list may be empty. */
-  public List<SoundEvent> getSoundEvents() throws KegbotApiException;
+  public List<SoundEvent> getSoundEvents() throws BackendException;
 
   /** Returns all defined taps. The list may be empty. */
-  public List<KegTap> getTaps() throws KegbotApiException;
+  public List<KegTap> getTaps() throws BackendException;
 
   /**
    * Retrieves information about a single user.
    *
    * @param username the username to query
    * @return the {@link User}
-   * @throws KegbotApiNotFoundError if the user does not exist
+   * @throws NotFoundException if the user does not exist
    */
-  public User getUser(String username) throws KegbotApiException;
+  public User getUser(String username) throws BackendException;
 
   /** Retrieves a full user list for this system. The list may be empty. */
-  public List<User> getUsers() throws KegbotApiException;
+  public List<User> getUsers() throws BackendException;
 
   /** Saves a new drink record. */
-  public Drink recordDrink(RecordDrinkRequest request) throws KegbotApiException;
+  public Drink recordDrink(RecordDrinkRequest request) throws BackendException;
 
   /** Saves a new temperature sensor record. */
   public ThermoLog recordTemperature(RecordTemperatureRequest request)
-      throws KegbotApiException;
+      throws BackendException;
 
   /** Sets the meter calibration factor. */
   public KegTap setTapMlPerTick(String tapName, double mlPerTick)
-      throws KegbotApiException;
+      throws BackendException;
 
 }
