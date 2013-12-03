@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU General Public License along
  * with Kegtab. If not, see <http://www.gnu.org/licenses/>.
  */
+
 package org.kegbot.app;
 
 import android.app.Activity;
@@ -25,35 +26,26 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.google.common.collect.Lists;
-
-import org.kegbot.api.KegbotApiImpl;
-import org.kegbot.app.config.AppConfiguration;
-import org.kegbot.app.config.SharedPreferencesConfigurationStore;
 import org.kegbot.app.service.KegbotCoreService;
+import org.kegbot.app.util.KegSizes;
 import org.kegbot.backend.Backend;
 import org.kegbot.backend.BackendException;
-import org.kegbot.proto.Models.KegSize;
+import org.kegbot.core.KegbotCore;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.Map;
 
 /**
- *
  * @author mike wakerly (opensource@hoho.com)
  */
 public class NewKegActivity extends Activity {
@@ -67,27 +59,41 @@ public class NewKegActivity extends Activity {
   private AutoCompleteTextView mBrewerName;
   private AutoCompleteTextView mStyle;
   private Spinner mSize;
-  private ArrayAdapter<String> mSizeAdapter;
+  private ArrayAdapter<KegSizeItem> mSizeAdapter;
   private Button mActivateButton;
 
-  private int mSizeId = -1;
-  private Backend mApi;
+  private KegSizeItem mSelectedSize;
+  private Backend mBackend;
 
-  private final List<KegSize> mKegSizes = Lists.newArrayList();
+  private static class KegSizeItem {
+    private String mName;
+    private String mDescription;
+
+    KegSizeItem(String name, String description) {
+      this.mName = name;
+      this.mDescription = description;
+    }
+
+    @Override
+    public String toString() {
+      return mDescription;
+    }
+
+    public String getName() {
+      return mName;
+    }
+
+  }
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    mBackend = KegbotCore.getInstance(this).getBackend();
     KegbotCoreService.stopService(this);
 
     mMeterName = getIntent().getStringExtra(EXTRA_METER_NAME);
 
     setContentView(R.layout.new_keg_activity);
-
-    AppConfiguration config = new AppConfiguration(new SharedPreferencesConfigurationStore(
-        PreferenceManager.getDefaultSharedPreferences(getApplicationContext())));
-
-    mApi = new KegbotApiImpl(config);
 
     mName = (AutoCompleteTextView) findViewById(R.id.newKegBeerName);
     mBrewerName = (AutoCompleteTextView) findViewById(R.id.newKegBrewer);
@@ -108,25 +114,13 @@ public class NewKegActivity extends Activity {
     });
 
     mSize = (Spinner) findViewById(R.id.newKegSize);
-    mSizeAdapter = new ArrayAdapter<String>(this, R.layout.keg_size_spinner_item);
-    mSizeAdapter.add("Loading Sizes..");
-    mSize.setOnItemSelectedListener(new OnItemSelectedListener() {
-      @Override
-      public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        Log.d(TAG, "Keg sizes: item " + position + " clicked");
-        if (position < mKegSizes.size()) {
-          mSizeId = mKegSizes.get(position).getId();
-        }
-      }
-
-      @Override
-      public void onNothingSelected(AdapterView<?> arg0) {
-        Log.d(TAG, "Keg sizes: nothing selected");
-        mSizeId = -1;
-      }
-    });
+    mSizeAdapter = new ArrayAdapter<KegSizeItem>(this, R.layout.keg_size_spinner_item);
 
     mSize.setAdapter(mSizeAdapter);
+    for (final Map.Entry<String, String> entry : KegSizes.DESCRIPTIONS.entrySet()) {
+      mSizeAdapter.add(new KegSizeItem(entry.getKey(), entry.getValue()));
+    }
+    mSize.setSelection(0);
 
     mActivateButton = (Button) findViewById(R.id.newKegButton);
     mActivateButton.setOnClickListener(new View.OnClickListener() {
@@ -147,32 +141,6 @@ public class NewKegActivity extends Activity {
   @Override
   protected void onResume() {
     super.onResume();
-
-    new AsyncTask<Void, Void, List<KegSize>>() {
-      @Override
-      protected List<KegSize> doInBackground(Void... params) {
-        try {
-          return mApi.getKegSizes();
-        } catch (BackendException e) {
-          // TODO: Handle error.
-          return Collections.emptyList();
-        }
-      }
-
-      @Override
-      protected void onPostExecute(List<KegSize> result) {
-        Log.d(TAG, "Got keg sizes");
-        mKegSizes.clear();
-        mKegSizes.addAll(result);
-        mSizeAdapter.clear();
-        for (KegSize size : mKegSizes) {
-          Log.d(TAG, "Adding: " + size.getName());
-          mSizeAdapter.add(size.getName());
-        }
-      }
-
-    }.execute();
-
   }
 
   @Override
@@ -188,13 +156,18 @@ public class NewKegActivity extends Activity {
     dialog.setMessage("Please wait ...");
     dialog.show();
 
-
     new AsyncTask<Void, Void, String>() {
       @Override
       protected String doInBackground(Void... params) {
+        KegSizeItem selected = (KegSizeItem) mSize.getSelectedItem();
+        if (selected == null) {
+          Log.e(TAG, "No Selection!!");
+          return "No Selection.";
+        }
         try {
-          mApi.startKeg(mMeterName, mName.getText().toString(),
-              mBrewerName.getText().toString(), mStyle.getText().toString(), mSizeId);
+          mBackend.startKeg(mMeterName, mName.getText().toString(),
+              mBrewerName.getText().toString(), mStyle.getText().toString(),
+              selected.getName());
           return "";
         } catch (BackendException e) {
           Log.w(TAG, "Activation failed.", e);
@@ -211,13 +184,12 @@ public class NewKegActivity extends Activity {
           return;
         }
         new AlertDialog.Builder(NewKegActivity.this)
-          .setCancelable(true)
-          .setNegativeButton("Ok", null)
-          .setTitle("Activation failed")
-          .setMessage("Activation failed: " + result)
-          .show();
+            .setCancelable(true)
+            .setNegativeButton("Ok", null)
+            .setTitle("Activation failed")
+            .setMessage("Activation failed: " + result)
+            .show();
       }
-
 
     }.execute();
   }

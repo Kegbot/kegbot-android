@@ -18,6 +18,8 @@
 
 package org.kegbot.backend;
 
+import android.content.Context;
+
 import org.codehaus.jackson.JsonNode;
 import org.kegbot.app.util.TimeSeries;
 import org.kegbot.proto.Api.RecordTemperatureRequest;
@@ -25,7 +27,6 @@ import org.kegbot.proto.Models.AuthenticationToken;
 import org.kegbot.proto.Models.Drink;
 import org.kegbot.proto.Models.Image;
 import org.kegbot.proto.Models.Keg;
-import org.kegbot.proto.Models.KegSize;
 import org.kegbot.proto.Models.KegTap;
 import org.kegbot.proto.Models.Session;
 import org.kegbot.proto.Models.SoundEvent;
@@ -43,9 +44,12 @@ import javax.annotation.Nullable;
  */
 public interface Backend {
 
+  /** Initialization stuff. */
+  public void start(Context context);
+
   /** Activates a new keg on the specified tap. */
   public KegTap startKeg(String tapName, String beerName, String brewerName, String styleName,
-      int kegSizeId) throws BackendException;
+      String kegType) throws BackendException;
 
   /** Assigns an authentication token to a user. */
   public AuthenticationToken assignToken(String authDevice, String tokenValue, String username)
@@ -84,9 +88,6 @@ public interface Backend {
   /** Returns the most recent since the given event. The list may be empty. */
   public List<SystemEvent> getEventsSince(long sinceEventId) throws BackendException;
 
-  /** Returns defined keg sizes. The list may be empty. */
-  public List<KegSize> getKegSizes() throws BackendException;
-
   /** Returns statistics for the given session. */
   public JsonNode getSessionStats(int sessionId) throws BackendException;
 
@@ -95,6 +96,21 @@ public interface Backend {
 
   /** Returns all defined taps. The list may be empty. */
   public List<KegTap> getTaps() throws BackendException;
+
+  /**
+   * Creates a new tap.
+   *
+   * @param meterName the flow meter name; must be unique.
+   * @param mlPerTick flow meter calibration
+   * @param relayName relay name, if any
+   * @param description descriptive name, like "Right Tap"
+   * @return the newly-created instance
+   * @throws BackendException on error creating the tap.
+   */
+  public KegTap createTap(String meterName, double mlPerTick, String relayName, String description)
+      throws BackendException;
+
+  public void removeTap(String meterName) throws BackendException;
 
   /**
    * Retrieves information about a single user.

@@ -92,7 +92,7 @@
     <string name="calibrate_dialog_custom_title">Enter actual volume</string>
     <string name="calibrate_dialog_custom_message">Enter the actual volume of the pour below.</string>
     <string name="new_keg_help_text">Enter keg details below.</string>
-    <string name="confirm_pin">Enter keg details below.</string>
+    <string name="confirm_pin">Confirm PIN</string>
     <string name="manager_pin_title">Manager PIN</string>
     <string name="manager_pin_description">Secret PIN for manager access.</string>
     <string name="example_url">http://kegbot.example.com</string>

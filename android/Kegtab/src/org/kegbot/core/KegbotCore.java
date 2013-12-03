@@ -129,6 +129,8 @@ public class KegbotCore {
 
   public synchronized void start() {
     if (!mStarted) {
+      Log.i(TAG, "Starting up, backend:" + mBackend);
+      mBackend.start(mContext);
       for (final Manager manager : mManagers) {
         Log.d(TAG, "Starting " + manager.getName());
         manager.start();

@@ -58,10 +58,12 @@ message BeerType {
   // Brewer information for the beer.  May refer to an 'unknown' or generic
   // brewer record.
   required string brewer_id = 3;
+  optional Brewer brewer = 13;
 
   // Style information for the beer.  May refer to an 'unknown' or generic beer
   // style.
   required string style_id = 4;
+  optional BeerStyle style = 14;
 
   // For seasonal or special edition beers, the year or other edition name.
   optional string edition = 6;

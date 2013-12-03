@@ -1,7 +1,7 @@
 package org.kegbot.backend;
 
 /**
- * The requested item was not found.
+ * The requested resource was not found.
  */
 public class NotFoundException extends BackendException {
 

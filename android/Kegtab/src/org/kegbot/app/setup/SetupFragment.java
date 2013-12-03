@@ -18,10 +18,12 @@
  */
 package org.kegbot.app.setup;
 
+import android.app.Fragment;
+
 import org.apache.http.conn.HttpHostConnectException;
 import org.kegbot.api.KegbotApiServerError;
 
-import android.app.Fragment;
+import java.net.SocketException;
 
 /**
  *
@@ -43,6 +45,8 @@ public abstract class SetupFragment extends Fragment {
       builder.append("Bad response from server (");
       builder.append(e.toString());
       builder.append(")");
+    } else if (e instanceof SocketException || e.getCause() instanceof SocketException) {
+      builder.append("Server is down or unreachable.");
     } else {
       builder.append(e.getMessage());
     }

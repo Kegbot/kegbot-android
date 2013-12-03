@@ -55,6 +55,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * The main "home screen" of the Kegtab application. It shows the status of each
+ * tap, and allows the user start a pour by authenticating (if enabled in
+ * settings).
+ */
 public class HomeActivity extends CoreActivity {
 
   private static final String LOG_TAG = HomeActivity.class.getSimpleName();

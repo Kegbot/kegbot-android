@@ -18,6 +18,7 @@
  */
 package org.kegbot.api;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.google.common.base.Strings;
@@ -39,7 +40,6 @@ import org.kegbot.proto.Models.AuthenticationToken;
 import org.kegbot.proto.Models.Drink;
 import org.kegbot.proto.Models.Image;
 import org.kegbot.proto.Models.Keg;
-import org.kegbot.proto.Models.KegSize;
 import org.kegbot.proto.Models.KegTap;
 import org.kegbot.proto.Models.Session;
 import org.kegbot.proto.Models.SoundEvent;
@@ -96,6 +96,11 @@ public class KegbotApiImpl implements Backend {
 
   private String apiKey() {
     return Strings.nullToEmpty(mConfig.getApiKey());
+  }
+
+  @Override
+  public void start(Context context) {
+    // TODO: implement me
   }
 
   private String getRequestUrl(String path) {
@@ -232,23 +237,31 @@ public class KegbotApiImpl implements Backend {
   }
 
   @Override
+  public KegTap createTap(String meterName, double mlPerTick, String relayName, String description)
+      throws BackendException {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public void removeTap(String meterName) {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
   public AuthenticationToken getAuthToken(String authDevice, String tokenValue)
       throws KegbotApiException {
     return getSingleProto("/auth-tokens/" + authDevice + "/" + tokenValue + "/",
         AuthenticationToken.newBuilder());
   }
 
-  public Drink getDrinkDetail(String id) throws KegbotApiException {
+  private Drink getDrinkDetail(String id) throws KegbotApiException {
     return getSingleProto("/drinks/" + id, Drink.newBuilder());
   }
 
-  public Keg getKegDetail(String id) throws KegbotApiException {
+  private Keg getKegDetail(String id) throws KegbotApiException {
     return getSingleProto("/kegs/" + id, Keg.newBuilder());
-  }
-
-  @Override
-  public List<KegSize> getKegSizes() throws KegbotApiException {
-    return getProto("/keg-sizes/", KegSize.newBuilder());
   }
 
   @Override
@@ -258,29 +271,29 @@ public class KegbotApiImpl implements Backend {
 
   @Override
   public KegTap startKeg(String tapName, String beerName, String brewerName, String styleName,
-      int kegSizeId) throws KegbotApiException {
+      String kegType) throws KegbotApiException {
     final Request.Builder builder = newRequest("/taps/" + tapName + "/activate/")
         .setMethod(Http.POST)
         .addParameter("beer_name", beerName)
         .addParameter("brewer_name", brewerName)
         .addParameter("style_name", styleName)
-        .addParameter("keg_size", Integer.valueOf(kegSizeId).toString());
+        .addParameter("keg_size", kegType);
     return getSingleProto(KegTap.newBuilder(), requestJson(builder.build()).get("object"));
   }
 
-  public List<Drink> getKegDrinks(String kegId) throws KegbotApiException {
+  private List<Drink> getKegDrinks(String kegId) throws KegbotApiException {
     return getProto("/kegs/" + kegId + "/drinks/", Drink.newBuilder());
   }
 
-  public List<SystemEvent> getKegEvents(String kegId) throws KegbotApiException {
+  private List<SystemEvent> getKegEvents(String kegId) throws KegbotApiException {
     return getProto("/keg/" + kegId + "/events/", SystemEvent.newBuilder());
   }
 
-  public List<Session> getKegSessions(String kegId) throws KegbotApiException {
+  private List<Session> getKegSessions(String kegId) throws KegbotApiException {
     return getProto("/kegs/" + kegId + "/sessions/", Session.newBuilder());
   }
 
-  public List<Drink> getRecentDrinks() throws KegbotApiException {
+  private List<Drink> getRecentDrinks() throws KegbotApiException {
     return getProto("/last-drinks/", Drink.newBuilder());
   }
 
@@ -296,7 +309,7 @@ public class KegbotApiImpl implements Backend {
     return getProto("/events/", SystemEvent.newBuilder(), params);
   }
 
-  public Session getSessionDetail(String id) throws KegbotApiException {
+  private Session getSessionDetail(String id) throws KegbotApiException {
     return getSingleProto("/sessions/" + id, Session.newBuilder());
   }
 
@@ -305,7 +318,7 @@ public class KegbotApiImpl implements Backend {
     return getJson("/sessions/" + sessionId + "/stats/", null).get("object");
   }
 
-  public KegTap getTapDetail(String tapName) throws KegbotApiException {
+  private KegTap getTapDetail(String tapName) throws KegbotApiException {
     return getSingleProto("/taps/" + tapName, KegTap.newBuilder());
   }
 
@@ -317,11 +330,11 @@ public class KegbotApiImpl implements Backend {
     return getSingleProto(KegTap.newBuilder(), requestJson(builder.build()).get("object"));
   }
 
-  public List<ThermoLog> getThermoSensorLogs(String sensorId) throws KegbotApiException {
+  private List<ThermoLog> getThermoSensorLogs(String sensorId) throws KegbotApiException {
     return getProto("/thermo-sensors/" + sensorId + "/logs/", ThermoLog.newBuilder());
   }
 
-  public List<ThermoSensor> getThermoSensors() throws KegbotApiException {
+  private List<ThermoSensor> getThermoSensors() throws KegbotApiException {
     return getProto("/thermo-sensors/", ThermoSensor.newBuilder());
   }
 
@@ -330,11 +343,11 @@ public class KegbotApiImpl implements Backend {
     return getSingleProto("/users/" + username, User.newBuilder());
   }
 
-  public List<Drink> getUserDrinks(String username) throws KegbotApiException {
+  private List<Drink> getUserDrinks(String username) throws KegbotApiException {
     return getProto("/users/" + username + "/drinks/", Drink.newBuilder());
   }
 
-  public List<SystemEvent> getUserEvents(String username) throws KegbotApiException {
+  private List<SystemEvent> getUserEvents(String username) throws KegbotApiException {
     return getProto("/users/" + username + "/events/", SystemEvent
         .newBuilder());
   }
