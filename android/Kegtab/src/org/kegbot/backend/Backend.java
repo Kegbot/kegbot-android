@@ -19,7 +19,7 @@
 package org.kegbot.backend;
 
 import org.codehaus.jackson.JsonNode;
-import org.kegbot.proto.Api.RecordDrinkRequest;
+import org.kegbot.app.util.TimeSeries;
 import org.kegbot.proto.Api.RecordTemperatureRequest;
 import org.kegbot.proto.Models.AuthenticationToken;
 import org.kegbot.proto.Models.Drink;
@@ -33,7 +33,10 @@ import org.kegbot.proto.Models.SystemEvent;
 import org.kegbot.proto.Models.ThermoLog;
 import org.kegbot.proto.Models.User;
 
+import java.io.File;
 import java.util.List;
+
+import javax.annotation.Nullable;
 
 /**
  * High-level Kegbot backend interface.
@@ -49,7 +52,7 @@ public interface Backend {
       throws BackendException;
 
   /** Attaches a picture to a drink record. */
-  public Image attachPictureToDrink(int drinkId, String imagePath) throws BackendException;
+  public Image attachPictureToDrink(int drinkId, File picture) throws BackendException;
 
   /** Creates a new user. */
   public User createUser(String username, String email, String password, String imagePath)
@@ -105,8 +108,27 @@ public interface Backend {
   /** Retrieves a full user list for this system. The list may be empty. */
   public List<User> getUsers() throws BackendException;
 
-  /** Saves a new drink record. */
-  public Drink recordDrink(RecordDrinkRequest request) throws BackendException;
+  /**
+   * Saves a new drink record from given pour data.
+   *
+   * <p>
+   * Either or both of {@code volumeMl} and {@code ticks} should be specified.
+   * </p>
+   *
+   * @param tapName the tap used for this pour (required).
+   * @param volumeMl
+   * @param ticks
+   * @param shout
+   * @param username
+   * @param recordDate
+   * @param durationMillis
+   * @param timeSeries
+   * @return
+   * @throws BackendException
+   */
+  public Drink recordDrink(String tapName, long volumeMl, long ticks, @Nullable String shout,
+      @Nullable String username, @Nullable String recordDate, long durationMillis,
+      @Nullable TimeSeries timeSeries) throws BackendException;
 
   /** Saves a new temperature sensor record. */
   public ThermoLog recordTemperature(RecordTemperatureRequest request)

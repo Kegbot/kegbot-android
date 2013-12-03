@@ -30,9 +30,9 @@ import com.squareup.okhttp.OkHttpClient;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.codehaus.jackson.JsonNode;
-import org.kegbot.app.util.DateUtils;
+import org.kegbot.app.util.TimeSeries;
 import org.kegbot.backend.Backend;
-import org.kegbot.proto.Api.RecordDrinkRequest;
+import org.kegbot.backend.BackendException;
 import org.kegbot.proto.Api.RecordTemperatureRequest;
 import org.kegbot.proto.Models.AuthenticationToken;
 import org.kegbot.proto.Models.Drink;
@@ -57,6 +57,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nullable;
 import javax.net.ssl.SSLContext;
 
 public class KegbotApiImpl implements Backend {
@@ -355,64 +356,43 @@ public class KegbotApiImpl implements Backend {
   }
 
   @Override
-  public Drink recordDrink(final RecordDrinkRequest request) throws KegbotApiException {
-    if (!request.isInitialized()) {
-      throw new KegbotApiException("Request is missing required field(s)");
-    }
+  public Drink recordDrink(String tapName, long volumeMl, long ticks,
+      @Nullable String shout, @Nullable String username, @Nullable String recordDate, long durationMillis,
+      @Nullable TimeSeries timeSeries) throws BackendException {
 
     final Map<String, String> params = Maps.newLinkedHashMap();
 
-    final String tapName = request.getTapName();
-    final int ticks = request.getTicks();
-
     params.put("ticks", String.valueOf(ticks));
 
-    final float volumeMl = request.getVolumeMl();
     if (volumeMl > 0) {
       params.put("volume_ml", String.valueOf(volumeMl));
     }
 
-    final String username = request.getUsername();
     if (!Strings.isNullOrEmpty(username)) {
       params.put("username", username);
     }
 
-    final String recordDate = request.getRecordDate();
-    boolean haveDate = false;
     if (!Strings.isNullOrEmpty(recordDate)) {
       try {
         params.put("record_date", recordDate); // new API
-        haveDate = true;
-        final long pourTime = DateUtils.dateFromIso8601String(recordDate);
-        params.put("pour_time", String.valueOf(pourTime)); // old API
       } catch (IllegalArgumentException e) {
         // Ignore.
       }
     }
 
-    final int secondsAgo = request.getSecondsAgo();
-    if (!haveDate & secondsAgo > 0) {
-      params.put("seconds_ago", String.valueOf(secondsAgo));
+    if (durationMillis > 0) {
+      // TODO: Fix API to report this in millis.
+      params.put("duration", String.valueOf(durationMillis / 1000));
     }
 
-    final int durationSeconds = request.getDurationSeconds();
-    if (durationSeconds > 0) {
-      params.put("duration", String.valueOf(durationSeconds));
-    }
+    // TODO: Handle spilled.
 
-    final boolean spilled = request.getSpilled();
-    if (spilled) {
-      params.put("spilled", String.valueOf(spilled));
-    }
-
-    final String shout = request.getShout();
     if (!Strings.isNullOrEmpty(shout)) {
       params.put("shout", shout);
     }
 
-    final String tickTimeSeries = request.getTickTimeSeries();
-    if (!Strings.isNullOrEmpty(tickTimeSeries)) {
-      params.put("tick_time_series", tickTimeSeries);
+    if (timeSeries != null) {
+      params.put("tick_time_series", timeSeries.asString());
     }
 
     return (Drink) postProto("/taps/" + tapName, Drink.newBuilder(), params);
@@ -434,12 +414,12 @@ public class KegbotApiImpl implements Backend {
   }
 
   @Override
-  public Image attachPictureToDrink(int drinkId, String imagePath) throws KegbotApiException {
+  public Image attachPictureToDrink(int drinkId, File picture) throws KegbotApiException {
     final String url = String.format("/drinks/%s/add-photo/", Integer.valueOf(drinkId));
 
     final Request.Builder builder = newRequest(url)
         .setMethod(Http.POST)
-        .addFile("photo", new File(imagePath));
+        .addFile("photo", picture);
 
     return getSingleProto(Image.newBuilder(), requestJson(builder.build()).get("object"));
   }

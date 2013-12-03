@@ -44,6 +44,7 @@ import org.kegbot.app.event.SoundEventListUpdateEvent;
 import org.kegbot.app.event.SystemEventListUpdateEvent;
 import org.kegbot.app.event.TapListUpdateEvent;
 import org.kegbot.app.storage.LocalDbHelper;
+import org.kegbot.app.util.TimeSeries;
 import org.kegbot.backend.Backend;
 import org.kegbot.backend.BackendException;
 import org.kegbot.backend.NotFoundException;
@@ -67,14 +68,14 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
 
 /**
- * This service manages a connection to a Kegbot backend, using the Kegbot API.
- * It implements the {@link Backend} interface, potentially employing caching.
+ * Wraps a {@link Backend}, performing asynchronous and periodic work against
+ * it.
  */
 public class SyncManager extends BackgroundManager {
 
   private static String TAG = SyncManager.class.getSimpleName();
 
-  private final Backend mApi;
+  private final Backend mBackend;
   private final Context mContext;
 
   private List<KegTap> mLastKegTapList = Lists.newArrayList();
@@ -93,7 +94,7 @@ public class SyncManager extends BackgroundManager {
   private static final long SYNC_INTERVAL_MILLIS = TimeUnit.MINUTES.toMillis(1);
   private static final long SYNC_INTERVAL_AGGRESSIVE_MILLIS = TimeUnit.SECONDS.toMillis(10);
 
-  private ExecutorService mApiExecutorService;
+  private ExecutorService mBackendExecutorService;
 
   public static Comparator<SystemEvent> EVENTS_DESCENDING = new Comparator<SystemEvent>() {
     @Override
@@ -122,7 +123,7 @@ public class SyncManager extends BackgroundManager {
 
   public SyncManager(Bus bus, Context context, Backend api) {
     super(bus);
-    mApi = api;
+    mBackend = api;
     mContext = context;
   }
 
@@ -132,7 +133,7 @@ public class SyncManager extends BackgroundManager {
     mRunning = true;
     mSyncImmediate = true;
     mNextSyncTime = Long.MIN_VALUE;
-    mApiExecutorService = Executors.newSingleThreadExecutor();
+    mBackendExecutorService = Executors.newSingleThreadExecutor();
     mLocalDbHelper = new LocalDbHelper(mContext);
     mRunning = true;
     getBus().register(this);
@@ -144,7 +145,7 @@ public class SyncManager extends BackgroundManager {
     mRunning = false;
     getBus().unregister(this);
     mLastKegTapList.clear();
-    mApiExecutorService.shutdown();
+    mBackendExecutorService.shutdown();
     super.stop();
   }
 
@@ -161,7 +162,7 @@ public class SyncManager extends BackgroundManager {
         .build();
 
     postDeferredPoursAsync();
-    mApiExecutorService.submit(new Runnable() {
+    mBackendExecutorService.submit(new Runnable() {
       @Override
       public void run() {
         try {
@@ -177,7 +178,7 @@ public class SyncManager extends BackgroundManager {
   }
 
   private void postDeferredPoursAsync() {
-    mApiExecutorService.submit(new Runnable() {
+    mBackendExecutorService.submit(new Runnable() {
       @Override
       public void run() {
         postDeferredPours();
@@ -195,7 +196,7 @@ public class SyncManager extends BackgroundManager {
       Log.e(TAG, "Record thermo request while not running.");
       return;
     }
-    mApiExecutorService.submit(new Runnable() {
+    mBackendExecutorService.submit(new Runnable() {
       @Override
       public void run() {
         try {
@@ -303,7 +304,13 @@ public class SyncManager extends BackgroundManager {
 
     final Drink drink;
     try {
-      drink = mApi.recordDrink(request);
+      TimeSeries ts = null;
+      if (request.hasTickTimeSeries()) {
+        ts = TimeSeries.fromString(request.getTickTimeSeries());
+      }
+      drink = mBackend.recordDrink(request.getTapName(), (long) request.getVolumeMl(),
+          request.getTicks(), request.getShout(), request.getUsername(), request.getRecordDate(),
+          request.getDurationSeconds() * 1000L, ts);
     } catch (NotFoundException e) {
       Log.w(TAG, "Tap does not exist, dropping pour.");
       return;
@@ -324,7 +331,7 @@ public class SyncManager extends BackgroundManager {
         if (drink != null) {
           Log.d(TAG, "Uploading image: " + imagePath);
           try {
-            mApi.attachPictureToDrink(drink.getId(), imagePath);
+            mBackend.attachPictureToDrink(drink.getId(), new File(imagePath));
           } catch (BackendException e) {
             // Discard image, no retry.
             Log.w(TAG, String.format("Error uploading image %s: %s", imagePath, e));
@@ -349,7 +356,7 @@ public class SyncManager extends BackgroundManager {
     if (!isConnected()) {
       throw new KegbotApiException("Not connected.");
     }
-    mApi.recordTemperature(request);
+    mBackend.recordTemperature(request);
     Log.d(TAG, "<<< Success.");
   }
 
@@ -449,7 +456,7 @@ public class SyncManager extends BackgroundManager {
 
     // Taps.
     try {
-      List<KegTap> newTaps = mApi.getTaps();
+      List<KegTap> newTaps = mBackend.getTaps();
       if (!newTaps.equals(mLastKegTapList)) {
         mLastKegTapList = newTaps;
         postOnMainThread(new TapListUpdateEvent(newTaps));
@@ -468,9 +475,9 @@ public class SyncManager extends BackgroundManager {
     try {
       List<SystemEvent> newEvents;
       if (lastEvent != null) {
-        newEvents = mApi.getEventsSince(lastEvent.getId());
+        newEvents = mBackend.getEventsSince(lastEvent.getId());
       } else {
-        newEvents = mApi.getEvents();
+        newEvents = mBackend.getEvents();
       }
       Collections.sort(newEvents, EVENTS_DESCENDING);
 
@@ -486,13 +493,13 @@ public class SyncManager extends BackgroundManager {
 
     // Current session
     try {
-      Session currentSession = mApi.getCurrentSession();
+      Session currentSession = mBackend.getCurrentSession();
       if ((currentSession == null && mLastSession != null) ||
           (mLastSession == null && currentSession != null) ||
           (currentSession != null && !currentSession.equals(mLastSession))) {
         JsonNode stats = null;
         if (currentSession != null) {
-          stats = mApi.getSessionStats(currentSession.getId());
+          stats = mBackend.getSessionStats(currentSession.getId());
         }
         mLastSession = currentSession;
         mLastSessionStats = stats;
@@ -505,7 +512,7 @@ public class SyncManager extends BackgroundManager {
 
     // Sound events
     try {
-      List<SoundEvent> events = mApi.getSoundEvents();
+      List<SoundEvent> events = mBackend.getSoundEvents();
       Collections.sort(events, SOUND_EVENT_COMPARATOR);
       if (!events.equals(mLastSoundEventList)) {
         mLastSoundEventList.clear();
