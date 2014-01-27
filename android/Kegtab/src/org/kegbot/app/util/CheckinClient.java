@@ -32,12 +32,14 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.core.KegbotCore;
 
+import java.io.File;
 import java.io.IOException;
 
 public class CheckinClient {
 
   private static final String TAG = CheckinClient.class.getSimpleName();
   private static final String CHECKIN_URL = "https://kegbotcheckin.appspot.com/checkin";
+  private static final String BUGREPORT_URL = "https://kegbotcheckin.appspot.com/bugreport";
 
   private final AppConfiguration mConfig;
   private final PackageInfo mPackageInfo;
@@ -98,6 +100,33 @@ public class CheckinClient {
       return rootNode;
     } catch (HttpRequestException e) {
       throw e.getCause();
+    }
+  }
+
+  public void submitBugreport(String message, File reportData) throws IOException {
+    final HttpRequest request = new HttpRequest(BUGREPORT_URL, "POST");
+    request.header("User-Agent", mUserAgent);
+    request.part("product", "kegtab-android");
+    request.part("reg_id", mConfig.getRegistrationId());
+    request.part("message", message);
+    request.part("data", reportData);
+
+    if (mPackageInfo != null) {
+      if (mPackageInfo.signatures != null && mPackageInfo.signatures.length > 0) {
+        request.part("android_build_fingerprint",
+            Utils.getFingerprintForSignature(mPackageInfo.signatures[0]));
+      }
+      request.part("version", String.valueOf(mPackageInfo.versionCode));
+    }
+
+    final int code;
+    try {
+      code = request.code();
+    } catch (HttpRequestException e) {
+      throw e.getCause();
+    }
+    if (code != 200) {
+      throw new IOException("Response code: " + code);
     }
   }
 
