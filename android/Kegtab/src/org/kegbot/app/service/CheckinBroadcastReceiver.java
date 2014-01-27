@@ -17,8 +17,8 @@ public class CheckinBroadcastReceiver extends BroadcastReceiver {
   @Override
   public void onReceive(Context context, Intent intent) {
     final String action = intent.getAction();
-    if (CheckinService.CHECKIN_ACTION.equals(action)) {
-      CheckinService.startCheckinService(context);
+    if (CheckinService.CHECKIN_NOW_ACTION.equals(action)) {
+      CheckinService.startCheckinService(context, true);
     }
   }
 

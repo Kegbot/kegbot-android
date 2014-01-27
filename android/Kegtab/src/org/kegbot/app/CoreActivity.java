@@ -132,7 +132,7 @@ public class CoreActivity extends Activity {
 
   private void updateAlerts() {
     if (mMenu != null) {
-      mMenu.findItem(R.id.alertUpdate).setVisible(mConfig.getUpdateNeeded());
+      mMenu.findItem(R.id.alertUpdate).setVisible(mConfig.getUpdateAvailable());
     }
   }
 

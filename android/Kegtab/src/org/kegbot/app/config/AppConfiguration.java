@@ -138,14 +138,6 @@ public class AppConfiguration {
     setInteger(ConfigKey.SETUP_VERSION, value);
   }
 
-  public boolean getIsRegistered() {
-    return getBoolean(ConfigKey.IS_REGISTERED);
-  }
-
-  public void setIsRegistered(boolean value) {
-    setBoolean(ConfigKey.IS_REGISTERED, value);
-  }
-
   public boolean getAllowRegistration() {
     return getBoolean(ConfigKey.ALLOW_REGISTRATION);
   }
@@ -230,12 +222,20 @@ public class AppConfiguration {
     set(ConfigKey.LAST_CHECKIN_STATUS, value);
   }
 
-  public void setUpdateNeeded(boolean value) {
-    setBoolean(ConfigKey.UPDATE_NEEDED, value);
+  public String getRegistrationId() {
+    return get(ConfigKey.REGISTRATION_ID);
   }
 
-  public boolean getUpdateNeeded() {
-    return getBoolean(ConfigKey.UPDATE_NEEDED);
+  public void setRegistrationId(String value) {
+    set(ConfigKey.REGISTRATION_ID, value);
+  }
+
+  public void setUpdateAvailable(boolean value) {
+    setBoolean(ConfigKey.UPDATE_AVAILABLE, value);
+  }
+
+  public boolean getUpdateAvailable() {
+    return getBoolean(ConfigKey.UPDATE_AVAILABLE);
   }
 
   public void setUpdateRequired(boolean value) {
