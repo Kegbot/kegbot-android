@@ -50,6 +50,8 @@ public class CheckinClient {
     mConfig = config;
     mPackageInfo = packageInfo;
     mUserAgent = userAgent;
+
+    //HttpRequest.setConnectionFactory(new OkConnectionFactory());
   }
 
   public static CheckinClient fromContext(final Context context) {
