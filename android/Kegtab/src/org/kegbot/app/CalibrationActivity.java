@@ -42,9 +42,9 @@ import org.kegbot.backend.Backend;
 import org.kegbot.backend.BackendException;
 import org.kegbot.core.AuthenticationToken;
 import org.kegbot.core.FlowMeter;
-import org.kegbot.core.HardwareManager;
 import org.kegbot.core.KegbotCore;
 import org.kegbot.core.ThermoSensor;
+import org.kegbot.core.hardware.HardwareManager;
 import org.kegbot.proto.Models.KegTap;
 
 import java.util.Set;

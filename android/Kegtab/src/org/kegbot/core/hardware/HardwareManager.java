@@ -16,21 +16,7 @@
  * You should have received a copy of the GNU General Public License along
  * with Kegtab. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.kegbot.core;
-
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-
-import org.kegbot.app.KegtabBroadcast;
-import org.kegbot.app.config.AppConfiguration;
-import org.kegbot.kegboard.KegboardAuthTokenMessage;
-import org.kegbot.kegboard.KegboardAuthTokenMessage.Status;
-import org.kegbot.kegboard.KegboardHelloMessage;
-import org.kegbot.kegboard.KegboardMeterStatusMessage;
-import org.kegbot.kegboard.KegboardOutputStatusMessage;
-import org.kegbot.kegboard.KegboardTemperatureReadingMessage;
-import org.kegbot.proto.Models.KegTap;
+package org.kegbot.core.hardware;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -44,6 +30,24 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.squareup.otto.Bus;
+
+import org.kegbot.app.KegtabBroadcast;
+import org.kegbot.app.config.AppConfiguration;
+import org.kegbot.core.AuthenticationToken;
+import org.kegbot.core.FlowMeter;
+import org.kegbot.core.Manager;
+import org.kegbot.core.ThermoSensor;
+import org.kegbot.kegboard.KegboardAuthTokenMessage;
+import org.kegbot.kegboard.KegboardAuthTokenMessage.Status;
+import org.kegbot.kegboard.KegboardHelloMessage;
+import org.kegbot.kegboard.KegboardMeterStatusMessage;
+import org.kegbot.kegboard.KegboardOutputStatusMessage;
+import org.kegbot.kegboard.KegboardTemperatureReadingMessage;
+import org.kegbot.proto.Models.KegTap;
+
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Generic hardware manager. Attaches to hardware-specific managers and exports

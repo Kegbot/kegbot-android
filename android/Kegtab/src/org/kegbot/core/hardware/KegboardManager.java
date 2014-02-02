@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License along
  * with Kegtab. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.kegbot.core;
+package org.kegbot.core.hardware;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -34,6 +34,7 @@ import com.hoho.android.usbserial.util.HexDump;
 import com.squareup.otto.Bus;
 
 import org.kegbot.app.util.IndentingPrintWriter;
+import org.kegbot.core.BackgroundManager;
 import org.kegbot.kegboard.KegboardAuthTokenMessage;
 import org.kegbot.kegboard.KegboardHelloMessage;
 import org.kegbot.kegboard.KegboardMessage;

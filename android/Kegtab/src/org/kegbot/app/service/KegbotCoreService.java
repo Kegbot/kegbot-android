@@ -46,10 +46,10 @@ import org.kegbot.core.AuthenticationToken;
 import org.kegbot.core.Flow;
 import org.kegbot.core.FlowManager;
 import org.kegbot.core.FlowMeter;
-import org.kegbot.core.HardwareManager;
 import org.kegbot.core.KegbotCore;
 import org.kegbot.core.SyncManager;
 import org.kegbot.core.ThermoSensor;
+import org.kegbot.core.hardware.HardwareManager;
 import org.kegbot.proto.Api.RecordTemperatureRequest;
 
 import java.io.FileDescriptor;

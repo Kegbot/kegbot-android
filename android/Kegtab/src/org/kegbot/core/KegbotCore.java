@@ -43,6 +43,8 @@ import org.kegbot.app.util.IndentingPrintWriter;
 import org.kegbot.app.util.Utils;
 import org.kegbot.backend.Backend;
 import org.kegbot.core.FlowManager.Clock;
+import org.kegbot.core.hardware.HardwareManager;
+import org.kegbot.core.hardware.KegboardManager;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
