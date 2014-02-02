@@ -324,7 +324,7 @@ public class AuthenticatingActivity extends Activity {
    */
   public static void startAndAuthenticate(Context context, String username, KegTap tap) {
     final Intent intent = new Intent(context, AuthenticatingActivity.class);
-    intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+    intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
     intent.putExtra(EXTRA_USERNAME, username);
     if (tap != null) {
       intent.putExtra(EXTRA_TAP, tap.getMeterName());
