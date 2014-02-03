@@ -17,14 +17,14 @@
  */
 package org.kegbot.kegboard;
 
+import junit.framework.TestCase;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import junit.framework.TestCase;
 
 /**
  *
@@ -59,7 +59,16 @@ public class KegboardMessageFactoryTest extends TestCase {
         if (amt < 0) {
           break;
         }
-        messages.addAll(mFactory.addBytes(buf, amt));
+
+        mFactory.addBytes(buf, amt);
+      }
+
+      while (true) {
+        final KegboardMessage message = mFactory.getMessage();
+        if (message == null) {
+          break;
+        }
+        messages.add(message);
       }
 
       assertEquals(23, messages.size());
