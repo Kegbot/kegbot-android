@@ -18,6 +18,8 @@
  */
 package org.kegbot.kegboard;
 
+import com.google.common.base.Strings;
+
 /**
  *
  * @author mike
@@ -26,6 +28,10 @@ public class KegboardHelloMessage extends KegboardMessage {
 
   public static final int MESSAGE_TYPE = 0x01;
 
+  private static final int TAG_FIRMWARE_VERSION = 0x01;
+  private static final int TAG_PROTOCOL_VERSION = 0x02;
+  private static final int TAG_SERIAL_NUMBER = 0x03;
+
   public KegboardHelloMessage(byte[] wholeMessage) throws KegboardMessageException {
     super(wholeMessage);
   }
@@ -33,6 +39,26 @@ public class KegboardHelloMessage extends KegboardMessage {
   @Override
   public short getMessageType() {
     return MESSAGE_TYPE;
+  }
+
+  @Override
+  public String getStringExtra() {
+    return "firmware_version=" + getFirmwareVersion() +
+        " protocol_version=" + getProtocolVersion() +
+        " serial_number=" + getSerialNumber();
+  }
+
+
+  public int getFirmwareVersion() {
+    return readTagAsShort(TAG_FIRMWARE_VERSION);
+  }
+
+  public int getProtocolVersion() {
+    return readTagAsShort(TAG_PROTOCOL_VERSION);
+  }
+
+  public String getSerialNumber() {
+    return Strings.nullToEmpty(readTagAsString(TAG_SERIAL_NUMBER));
   }
 
 }

@@ -18,12 +18,12 @@
  */
 package org.kegbot.kegboard;
 
-import java.util.Arrays;
-import java.util.Map;
-
 import com.google.common.collect.Maps;
 import com.google.common.primitives.Bytes;
 import com.google.common.primitives.Shorts;
+
+import java.util.Arrays;
+import java.util.Map;
 
 /**
  * Base message type for messages to/from a Kegboard device.
@@ -177,6 +177,16 @@ public abstract class KegboardMessage {
     return mTags.get(Integer.valueOf(tagNum));
   }
 
+  public int readTagAsShort(int tagNum) {
+    final byte[] tagData = readTag(tagNum);
+    if (tagData != null && tagData.length == 2) {
+      int result = (tagData[1] & 0xff) << 8;
+      result |= tagData[0] & 0xff;
+      return result;
+    }
+    return 0;
+  }
+
   public Long readTagAsLong(int tagNum) {
     final byte[] tagData = readTag(tagNum);
     if (tagData != null && tagData.length == 4) {
@@ -194,7 +204,7 @@ public abstract class KegboardMessage {
     if (tagData == null) {
       return null;
     }
-    return new String(tagData);
+    return new String(tagData).replace("\0", "");
   }
 
   private static int extractType(final byte[] bytes) {
