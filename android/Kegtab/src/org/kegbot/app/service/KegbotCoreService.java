@@ -35,6 +35,8 @@ import android.os.SystemClock;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.squareup.otto.Subscribe;
+
 import org.kegbot.app.AuthenticatingActivity;
 import org.kegbot.app.HomeActivity;
 import org.kegbot.app.PourInProgressActivity;
@@ -50,6 +52,9 @@ import org.kegbot.core.KegbotCore;
 import org.kegbot.core.SyncManager;
 import org.kegbot.core.ThermoSensor;
 import org.kegbot.core.hardware.HardwareManager;
+import org.kegbot.core.hardware.MeterUpdateEvent;
+import org.kegbot.core.hardware.ThermoSensorUpdateEvent;
+import org.kegbot.core.hardware.TokenAttachedEvent;
 import org.kegbot.proto.Api.RecordTemperatureRequest;
 
 import java.io.FileDescriptor;
@@ -88,53 +93,46 @@ public class KegbotCoreService extends Service {
 
   private final Handler mHandler = new Handler();
 
-  private final HardwareManager.Listener mHardwareListener = new HardwareManager.Listener() {
-    @Override
-    public void onTokenRemoved(AuthenticationToken token, String tapName) {
-      Log.d(TAG, "Auth token removed: " + token);
-    }
+  @Subscribe
+  public void onTokenAdded(TokenAttachedEvent event) {
+    final AuthenticationToken token = event.getToken();
+    final Runnable r = new Runnable() {
+      @Override
+      public void run() {
+        Log.d(TAG, "onTokenAttached: running");
+        AuthenticatingActivity.startAndAuthenticate(KegbotCoreService.this,
+            token.getAuthDevice(), token.getTokenValue());
+      }
+    };
+    mHandler.post(r);
+  }
 
-    @Override
-    public void onTokenAttached(final AuthenticationToken token, final String tapName) {
-      Log.d(TAG, "Auth token added: " + token);
+  @Subscribe
+  public void onThermoSensorUpdate(final ThermoSensorUpdateEvent event) {
+    final ThermoSensor sensor = event.getSensor();
+    final Runnable r = new Runnable() {
+      @Override
+      public void run() {
+        Log.d(TAG, "Sensor update for sensor: " + sensor);
+        final RecordTemperatureRequest request = RecordTemperatureRequest.newBuilder()
+            .setSensorName(sensor.getName()).setTempC((float) sensor.getTemperatureC())
+            .buildPartial();
+        mApiManager.recordTemperatureAsync(request);
+      }
+    };
+    mExecutorService.submit(r);
+  }
 
-      final Runnable r = new Runnable() {
-        @Override
-        public void run() {
-          Log.d(TAG, "onTokenAttached: running");
-          AuthenticatingActivity.startAndAuthenticate(KegbotCoreService.this,
-              token.getAuthDevice(), token.getTokenValue());
-        }
-      };
-      mHandler.post(r);
-    }
-
-    @Override
-    public void onThermoSensorUpdate(final ThermoSensor sensor) {
-      final Runnable r = new Runnable() {
-        @Override
-        public void run() {
-          Log.d(TAG, "Sensor update for sensor: " + sensor);
-          final RecordTemperatureRequest request = RecordTemperatureRequest.newBuilder()
-              .setSensorName(sensor.getName()).setTempC((float) sensor.getTemperatureC())
-              .buildPartial();
-          mApiManager.recordTemperatureAsync(request);
-        }
-      };
-      mExecutorService.submit(r);
-    }
-
-    @Override
-    public void onMeterUpdate(final FlowMeter meter) {
-      final Runnable r = new Runnable() {
-        @Override
-        public void run() {
-          mFlowManager.handleMeterActivity(meter.getName(), (int) meter.getTicks());
-        }
-      };
-      mExecutorService.submit(r);
-    }
-  };
+  public void onMeterUpdate(final MeterUpdateEvent event) {
+    final FlowMeter meter = event.getMeter();
+    final Runnable r = new Runnable() {
+      @Override
+      public void run() {
+        mFlowManager.handleMeterActivity(meter.getName(), (int) meter.getTicks());
+      }
+    };
+    mExecutorService.submit(r);
+  }
 
   private final FlowManager.Listener mFlowListener = new FlowManager.Listener() {
 
@@ -142,7 +140,7 @@ public class KegbotCoreService extends Service {
     public void onFlowStart(final Flow flow) {
       Log.d(TAG, "onFlowStart: " + flow);
       if (flow.isAuthenticated()) {
-        mHardwareManager.setTapRelayEnabled(flow.getTap(), true);
+        mHardwareManager.toggleOutput(flow.getTap(), true);
       }
       startPourActivity();
       mCore.postEvent(new FlowUpdateEvent(flow));
@@ -151,7 +149,7 @@ public class KegbotCoreService extends Service {
     @Override
     public void onFlowUpdate(final Flow flow) {
       if (flow.isAuthenticated()) {
-        mHardwareManager.setTapRelayEnabled(flow.getTap(), true);
+        mHardwareManager.toggleOutput(flow.getTap(), true);
       }
       mCore.postEvent(new FlowUpdateEvent(flow));
     }
@@ -159,7 +157,7 @@ public class KegbotCoreService extends Service {
     @Override
     public void onFlowEnd(final Flow flow) {
       Log.d(TAG, "onFlowEnd" + flow);
-      mHardwareManager.setTapRelayEnabled(flow.getTap(), false);
+      mHardwareManager.toggleOutput(flow.getTap(), false);
       final Runnable r = new Runnable() {
         @Override
         public void run() {
@@ -291,12 +289,10 @@ public class KegbotCoreService extends Service {
     if (runCore) {
       debugNotice("Running core!");
       mFlowManager.addFlowListener(mFlowListener);
-      mHardwareManager.addListener(mHardwareListener);
       startForeground(NOTIFICATION_FOREGROUND, buildForegroundNotification());
     } else {
       debugNotice("Stopping core.");
       mFlowManager.removeFlowListener(mFlowListener);
-      mHardwareManager.removeListener(mHardwareListener);
       mCore.stop();
       stopForeground(true);
     }

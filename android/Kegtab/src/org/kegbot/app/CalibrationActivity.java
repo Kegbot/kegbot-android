@@ -33,6 +33,8 @@ import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.squareup.otto.Subscribe;
+
 import org.kegbot.api.KegbotApiImpl;
 import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.app.config.SharedPreferencesConfigurationStore;
@@ -40,14 +42,11 @@ import org.kegbot.app.util.Units;
 import org.kegbot.app.view.BadgeView;
 import org.kegbot.backend.Backend;
 import org.kegbot.backend.BackendException;
-import org.kegbot.core.AuthenticationToken;
 import org.kegbot.core.FlowMeter;
 import org.kegbot.core.KegbotCore;
-import org.kegbot.core.ThermoSensor;
 import org.kegbot.core.hardware.HardwareManager;
+import org.kegbot.core.hardware.MeterUpdateEvent;
 import org.kegbot.proto.Models.KegTap;
-
-import java.util.Set;
 
 public class CalibrationActivity extends CoreActivity {
 
@@ -85,32 +84,15 @@ public class CalibrationActivity extends CoreActivity {
   private long mLastReading = Long.MIN_VALUE;
   private long mTicks = 0;
 
-  /** Listeners removed from the HardwareManager. */
-  private Set<HardwareManager.Listener> mSwappedListeners;
-
-  /** Our listener, replacing any others while we are active. */
-  private HardwareManager.Listener mHardwareListener = new HardwareManager.Listener() {
-    @Override
-    public void onMeterUpdate(FlowMeter meter) {
-      final String name = meter.getName();
-      Log.d(TAG, "Meter update: " + name);
-      if (name.equals(mMeterName)) {
-        handleMeterUpdate(meter.getTicks());
-      }
+  @Subscribe
+  public void onMeterUpdate(MeterUpdateEvent event) {
+    final FlowMeter meter = event.getMeter();
+    final String name = meter.getName();
+    Log.d(TAG, "Meter update: " + name);
+    if (name.equals(mMeterName)) {
+      handleMeterUpdate(meter.getTicks());
     }
-
-    @Override
-    public void onThermoSensorUpdate(ThermoSensor sensor) {
-    }
-
-    @Override
-    public void onTokenAttached(AuthenticationToken token, String tapName) {
-    }
-
-    @Override
-    public void onTokenRemoved(AuthenticationToken token, String tapName) {
-    }
-  };
+  }
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -186,25 +168,21 @@ public class CalibrationActivity extends CoreActivity {
     super.onResume();
     Log.d(TAG, "onResume, swapping hardware listeners");
     mHardwareManager = KegbotCore.getInstance(getApplicationContext()).getHardwareManager();
-    mHardwareManager.setTapRelayEnabled(mTap, true);
-    mSwappedListeners = mHardwareManager.getListeners();
-    for (HardwareManager.Listener old : mSwappedListeners) {
-      mHardwareManager.removeListener(old);
-    }
-    mHardwareManager.addListener(mHardwareListener);
+    mHardwareManager.toggleOutput(mTap, true);
+
+    final KegbotCore core = KegbotCore.getInstance(this);
+    core.getBus().register(this);
 
     mTap = KegbotCore.getInstance(getApplicationContext()).getTapManager().getTapForMeterName(
         mMeterName);
-    mHardwareManager.setTapRelayEnabled(mTap, true);
+    mHardwareManager.toggleOutput(mTap, true);
   }
 
   @Override
   protected void onPause() {
-    mHardwareManager.setTapRelayEnabled(mTap, false);
-    mHardwareManager.removeListener(mHardwareListener);
-    for (HardwareManager.Listener old : mSwappedListeners) {
-      mHardwareManager.addListener(old);
-    }
+    mHardwareManager.toggleOutput(mTap, false);
+    final KegbotCore core = KegbotCore.getInstance(this);
+    core.getBus().register(this);
     super.onPause();
   }
 

@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU General Public License along
  * with Kegtab. If not, see <http://www.gnu.org/licenses/>.
  */
+
 package org.kegbot.core.hardware;
 
 import android.content.BroadcastReceiver;
@@ -23,41 +24,30 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.util.Log;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.squareup.otto.Bus;
 
 import org.kegbot.app.KegtabBroadcast;
 import org.kegbot.app.config.AppConfiguration;
-import org.kegbot.core.AuthenticationToken;
-import org.kegbot.core.FlowMeter;
+import org.kegbot.app.event.Event;
+import org.kegbot.app.util.IndentingPrintWriter;
 import org.kegbot.core.Manager;
-import org.kegbot.core.ThermoSensor;
-import org.kegbot.kegboard.KegboardAuthTokenMessage;
-import org.kegbot.kegboard.KegboardAuthTokenMessage.Status;
-import org.kegbot.kegboard.KegboardHelloMessage;
-import org.kegbot.kegboard.KegboardMeterStatusMessage;
-import org.kegbot.kegboard.KegboardOutputStatusMessage;
-import org.kegbot.kegboard.KegboardTemperatureReadingMessage;
 import org.kegbot.proto.Models.KegTap;
 
-import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 /**
- * Generic hardware manager. Attaches to hardware-specific managers and exports
- * generic events to the rest of the core.
+ * The HardwareManager provides implementation-independent access to sensors to
+ * the rest of the Kegbot core. It is also responsible for admitting and
+ * removing controllers based on internal policy.
  */
 public class HardwareManager extends Manager {
 
   private static String TAG = HardwareManager.class.getSimpleName();
-
-  private static final long THERMO_REPORT_PERIOD_MILLIS = TimeUnit.SECONDS.toMillis(30);
 
   private static final String ACTION_METER_UPDATE = "org.kegbot.action.METER_UPDATE";
   private static final String ACTION_TOKEN_DEAUTHED = "org.kegbot.action.TOKEN_DEAUTHED";
@@ -65,35 +55,32 @@ public class HardwareManager extends Manager {
   private static final String EXTRA_TICKS = "ticks";
   private static final String EXTRA_TAP_NAME = "tap";
 
-  /**
-   * All monitored flow meters.
-   */
-  //@GuardedBy("mFlowMeters")
-  private final Map<String, FlowMeter> mFlowMeters = Maps.newLinkedHashMap();
-
-  /**
-   * All monitored thermo sensors.
-   */
-  //@GuardedBy("mThermoSensors")
-  private final Map<String, ThermoSensor> mThermoSensors = Maps.newLinkedHashMap();
-
-  /**
-   * All listeners.
-   */
-  private Set<Listener> mListeners = Sets.newLinkedHashSet();
+  private final Set<Controller> mControllers = Sets.newLinkedHashSet();
 
   private final Context mContext;
-  private final AppConfiguration mConfig;
-  private final KegboardManager mKegboardManager;
 
-  private final Map<String, Long> mLastThermoReadingElapsedRealtime =
-    Maps.newLinkedHashMap();
+  private final KegboardManager mKegboardManager;
 
   private static final IntentFilter DEBUG_INTENT_FILTER = new IntentFilter();
   static {
     DEBUG_INTENT_FILTER.addAction(ACTION_METER_UPDATE);
     DEBUG_INTENT_FILTER.addAction(KegtabBroadcast.ACTION_TOKEN_ADDED);
     DEBUG_INTENT_FILTER.addAction(ACTION_TOKEN_DEAUTHED);
+  }
+
+  /**
+   * Callback interface implemented by hardware-specific controllers, such as
+   * {@link KegboardManager}.
+   */
+  interface Listener {
+    /** Issued when a new controller has been attached. */
+    public void onControllerAttached(Controller controller);
+
+    /** Issued when a controller has an event. */
+    public void onControllerEvent(Controller controller, Event event);
+
+    /** Issued when a controller has been removed. */
+    public void onControllerRemoved(Controller controller);
   }
 
   private final BroadcastReceiver mDebugReceiver = new BroadcastReceiver() {
@@ -111,216 +98,113 @@ public class HardwareManager extends Manager {
         long ticks = intent.getLongExtra(EXTRA_TICKS, -1);
         if (ticks > 0) {
           Log.d(TAG, "Got debug meter update: tap=" + tapName + " ticks=" + ticks);
-          handleMeterUpdate(tapName, ticks);
+          // handleMeterUpdate(tapName, ticks);
         }
-      } else if (KegtabBroadcast.ACTION_TOKEN_ADDED.equals(action) || ACTION_TOKEN_DEAUTHED.equals(action)) {
+      } else if (KegtabBroadcast.ACTION_TOKEN_ADDED.equals(action)
+          || ACTION_TOKEN_DEAUTHED.equals(action)) {
         final Bundle extras = intent.getExtras();
         if (extras == null) {
           return;
         }
-        final String tapName = extras.getString(EXTRA_TAP_NAME, "");
-        final String authDevice = extras.getString(KegtabBroadcast.TOKEN_ADDED_EXTRA_AUTH_DEVICE, "core.rfid");
+        final String authDevice = extras.getString(KegtabBroadcast.TOKEN_ADDED_EXTRA_AUTH_DEVICE,
+            "core.rfid");
         final String value = extras.getString(KegtabBroadcast.TOKEN_ADDED_EXTRA_TOKEN_VALUE, "");
-        final boolean added = KegtabBroadcast.ACTION_TOKEN_ADDED.equals(action);
         Log.d(TAG, "Sending token auth event: authDevice=" + authDevice + " value=" + value);
-        handleTokenAuthEvent(tapName, authDevice, value, added);
+        // handleTokenAuthEvent(tapName, authDevice, value, added);
       }
     }
   };
 
-  private final KegboardManager.Listener mKegboardListener = new KegboardManager.Listener() {
-    @Override
-    public void onTemperatureReadingMessage(KegboardTemperatureReadingMessage message) {
-      final String sensorName = formatWithBoardName(message.getName());
-      final Long lastReport = mLastThermoReadingElapsedRealtime.get(sensorName);
-      final long now = SystemClock.elapsedRealtime();
-      if (lastReport != null) {
-        final long delta = now - lastReport.longValue();
-        if (delta < THERMO_REPORT_PERIOD_MILLIS) {
-          return;
-        }
-      }
-      mLastThermoReadingElapsedRealtime.put(sensorName, Long.valueOf(now));
-      handleThermoUpdate(sensorName, message.getValue());
-    }
-
-    @Override
-    public void onOutputStatusMessage(KegboardOutputStatusMessage message) {
-    }
-
-    @Override
-    public void onMeterStatusMessage(KegboardMeterStatusMessage message) {
-      handleMeterUpdate(formatWithBoardName(message.getMeterName()), message.getMeterReading());
-    }
-
-    @Override
-    public void onHelloMessage(KegboardHelloMessage message) {
-    }
-
-    @Override
-    public void onAuthTokenMessage(KegboardAuthTokenMessage message) {
-      String deviceName = message.getName();
-      if ("onewire".equals(deviceName)) {
-        deviceName = "core.onewire";
-      } else if ("rfid".equals(deviceName)) {
-        deviceName = "core.rfid";
-      }
-      handleTokenAuthEvent("", deviceName, message.getToken(), message.getStatus() == Status.PRESENT);
-    }
-  };
-
-  public HardwareManager(Bus bus, Context context, AppConfiguration config, KegboardManager kegboardManager) {
+  public HardwareManager(Bus bus, Context context, AppConfiguration config) {
     super(bus);
     mContext = context;
-    mConfig = config;
-    mKegboardManager = kegboardManager;
+
+    mKegboardManager = new KegboardManager(getBus(), mContext, new Listener() {
+      @Override
+      public void onControllerAttached(Controller controller) {
+        HardwareManager.this.onControllerAttached(controller);
+      }
+
+      @Override
+      public void onControllerEvent(Controller controller, Event event) {
+        HardwareManager.this.onControllerEvent(controller, event);
+      }
+
+      @Override
+      public void onControllerRemoved(Controller controller) {
+        HardwareManager.this.onControllerRemoved(controller);
+      }
+    });
   }
 
   @Override
   public void start() {
     mContext.registerReceiver(mDebugReceiver, DEBUG_INTENT_FILTER);
-    mKegboardManager.addListener(mKegboardListener);
+    mKegboardManager.start();
+    getBus().register(this);
+  }
+
+  public void refreshSoon() {
+    mKegboardManager.refreshSoon();
+  }
+
+  private synchronized void onControllerAttached(Controller controller) {
+    Log.d(TAG, "Controller attached: " + controller);
+    if (mControllers.contains(controller)) {
+      Log.w(TAG, "Controller already attached!");
+      return;
+    }
+    mControllers.add(controller);
+    postOnMainThread(new ControllerAttachedEvent(controller));
+
+  }
+
+  private synchronized void onControllerEvent(Controller controller, Event event) {
+    if (!mControllers.contains(controller)) {
+      Log.w(TAG, "Received event from unknown controller: " + controller);
+      return;
+    }
+    postOnMainThread(event);
+  }
+
+  private synchronized void onControllerRemoved(Controller controller) {
+    if (!mControllers.contains(controller)) {
+      Log.w(TAG, "Unknown controller was detached: " + controller);
+      return;
+    }
+    mControllers.remove(controller);
+    postOnMainThread(new ControllerDetachedEvent(controller));
   }
 
   @Override
   public void stop() {
-    mKegboardManager.removeListener(mKegboardListener);
+    mKegboardManager.stop();
     mContext.unregisterReceiver(mDebugReceiver);
+    getBus().unregister(this);
   }
 
-  public void setTapRelayEnabled(KegTap tap, boolean enabled) {
-    if (tap == null) {
+  public void toggleOutput(final KegTap tap, final boolean enable) {
+    Preconditions.checkNotNull(tap);
+    Log.d(TAG, "setTapRelayEnabled tap=" + tap.getMeterName() + " enabled=" + enable);
+
+    final String outputName = tap.getRelayName();
+    if (Strings.isNullOrEmpty(outputName)) {
+      Log.d(TAG, "No output configured for tap.");
       return;
     }
+    mKegboardManager.toggleOutput(outputName, enable);
+  }
 
-    Log.d(TAG, "setTapRelayEnabled tap=" + tap.getMeterName() + " enabled=" + enabled);
-
-    final String relayName = tap.getRelayName();
-    if (Strings.isNullOrEmpty(relayName)) {
-      return;
-    }
-
-    String relayPrefix = formatWithBoardName("relay");
-
-    if (relayName.startsWith(relayPrefix) && relayName.length() > relayPrefix.length()) {
-      int outputId = -1;
-      try {
-        outputId = Integer.valueOf(relayName.substring(relayPrefix.length())).intValue();
-      } catch (NumberFormatException e) {
-      }
-
-      if (outputId >= 0) {
-        mKegboardManager.enableOutput(outputId, enabled);
-      } else {
-        Log.w(TAG, String.format("Unparseable relay name: %s", relayName));
-      }
+  @Override
+  protected void dump(IndentingPrintWriter writer) {
+    writer.print("Dump of KegboardManager:");
+    writer.println();
+    writer.increaseIndent();
+    try {
+      mKegboardManager.dump(writer);
+    } finally {
+      writer.decreaseIndent();
     }
   }
 
-  private void handleThermoUpdate(String sensorName, double sensorValue) {
-    Log.d(TAG, "Got Thermo Event: " + sensorName + "=" + sensorValue);
-    final ThermoSensor sensor = getOrCreateThermoSensor(sensorName);
-    sensor.setTemperatureC(sensorValue);
-
-    for (Listener listener : mListeners) {
-      listener.onThermoSensorUpdate(sensor);
-    }
-  }
-
-  private void handleMeterUpdate(String tapName, long ticks) {
-    Log.d(TAG, "Got Meter Event: " + tapName + "=" + ticks);
-    final FlowMeter meter = getOrCreateMeter(tapName);
-    meter.setTicks(ticks);
-
-    for (Listener listener : mListeners) {
-      listener.onMeterUpdate(meter);
-    }
-  }
-
-  private void handleTokenAuthEvent(String tapName, String authDevice, String value, boolean added) {
-    Log.d(TAG, "Got Auth Token Event");
-    final AuthenticationToken token = new AuthenticationToken(authDevice, value);
-    for (final Listener listener : mListeners) {
-      if (added) {
-        listener.onTokenAttached(token, tapName);
-      } else {
-        listener.onTokenRemoved(token, tapName);
-      }
-    }
-
-  }
-
-  private FlowMeter getOrCreateMeter(String tapName) {
-    synchronized (mFlowMeters) {
-      if (!mFlowMeters.containsKey(tapName)) {
-        mFlowMeters.put(tapName, new FlowMeter(tapName));
-      }
-      return mFlowMeters.get(tapName);
-    }
-  }
-
-  private ThermoSensor getOrCreateThermoSensor(String sensorName) {
-    synchronized (mThermoSensors) {
-      if (!mThermoSensors.containsKey(sensorName)) {
-        mThermoSensors.put(sensorName, new ThermoSensor(sensorName));
-      }
-      return mThermoSensors.get(sensorName);
-    }
-  }
-
-  private String formatWithBoardName(String sensorName) {
-    return String.format("%s.%s", mConfig.getKegboardName(), sensorName);
-  }
-
-  public boolean addListener(Listener listener) {
-    Log.d(TAG, "Adding listener: " + listener);
-    return mListeners.add(listener);
-  }
-
-  public Set<Listener> getListeners() {
-    return Sets.newLinkedHashSet(mListeners);
-  }
-
-  public boolean removeListener(Listener listener) {
-    Log.d(TAG, "Removing listener: " + listener);
-    return mListeners.remove(listener);
-  }
-
-  /**
-   * Receives notifications for hardware events.
-   */
-  public interface Listener {
-
-    /**
-     * Notifies the listener that a flow meter's state has changed.
-     *
-     * @param meter
-     *          the meter that was updated
-     */
-    public void onMeterUpdate(FlowMeter meter);
-
-    /**
-     * Notifies the listener that a thermo sensor's state has changed.
-     *
-     * @param sensor
-     *          the sensor that was updated
-     */
-    public void onThermoSensorUpdate(ThermoSensor sensor);
-
-    /**
-     * A token was attached.
-     *
-     * @param token
-     * @param tapName
-     */
-    public void onTokenAttached(AuthenticationToken token, String tapName);
-
-    /**
-     * A token was removed.
-     *
-     * @param token
-     * @param tapName
-     */
-    public void onTokenRemoved(AuthenticationToken token, String tapName);
-  }
 }

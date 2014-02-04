@@ -183,6 +183,7 @@ public class HomeActivity extends CoreActivity {
     Log.d(LOG_TAG, "onResume");
     super.onResume();
     mCore.getBus().register(this);
+    mCore.getHardwareManager().refreshSoon();
     startAttractMode();
 
     if (checkPlayServices()) {

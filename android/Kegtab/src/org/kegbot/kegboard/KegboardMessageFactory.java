@@ -18,109 +18,98 @@
  */
 package org.kegbot.kegboard;
 
+import com.google.common.base.Preconditions;
 import com.google.common.primitives.Shorts;
 
 import java.util.Arrays;
 
+import javax.annotation.concurrent.GuardedBy;
+
 public class KegboardMessageFactory {
 
-  private static final boolean DEBUG = false;
+  private static final boolean DEBUG = true;
+
+  private static final byte[] KBSP_PREFIX = "KBSP v1:".getBytes();
+  private static final byte[] KBSP_TRAILER = "\r\n".getBytes();
 
   private static final int KBSP_HEADER_LENGTH = 12;
+  private static final int KBSP_CRC_LENGTH = 2;
+  private static final int KBSP_TRAILER_LENGTH = KBSP_CRC_LENGTH + KBSP_TRAILER.length;
+  private static final int KBSP_MIN_PACKET_SIZE = KBSP_HEADER_LENGTH + KBSP_TRAILER_LENGTH;
 
-  private static final byte[] KBSP_PREFIX = { 'K', 'B', 'S', 'P', ' ', 'v',
-    '1', ':' };
-
+  @GuardedBy("this")
   private final byte[] mBuffer = new byte[2048];
 
-  private int mPayloadLength = 0;
   private int mAppendPosition = 0;
-  private int mPosition = 0;
 
-  private boolean mFramingBroken = false;
-
-  public void addBytes(byte[] newBytes, int length) {
+  public synchronized void addBytes(byte[] newBytes, int length) {
     for (int i = 0; i < length; i++) {
-      final byte b = newBytes[i];
-      if (mFramingBroken) {
-        if (b == '\n') {
-          mFramingBroken = false;
-        }
-        continue;
-      }
-      mBuffer[mAppendPosition++] = b;
+      mBuffer[mAppendPosition++] = newBytes[i];
     }
   }
 
-  public KegboardMessage getMessage() {
+  public synchronized KegboardMessage getMessage() {
     // Consume from mBuffer until done
-    while (available() > 0) {
-      if (mPosition < KBSP_HEADER_LENGTH) {
-        if (available() < KBSP_HEADER_LENGTH) {
-          return null;
-        }
-        consumeHeader();
-        mPayloadLength = Shorts.fromBytes(mBuffer[11], mBuffer[10]);
-        if (mPayloadLength > 240) {
-          framingError();
-          return null;
-        }
-        continue;
-      } else {
-        final int totalLength = KBSP_HEADER_LENGTH + mPayloadLength + 4;
+    while (mAppendPosition > 0) {
+      final int available = mAppendPosition;
+      if (available < KBSP_MIN_PACKET_SIZE) {
+        return null;
+      }
 
-        int remain = totalLength - mPosition;
-        if (available() < remain) {
-          return null;
-        }
-        debug("completed!");
-
-        final KegboardMessage message;
-        try {
-          message = KegboardMessage.fromBytes(Arrays.copyOf(mBuffer, totalLength));
-          return message;
-        } catch (KegboardMessageException e) {
-          debug("Error building message: " + e);
-        } finally {
-          System.arraycopy(mBuffer, totalLength, mBuffer, 0, mBuffer.length - totalLength);
-          mPosition = 0;
-          mAppendPosition -= totalLength;
+      boolean framingError = false;
+      for (int i = 0; i < KBSP_PREFIX.length; i++) {
+        if (mBuffer[i] != KBSP_PREFIX[i]) {
+          compact(i + 1);
+          framingError = true;
+          break;
         }
       }
-    }
 
+      if (framingError) {
+        //debug("Framing error: " + HexDump.dumpHexString(mBuffer, 0, 12));
+        continue;
+      }
+
+      int payloadLength = Shorts.fromBytes(mBuffer[11], mBuffer[10]);
+      if (payloadLength > 240) {
+        compact(KBSP_HEADER_LENGTH);
+        framingError("Illegal payload length");
+        return null;
+      }
+
+      int totalLength = KBSP_HEADER_LENGTH + payloadLength + KBSP_TRAILER_LENGTH;
+      if (available < totalLength) {
+        return null;
+      }
+
+      final KegboardMessage message;
+      try {
+        message = KegboardMessage.fromBytes(Arrays.copyOf(mBuffer, totalLength));
+        return message;
+      } catch (KegboardMessageException e) {
+        debug("Error building message: " + e);
+        /* Don't return, keep trying. */
+      } finally {
+        compact(totalLength);
+      }
+    }
     return null;
+  }
+
+  private void compact(int length) {
+    mAppendPosition -= length;
+    Preconditions.checkState(mAppendPosition >= 0);
+    System.arraycopy(mBuffer, length, mBuffer, 0, mBuffer.length - length);
   }
 
   private void debug(String message) {
     if (DEBUG) {
-      System.out.println("[mPosition=" + mPosition + "]: " + message);
+      System.out.println("[mAppendPosition=" + mAppendPosition + "]: " + message);
     }
   }
 
-  private void framingError() {
-    mFramingBroken = true;
-  }
-
-  private int available() {
-    return mAppendPosition - mPosition;
-  }
-
-  private byte consumeByte() {
-    final byte b = mBuffer[mPosition++];
-    return b;
-  }
-
-  private void consumeHeader() {
-    for (int i = 0; i < KBSP_PREFIX.length; i++) {
-      final byte b = consumeByte();
-      if (b != KBSP_PREFIX[i]) {
-        framingError();
-        return;
-      }
-    }
-
-    mPosition += 8;
+  private void framingError(String reason) {
+    debug("Framing error: " + reason);
   }
 
 }

@@ -44,7 +44,6 @@ import org.kegbot.app.util.Utils;
 import org.kegbot.backend.Backend;
 import org.kegbot.core.FlowManager.Clock;
 import org.kegbot.core.hardware.HardwareManager;
-import org.kegbot.core.hardware.KegboardManager;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -79,7 +78,6 @@ public class KegbotCore {
   private final Backend mBackend;
   private final SyncManager mSyncManager;
 
-  private final KegboardManager mKegboardManager;
   private final HardwareManager mHardwareManager;
 
   private final BluetoothManager mBluetoothManager;
@@ -117,10 +115,7 @@ public class KegbotCore {
     mSyncManager = new SyncManager(mBus, context, mBackend);
     mManagers.add(mSyncManager);
 
-    mKegboardManager = new KegboardManager(mBus, context);
-    mManagers.add(mKegboardManager);
-
-    mHardwareManager = new HardwareManager(mBus, context, mConfig, mKegboardManager);
+    mHardwareManager = new HardwareManager(mBus, context, mConfig);
     mManagers.add(mHardwareManager);
 
     mAuthenticationManager = new AuthenticationManager(mBus, context, mBackend, mConfig);
@@ -224,13 +219,6 @@ public class KegbotCore {
    */
   public SoundManager getSoundManager() {
     return mSoundManager;
-  }
-
-  /**
-   * @return the kegboardManager
-   */
-  public KegboardManager getKegboardManager() {
-    return mKegboardManager;
   }
 
   /**

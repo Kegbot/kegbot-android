@@ -17,21 +17,6 @@
  */
 package org.kegbot.core;
 
-import java.util.ArrayDeque;
-import java.util.Collection;
-import java.util.Deque;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-
-import org.kegbot.app.config.AppConfiguration;
-import org.kegbot.app.util.IndentingPrintWriter;
-import org.kegbot.proto.Models.KegTap;
-
 import android.util.Log;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -45,6 +30,23 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
+
+import org.kegbot.app.config.AppConfiguration;
+import org.kegbot.app.util.IndentingPrintWriter;
+import org.kegbot.core.hardware.MeterUpdateEvent;
+import org.kegbot.proto.Models.KegTap;
+
+import java.util.ArrayDeque;
+import java.util.Collection;
+import java.util.Deque;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 public class FlowManager extends Manager {
 
@@ -242,6 +244,11 @@ public class FlowManager extends Manager {
       }
     }
     return null;
+  }
+
+  @Subscribe
+  public void onMeterUpdateEvent(final MeterUpdateEvent event) {
+    handleMeterActivity(event.getMeter().getName(), (int) event.getMeter().getTicks());
   }
 
   public Flow handleMeterActivity(final String tapName, final int ticks) {
