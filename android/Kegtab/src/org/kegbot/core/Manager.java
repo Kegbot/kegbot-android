@@ -17,12 +17,14 @@
  */
 package org.kegbot.core;
 
-import org.kegbot.app.util.IndentingPrintWriter;
-
 import android.os.Handler;
 import android.util.Log;
 
 import com.squareup.otto.Bus;
+
+import org.kegbot.app.alert.AlertCore.Alert;
+import org.kegbot.app.event.AlertEvent;
+import org.kegbot.app.util.IndentingPrintWriter;
 
 /**
  * Base class for Kegbot core components.
@@ -75,6 +77,10 @@ public abstract class Manager {
 
   protected Bus getBus() {
     return mBus;
+  }
+
+  protected void postAlert(Alert alert) {
+    postOnMainThread(new AlertEvent(alert));
   }
 
   protected void postOnMainThread(final Object event) {

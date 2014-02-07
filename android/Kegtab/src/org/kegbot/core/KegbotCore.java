@@ -34,6 +34,7 @@ import com.squareup.otto.ThreadEnforcer;
 
 import org.kegbot.api.KegbotApiImpl;
 import org.kegbot.app.KegbotApplication;
+import org.kegbot.app.alert.AlertCore;
 import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.app.config.SharedPreferencesConfigurationStore;
 import org.kegbot.app.util.DeviceId;
@@ -71,6 +72,7 @@ public class KegbotCore {
   private final AuthenticationManager mAuthenticationManager;
   private final SoundManager mSoundManager;
   private final ImageDownloader mImageDownloader;
+  private final AlertCore mAlertCore;
 
   private final Backend mBackend;
   private final SyncManager mSyncManager;
@@ -125,6 +127,9 @@ public class KegbotCore {
 
     mBluetoothManager = new BluetoothManager(mBus, context);
     mManagers.add(mBluetoothManager);
+
+    mAlertCore = new AlertCore(mBus, mContext);
+    mManagers.add(mAlertCore);
   }
 
   public synchronized void start() {
@@ -233,6 +238,10 @@ public class KegbotCore {
 
   public ImageDownloader getImageDownloader() {
     return mImageDownloader;
+  }
+
+  public AlertCore getAlertCore() {
+    return mAlertCore;
   }
 
   public synchronized String getDeviceId() {
