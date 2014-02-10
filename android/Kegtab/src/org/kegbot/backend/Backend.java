@@ -123,12 +123,13 @@ public interface Backend {
    * @param recordDate
    * @param durationMillis
    * @param timeSeries
+   * @param picture
    * @return
    * @throws BackendException
    */
   public Drink recordDrink(String tapName, long volumeMl, long ticks, @Nullable String shout,
       @Nullable String username, @Nullable String recordDate, long durationMillis,
-      @Nullable TimeSeries timeSeries) throws BackendException;
+      @Nullable TimeSeries timeSeries, @Nullable File picture) throws BackendException;
 
   /** Saves a new temperature sensor record. */
   public ThermoLog recordTemperature(RecordTemperatureRequest request)

@@ -362,23 +362,23 @@ public class KegbotApiImpl implements Backend {
   @Override
   public Drink recordDrink(String tapName, long volumeMl, long ticks,
       @Nullable String shout, @Nullable String username, @Nullable String recordDate, long durationMillis,
-      @Nullable TimeSeries timeSeries) throws BackendException {
+      @Nullable TimeSeries timeSeries, @Nullable File picture) throws BackendException {
 
-    final Map<String, String> params = Maps.newLinkedHashMap();
-
-    params.put("ticks", String.valueOf(ticks));
+    final Request.Builder builder = newRequest("/taps/" + tapName)
+        .setMethod(Http.POST)
+        .addParameter("ticks", String.valueOf(ticks));
 
     if (volumeMl > 0) {
-      params.put("volume_ml", String.valueOf(volumeMl));
+      builder.addParameter("volume_ml", String.valueOf(volumeMl));
     }
 
     if (!Strings.isNullOrEmpty(username)) {
-      params.put("username", username);
+      builder.addParameter("username", username);
     }
 
     if (!Strings.isNullOrEmpty(recordDate)) {
       try {
-        params.put("record_date", recordDate); // new API
+        builder.addParameter("record_date", recordDate); // new API
       } catch (IllegalArgumentException e) {
         // Ignore.
       }
@@ -386,20 +386,24 @@ public class KegbotApiImpl implements Backend {
 
     if (durationMillis > 0) {
       // TODO: Fix API to report this in millis.
-      params.put("duration", String.valueOf(durationMillis / 1000));
+      builder.addParameter("duration", String.valueOf(durationMillis / 1000));
     }
 
     // TODO: Handle spilled.
 
     if (!Strings.isNullOrEmpty(shout)) {
-      params.put("shout", shout);
+      builder.addParameter("shout", shout);
     }
 
     if (timeSeries != null) {
-      params.put("tick_time_series", timeSeries.asString());
+      builder.addParameter("tick_time_series", timeSeries.asString());
     }
 
-    return (Drink) postProto("/taps/" + tapName, Drink.newBuilder(), params);
+    if (picture != null) {
+      builder.addFile("photo", picture);
+    }
+
+    return getSingleProto(Drink.newBuilder(), requestJson(builder.build()).get("object"));
   }
 
   @Override

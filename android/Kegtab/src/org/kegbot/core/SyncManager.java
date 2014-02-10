@@ -303,6 +303,16 @@ public class SyncManager extends BackgroundManager {
     }
 
     final Drink drink;
+
+    File picture = null;
+    if (pour.getImagesCount() > 0) {
+      // TODO(mikey): Single image everywhere.
+      picture = new File(pour.getImagesList().get(0));
+      if (!picture.exists()) {
+        picture = null;
+      }
+    }
+
     try {
       TimeSeries ts = null;
       if (request.hasTickTimeSeries()) {
@@ -310,7 +320,7 @@ public class SyncManager extends BackgroundManager {
       }
       drink = mBackend.recordDrink(request.getTapName(), (long) request.getVolumeMl(),
           request.getTicks(), request.getShout(), request.getUsername(), request.getRecordDate(),
-          request.getDurationSeconds() * 1000L, ts);
+          request.getDurationSeconds() * 1000L, ts, picture);
     } catch (NotFoundException e) {
       Log.w(TAG, "Tap does not exist, dropping pour.");
       return;
@@ -318,33 +328,16 @@ public class SyncManager extends BackgroundManager {
       // TODO: Handle error.
       Log.w(TAG, "Other error.");
       return;
+    } finally {
+      for (final String image : pour.getImagesList()) {
+        if (new File(image).delete()) {
+          Log.d(TAG, "Deleted " + image);
+        }
+      }
     }
 
     Log.d(TAG, "<<< Success, drink posted: " + drink);
     postOnMainThread(new DrinkPostedEvent(drink));
-
-    if (pour.getImagesCount() > 0) {
-      // TODO(mikey): Single image everywhere.
-      final String imagePath = pour.getImagesList().get(0);
-      Log.d(TAG, "Drink had image, trying to post it.");
-      try {
-        if (drink != null) {
-          Log.d(TAG, "Uploading image: " + imagePath);
-          try {
-            mBackend.attachPictureToDrink(drink.getId(), new File(imagePath));
-          } catch (BackendException e) {
-            // Discard image, no retry.
-            Log.w(TAG, String.format("Error uploading image %s: %s", imagePath, e));
-          }
-        }
-      } finally {
-        for (final String image : pour.getImagesList()) {
-          if (new File(image).delete()) {
-            Log.d(TAG, "Deleted " + image);
-          }
-        }
-      }
-    }
   }
 
   /**
