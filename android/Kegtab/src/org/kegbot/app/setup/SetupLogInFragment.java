@@ -68,7 +68,7 @@ public class SetupLogInFragment extends SetupFragment {
     }
 
     AppConfiguration prefs = KegbotCore.getInstance(getActivity()).getConfiguration();
-    KegbotApiImpl api = new KegbotApiImpl(prefs.getApiUrl(), "");
+    KegbotApiImpl api = new KegbotApiImpl(prefs);
 
     try {
       api.login(username, password);

@@ -87,7 +87,7 @@ public class NewKegActivity extends Activity {
     AppConfiguration config = new AppConfiguration(new SharedPreferencesConfigurationStore(
         PreferenceManager.getDefaultSharedPreferences(getApplicationContext())));
 
-    mApi = new KegbotApiImpl(config.getApiUrl(), config.getApiKey());
+    mApi = new KegbotApiImpl(config);
 
     mName = (AutoCompleteTextView) findViewById(R.id.newKegBeerName);
     mBrewerName = (AutoCompleteTextView) findViewById(R.id.newKegBrewer);

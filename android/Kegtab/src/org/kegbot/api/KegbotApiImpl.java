@@ -30,6 +30,7 @@ import com.squareup.okhttp.OkHttpClient;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.codehaus.jackson.JsonNode;
+import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.app.util.TimeSeries;
 import org.kegbot.backend.Backend;
 import org.kegbot.backend.BackendException;
@@ -64,16 +65,13 @@ public class KegbotApiImpl implements Backend {
 
   private static final String TAG = KegbotApiImpl.class.getSimpleName();
 
-  private final String mBaseUrl;
-  private String mApiKey;
-
+  private final AppConfiguration mConfig;
   private final CookieManager mCookieManager;
   private final OkHttpClient mClient;
   private final Http mHttp;
 
-  public KegbotApiImpl(String baseUrl, String apiKey) {
-    mBaseUrl = baseUrl;
-    mApiKey = apiKey;
+  public KegbotApiImpl(AppConfiguration config) {
+    mConfig = config;
     mCookieManager = new CookieManager();
     mClient = new OkHttpClient();
 
@@ -92,15 +90,21 @@ public class KegbotApiImpl implements Backend {
     mHttp = new Http(mClient);
   }
 
+  private String apiUrl() {
+    return Strings.nullToEmpty(mConfig.getApiUrl());
+  }
+
+  private String apiKey() {
+    return Strings.nullToEmpty(mConfig.getApiKey());
+  }
+
   private String getRequestUrl(String path) {
-    return mBaseUrl + path;
+    return apiUrl() + path;
   }
 
   private Request.Builder newRequest(String apiPath) {
     final Request.Builder builder = Request.newBuilder(getRequestUrl(apiPath));
-    if (mApiKey != null) {
-      builder.addHeader("X-Kegbot-Api-Key", mApiKey);
-    }
+    builder.addHeader("X-Kegbot-Api-Key", apiKey());
     return builder;
   }
 
@@ -209,8 +213,8 @@ public class KegbotApiImpl implements Backend {
 
     final String apiKey = keyNode.getValueAsText();
     debug("Got api key:" + apiKey);
-    mApiKey = apiKey;
-    return mApiKey;
+    mConfig.setApiKey(apiKey);
+    return apiKey();
   }
 
   public List<Keg> getAllKegs() throws KegbotApiException {

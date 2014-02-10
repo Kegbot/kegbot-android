@@ -98,7 +98,7 @@ public class KegbotCore {
     mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
     mConfig = new AppConfiguration(new SharedPreferencesConfigurationStore(mSharedPreferences));
 
-    mBackend = new KegbotApiImpl(mConfig.getApiUrl(), mConfig.getApiKey());
+    mBackend = new KegbotApiImpl(mConfig);
 
     mImageDownloader = new ImageDownloader(context, mConfig.getKegbotUrl());
 

@@ -282,7 +282,7 @@ public class CalibrationActivity extends CoreActivity {
                 new SharedPreferencesConfigurationStore(
                     PreferenceManager.getDefaultSharedPreferences(getApplicationContext())));
 
-        Backend api = new KegbotApiImpl(config.getApiUrl(), config.getApiKey());
+        Backend api = new KegbotApiImpl(config);
 
         try {
           api.setTapMlPerTick(mMeterName, mMlPerTick);
