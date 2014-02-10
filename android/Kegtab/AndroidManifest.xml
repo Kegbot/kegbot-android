@@ -200,7 +200,7 @@
             android:label="@string/app_name"
             android:launchMode="singleTop"
             android:screenOrientation="sensorLandscape"
-            android:windowSoftInputMode="stateHidden|adjustPan">
+            android:windowSoftInputMode="stateVisible|adjustPan">
           <intent-filter>
                 <action android:name="org.kegbot.app.activity.NEW_DRINKER" />
                 <category android:name="android.intent.category.DEFAULT" />

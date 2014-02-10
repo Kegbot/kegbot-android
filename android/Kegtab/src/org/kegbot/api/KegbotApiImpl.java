@@ -430,8 +430,11 @@ public class KegbotApiImpl implements Backend {
     final Request.Builder builder = newRequest("/new-user/")
         .setMethod(Http.POST)
         .addParameter("username", username)
-        .addParameter("email", email)
-        .addParameter("password", password);
+        .addParameter("email", email);
+
+    if (!Strings.isNullOrEmpty(password)) {
+        builder.addParameter("password", password);
+    }
 
     if (!Strings.isNullOrEmpty(imagePath)) {
       builder.addFile("photo", new File(imagePath));

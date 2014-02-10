@@ -102,4 +102,7 @@
     <string name="privacy_policy_title">Privacy Policy</string>
     <string name="username_title">Username</string>
     <string name="username_description">Your Kegbot account name.</string>
+    <string name="register_username_description">Pick a username. It\'s public and permanent!</string>
+    <string name="register_photo_description">Almost there! How about a mugshot? (It\'s optional.)</string>
+    <string name="register_email_description">We need your e-mail address!</string>
 </resources>
