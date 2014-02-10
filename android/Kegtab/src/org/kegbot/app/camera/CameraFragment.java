@@ -17,18 +17,6 @@
 
 package org.kegbot.app.camera;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import org.kegbot.app.R;
-import org.kegbot.app.config.AppConfiguration;
-import org.kegbot.app.event.PictureDiscardedEvent;
-import org.kegbot.app.event.PictureTakenEvent;
-import org.kegbot.core.KegbotCore;
-
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Fragment;
@@ -52,6 +40,18 @@ import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+
+import org.kegbot.app.R;
+import org.kegbot.app.config.AppConfiguration;
+import org.kegbot.app.event.PictureDiscardedEvent;
+import org.kegbot.app.event.PictureTakenEvent;
+import org.kegbot.core.KegbotCore;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class CameraFragment extends Fragment {
 
@@ -207,6 +207,13 @@ public class CameraFragment extends Fragment {
       }
     };
 
+    final PictureCallback rawCallback = new PictureCallback() {
+      @Override
+      public void onPictureTaken(byte[] data, Camera camera) {
+        Log.d(TAG, "camera RAW: " + data);
+      }
+    };
+
     if (mCamera == null || mState == State.DISABLED) {
       Log.d(TAG, "Not taking picture: disabled.");
     }
@@ -285,13 +292,19 @@ public class CameraFragment extends Fragment {
       Log.wtf(TAG, "doTakePicture called in disabled state.");
       return;
     }
-    mCamera.cancelAutoFocus();
-    mCamera.autoFocus(new Camera.AutoFocusCallback() {
-      @Override
-      public void onAutoFocus(boolean success, Camera camera) {
-        mCamera.takePicture(shutter, raw, jpeg);
-      }
-    });
+    if (Camera.Parameters.FOCUS_MODE_AUTO.equals(mCamera.getParameters().getFocusMode())) {
+      Log.d(TAG, "Taking picture with autofocus.");
+      mCamera.cancelAutoFocus();
+      mCamera.autoFocus(new Camera.AutoFocusCallback() {
+        @Override
+        public void onAutoFocus(boolean success, Camera camera) {
+          mCamera.takePicture(shutter, raw, jpeg);
+        }
+      });
+    } else {
+      Log.d(TAG, "Taking picture without autofocus.");
+      mCamera.takePicture(shutter, raw, jpeg);
+    }
   }
 
   @Override
