@@ -32,6 +32,7 @@ import com.google.common.collect.Sets;
 import com.squareup.otto.Bus;
 
 import org.kegbot.app.KegtabBroadcast;
+import org.kegbot.app.alert.AlertCore;
 import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.app.event.Event;
 import org.kegbot.app.util.IndentingPrintWriter;
@@ -157,6 +158,9 @@ public class HardwareManager extends Manager {
     mControllers.add(controller);
     postOnMainThread(new ControllerAttachedEvent(controller));
 
+    postAlert(AlertCore.newBuilder("Controller Attached")
+        .setId(controller.getName())
+        .build());
   }
 
   private synchronized void onControllerEvent(Controller controller, Event event) {
@@ -174,6 +178,10 @@ public class HardwareManager extends Manager {
     }
     mControllers.remove(controller);
     postOnMainThread(new ControllerDetachedEvent(controller));
+
+    postAlert(AlertCore.newBuilder("Controller Removed")
+        .setId(controller.getName())
+        .build());
   }
 
   @Override
