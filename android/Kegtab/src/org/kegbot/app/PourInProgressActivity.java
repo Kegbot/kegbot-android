@@ -17,26 +17,6 @@
  */
 package org.kegbot.app;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-
-import javax.annotation.concurrent.GuardedBy;
-
-import org.kegbot.app.camera.CameraFragment;
-import org.kegbot.app.config.AppConfiguration;
-import org.kegbot.app.event.FlowUpdateEvent;
-import org.kegbot.app.event.PictureDiscardedEvent;
-import org.kegbot.app.event.PictureTakenEvent;
-import org.kegbot.app.util.ImageDownloader;
-import org.kegbot.core.AuthenticationManager;
-import org.kegbot.core.Flow;
-import org.kegbot.core.FlowManager;
-import org.kegbot.core.KegbotCore;
-import org.kegbot.proto.Models.KegTap;
-import org.kegbot.proto.Models.User;
-
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -66,6 +46,27 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.squareup.otto.Subscribe;
+
+import org.kegbot.app.camera.CameraFragment;
+import org.kegbot.app.config.AppConfiguration;
+import org.kegbot.app.event.FlowUpdateEvent;
+import org.kegbot.app.event.PictureDiscardedEvent;
+import org.kegbot.app.event.PictureTakenEvent;
+import org.kegbot.app.util.ImageDownloader;
+import org.kegbot.app.util.Utils;
+import org.kegbot.core.AuthenticationManager;
+import org.kegbot.core.Flow;
+import org.kegbot.core.FlowManager;
+import org.kegbot.core.KegbotCore;
+import org.kegbot.proto.Models.KegTap;
+import org.kegbot.proto.Models.User;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+
+import javax.annotation.concurrent.GuardedBy;
 
 /**
  * Activity shown while a pour is in progress.
@@ -362,7 +363,7 @@ public class PourInProgressActivity extends CoreActivity {
 
   /** Returns the currently-focused {@link Flow}, or {@code null}. */
   private Flow getCurrentlyFocusedFlow() {
-    synchronized (mTaps) {
+    synchronized (mTapsLock) {
       final KegTap tap = getCurrentlyFocusedTap();
       if (tap == null) {
         return null;
@@ -417,7 +418,7 @@ public class PourInProgressActivity extends CoreActivity {
 
     if (!imageWasReplaced) {
       mDrinkerImage.setImageBitmap(null);
-      mDrinkerImage.setBackgroundDrawable(getResources().getDrawable(R.drawable.unknown_drinker));
+      Utils.setBackground(mDrinkerImage, getResources().getDrawable(R.drawable.unknown_drinker));
     }
   }
 
@@ -586,6 +587,7 @@ public class PourInProgressActivity extends CoreActivity {
           if (oldTap != tap) {
             mTaps.remove(index);
             mTaps.add(index.intValue(), tap);
+            mPouringTapAdapter.notifyDataSetChanged();
           }
         } else {
           mTaps.add(tap);

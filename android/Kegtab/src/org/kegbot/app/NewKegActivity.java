@@ -18,17 +18,6 @@
  */
 package org.kegbot.app;
 
-import java.util.Collections;
-import java.util.List;
-
-import org.kegbot.api.KegbotApi;
-import org.kegbot.api.KegbotApiException;
-import org.kegbot.api.KegbotApiImpl;
-import org.kegbot.app.config.AppConfiguration;
-import org.kegbot.app.config.SharedPreferencesConfigurationStore;
-import org.kegbot.app.service.KegbotCoreService;
-import org.kegbot.proto.Models.KegSize;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -52,6 +41,17 @@ import android.widget.TextView;
 
 import com.google.common.collect.Lists;
 
+import org.kegbot.api.KegbotApiImpl;
+import org.kegbot.app.config.AppConfiguration;
+import org.kegbot.app.config.SharedPreferencesConfigurationStore;
+import org.kegbot.app.service.KegbotCoreService;
+import org.kegbot.backend.Backend;
+import org.kegbot.backend.BackendException;
+import org.kegbot.proto.Models.KegSize;
+
+import java.util.Collections;
+import java.util.List;
+
 /**
  *
  * @author mike wakerly (opensource@hoho.com)
@@ -71,7 +71,7 @@ public class NewKegActivity extends Activity {
   private Button mActivateButton;
 
   private int mSizeId = -1;
-  private KegbotApi mApi;
+  private Backend mApi;
 
   private final List<KegSize> mKegSizes = Lists.newArrayList();
 
@@ -87,9 +87,7 @@ public class NewKegActivity extends Activity {
     AppConfiguration config = new AppConfiguration(new SharedPreferencesConfigurationStore(
         PreferenceManager.getDefaultSharedPreferences(getApplicationContext())));
 
-    mApi = new KegbotApiImpl();
-    mApi.setApiUrl(config.getApiUrl());
-    mApi.setApiKey(config.getApiKey());
+    mApi = new KegbotApiImpl(config);
 
     mName = (AutoCompleteTextView) findViewById(R.id.newKegBeerName);
     mBrewerName = (AutoCompleteTextView) findViewById(R.id.newKegBrewer);
@@ -155,7 +153,8 @@ public class NewKegActivity extends Activity {
       protected List<KegSize> doInBackground(Void... params) {
         try {
           return mApi.getKegSizes();
-        } catch (KegbotApiException e) {
+        } catch (BackendException e) {
+          // TODO: Handle error.
           return Collections.emptyList();
         }
       }
@@ -194,10 +193,10 @@ public class NewKegActivity extends Activity {
       @Override
       protected String doInBackground(Void... params) {
         try {
-          mApi.activateKeg(mMeterName, mName.getText().toString(),
+          mApi.startKeg(mMeterName, mName.getText().toString(),
               mBrewerName.getText().toString(), mStyle.getText().toString(), mSizeId);
           return "";
-        } catch (KegbotApiException e) {
+        } catch (BackendException e) {
           Log.w(TAG, "Activation failed.", e);
           return e.toString();
         }

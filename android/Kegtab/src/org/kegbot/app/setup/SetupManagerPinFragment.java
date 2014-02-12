@@ -18,10 +18,6 @@
  */
 package org.kegbot.app.setup;
 
-import org.kegbot.app.R;
-import org.kegbot.app.config.AppConfiguration;
-import org.kegbot.core.KegbotCore;
-
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -29,6 +25,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+
+import org.kegbot.app.R;
+import org.kegbot.app.config.AppConfiguration;
+import org.kegbot.core.KegbotCore;
 
 public class SetupManagerPinFragment extends SetupFragment {
 
@@ -39,7 +39,6 @@ public class SetupManagerPinFragment extends SetupFragment {
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     mView = inflater.inflate(R.layout.setup_manager_pin_fragment, null);
-    mView.setBackgroundDrawable(getResources().getDrawable(R.drawable.shape_rounded_rect));
 
     AppConfiguration prefs = KegbotCore.getInstance(getActivity()).getConfiguration();
 

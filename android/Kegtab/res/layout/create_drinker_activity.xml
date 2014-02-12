@@ -1,48 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:gravity="top|center"
-    android:orientation="horizontal"
-    android:paddingTop="16dip" >
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="32dip" >
 
-    <fragment
-        android:id="@+id/camera"
-        android:layout_width="512dip"
-        android:layout_height="wrap_content"
-        class="org.kegbot.app.camera.CameraFragment" >
-
-        <!-- Preview: layout=@layout/camera_fragment_layout -->
-    </fragment>
-
-    <LinearLayout
+    <TextView
+        android:id="@+id/new_drinker_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:paddingLeft="16dip" >
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:text="New Drinker"
+        android:textSize="32sp"
+        android:textStyle="bold" />
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="32dip"
-            android:background="@drawable/shape_rounded_rect"
-            android:orientation="vertical" >
+    <TextView
+        android:id="@+id/new_drinker_subtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/new_drinker_title"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="32dip"
+        android:text="@string/register_email_description"
+        android:textSize="24sp" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Username"
-                android:textSize="24dip"
-                android:textStyle="bold" />
-
-            <EditText
-                android:id="@+id/username"
-                android:layout_width="384dip"
-                android:layout_height="wrap_content"
-                android:hint="Public, permanent. Choose wisely!"
-                android:inputType="textEmailAddress" />
-        </LinearLayout>
+    <ViewFlipper
+        android:id="@+id/new_drinker_flipper"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/new_drinker_subtitle"
+        android:layout_centerHorizontal="true" >
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -63,6 +50,7 @@
                 android:layout_width="384dip"
                 android:layout_height="wrap_content"
                 android:hint="user@example.com"
+                android:imeOptions="actionNext"
                 android:inputType="textEmailAddress" />
         </LinearLayout>
 
@@ -76,24 +64,44 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Password"
+                android:text="Username"
                 android:textSize="24dip"
                 android:textStyle="bold" />
 
             <EditText
-                android:id="@+id/password"
+                android:id="@+id/username"
                 android:layout_width="384dip"
                 android:layout_height="wrap_content"
-                android:inputType="textPassword" />
+                android:hint="Public, permanent. Choose wisely!"
+                android:imeOptions="actionNext"
+                android:inputType="textEmailAddress" />
         </LinearLayout>
 
-        <Button
-            android:id="@+id/submitButton"
-            android:layout_width="match_parent"
+        <LinearLayout
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Register!"
-            android:textStyle="bold"
-            android:textSize="32dip"/>
-    </LinearLayout>
+            android:layout_marginBottom="32dip"
+            android:background="@drawable/shape_rounded_rect"
+            android:orientation="horizontal" 
+            android:gravity="center">
 
-</LinearLayout>
+            <fragment
+                android:id="@+id/camera"
+                android:layout_width="320dip"
+                android:layout_height="wrap_content"
+                class="org.kegbot.app.camera.CameraFragment" >
+
+                <!-- Preview: layout=@layout/camera_fragment_layout -->
+            </fragment>
+
+            <Button
+                android:id="@+id/submitButton"
+                style="@style/mediumButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="32dp"
+                android:text="Register Me!"/>
+        </LinearLayout>
+    </ViewFlipper>
+
+</RelativeLayout>

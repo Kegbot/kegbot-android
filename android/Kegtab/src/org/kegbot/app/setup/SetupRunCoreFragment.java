@@ -17,15 +17,16 @@
  */
 package org.kegbot.app.setup;
 
-import org.kegbot.app.R;
-import org.kegbot.app.config.AppConfiguration;
-import org.kegbot.core.KegbotCore;
-
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+
+import org.kegbot.app.R;
+import org.kegbot.app.config.AppConfiguration;
+import org.kegbot.app.util.Utils;
+import org.kegbot.core.KegbotCore;
 
 /**
  * {@link SetupFragment} which controls preference for running the Kegbot core.
@@ -42,7 +43,7 @@ public class SetupRunCoreFragment extends SetupFragment {
     AppConfiguration prefs = KegbotCore.getInstance(getActivity()).getConfiguration();
     CheckBox box = (CheckBox) mView.findViewById(R.id.runCore);
     box.setChecked(prefs.getRunCore());
-    mView.setBackgroundDrawable(getResources().getDrawable(R.drawable.shape_rounded_rect));
+    Utils.setBackground(mView, getResources().getDrawable(R.drawable.shape_rounded_rect));
     return mView;
   }
 

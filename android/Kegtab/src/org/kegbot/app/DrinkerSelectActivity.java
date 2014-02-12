@@ -18,13 +18,6 @@
  */
 package org.kegbot.app;
 
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import org.kegbot.app.util.ImageDownloader;
-import org.kegbot.core.KegbotCore;
-import org.kegbot.proto.Models.User;
-
 import android.app.ActionBar;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.Intent;
@@ -46,6 +39,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.common.base.Strings;
+
+import org.kegbot.app.util.ImageDownloader;
+import org.kegbot.app.util.Utils;
+import org.kegbot.core.KegbotCore;
+import org.kegbot.proto.Models.User;
+
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Shows a list of available drinkers, returning the select username (using
@@ -102,14 +103,15 @@ public class DrinkerSelectActivity extends CoreActivity implements LoaderCallbac
         } catch (Throwable e) {
           Log.wtf(TAG, "UNCAUGHT EXCEPTION", e);
         }
-        view.setBackgroundDrawable(getResources().getDrawable(R.drawable.shape_rounded_rect));
+        Utils.setBackground(view,
+            getResources().getDrawable(R.drawable.shape_rounded_rect));
         return view;
       }
 
       private void applyUser(User userDetail, View view) {
         final ImageView icon = (ImageView) view.findViewById(R.id.drinkerIcon);
         icon.setImageBitmap(null);
-        icon.setBackgroundDrawable(null);
+        Utils.setBackground(icon, null);
 
         final String imageUrl;
         if (userDetail.hasImage()) {

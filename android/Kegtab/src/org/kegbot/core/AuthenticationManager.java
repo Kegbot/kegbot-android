@@ -18,20 +18,6 @@
  */
 package org.kegbot.core;
 
-import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-
-import org.kegbot.api.KegbotApi;
-import org.kegbot.api.KegbotApiException;
-import org.kegbot.api.KegbotApiNotFoundError;
-import org.kegbot.app.config.AppConfiguration;
-import org.kegbot.proto.Models.User;
-
 import android.content.Context;
 import android.util.Log;
 
@@ -40,6 +26,20 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Sets;
 import com.squareup.otto.Bus;
+
+import org.kegbot.app.config.AppConfiguration;
+import org.kegbot.backend.Backend;
+import org.kegbot.backend.BackendException;
+import org.kegbot.backend.NotFoundException;
+import org.kegbot.proto.Models.User;
+
+import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 /**
  *
@@ -51,23 +51,21 @@ public class AuthenticationManager extends Manager {
 
   private static final long CACHE_EXPIRE_HOURS = 3;
 
-  private final KegbotApi mApi;
+  private final Backend mApi;
 
   private final AppConfiguration mConfig;
 
-  private final Context mContext;
-
   private final ExecutorService mExecutorService = Executors.newSingleThreadExecutor();
 
-  private User fetchUserForToken(AuthenticationToken token) throws KegbotApiException {
+  private User fetchUserForToken(AuthenticationToken token) throws BackendException {
     Log.d(TAG, "Loading token");
     org.kegbot.proto.Models.AuthenticationToken tok = mApi.getAuthToken(token
         .getAuthDevice(), token.getTokenValue());
     Log.d(TAG, "Got auth token: " + tok);
     if (!tok.getEnabled()) {
-      throw new KegbotApiNotFoundError("Token not enabled.");
+      throw new NotFoundException("Token not enabled.");
     } else if (!tok.hasUser()) {
-      throw new KegbotApiNotFoundError("Token not assigned.");
+      throw new NotFoundException("Token not assigned.");
     }
     return tok.getUser();
   }
@@ -87,13 +85,12 @@ public class AuthenticationManager extends Manager {
             @Override
             public User load(String username) throws Exception {
               Log.d(TAG, "Loading user: " + username);
-              return mApi.getUserDetail(username);
+              return mApi.getUser(username);
             }
           });
 
-  AuthenticationManager(Bus bus, Context context, KegbotApi api, AppConfiguration prefs) {
+  AuthenticationManager(Bus bus, Context context, Backend api, AppConfiguration prefs) {
     super(bus);
-    mContext = context.getApplicationContext();
     mApi = api;
     mConfig = prefs;
   }
@@ -108,10 +105,10 @@ public class AuthenticationManager extends Manager {
     if (!mConfig.getCacheCredentials()) {
       try {
         return fetchUserForToken(token);
-      } catch (KegbotApiNotFoundError e) {
+      } catch (NotFoundException e) {
         Log.d(TAG, "Token is not assigned to anyone: " + token);
         return null;
-      } catch (KegbotApiException e) {
+      } catch (BackendException e) {
         Log.w(TAG, "Error fetching token: " + e.getCause(), e);
         return null;
       }
@@ -121,7 +118,7 @@ public class AuthenticationManager extends Manager {
       return mAuthTokenCache.get(token);
     } catch (ExecutionException e) {
       Throwable cause = e.getCause();
-      if (cause != null && cause instanceof KegbotApiNotFoundError) {
+      if (cause != null && cause instanceof NotFoundException) {
         Log.d(TAG, "Token is not assigned to anyone: " + token);
         return null;
       } else {

@@ -27,5 +27,7 @@
     <!-- 0x16C0 / 0x0483: Teensyduino  -->
     <usb-device vendor-id="5824" product-id="1155" />
     
+    <usb-device vendor-id="1003" product-id="1078" />
+    
 </resources>
 

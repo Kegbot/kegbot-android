@@ -3,30 +3,10 @@
  */
 package org.kegbot.app;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import org.kegbot.core.KegbotCore;
-
 import android.app.ActionBar;
 import android.app.Activity;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -37,6 +17,20 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.common.base.Strings;
+
+import org.kegbot.app.util.CheckinClient;
+import org.kegbot.core.KegbotCore;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Bug report activity.
@@ -49,14 +43,15 @@ public class BugreportActivity extends Activity {
 
   private static final int INPUT_BUFFER_SIZE = 1024 * 64;
 
+  private static final String BUGREPORT_FILENAME = "bugreport.txt";
+
   private KegbotCore mCore;
 
   private final ExecutorService mExecutor = Executors.newSingleThreadExecutor();
   private ProgressBar mProgressBar;
   private TextView mMessageText;
   private TextView mDetailText;
-  private String mBugreportFilename = "";
-  private String mBugDate;
+  private File mBugreportFile;
 
   private Button mButton;
 
@@ -80,7 +75,7 @@ public class BugreportActivity extends Activity {
   protected void onStart() {
     super.onStart();
 
-    if (!Strings.isNullOrEmpty(mBugreportFilename)) {
+    if (mBugreportFile != null) {
       showBugreportReady();
     } else {
       showIdle();
@@ -99,8 +94,7 @@ public class BugreportActivity extends Activity {
     mButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        new BugreportAsyncTask().executeOnExecutor(mExecutor, (Void) null);
-        showRunning();
+        collectBugreport();
       }
     });
 
@@ -109,7 +103,7 @@ public class BugreportActivity extends Activity {
     mProgressBar.setVisibility(View.INVISIBLE);
   }
 
-  private void showRunning() {
+  private void showCollectingBugreport() {
     mButton.setEnabled(false);
     mMessageText.setText(R.string.bugreport_message_running);
     mDetailText.setVisibility(View.GONE);
@@ -122,14 +116,41 @@ public class BugreportActivity extends Activity {
     mButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        launchMailer();
+        submitBugreport();
       }
     });
+    mMessageText.setEnabled(true);
     mMessageText.setText(R.string.bugreport_message_ready);
+    mButton.setEnabled(true);
 
     mProgressBar.setVisibility(View.INVISIBLE);
     mDetailText.setText("");
     mDetailText.setVisibility(View.VISIBLE);
+    mDetailText.setEnabled(true);
+  }
+
+  private void showSubmittingBugreport() {
+    mButton.setEnabled(false);
+    mMessageText.setText(R.string.bugreport_message_running);
+    mDetailText.setEnabled(false);
+    mProgressBar.setVisibility(View.VISIBLE);
+    mProgressBar.setIndeterminate(true);
+  }
+
+  private void showFinished() {
+    mButton.setEnabled(false);
+    mMessageText.setText(R.string.bugreport_message_submitted);
+    mDetailText.setEnabled(false);
+    mProgressBar.setVisibility(View.VISIBLE);
+    mProgressBar.setProgress(100);
+    mProgressBar.setIndeterminate(false);
+
+    mHandler.postDelayed(new Runnable() {
+      @Override
+      public void run() {
+        finish();
+      }
+    }, 3000);
   }
 
   private void showError(final String errorMessage) {
@@ -144,81 +165,100 @@ public class BugreportActivity extends Activity {
     });
   }
 
-  private void launchMailer() {
-    PackageManager pm = getPackageManager();
-    PackageInfo packageInfo;
-    try {
-      packageInfo = pm.getPackageInfo(getPackageName(), 0);
-    } catch (NameNotFoundException e) {
-      showError("Fatal error getting package info: " + e);
-      return;
-    }
-
-    String messageText = mDetailText.getText().toString();
-    if (Strings.isNullOrEmpty(messageText)) {
-      messageText = "[No detail was entered.]";
-    }
-    Intent intent = new Intent(Intent.ACTION_SEND);
-    intent.setType("text/plain");
-    intent.putExtra(Intent.EXTRA_EMAIL, new String[] {"bugreport@kegbot.org"});
-    intent.putExtra(Intent.EXTRA_SUBJECT, String.format("Kegtab %s bug report (%s)",
-        packageInfo.versionName, mBugDate));
-    intent.putExtra(Intent.EXTRA_TEXT, messageText);
-    intent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://" + mBugreportFilename));
-
-    try {
-      BugreportActivity.this.startActivity(intent);
-      finish();
-    } catch (ActivityNotFoundException e) {
-      showError("Could not start your mail program.  Bugreport path: " + mBugreportFilename);
-    }
-    mBugreportFilename = "";
+  private void collectBugreport() {
+    showCollectingBugreport();
+    new CollectBugreportAsyncTask().executeOnExecutor(mExecutor, (Void) null);
   }
 
-  private String takeBugreport() {
-    File bugreportDir = getFilesDir();
-    mBugDate = new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date());
+  private void submitBugreport() {
+    showSubmittingBugreport();
+    new SubmitBugreportAsyncTask().execute(mBugreportFile);
+  }
 
-    File bugreportFile = new File(bugreportDir, "kegbot-bugreport-" + mBugDate + ".txt");
+  private class CollectBugreportAsyncTask extends AsyncTask<Void, Void, File> {
+    @Override
+    protected File doInBackground(Void... params) {
+      final FileOutputStream out;
+      try {
+        out = openFileOutput(BUGREPORT_FILENAME, MODE_PRIVATE);
+      } catch (FileNotFoundException e) {
+        showError("Could not create bugreport file, error: " + e);
+        return null;
+      }
 
-    bugreportDir.mkdirs();
+      try {
+        PrintWriter writer = new PrintWriter(out);
+        writer.println("Kegbot bugreport.");
+        writer.println();
 
-    FileOutputStream out;
-    try {
-      out = new FileOutputStream(bugreportFile);
-    } catch (FileNotFoundException e) {
-      showError("Could not create file " + bugreportFile.getAbsolutePath() + ", error: " + e);
-      return "";
+        writer.println("--- Kegbot core ---");
+        writer.println();
+        writer.flush();
+
+        mCore.dump(writer);
+
+        writer.println("--- System logs ---");
+        writer.println();
+        writer.flush();
+
+        try {
+          getDeviceLogs(out);
+          writer.flush();
+        } catch (IOException e) {
+          showError("Error grabbing bugreport: " + e);
+        }
+
+        writer.println("--- (end of bugreport) ---");
+        writer.flush();
+        writer.close();
+      } finally {
+        try {
+          out.close();
+        } catch (IOException e) {
+          // Ignore.
+        }
+      }
+      return getFileStreamPath(BUGREPORT_FILENAME);
     }
 
-    PrintWriter writer = new PrintWriter(out);
-    writer.println("Kegbot bugreport.");
-    writer.println();
-
-    writer.println("--- Kegbot core ---");
-    writer.println();
-    writer.flush();
-
-    mCore.dump(writer);
-
-    writer.println("--- System logs ---");
-    writer.println();
-    writer.flush();
-
-    try {
-      getDeviceLogs(out);
-      writer.flush();
-    } catch (IOException e) {
-      showError("Error grabbing bugreport: " + e);
+    @Override
+    protected void onCancelled() {
+      super.onCancelled();
     }
 
-    writer.println("--- (end of bugreport) ---");
-    writer.flush();
-    writer.close();
+    @Override
+    protected void onPostExecute(File file) {
+      mBugreportFile = file;
+      if (mBugreportFile == null) {
+        // Presume we called showError() somewhere.
+        return;
+      }
+      showBugreportReady();
+    }
 
-    final String path = bugreportFile.getAbsolutePath();
-    Log.i(TAG, "Created bug report: " + path);
-    return path;
+  }
+
+  private class SubmitBugreportAsyncTask extends AsyncTask<File, Void, IOException> {
+    @Override
+    protected IOException doInBackground(File... params) {
+      final String messageText = Strings.nullToEmpty(mDetailText.getText().toString());
+      final CheckinClient client = CheckinClient.fromContext(getApplicationContext());
+      try {
+        client.submitBugreport(messageText, mBugreportFile);
+      } catch (IOException e) {
+        return e;
+      }
+      return null;
+    }
+
+    @Override
+    protected void onPostExecute(IOException result) {
+      if (result == null) {
+        showFinished();
+      } else {
+        showError("Error submitting bugreport: " + result.getMessage());
+      }
+    }
   }
 
   private static void getDeviceLogs(OutputStream outputStream) throws IOException {
@@ -236,34 +276,6 @@ public class BugreportActivity extends Activity {
       outputStream.write(line.getBytes());
       outputStream.write('\n');
     }
-  }
-
-  private class BugreportAsyncTask extends AsyncTask<Void, Void, String> {
-    @Override
-    protected String doInBackground(Void... params) {
-      return takeBugreport();
-    }
-
-    @Override
-    protected void onCancelled() {
-      super.onCancelled();
-    }
-
-    @Override
-    protected void onPostExecute(String filename) {
-      mProgressBar.setIndeterminate(false);
-      mProgressBar.setProgress(100);
-
-      mBugreportFilename = filename;
-
-      if (Strings.isNullOrEmpty(mBugreportFilename)) {
-        // Presume we called showError() somewhere.
-        return;
-      }
-
-      showBugreportReady();
-    }
-
   }
 
   public static void startBugreportActivity(Context context) {

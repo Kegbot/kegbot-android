@@ -18,12 +18,6 @@
  */
 package org.kegbot.app;
 
-import org.kegbot.api.KegbotApi;
-import org.kegbot.api.KegbotApiException;
-import org.kegbot.core.KegbotCore;
-import org.kegbot.proto.Models.Keg;
-import org.kegbot.proto.Models.KegTap;
-
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.ProgressDialog;
@@ -38,6 +32,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+
+import org.kegbot.backend.Backend;
+import org.kegbot.backend.BackendException;
+import org.kegbot.core.KegbotCore;
+import org.kegbot.proto.Models.Keg;
+import org.kegbot.proto.Models.KegTap;
 
 /**
  * Fragment showing manager controls for the tap.
@@ -181,10 +181,10 @@ public class TapEditFragment extends Fragment {
     new AsyncTask<Void, Void, Void>() {
       @Override
       protected Void doInBackground(Void... params) {
-        KegbotApi api = KegbotCore.getInstance(getActivity()).getApi();
+        Backend api = KegbotCore.getInstance(getActivity()).getBackend();
         try {
-          api.endKeg(String.valueOf(kegId));
-        } catch (KegbotApiException e) {
+          api.endKeg(kegId);
+        } catch (BackendException e) {
           Log.w(TAG, "Error ending keg: " + e, e);
         }
         return null;

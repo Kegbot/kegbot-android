@@ -18,11 +18,6 @@
  */
 package org.kegbot.app.setup;
 
-import org.kegbot.app.R;
-import org.kegbot.app.config.AppConfiguration;
-import org.kegbot.app.service.CheckinService;
-import org.kegbot.core.KegbotCore;
-
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -31,6 +26,11 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 
 import com.google.common.base.Strings;
+
+import org.kegbot.app.R;
+import org.kegbot.app.config.AppConfiguration;
+import org.kegbot.app.service.CheckinService;
+import org.kegbot.core.KegbotCore;
 
 public class SetupKegbotUrlFragment extends SetupFragment {
 
@@ -48,7 +48,6 @@ public class SetupKegbotUrlFragment extends SetupFragment {
       // Don't clobber the hint if empty.
       text.setText(existingUrl);
     }
-    mView.setBackgroundDrawable(getResources().getDrawable(R.drawable.shape_rounded_rect));
     return mView;
   }
 

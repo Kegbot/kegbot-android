@@ -18,25 +18,6 @@
  */
 package org.kegbot.core;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-
-import org.kegbot.app.util.IndentingPrintWriter;
-import org.kegbot.kegboard.KegboardAuthTokenMessage;
-import org.kegbot.kegboard.KegboardHelloMessage;
-import org.kegbot.kegboard.KegboardMessage;
-import org.kegbot.kegboard.KegboardMessageFactory;
-import org.kegbot.kegboard.KegboardMeterStatusMessage;
-import org.kegbot.kegboard.KegboardOutputStatusMessage;
-import org.kegbot.kegboard.KegboardPingCommand;
-import org.kegbot.kegboard.KegboardSetOutputCommand;
-import org.kegbot.kegboard.KegboardTemperatureReadingMessage;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -51,6 +32,25 @@ import com.hoho.android.usbserial.driver.UsbSerialDriver;
 import com.hoho.android.usbserial.driver.UsbSerialProber;
 import com.hoho.android.usbserial.util.HexDump;
 import com.squareup.otto.Bus;
+
+import org.kegbot.app.util.IndentingPrintWriter;
+import org.kegbot.kegboard.KegboardAuthTokenMessage;
+import org.kegbot.kegboard.KegboardHelloMessage;
+import org.kegbot.kegboard.KegboardMessage;
+import org.kegbot.kegboard.KegboardMessageFactory;
+import org.kegbot.kegboard.KegboardMeterStatusMessage;
+import org.kegbot.kegboard.KegboardOutputStatusMessage;
+import org.kegbot.kegboard.KegboardPingCommand;
+import org.kegbot.kegboard.KegboardSetOutputCommand;
+import org.kegbot.kegboard.KegboardTemperatureReadingMessage;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Monitors a serial Kegboard device, sending updates to any attached listener.
@@ -252,14 +252,15 @@ public class KegboardManager extends BackgroundManager {
    * Finds and acquires a usable UsbSerialDriver, returning {@code true} if valid.
    */
   private boolean acquireSerialDevice() {
-    UsbSerialDriver result = UsbSerialProber.acquire(mUsbManager);
+    UsbSerialDriver result = UsbSerialProber.findFirstDevice(mUsbManager);
     if (result != null) {
       Log.d(TAG, "FindUsbSerialDevice, result=" + result);
       boolean opened = false;
       try {
         result.open();
         opened = true;
-        result.setBaudRate(115200);
+        result.setParameters(115200, UsbSerialDriver.DATABITS_8, UsbSerialDriver.STOPBITS_1, UsbSerialDriver.FLOWCONTROL_NONE);
+        result.setDTR(true);
         Log.d(TAG, "Usb device opened!");
         mSerialDevice = result;
         return true;

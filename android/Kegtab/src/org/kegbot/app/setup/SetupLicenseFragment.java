@@ -17,15 +17,15 @@
  */
 package org.kegbot.app.setup;
 
-import org.kegbot.app.R;
-import org.kegbot.app.service.CheckinService;
-
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+
+import org.kegbot.app.R;
+import org.kegbot.app.service.CheckinService;
 
 /**
  * {@link SetupFragment} which controls preference for running the Kegbot core.
@@ -39,7 +39,6 @@ public class SetupLicenseFragment extends SetupFragment {
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     mView = inflater.inflate(R.layout.setup_license_fragment, null);
-    mView.setBackgroundDrawable(getResources().getDrawable(R.drawable.shape_rounded_rect));
     return mView;
   }
 

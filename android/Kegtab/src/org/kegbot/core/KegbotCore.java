@@ -18,21 +18,6 @@
  */
 package org.kegbot.core;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.Date;
-import java.util.Set;
-
-import org.kegbot.api.KegbotApi;
-import org.kegbot.api.KegbotApiImpl;
-import org.kegbot.app.KegbotApplication;
-import org.kegbot.app.config.AppConfiguration;
-import org.kegbot.app.config.SharedPreferencesConfigurationStore;
-import org.kegbot.app.util.DeviceId;
-import org.kegbot.app.util.ImageDownloader;
-import org.kegbot.app.util.IndentingPrintWriter;
-import org.kegbot.app.util.Utils;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
@@ -46,6 +31,21 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import com.squareup.otto.Bus;
 import com.squareup.otto.ThreadEnforcer;
+
+import org.kegbot.api.KegbotApiImpl;
+import org.kegbot.app.KegbotApplication;
+import org.kegbot.app.config.AppConfiguration;
+import org.kegbot.app.config.SharedPreferencesConfigurationStore;
+import org.kegbot.app.util.DeviceId;
+import org.kegbot.app.util.ImageDownloader;
+import org.kegbot.app.util.IndentingPrintWriter;
+import org.kegbot.app.util.Utils;
+import org.kegbot.backend.Backend;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.Date;
+import java.util.Set;
 
 /**
  * Top-level class implementing the Kegbot core.
@@ -71,7 +71,7 @@ public class KegbotCore {
   private final SoundManager mSoundManager;
   private final ImageDownloader mImageDownloader;
 
-  private final KegbotApi mApi;
+  private final Backend mBackend;
   private final SyncManager mSyncManager;
 
   private final KegboardManager mKegboardManager;
@@ -90,9 +90,7 @@ public class KegbotCore {
     mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
     mConfig = new AppConfiguration(new SharedPreferencesConfigurationStore(mSharedPreferences));
 
-    mApi = new KegbotApiImpl();
-    mApi.setApiUrl(mConfig.getApiUrl());
-    mApi.setApiKey(mConfig.getApiKey());
+    mBackend = new KegbotApiImpl(mConfig);
 
     mImageDownloader = new ImageDownloader(context, mConfig.getKegbotUrl());
 
@@ -102,7 +100,7 @@ public class KegbotCore {
     mFlowManager = new FlowManager(mBus, mTapManager, mConfig);
     mManagers.add(mFlowManager);
 
-    mSyncManager = new SyncManager(mBus, context, mApi);
+    mSyncManager = new SyncManager(mBus, context, mBackend);
     mManagers.add(mSyncManager);
 
     mKegboardManager = new KegboardManager(mBus, context);
@@ -111,7 +109,7 @@ public class KegbotCore {
     mHardwareManager = new HardwareManager(mBus, context, mConfig, mKegboardManager);
     mManagers.add(mHardwareManager);
 
-    mAuthenticationManager = new AuthenticationManager(mBus, context, mApi, mConfig);
+    mAuthenticationManager = new AuthenticationManager(mBus, context, mBackend, mConfig);
     mManagers.add(mAuthenticationManager);
 
     mSoundManager = new SoundManager(mBus, context);
@@ -182,14 +180,14 @@ public class KegbotCore {
   }
 
   /**
-   * @return the api
+   * @return the backend
    */
-  public KegbotApi getApi() {
-    return mApi;
+  public Backend getBackend() {
+    return mBackend;
   }
 
   /**
-   * @return the api manager
+   * @return the sync manager
    */
   public SyncManager getSyncManager() {
     return mSyncManager;
@@ -252,7 +250,7 @@ public class KegbotCore {
     writer.printPair("device", Build.DEVICE).println();
     writer.printPair("model", Build.MODEL).println();
     writer.printPair("manufacturer", Build.MANUFACTURER).println();
-    writer.printPair("sdk", Build.VERSION.SDK).println();
+    writer.printPair("sdk", Integer.valueOf(Build.VERSION.SDK_INT)).println();
     writer.decreaseIndent();
     writer.println();
 

@@ -18,17 +18,22 @@
  */
 package org.kegbot.core;
 
-import java.util.List;
-
-import org.kegbot.app.util.TimeSeries;
-import org.kegbot.app.util.DateUtils;
-import org.kegbot.proto.Models.KegTap;
-
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
+import org.kegbot.app.util.TimeSeries;
+import org.kegbot.app.util.DateUtils;
+import org.kegbot.proto.Models.KegTap;
+
+import java.util.List;
+
+/**
+ * A flow holds all state about an active pour in progress.
+ *
+ * @author mikey
+ */
 public class Flow {
 
   /** Flow id for this instance. */

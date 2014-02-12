@@ -33,7 +33,6 @@ import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -90,6 +89,15 @@ public class HomeActivity extends CoreActivity {
   private ViewPager mTapStatusPager;
   private AppConfiguration mConfig;
   private TapEditFragment mTapEditor;
+
+  /**
+   * Keep track of Google Play Services error codes, and don't annoy when the
+   * same error persists. (For some reason, {@link GooglePlayServicesUtil} treats
+   * absence of the apk as "user recoverable").
+   *
+   * @see #checkPlayServices()
+   */
+  private int mLastShownGooglePlayServicesError = Integer.MIN_VALUE;
 
   /**
    * Shadow copy of tap manager taps. Updated, as needed, in
@@ -156,8 +164,6 @@ public class HomeActivity extends CoreActivity {
       public void onPageScrollStateChanged(int state) {
       }
     });
-
-    mTapStatusPager.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
 
     CheckinService.requestImmediateCheckin(this);
   }
@@ -350,16 +356,18 @@ public class HomeActivity extends CoreActivity {
   private boolean checkPlayServices() {
     int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
     if (resultCode != ConnectionResult.SUCCESS) {
-        if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
-            GooglePlayServicesUtil.getErrorDialog(resultCode, this,
-                REQUEST_PLAY_SERVICES_UPDATE).show();
-        } else {
-            Log.i(LOG_TAG, "GCM not supported.");
+      if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
+        Log.i(LOG_TAG, "GCM error: " + resultCode);
+        if (resultCode != mLastShownGooglePlayServicesError) {
+          GooglePlayServicesUtil.getErrorDialog(
+              resultCode, this, REQUEST_PLAY_SERVICES_UPDATE).show();
+          mLastShownGooglePlayServicesError = resultCode;
         }
-        return false;
+      }
+      return false;
     }
     return true;
-}
+  }
 
   public class MyAdapter extends FragmentStatePagerAdapter {
     public MyAdapter(FragmentManager fm) {

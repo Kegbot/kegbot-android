@@ -18,14 +18,23 @@
  */
 package org.kegbot.app.service;
 
-import java.io.FileDescriptor;
-import java.io.PrintWriter;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import android.app.Notification;
+import android.app.PendingIntent;
+import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.Binder;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.PowerManager;
+import android.os.SystemClock;
+import android.util.Log;
+import android.widget.Toast;
 
-import org.kegbot.api.KegbotApi;
-import org.kegbot.api.KegbotApiException;
 import org.kegbot.app.AuthenticatingActivity;
 import org.kegbot.app.HomeActivity;
 import org.kegbot.app.PourInProgressActivity;
@@ -43,23 +52,11 @@ import org.kegbot.core.SyncManager;
 import org.kegbot.core.ThermoSensor;
 import org.kegbot.proto.Api.RecordTemperatureRequest;
 
-import android.app.Notification;
-import android.app.PendingIntent;
-import android.app.Service;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.net.Uri;
-import android.os.Binder;
-import android.os.Handler;
-import android.os.IBinder;
-import android.os.PowerManager;
-import android.os.SystemClock;
-import android.util.Log;
-import android.widget.Toast;
+import java.io.FileDescriptor;
+import java.io.PrintWriter;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Primary service for running this kegbot.
@@ -90,19 +87,6 @@ public class KegbotCoreService extends Service {
   private BroadcastReceiver mBroadcastReceiver;
 
   private final Handler mHandler = new Handler();
-
-  private final Runnable mFlowManagerWorker = new Runnable() {
-    @Override
-    public void run() {
-      Log.i(TAG, "Kegbot core starting up!");
-
-      try {
-        configure();
-      } catch (KegbotApiException e1) {
-        Log.e(TAG, "Api failed.", e1);
-      }
-    }
-  };
 
   private final HardwareManager.Listener mHardwareListener = new HardwareManager.Listener() {
     @Override
@@ -213,8 +197,6 @@ public class KegbotCoreService extends Service {
     mCore.getImageDownloader().setBaseUrl(mConfig.getKegbotUrl());
 
     mFlowManager.addFlowListener(mFlowListener);
-
-    mExecutorService.execute(mFlowManagerWorker);
 
     updateFromPreferences();
 
@@ -350,19 +332,6 @@ public class KegbotCoreService extends Service {
     Log.d(TAG, "Recording drink for flow: " + ended);
     Log.d(TAG, "Tap: "  + ended.getTap());
     mApiManager.recordDrinkAsync(ended);
-  }
-
-  /**
-   * @throws KegbotApiException
-   *
-   */
-  private void configure() throws KegbotApiException {
-    Log.d(TAG, "Configuring!");
-    final Uri apiUrl = Uri.parse(mConfig.getApiUrl());
-
-    KegbotApi api = mCore.getApi();
-    api.setApiUrl(apiUrl.toString());
-    api.setApiKey(mConfig.getApiKey());
   }
 
   private void debugNotice(String message) {

@@ -17,15 +17,6 @@
  */
 package org.kegbot.app;
 
-import org.kegbot.api.KegbotApiException;
-import org.kegbot.app.config.AppConfiguration;
-import org.kegbot.core.AuthenticationManager;
-import org.kegbot.core.AuthenticationToken;
-import org.kegbot.core.FlowManager;
-import org.kegbot.core.KegbotCore;
-import org.kegbot.proto.Models.KegTap;
-import org.kegbot.proto.Models.User;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -45,6 +36,15 @@ import android.widget.TextView;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.hoho.android.usbserial.util.HexDump;
+
+import org.kegbot.app.config.AppConfiguration;
+import org.kegbot.backend.BackendException;
+import org.kegbot.core.AuthenticationManager;
+import org.kegbot.core.AuthenticationToken;
+import org.kegbot.core.FlowManager;
+import org.kegbot.core.KegbotCore;
+import org.kegbot.proto.Models.KegTap;
+import org.kegbot.proto.Models.User;
 
 /**
  * Activity shown while authenticating a user.
@@ -274,8 +274,8 @@ public class AuthenticatingActivity extends Activity {
         Log.d(TAG, "Assigning authDevice=" + authDevice + " tokenValue=" + tokenValue
             + "to username=" + username);
         try {
-          mCore.getApi().assignToken(authDevice, tokenValue, username);
-        } catch (KegbotApiException e) {
+          mCore.getBackend().assignToken(authDevice, tokenValue, username);
+        } catch (BackendException e) {
           Log.w(TAG, "Assignment failed!", e);
           return Boolean.FALSE;
         }
@@ -324,7 +324,7 @@ public class AuthenticatingActivity extends Activity {
    */
   public static void startAndAuthenticate(Context context, String username, KegTap tap) {
     final Intent intent = new Intent(context, AuthenticatingActivity.class);
-    intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+    intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
     intent.putExtra(EXTRA_USERNAME, username);
     if (tap != null) {
       intent.putExtra(EXTRA_TAP, tap.getMeterName());

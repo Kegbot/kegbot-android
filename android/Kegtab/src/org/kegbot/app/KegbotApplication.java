@@ -3,15 +3,15 @@
  */
 package org.kegbot.app;
 
-import org.kegbot.app.service.CheckinService;
-import org.kegbot.app.util.Utils;
-import org.kegbot.core.KegbotCore;
-
 import android.app.Application;
 import android.content.pm.PackageInfo;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
+
+import org.kegbot.app.service.CheckinService;
+import org.kegbot.app.util.Utils;
+import org.kegbot.core.KegbotCore;
 
 /**
  * Kegbot customized application.
@@ -51,7 +51,7 @@ public class KegbotApplication extends Application {
     System.setProperty("http.agent", userAgent);
 
     KegbotCore.getInstance(getApplicationContext());
-    CheckinService.startCheckinService(this);
+    CheckinService.startCheckinService(this, false);
   }
 
   public boolean isReleaseBuild() {

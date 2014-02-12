@@ -18,30 +18,6 @@
  */
 package org.kegbot.app.service;
 
-import java.io.FileDescriptor;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Date;
-import java.util.List;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpParams;
-import org.apache.http.params.HttpProtocolParams;
-import org.apache.http.util.EntityUtils;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.kegbot.app.R;
-import org.kegbot.app.config.AppConfiguration;
-import org.kegbot.app.util.Utils;
-import org.kegbot.core.KegbotCore;
-
 import android.app.AlarmManager;
 import android.app.IntentService;
 import android.app.Notification;
@@ -49,16 +25,21 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
-import android.os.Build;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.os.SystemClock;
 import android.util.Log;
 
-import com.google.common.collect.Lists;
+import org.kegbot.app.R;
+import org.kegbot.app.config.AppConfiguration;
+import org.kegbot.app.util.CheckinClient;
+import org.kegbot.core.KegbotCore;
+
+import java.io.FileDescriptor;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Date;
 
 /**
  * Checkin service: pings kegbot servers for version/support information.
@@ -68,22 +49,13 @@ import com.google.common.collect.Lists;
 public class CheckinService extends IntentService {
 
   private static final String TAG = CheckinService.class.getSimpleName();
-  private static final String CHECKIN_URL = "https://kegbot.org/checkin/";
-  static final String CHECKIN_ACTION = "org.kegbot.app.CHECKIN";
+  static final String CHECKIN_NOW_ACTION = "org.kegbot.app.CHECKIN";
 
   private static final long CHECKIN_INTERVAL_MILLIS = AlarmManager.INTERVAL_HALF_DAY;
 
   private static final int CHECKIN_NOTIFICATION_ID = 100;
 
-  /**
-   * Normal checkin response status; nothing to do.
-   */
-  static final String STATUS_OK = "ok";
-
   private AppConfiguration mConfig;
-
-  private int mKegbotVersion = -1;
-  private String mDeviceId;
   private PendingIntent mPendingIntent;
   private WakeLock mWakeLock;
 
@@ -100,16 +72,6 @@ public class CheckinService extends IntentService {
     final PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
     mWakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "kbcheckin");
 
-    mDeviceId = KegbotCore.getInstance(this).getDeviceId();
-    try {
-      final PackageInfo pinfo = getPackageManager().getPackageInfo(getPackageName(), 0);
-      mKegbotVersion = pinfo.versionCode;
-    } catch (NameNotFoundException e) {
-      Log.w(TAG, "Could not look up own package info.");
-    }
-
-    resetCheckinStateIfNeeded();
-
     registerAlarm();
   }
 
@@ -121,11 +83,10 @@ public class CheckinService extends IntentService {
 
   @Override
   protected void onHandleIntent(Intent intent) {
+    // If action was unset, it means the service was started
+    // only to schedule the next checkin.
     try {
-      final String action = intent.getAction();
-      if (CHECKIN_ACTION.equals(action)) {
-        doCheckin();
-      } else if (resetCheckinStateIfNeeded()) {
+      if (CHECKIN_NOW_ACTION.equals(intent.getAction())) {
         doCheckin();
       }
     } finally {
@@ -145,7 +106,7 @@ public class CheckinService extends IntentService {
   private void registerAlarm() {
     unregisterAlarm();
     Log.d(TAG, "Registering alarm.");
-    final Intent intent = getCheckinIntent(this);
+    final Intent intent = getCheckinNowIntent(this);
     mPendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
     final AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
     final long nextCheckin = SystemClock.elapsedRealtime() + CHECKIN_INTERVAL_MILLIS;
@@ -181,83 +142,20 @@ public class CheckinService extends IntentService {
   }
 
   private void doCheckin() {
-    Log.d(TAG, "Performing checkin: " + CHECKIN_URL);
-    final long now = System.currentTimeMillis();
-    mConfig.setLastCheckinAttempt(now);
-
-    final HttpClient client = new DefaultHttpClient();
-    final HttpPost request = new HttpPost(CHECKIN_URL);
-    final HttpParams requestParams = new BasicHttpParams();
-
-    HttpProtocolParams.setUserAgent(requestParams, Utils.getUserAgent(getApplicationContext()));
-    request.setParams(requestParams);
-
+    final CheckinClient client = CheckinClient.fromContext(getApplicationContext());
     try {
-      List<NameValuePair> params = Lists.newArrayList();
-      params.add(new BasicNameValuePair("device_id", mDeviceId));
-      params.add(new BasicNameValuePair("android_version", String.valueOf(Build.VERSION.SDK_INT)));
-      params.add(new BasicNameValuePair("android_device", Build.DEVICE));
-      params.add(new BasicNameValuePair("app_package", getPackageName()));
-      params.add(new BasicNameValuePair("app_version", String.valueOf(mKegbotVersion)));
-      params.add(new BasicNameValuePair("gcm_reg_id", mConfig.getGcmRegistrationId()));
-      request.setEntity(new UrlEncodedFormEntity(params));
-
-      final HttpResponse response = client.execute(request);
-      Log.d(TAG, "Checkin complete");
-      final String responseBody = EntityUtils.toString(response.getEntity());
-      final ObjectMapper mapper = new ObjectMapper();
-      final JsonNode rootNode = mapper.readValue(responseBody, JsonNode.class);
-      if (response.getStatusLine().getStatusCode() == 200) {
-        mConfig.setLastCheckinSuccess(now);
-        mConfig.setIsRegistered(true);
-        processLastCheckinResponse(rootNode);
-      }
+      client.checkin();
     } catch (IOException e) {
-      Log.d(TAG, "Checkin failed: " + e);
+      Log.w(TAG, "Checkin failed.", e);
+      return;
     }
-  }
-
-  /**
-   * Processes the checkin response message.
-   */
-  private void processLastCheckinResponse(JsonNode response) {
-    Log.d(TAG, "Checkin response: " + response);
 
     NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
-    final JsonNode statusNode = response.get("status");
-    if (statusNode == null || !statusNode.isTextual()) {
-      Log.d(TAG, "Invalid checkin response: no status.");
-      return;
-    }
+    if (mConfig.getUpdateAvailable()) {
+      Log.d(TAG, "Update is available, notifying..");
+      final boolean updateRequired = mConfig.getUpdateRequired();
 
-    final String status = statusNode.getTextValue();
-    if (STATUS_OK.equals(status)) {
-      Log.d(TAG, "Checkin status: " + status);
-    } else {
-      Log.d(TAG, "Invalid checkin response: unknown status: " + status);
-      return;
-    }
-
-    boolean updateNeeded = false;
-    final JsonNode updateNeededNode = response.get("update_needed");
-    if (updateNeededNode != null && updateNeededNode.isBoolean()
-        && updateNeededNode.getBooleanValue()) {
-      updateNeeded = true;
-    }
-
-    boolean updateRequired = false;
-    final JsonNode updateRequiredNode = response.get("update_required");
-    if (updateRequiredNode != null && updateRequiredNode.isBoolean()
-        && updateRequiredNode.getBooleanValue()) {
-      updateRequired = true;
-    }
-
-    mConfig.setLastCheckinStatus(status);
-    mConfig.setUpdateNeeded(updateNeeded);
-    mConfig.setUpdateRequired(updateRequired);
-
-    if (updateNeeded) {
       Intent notificationIntent = new Intent(Intent.ACTION_VIEW);
       notificationIntent.setData(Uri.parse("market://details?id=org.kegbot.app"));
       PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
@@ -281,30 +179,22 @@ public class CheckinService extends IntentService {
     }
   }
 
-  /**
-   * @return {@code true} if state was reset.
-   */
-  private boolean resetCheckinStateIfNeeded() {
-    mConfig.setUpdateNeeded(false);
-    mConfig.setUpdateRequired(false);
-    mConfig.setLastCheckinAttempt(Long.MIN_VALUE);
-    mConfig.setLastCheckinSuccess(Long.MIN_VALUE);
-    mConfig.setLastCheckinStatus("unknown");
-    return true;
-  }
-
-  private static Intent getCheckinIntent(Context context) {
-    final Intent intent = new Intent(CHECKIN_ACTION);
+  private static Intent getCheckinNowIntent(Context context) {
+    final Intent intent = new Intent(CHECKIN_NOW_ACTION);
     return intent;
   }
 
   public static void requestImmediateCheckin(Context context) {
-    final Intent intent = getCheckinIntent(context);
+    Log.d(TAG, "Requesting immediate checkin.");
+    final Intent intent = getCheckinNowIntent(context);
     context.sendBroadcast(intent);
   }
 
-  public static void startCheckinService(Context context) {
+  public static void startCheckinService(Context context, boolean checkinNow) {
     final Intent intent = new Intent(context, CheckinService.class);
+    if (checkinNow) {
+      intent.setAction(CHECKIN_NOW_ACTION);
+    }
     context.startService(intent);
   }
 

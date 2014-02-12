@@ -18,22 +18,6 @@
  */
 package org.kegbot.app;
 
-import java.util.Set;
-
-import org.kegbot.api.KegbotApi;
-import org.kegbot.api.KegbotApiException;
-import org.kegbot.api.KegbotApiImpl;
-import org.kegbot.app.config.AppConfiguration;
-import org.kegbot.app.config.SharedPreferencesConfigurationStore;
-import org.kegbot.app.util.Units;
-import org.kegbot.app.view.BadgeView;
-import org.kegbot.core.AuthenticationToken;
-import org.kegbot.core.FlowMeter;
-import org.kegbot.core.HardwareManager;
-import org.kegbot.core.KegbotCore;
-import org.kegbot.core.ThermoSensor;
-import org.kegbot.proto.Models.KegTap;
-
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -48,6 +32,22 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
+
+import org.kegbot.api.KegbotApiImpl;
+import org.kegbot.app.config.AppConfiguration;
+import org.kegbot.app.config.SharedPreferencesConfigurationStore;
+import org.kegbot.app.util.Units;
+import org.kegbot.app.view.BadgeView;
+import org.kegbot.backend.Backend;
+import org.kegbot.backend.BackendException;
+import org.kegbot.core.AuthenticationToken;
+import org.kegbot.core.FlowMeter;
+import org.kegbot.core.HardwareManager;
+import org.kegbot.core.KegbotCore;
+import org.kegbot.core.ThermoSensor;
+import org.kegbot.proto.Models.KegTap;
+
+import java.util.Set;
 
 public class CalibrationActivity extends CoreActivity {
 
@@ -282,14 +282,12 @@ public class CalibrationActivity extends CoreActivity {
                 new SharedPreferencesConfigurationStore(
                     PreferenceManager.getDefaultSharedPreferences(getApplicationContext())));
 
-        KegbotApi api = new KegbotApiImpl();
-        api.setApiUrl(config.getApiUrl());
-        api.setApiKey(config.getApiKey());
+        Backend api = new KegbotApiImpl(config);
 
         try {
           api.setTapMlPerTick(mMeterName, mMlPerTick);
           return "";
-        } catch (KegbotApiException e) {
+        } catch (BackendException e) {
           Log.w(TAG, "Error calibrating: " + e, e);
           return e.toString();
         }
