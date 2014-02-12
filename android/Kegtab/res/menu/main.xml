@@ -27,6 +27,13 @@
         android:visible="false"/>
     
     <item
+        android:id="@+id/alertGeneral"
+        android:showAsAction="ifRoom|withText"
+        android:title="@string/update_available"
+        android:icon="@drawable/icon_warning"
+        android:visible="false"/>
+    
+    <item
         android:id="@+id/alertNetwork"
         android:showAsAction="ifRoom|withText"
         android:title="@string/alert_network"
