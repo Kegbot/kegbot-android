@@ -58,12 +58,10 @@ message BeerType {
   // Brewer information for the beer.  May refer to an 'unknown' or generic
   // brewer record.
   required string brewer_id = 3;
-  optional Brewer brewer = 13;
 
   // Style information for the beer.  May refer to an 'unknown' or generic beer
   // style.
   required string style_id = 4;
-  optional BeerStyle style = 14;
 
   // For seasonal or special edition beers, the year or other edition name.
   optional string edition = 6;
@@ -265,6 +263,24 @@ message KegSize {
 
 }
 
+// Describes a hardware controller
+message Controller {
+  required uint32 id = 1;
+  required string name = 2;
+
+  optional string model_name = 3;
+  optional string serial_number = 4;
+}
+
+message FlowMeter {
+  required uint32 id = 1;
+  required string name = 2;
+  required string port_name = 3;
+  required float ticks_per_ml = 4;
+
+  optional Controller controller = 5;
+}
+
 // Describes a tap which is available for pouring beer.
 message KegTap {
 
@@ -275,7 +291,11 @@ message KegTap {
   required string name = 2;
 
   // The name of the flow meter assigned to this tap.
-  required string meter_name = 3;
+  // Deprecated in favor of 'meter'
+  optional string meter_name = 3 [deprecated = true];
+
+  // The currently-connected meter, if any.
+  optional FlowMeter meter = 12;
 
   // The relay name of the tap.
   optional string relay_name = 4;
