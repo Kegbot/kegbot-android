@@ -3,7 +3,10 @@
  */
 package org.kegbot.app.config;
 
+import android.content.Context;
 import android.content.SharedPreferences;
+
+import java.util.Set;
 
 /**
  * A {@link ConfigurationStore} backed by an Android {@link SharedPreferences}
@@ -19,9 +22,19 @@ public class SharedPreferencesConfigurationStore implements ConfigurationStore {
     mSharedPreferences = prefs;
   }
 
+  public static SharedPreferencesConfigurationStore fromName(Context context, String sharedPrefsName) {
+    return new SharedPreferencesConfigurationStore(
+        context.getSharedPreferences(sharedPrefsName, 0));
+  }
+
   @Override
   public void putString(String key, String value) {
     mSharedPreferences.edit().putString(getKey(key), value).apply();
+  }
+
+  @Override
+  public void putStringSet(String key, Set<String> values) {
+    mSharedPreferences.edit().putStringSet(key, values).apply();
   }
 
   @Override
@@ -42,6 +55,11 @@ public class SharedPreferencesConfigurationStore implements ConfigurationStore {
   @Override
   public String getString(String key, String defaultValue) {
     return mSharedPreferences.getString(getKey(key), defaultValue);
+  }
+
+  @Override
+  public Set<String> getStringSet(String key, Set<String> defaultValues) {
+    return mSharedPreferences.getStringSet(key, defaultValues);
   }
 
   @Override

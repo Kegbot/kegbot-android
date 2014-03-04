@@ -18,6 +18,8 @@
  */
 package org.kegbot.app.config;
 
+import java.util.Set;
+
 /**
  * A generic key-value interface for storing configuration data.
  *
@@ -27,6 +29,8 @@ public interface ConfigurationStore {
 
   public void putString(String key, String value);
 
+  public void putStringSet(String key, Set<String> values);
+
   public void putInteger(String key, int value);
 
   public void putLong(String key, long value);
@@ -34,6 +38,8 @@ public interface ConfigurationStore {
   public void putBoolean(String key, boolean value);
 
   public String getString(String key, String defaultValue);
+
+  public Set<String> getStringSet(String key, Set<String> defaultValues);
 
   public int getInteger(String key, int defaultValue);
 
