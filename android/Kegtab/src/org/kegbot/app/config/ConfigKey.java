@@ -29,6 +29,7 @@ import static org.kegbot.app.config.AppConfiguration.TRUE;
  */
 enum ConfigKey {
   SETUP_VERSION("0"),
+  LOCAL_BACKEND(FALSE),
 
   KEGBOT_URL(""),
   API_KEY(""),

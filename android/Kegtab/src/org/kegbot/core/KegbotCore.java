@@ -35,8 +35,8 @@ import com.squareup.otto.ThreadEnforcer;
 
 import org.kegbot.api.KegbotApiImpl;
 import org.kegbot.app.AuthenticatingActivity;
-import org.kegbot.app.NewControllerActivity;
 import org.kegbot.app.KegbotApplication;
+import org.kegbot.app.NewControllerActivity;
 import org.kegbot.app.alert.AlertCore;
 import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.app.config.SharedPreferencesConfigurationStore;
@@ -45,6 +45,7 @@ import org.kegbot.app.util.ImageDownloader;
 import org.kegbot.app.util.IndentingPrintWriter;
 import org.kegbot.app.util.Utils;
 import org.kegbot.backend.Backend;
+import org.kegbot.backend.LocalBackend;
 import org.kegbot.core.FlowManager.Clock;
 import org.kegbot.core.hardware.Controller;
 import org.kegbot.core.hardware.ControllerAttachedEvent;
@@ -56,6 +57,7 @@ import org.kegbot.proto.Api.RecordTemperatureRequest;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Date;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -109,7 +111,13 @@ public class KegbotCore {
     mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
     mConfig = new AppConfiguration(new SharedPreferencesConfigurationStore(mSharedPreferences));
 
-    mBackend = new KegbotApiImpl(mConfig);
+    if (mConfig.isLocalBackend()) {
+      Log.d(TAG, "Using local backend.");
+      mBackend = new LocalBackend();
+    } else {
+      Log.d(TAG, "Using server backend.");
+      mBackend = new KegbotApiImpl(mConfig);
+    }
 
     mImageDownloader = new ImageDownloader(context, mConfig.getKegbotUrl());
 
@@ -274,6 +282,25 @@ public class KegbotCore {
     writer.printPair("sdk", Integer.valueOf(Build.VERSION.SDK_INT)).println();
     writer.decreaseIndent();
     writer.println();
+
+    writer.println("## Prefs");
+    writer.increaseIndent();
+    for (Map.Entry<String, ?> entry : mSharedPreferences.getAll().entrySet()) {
+      final String key = entry.getKey();
+      String value = entry.getValue().toString();
+
+      if (key.equals("config:PIN") || key.equals("config:API_KEY")) {
+        if (value.isEmpty()) {
+          value = "(unset)";
+        } else {
+          value = "(redacted)";
+        }
+      }
+
+      writer.printPair(key, value).println();
+    }
+    writer.println();
+    writer.decreaseIndent();
 
     try {
       final PackageInfo packageInfo = Utils.getOwnPackageInfo(mContext);

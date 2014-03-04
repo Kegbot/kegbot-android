@@ -270,4 +270,12 @@ public class AppConfiguration {
     return getBoolean(ConfigKey.KEEP_SCREEN_ON);
   }
 
+  public boolean isLocalBackend() {
+    return getBoolean(ConfigKey.LOCAL_BACKEND);
+  }
+
+  public void setIsLocalBackend(boolean value) {
+    setBoolean(ConfigKey.LOCAL_BACKEND, value);
+  }
+
 }
