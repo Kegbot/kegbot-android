@@ -18,17 +18,8 @@
  */
 package org.kegbot.app;
 
-import org.kegbot.app.util.ImageDownloader;
-import org.kegbot.app.util.Units;
-import org.kegbot.app.view.BadgeView;
-import org.kegbot.core.KegbotCore;
-import org.kegbot.proto.Models.Image;
-import org.kegbot.proto.Models.Keg;
-import org.kegbot.proto.Models.KegTap;
-
 import android.app.Activity;
 import android.app.ListFragment;
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.format.DateUtils;
 import android.util.Log;
@@ -41,6 +32,14 @@ import android.widget.TextView;
 import android.widget.ViewFlipper;
 
 import com.google.common.base.Strings;
+
+import org.kegbot.app.util.ImageDownloader;
+import org.kegbot.app.util.Units;
+import org.kegbot.app.view.BadgeView;
+import org.kegbot.core.KegbotCore;
+import org.kegbot.proto.Models.Image;
+import org.kegbot.proto.Models.Keg;
+import org.kegbot.proto.Models.KegTap;
 
 public class TapStatusFragment extends ListFragment {
 
@@ -66,21 +65,6 @@ public class TapStatusFragment extends ListFragment {
     mImageDownloader = mCore.getImageDownloader();
   }
 
-  @Override
-  public void onActivityResult(int requestCode, int resultCode, Intent data) {
-    switch (requestCode) {
-      case SELECT_DRINKER:
-        if (resultCode == Activity.RESULT_OK) {
-          String username = data.getStringExtra("username");
-          final String tapName = mTapDetail.getMeterName();
-          final KegTap tap = mCore.getTapManager().getTapForMeterName(tapName);
-          mCore.getFlowManager().activateUserAtTap(tap, username);
-        }
-        break;
-      default:
-        super.onActivityResult(requestCode, resultCode, data);
-    }
-  }
 
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
