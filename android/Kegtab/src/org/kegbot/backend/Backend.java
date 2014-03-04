@@ -24,7 +24,9 @@ import org.codehaus.jackson.JsonNode;
 import org.kegbot.app.util.TimeSeries;
 import org.kegbot.proto.Api.RecordTemperatureRequest;
 import org.kegbot.proto.Models.AuthenticationToken;
+import org.kegbot.proto.Models.Controller;
 import org.kegbot.proto.Models.Drink;
+import org.kegbot.proto.Models.FlowMeter;
 import org.kegbot.proto.Models.Image;
 import org.kegbot.proto.Models.Keg;
 import org.kegbot.proto.Models.KegTap;
@@ -154,5 +156,19 @@ public interface Backend {
   /** Sets the meter calibration factor. */
   public KegTap setTapMlPerTick(String tapName, double mlPerTick)
       throws BackendException;
+
+  public Controller createController(String name, String serialNumber, String deviceType)
+      throws BackendException;
+
+  public List<Controller> getControllers() throws BackendException;
+
+  public Controller updateController(Controller controller) throws BackendException;
+
+  public FlowMeter createFlowMeter(Controller controller, String portName, double ticksPerMl)
+      throws BackendException;
+
+  public List<FlowMeter> getFlowMeters() throws BackendException;
+
+  public FlowMeter updateFlowMeter(FlowMeter flowMeter) throws BackendException;
 
 }

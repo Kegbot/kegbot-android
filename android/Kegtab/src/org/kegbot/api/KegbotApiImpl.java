@@ -37,7 +37,9 @@ import org.kegbot.backend.Backend;
 import org.kegbot.backend.BackendException;
 import org.kegbot.proto.Api.RecordTemperatureRequest;
 import org.kegbot.proto.Models.AuthenticationToken;
+import org.kegbot.proto.Models.Controller;
 import org.kegbot.proto.Models.Drink;
+import org.kegbot.proto.Models.FlowMeter;
 import org.kegbot.proto.Models.Image;
 import org.kegbot.proto.Models.Keg;
 import org.kegbot.proto.Models.KegTap;
@@ -426,8 +428,66 @@ public class KegbotApiImpl implements Backend {
         requestJson(builder.build()).get("object"));
   }
 
+  @Override
+  public List<Controller> getControllers() throws BackendException {
+    return getProto("/controllers/", Controller.newBuilder());
+  }
+
+  @Override
+  public Controller updateController(Controller controller) throws BackendException {
+    final Map<String, String> params = Maps.newLinkedHashMap();
+    params.put("name", controller.getName());
+    if (controller.hasSerialNumber()) {
+      params.put("serial_number", controller.getSerialNumber());
+    }
+    if (controller.hasModelName()) {
+      params.put("model_name", controller.getModelName());
+    }
+
+    return (Controller) postProto("/controllers/" + controller.getId(), Controller.newBuilder(),
+        params);
+  }
+
+  @Override
+  public List<FlowMeter> getFlowMeters() throws BackendException {
+    return getProto("/flow-meters/", FlowMeter.newBuilder());
+  }
+
+  @Override
+  public FlowMeter updateFlowMeter(FlowMeter flowMeter) throws BackendException {
+    final Map<String, String> params = Maps.newLinkedHashMap();
+    params.put("port_name", flowMeter.getPortName());
+
+    return (FlowMeter) postProto("/flow-meters/" + flowMeter.getId(), FlowMeter.newBuilder(),
+        params);
+  }
+
   private synchronized void debug(String message) {
     Log.d(TAG, message);
+  }
+
+  @Override
+  public Controller createController(String name, String serialNumber, String deviceType)
+      throws BackendException {
+    final Map<String, String> params = Maps.newLinkedHashMap();
+    params.put("name", name);
+    if (!Strings.isNullOrEmpty(serialNumber)) {
+      params.put("serial_number", serialNumber);
+    }
+    if (!Strings.isNullOrEmpty(deviceType)) {
+      params.put("model_name", deviceType);
+    }
+
+    return (Controller) postProto("/controllers/", Controller.newBuilder(), params);
+  }
+
+  @Override
+  public FlowMeter createFlowMeter(Controller controller, String portName, double ticksPerMl) throws BackendException {
+    final Map<String, String> params = Maps.newLinkedHashMap();
+    params.put("controller", String.valueOf(controller.getId()));
+    params.put("port_name", portName);
+    params.put("ticks_per_ml", String.valueOf(ticksPerMl));
+    return (FlowMeter) postProto("/flow-meters/", FlowMeter.newBuilder(), params);
   }
 
 }
