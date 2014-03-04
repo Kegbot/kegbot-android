@@ -20,7 +20,7 @@ package org.kegbot.core;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.util.List;
+import com.squareup.otto.Bus;
 
 import junit.framework.TestCase;
 
@@ -28,7 +28,7 @@ import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.core.FlowManager.Clock;
 import org.kegbot.proto.Models.KegTap;
 
-import com.squareup.otto.Bus;
+import java.util.List;
 
 /**
  * Tests for {@link FlowManager}.
@@ -58,7 +58,7 @@ public class FlowManagerTest extends TestCase {
 
     mBus = mock(Bus.class);
 
-    mTapManager = new TapManager(mBus);
+    mTapManager = new TapManager(mBus, null);
     mTap0 = KegTap.newBuilder().setId(1).setName("tap0").setMlPerTick(1).setMeterName("kegboard.flow0").build();
     mTap1 = KegTap.newBuilder().setId(2).setName("tap1").setMlPerTick(1).setMeterName("kegboard.flow1").build();
     mTapManager.addTap(mTap0);

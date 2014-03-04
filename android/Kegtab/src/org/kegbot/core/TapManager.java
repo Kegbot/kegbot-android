@@ -18,22 +18,25 @@
  */
 package org.kegbot.core;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.kegbot.app.event.TapListUpdateEvent;
-import org.kegbot.app.util.IndentingPrintWriter;
-import org.kegbot.proto.Models.KegTap;
-
 import android.util.Log;
 
+import com.google.android.gms.common.util.VisibleForTesting;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
+
+import org.kegbot.app.config.ConfigurationStore;
+import org.kegbot.app.event.TapListUpdateEvent;
+import org.kegbot.app.util.IndentingPrintWriter;
+import org.kegbot.proto.Models.KegTap;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Tap manager.
@@ -44,7 +47,12 @@ public class TapManager extends Manager {
 
   private static final String TAG = TapManager.class.getSimpleName();
 
+  @VisibleForTesting
+  protected static final String KEY_HIDDEN_TAP_IDS = "hidden_tap_ids";
+
   private final Map<String, KegTap> mTaps = Maps.newLinkedHashMap();
+
+  private ConfigurationStore mLocalConfig;
 
   /**
    * Stores the currently "focused" tap.
@@ -53,8 +61,9 @@ public class TapManager extends Manager {
    */
   private KegTap mFocusedTap = null;
 
-  public TapManager(Bus bus) {
+  public TapManager(Bus bus, ConfigurationStore configStore) {
     super(bus);
+    mLocalConfig = configStore;
   }
 
   @Override
@@ -129,6 +138,20 @@ public class TapManager extends Manager {
     return Lists.newArrayList(mTaps.values());
   }
 
+  public synchronized List<KegTap> getVisibleTaps() {
+    final Set<String> hiddenIds = mLocalConfig.getStringSet(KEY_HIDDEN_TAP_IDS,
+        Collections.<String>emptySet());
+    final List<KegTap> results = Lists.newArrayList();
+
+    for (final KegTap tap : mTaps.values()) {
+      final String tapId = String.valueOf(tap.getId());
+      if (!hiddenIds.contains(tapId)) {
+        results.add(tap);
+      }
+    }
+    return results;
+  }
+
   public synchronized Collection<KegTap> getTapsWithActiveKeg() {
     final Set<KegTap> result = Sets.newLinkedHashSet();
     for (final KegTap tap : mTaps.values()) {
@@ -157,6 +180,23 @@ public class TapManager extends Manager {
     for (String tapName : removedTaps) {
       Log.i(TAG, "Removing tap: " + tapName);
       removeTap(getTapForMeterName(tapName));
+    }
+  }
+
+  public synchronized void setTapVisibility(KegTap tap, boolean isVisible) {
+    final String tapId = String.valueOf(tap.getId());
+    final Set<String> hiddenTaps = mLocalConfig.getStringSet(KEY_HIDDEN_TAP_IDS,
+        Sets.<String>newLinkedHashSet());
+
+    final boolean changed;
+    if (isVisible) {
+      changed = hiddenTaps.remove(tapId);
+    } else {
+      changed = hiddenTaps.add(tapId);
+    }
+
+    if (changed) {
+      mLocalConfig.putStringSet(KEY_HIDDEN_TAP_IDS, hiddenTaps);
     }
   }
 

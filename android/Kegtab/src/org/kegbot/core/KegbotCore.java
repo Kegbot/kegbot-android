@@ -104,7 +104,9 @@ public class KegbotCore {
 
     mImageDownloader = new ImageDownloader(context, mConfig.getKegbotUrl());
 
-    mTapManager = new TapManager(mBus);
+
+    mTapManager = new TapManager(mBus,
+        SharedPreferencesConfigurationStore.fromName(mContext, "tap_manager_prefs"));
     mManagers.add(mTapManager);
 
     mFlowManager = new FlowManager(mBus, mTapManager, mConfig, mClock);
