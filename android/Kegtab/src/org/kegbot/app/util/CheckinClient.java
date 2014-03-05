@@ -68,27 +68,26 @@ public class CheckinClient {
 
     final long now = System.currentTimeMillis();
     mConfig.setLastCheckinAttempt(now);
-
-    final HttpRequest request = new HttpRequest(CHECKIN_URL, "POST");
-    request.header("User-Agent", mUserAgent);
-
-    final ImmutableMap.Builder<String, String> builder = ImmutableMap.builder();
-    builder.put("product", "kegtab-android");
-    builder.put("reg_id", mConfig.getRegistrationId());
-    builder.put("android_version", String.valueOf(Build.VERSION.SDK_INT));
-    builder.put("android_device", Build.DEVICE);
-    builder.put("gcm_reg_id", mConfig.getGcmRegistrationId());
-
-    if (mPackageInfo != null) {
-      if (mPackageInfo.signatures != null && mPackageInfo.signatures.length > 0) {
-        builder.put("android_build_fingerprint",
-            Utils.getFingerprintForSignature(mPackageInfo.signatures[0]));
-      }
-      builder.put("version", String.valueOf(mPackageInfo.versionCode));
-    }
-
-    request.form(builder.build());
     try {
+      final HttpRequest request = new HttpRequest(CHECKIN_URL, "POST");
+      request.header("User-Agent", mUserAgent);
+
+      final ImmutableMap.Builder<String, String> builder = ImmutableMap.builder();
+      builder.put("product", "kegtab-android");
+      builder.put("reg_id", mConfig.getRegistrationId());
+      builder.put("android_version", String.valueOf(Build.VERSION.SDK_INT));
+      builder.put("android_device", Build.DEVICE);
+      builder.put("gcm_reg_id", mConfig.getGcmRegistrationId());
+
+      if (mPackageInfo != null) {
+        if (mPackageInfo.signatures != null && mPackageInfo.signatures.length > 0) {
+          builder.put("android_build_fingerprint",
+              Utils.getFingerprintForSignature(mPackageInfo.signatures[0]));
+        }
+        builder.put("version", String.valueOf(mPackageInfo.versionCode));
+      }
+
+      request.form(builder.build());
       final int statusCode = request.code();
       if (statusCode != 200) {
         Log.w(TAG, "Checkin failed, code: " + statusCode);
