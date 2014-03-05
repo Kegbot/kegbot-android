@@ -36,6 +36,10 @@ public class KegtabBroadcast {
 
   public static final String DRINKER_SELECT_EXTRA_TAP_NAME = "tap";
 
+  public static final String ACTION_METER_UPDATE = "org.kegbot.action.METER_UPDATE";
+  public static final String METER_UPDATE_EXTRA_METER_NAME = "meter";
+  public static final String METER_UPDATE_EXTRA_TICKS = "ticks";
+
   public static final String ACTION_TOKEN_ADDED = "org.kegbot.action.TOKEN_ADDED";
   public static final String TOKEN_ADDED_EXTRA_AUTH_DEVICE = "auth_device";
   public static final String TOKEN_ADDED_EXTRA_TOKEN_VALUE = "token";

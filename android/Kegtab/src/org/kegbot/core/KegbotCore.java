@@ -104,7 +104,6 @@ public class KegbotCore {
 
     mImageDownloader = new ImageDownloader(context, mConfig.getKegbotUrl());
 
-
     mTapManager = new TapManager(mBus,
         SharedPreferencesConfigurationStore.fromName(mContext, "tap_manager_prefs"));
     mManagers.add(mTapManager);
@@ -115,7 +114,7 @@ public class KegbotCore {
     mSyncManager = new SyncManager(mBus, context, mBackend);
     mManagers.add(mSyncManager);
 
-    mHardwareManager = new HardwareManager(mBus, context, mConfig);
+    mHardwareManager = new HardwareManager(mBus, context, mConfig, mBackend);
     mManagers.add(mHardwareManager);
 
     mAuthenticationManager = new AuthenticationManager(mBus, context, mBackend, mConfig);

@@ -216,12 +216,13 @@
         <!-- BROADCAST RECEIVERS -->
         <!-- ################### -->
 
-        <receiver android:name=".UserAuthedReceiver" >
+        <receiver android:name="org.kegbot.app.DebugBroadcastReceiver" >
             <intent-filter android:priority="1" >
-                <action android:name="org.kegbot.action.AUTH_BEGIN" />
-                <action android:name="org.kegbot.action.AUTH_FAIL" />
                 <action android:name="org.kegbot.action.USER_AUTHED" />
-            </intent-filter>
+                <action android:name="org.kegbot.action.METER_UPDATE" />
+                <action android:name="org.kegbot.action.TOKEN_ADDED" />
+                <action android:name="org.kegbot.action.THERMO_UPDATE" />
+             </intent-filter>
         </receiver>
         
         <receiver

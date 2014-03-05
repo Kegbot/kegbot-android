@@ -47,12 +47,10 @@ import org.kegbot.app.event.FlowUpdateEvent;
 import org.kegbot.core.AuthenticationToken;
 import org.kegbot.core.Flow;
 import org.kegbot.core.FlowManager;
-import org.kegbot.core.FlowMeter;
 import org.kegbot.core.KegbotCore;
 import org.kegbot.core.SyncManager;
 import org.kegbot.core.ThermoSensor;
 import org.kegbot.core.hardware.HardwareManager;
-import org.kegbot.core.hardware.MeterUpdateEvent;
 import org.kegbot.core.hardware.ThermoSensorUpdateEvent;
 import org.kegbot.core.hardware.TokenAttachedEvent;
 import org.kegbot.proto.Api.RecordTemperatureRequest;
@@ -123,19 +121,7 @@ public class KegbotCoreService extends Service {
     mExecutorService.submit(r);
   }
 
-  public void onMeterUpdate(final MeterUpdateEvent event) {
-    final FlowMeter meter = event.getMeter();
-    final Runnable r = new Runnable() {
-      @Override
-      public void run() {
-        mFlowManager.handleMeterActivity(meter.getName(), (int) meter.getTicks());
-      }
-    };
-    mExecutorService.submit(r);
-  }
-
   private final FlowManager.Listener mFlowListener = new FlowManager.Listener() {
-
     @Override
     public void onFlowStart(final Flow flow) {
       Log.d(TAG, "onFlowStart: " + flow);
