@@ -175,7 +175,14 @@ public class FlowManager extends Manager {
   }
 
   @Override
+  protected void start() {
+    getBus().register(this);
+    super.start();
+  }
+
+  @Override
   protected void stop() {
+    getBus().unregister(this);
     stopIdleChecker();
     for (Flow flow : getAllActiveFlows()) {
       endFlow(flow);
