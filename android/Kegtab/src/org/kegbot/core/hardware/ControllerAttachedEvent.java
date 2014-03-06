@@ -3,7 +3,7 @@ package org.kegbot.core.hardware;
 
 import org.kegbot.app.event.Event;
 
-class ControllerAttachedEvent implements Event {
+public class ControllerAttachedEvent implements Event {
 
   private final Controller mController;
 

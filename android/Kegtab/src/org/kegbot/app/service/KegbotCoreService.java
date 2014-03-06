@@ -50,6 +50,7 @@ import org.kegbot.core.FlowManager;
 import org.kegbot.core.KegbotCore;
 import org.kegbot.core.SyncManager;
 import org.kegbot.core.ThermoSensor;
+import org.kegbot.core.hardware.ControllerAttachedEvent;
 import org.kegbot.core.hardware.HardwareManager;
 import org.kegbot.core.hardware.ThermoSensorUpdateEvent;
 import org.kegbot.core.hardware.TokenAttachedEvent;
@@ -119,6 +120,11 @@ public class KegbotCoreService extends Service {
       }
     };
     mExecutorService.submit(r);
+  }
+
+  @Subscribe
+  public void onControllerAttached(ControllerAttachedEvent event) {
+    Log.d(TAG, "Controller attached: " + event.getController());
   }
 
   private final FlowManager.Listener mFlowListener = new FlowManager.Listener() {

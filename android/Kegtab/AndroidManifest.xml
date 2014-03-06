@@ -221,8 +221,10 @@
                 <action android:name="org.kegbot.action.USER_AUTHED" />
                 <action android:name="org.kegbot.action.METER_UPDATE" />
                 <action android:name="org.kegbot.action.TOKEN_ADDED" />
+                <action android:name="org.kegbot.action.CONTROLLER_ADDED" />
+                <action android:name="org.kegbot.action.CONTROLLER_REMOVED" />
                 <action android:name="org.kegbot.action.THERMO_UPDATE" />
-             </intent-filter>
+                </intent-filter>
         </receiver>
         
         <receiver

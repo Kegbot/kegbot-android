@@ -44,6 +44,12 @@ public class KegtabBroadcast {
   public static final String TOKEN_ADDED_EXTRA_AUTH_DEVICE = "auth_device";
   public static final String TOKEN_ADDED_EXTRA_TOKEN_VALUE = "token";
 
+  public static final String ACTION_CONTROLLER_ADDED = "org.kegbot.action.CONTROLLER_ADDED";
+  public static final String CONTROLLER_ADDED_EXTRA_NAME = "name";
+
+  public static final String ACTION_CONTROLLER_REMOVED = "org.kegbot.action.CONTROLLER_REMOVED";
+  public static final String CONTROLLER_REMOVED_EXTRA_NAME = "name";
+
   private KegtabBroadcast() {
     throw new IllegalStateException("Non-instantiable class.");
   }

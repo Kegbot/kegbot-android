@@ -32,6 +32,9 @@ import org.kegbot.core.AuthenticationToken;
 import org.kegbot.core.FlowMeter;
 import org.kegbot.core.KegbotCore;
 import org.kegbot.core.TapManager;
+import org.kegbot.core.hardware.Controller;
+import org.kegbot.core.hardware.FakeControllerEvent;
+import org.kegbot.core.hardware.FakeControllerManager;
 import org.kegbot.core.hardware.MeterUpdateEvent;
 import org.kegbot.core.hardware.TokenAttachedEvent;
 
@@ -59,6 +62,10 @@ public class DebugBroadcastReceiver extends BroadcastReceiver {
       handleMeterUpdate(core, intent);
     } else if (KegtabBroadcast.ACTION_TOKEN_ADDED.equals(action)) {
       handleTokenAdded(core, intent);
+    } else if (KegtabBroadcast.ACTION_CONTROLLER_ADDED.equals(action)) {
+      handleControllerAddedOrRemoved(core, intent, true);
+    } else if (KegtabBroadcast.ACTION_CONTROLLER_REMOVED.equals(action)) {
+      handleControllerAddedOrRemoved(core, intent, false);
     } else {
       Log.w(TAG, "Unknown intent action: " + action);
     }
@@ -89,7 +96,7 @@ public class DebugBroadcastReceiver extends BroadcastReceiver {
     if (ticks <= 0) {
       return;
     }
-  
+
     Log.d(TAG, "Got debug meter update: meter=" + meterName + " ticks=" + ticks);
     final FlowMeter meter = new FlowMeter(meterName);
     meter.setTicks(ticks);
