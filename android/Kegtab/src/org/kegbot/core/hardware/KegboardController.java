@@ -3,6 +3,7 @@ package org.kegbot.core.hardware;
 import android.os.SystemClock;
 import android.util.Log;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -71,7 +72,20 @@ public class KegboardController implements Controller {
   }
 
   @Override
-  public String getStatues() {
+  public String getSerialNumber() {
+    return Strings.nullToEmpty(mSerialNumber);
+  }
+
+  @Override
+  public String getDeviceType() {
+    if (getSerialNumber().startsWith("KB-01")) {
+      return TYPE_KBPM;
+    }
+    return TYPE_UNKNOWN;
+  }
+
+  @Override
+  public String getStatus() {
     return mStatus;
   }
 

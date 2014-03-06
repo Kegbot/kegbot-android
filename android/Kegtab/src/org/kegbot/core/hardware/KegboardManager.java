@@ -65,7 +65,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @author mike wakerly (mike@wakerly.com)
  */
-public class KegboardManager extends BackgroundManager {
+public class KegboardManager extends BackgroundManager implements ControllerManager {
 
   private final String TAG = KegboardManager.class.getSimpleName();
 
@@ -94,7 +94,7 @@ public class KegboardManager extends BackgroundManager {
   private Context mContext;
 
   /** Callback interface to parent {@link HardwareManager}. */
-  private final HardwareManager.Listener mListener;
+  private final ControllerManager.Listener mListener;
 
   /**
    * {@link SystemClock#uptimeMillis()} value at which the USB device tree
@@ -134,7 +134,7 @@ public class KegboardManager extends BackgroundManager {
     }
   };
 
-  public KegboardManager(Bus bus, Context context, HardwareManager.Listener listener) {
+  public KegboardManager(Bus bus, Context context, ControllerManager.Listener listener) {
     super(bus);
     mContext = context.getApplicationContext();
     mListener = listener;
@@ -160,6 +160,7 @@ public class KegboardManager extends BackgroundManager {
     super.stop();
   }
 
+  @Override
   public void refreshSoon() {
     Log.d(TAG, "refreshSoon");
     mNextUsbRefreshUptimeMillis = SystemClock.uptimeMillis();
@@ -458,7 +459,7 @@ public class KegboardManager extends BackgroundManager {
   private boolean serviceControllers() {
     boolean didIo = false;
     for (final KegboardController controller : mControllers.values()) {
-      if (!Controller.STATUS_OK.equals(controller.getStatues())) {
+      if (!Controller.STATUS_OK.equals(controller.getStatus())) {
         continue;
       }
 
@@ -529,7 +530,7 @@ public class KegboardManager extends BackgroundManager {
   }
 
   @Override
-  protected void dump(IndentingPrintWriter writer) {
+  public void dump(IndentingPrintWriter writer) {
     writer.printPair("numControllers", Integer.valueOf(mControllers.size())).println();
     for (final KegboardController controller : mControllers.values()) {
       writer.printf("  %s", controller).println();

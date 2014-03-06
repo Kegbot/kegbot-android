@@ -24,6 +24,7 @@ import android.util.Log;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.squareup.otto.Bus;
 
@@ -35,77 +36,97 @@ import org.kegbot.backend.Backend;
 import org.kegbot.core.Manager;
 import org.kegbot.proto.Models.KegTap;
 
+import java.util.Map;
 import java.util.Set;
 
 /**
  * The HardwareManager provides implementation-independent access to sensors to
  * the rest of the Kegbot core. It is also responsible for admitting and
- * removing controllers based on internal policy.
+ * removing controllers based on internal policy. <h2>Life of a Controller</h2>
+ * <p>
+ * Discovery, connection, and management of controllers is not done directly by
+ * HardwareManager. Instead, subordinate manager classes handle this; at time of
+ * writing, {@link KegboardManager} is the sole implementation, althought others
+ * are possible.
+ * </p>
+ * <h3>Notification to HardwareManager</h3>
+ * <p>
+ * When a controller is attached, the subordinate manager will deliver a
+ * callback to {@link HardwareManager} via
+ * {@link Listener#onControllerAttached(Controller)}. This callback will be
+ * issued regardless of the controller's operational status (
+ * {@link Controller#getStatus()}), in other words, the controller may be
+ * attached in a non-functional state.
+ * </p>
+ * <h3>Notification to upper layers</h3>
+ * <p>
+ * After receiving notification from the subordinate manager, the
+ * HardwareManager will issue a {@link ControllerAttachedEvent} on the core bus,
+ * and the controller will be considered <em>operationally disabled</em> until
+ * {@link #enableController(Controller)} is called. This allows a higher-level
+ * component (such as the user interface) to gate operational status. In the
+ * typical case, a controller will be immediately enabled unless it is
+ * unrecognized ({@link Controller#getName()} does not match any known to the
+ * backend).
+ * </p>
  */
 public class HardwareManager extends Manager {
 
   private static String TAG = HardwareManager.class.getSimpleName();
 
-  private final Set<Controller> mControllers = Sets.newLinkedHashSet();
+  /** All controllers, by operational status. */
+  private final Map<Controller, Boolean> mControllers = Maps.newLinkedHashMap();
 
-  private final KegboardManager mKegboardManager;
+  private final Set<ControllerManager> mManagers = Sets.newLinkedHashSet();
+
+  private final ControllerManager.Listener mListener = new ControllerManager.Listener() {
+    @Override
+    public void onControllerAttached(Controller controller) {
+      HardwareManager.this.onControllerAttached(controller);
+    }
+
+    @Override
+    public void onControllerEvent(Controller controller, Event event) {
+      HardwareManager.this.onControllerEvent(controller, event);
+    }
+
+    @Override
+    public void onControllerRemoved(Controller controller) {
+      HardwareManager.this.onControllerRemoved(controller);
+    }
+  };
 
   private final Backend mBackend;
-
-  /**
-   * Callback interface implemented by hardware-specific controllers, such as
-   * {@link KegboardManager}.
-   */
-  interface Listener {
-    /** Issued when a new controller has been attached. */
-    public void onControllerAttached(Controller controller);
-
-    /** Issued when a controller has an event. */
-    public void onControllerEvent(Controller controller, Event event);
-
-    /** Issued when a controller has been removed. */
-    public void onControllerRemoved(Controller controller);
-  }
 
   public HardwareManager(Bus bus, Context context, AppConfiguration config, Backend backend) {
     super(bus);
     mBackend = backend;
 
-    mKegboardManager = new KegboardManager(getBus(), context, new Listener() {
-      @Override
-      public void onControllerAttached(Controller controller) {
-        HardwareManager.this.onControllerAttached(controller);
-      }
-
-      @Override
-      public void onControllerEvent(Controller controller, Event event) {
-        HardwareManager.this.onControllerEvent(controller, event);
-      }
-
-      @Override
-      public void onControllerRemoved(Controller controller) {
-        HardwareManager.this.onControllerRemoved(controller);
-      }
-    });
+    mManagers.add(new KegboardManager(getBus(), context, mListener));
+    mManagers.add(new FakeControllerManager(getBus(), mListener));
   }
 
   @Override
   public void start() {
-    mKegboardManager.start();
+    for (final ControllerManager subordinate : mManagers) {
+      subordinate.start();
+    }
     getBus().register(this);
   }
 
   public void refreshSoon() {
-    mKegboardManager.refreshSoon();
+    for (final ControllerManager subordinate : mManagers) {
+      subordinate.refreshSoon();
+    }
   }
 
   private synchronized void onControllerAttached(Controller controller) {
     Log.d(TAG, "Controller attached: " + controller);
-    if (mControllers.contains(controller)) {
+    if (mControllers.containsKey(controller)) {
       Log.w(TAG, "Controller already attached!");
       return;
     }
-    mControllers.add(controller);
+    mControllers.put(controller, Boolean.FALSE);
     postOnMainThread(new ControllerAttachedEvent(controller));
 
     postAlert(AlertCore.newBuilder("Controller Attached")
@@ -114,15 +135,20 @@ public class HardwareManager extends Manager {
   }
 
   private synchronized void onControllerEvent(Controller controller, Event event) {
-    if (!mControllers.contains(controller)) {
+    if (!mControllers.containsKey(controller)) {
       Log.w(TAG, "Received event from unknown controller: " + controller);
       return;
     }
-    postOnMainThread(event);
+    if (controller.getStatus().equals(Controller.STATUS_OK)) {
+      postOnMainThread(event);
+    } else {
+      Log.d(TAG, String.format("Dropping event from offline controller %s: %s",
+          controller, event));
+    }
   }
 
   private synchronized void onControllerRemoved(Controller controller) {
-    if (!mControllers.contains(controller)) {
+    if (!mControllers.containsKey(controller)) {
       Log.w(TAG, "Unknown controller was detached: " + controller);
       return;
     }
@@ -136,8 +162,14 @@ public class HardwareManager extends Manager {
 
   @Override
   public void stop() {
-    mKegboardManager.stop();
+    for (final ControllerManager subordinate : mManagers) {
+      subordinate.stop();
+    }
     getBus().unregister(this);
+  }
+
+  public void enableController(Controller controller) {
+
   }
 
   public void toggleOutput(final KegTap tap, final boolean enable) {
@@ -149,18 +181,29 @@ public class HardwareManager extends Manager {
       Log.d(TAG, "No output configured for tap.");
       return;
     }
-    mKegboardManager.toggleOutput(outputName, enable);
+    //mKegboardManager.toggleOutput(outputName, enable);
   }
 
   @Override
   protected void dump(IndentingPrintWriter writer) {
-    writer.print("Dump of KegboardManager:");
+    writer.print("Controllers:");
     writer.println();
     writer.increaseIndent();
-    try {
-      mKegboardManager.dump(writer);
-    } finally {
-      writer.decreaseIndent();
+    for (final Controller controller : mControllers.keySet()) {
+      writer.printPair(controller.toString(), mControllers.get(controller)).println();
+    }
+    writer.decreaseIndent();
+    writer.println();
+
+    for (final ControllerManager subordinate : mManagers) {
+      writer.print("Dump of " + subordinate + ":\n");
+      writer.increaseIndent();
+      try {
+        subordinate.dump(writer);
+      } finally {
+        writer.decreaseIndent();
+        writer.println();
+      }
     }
   }
 

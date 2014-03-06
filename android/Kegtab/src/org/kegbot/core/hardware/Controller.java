@@ -28,12 +28,19 @@ public interface Controller {
   /** Controller disabled: a Controller with the same name already exists. */
   public static final String STATUS_NAME_CONFLICT = "name-conflict";
 
+  /** @see #getName() */
   public static final String DEFAULT_DEVICE_NAME = "kegboard";
+
+  /** @see #getDeviceType() */
+  public static final String TYPE_UNKNOWN = "Unknown";
+
+  /** @see #getDeviceType() */
+  public static final String TYPE_KBPM = "Kegboard Pro Mini";
 
   /**
    * Returns the current device state.
    */
-  public String getStatues();
+  public String getStatus();
 
   /**
    * Returns a uniquely-identifying string name for this device.
@@ -46,6 +53,12 @@ public interface Controller {
    * @return
    */
   public String getName();
+
+  /** Returns the device's unique serial number. */
+  public String getSerialNumber();
+
+  /** One of {@link #TYPE_UNKNOWN} or {@link #TYPE_KBPM}. */
+  public String getDeviceType();
 
   /** Returns all flow meter ports on this device. */
   public Collection<FlowMeter> getFlowMeters();
