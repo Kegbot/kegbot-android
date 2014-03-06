@@ -92,7 +92,7 @@ public class KegbotApiImpl implements Backend {
   }
 
   private String apiUrl() {
-    return Strings.nullToEmpty(mConfig.getApiUrl());
+    return String.format("%s/v1", Strings.nullToEmpty(mConfig.getApiUrl()));
   }
 
   private String apiKey() {
