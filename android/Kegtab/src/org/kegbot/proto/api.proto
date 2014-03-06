@@ -101,3 +101,41 @@ message RecordTemperatureRequest {
   // time the request is processed.
   optional string record_date = 3;
 }
+
+// Responses
+
+message SyncResponse {
+  // All configured controllers.
+  repeated Controller controllers = 1;
+
+  // Recently-poured drinks.
+  repeated Drink drinks = 2;
+
+  // Recent system events.
+  repeated SystemEvent events = 3;
+
+  // Kegs on tap.
+  repeated Keg active_kegs = 4;
+
+  // All configured meters.
+  repeated FlowMeter meters = 5;
+
+  // Site info.
+  optional SiteInfo site_info = 6;
+
+  // Sound events.
+  repeated SoundEvent sound_events = 7;
+
+  // All taps.
+  repeated KegTap taps = 8;
+
+  // All toggles.
+  repeated FlowToggle toggles = 9;
+
+  // Current session (if there is one).
+  optional Session active_session = 10;
+
+  // Currently-active users (if any).
+  repeated User active_users = 11;
+
+}

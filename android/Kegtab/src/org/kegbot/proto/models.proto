@@ -281,6 +281,14 @@ message FlowMeter {
   optional Controller controller = 5;
 }
 
+message FlowToggle {
+  required uint32 id = 1;
+  required string name = 2;
+  required string port_name = 3;
+
+  optional Controller controller = 4;
+}
+
 // Describes a tap which is available for pouring beer.
 message KegTap {
 
@@ -296,6 +304,9 @@ message KegTap {
 
   // The currently-connected meter, if any.
   optional FlowMeter meter = 12;
+
+  // The currently-connected toggle, if any.
+  optional FlowToggle toggle = 13;
 
   // The relay name of the tap.
   optional string relay_name = 4;
@@ -455,6 +466,13 @@ message User {
 
   // Canonical URL for this object.
   optional string url = 12;
+}
+
+// Site information.
+
+message SiteInfo {
+  optional string title = 1;
+  optional string server_version = 2;
 }
 
 // Extended information about a specific user.
