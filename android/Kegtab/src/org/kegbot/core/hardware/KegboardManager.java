@@ -72,15 +72,10 @@ public class KegboardManager extends BackgroundManager {
   private static final String ACTION_USB_PERMISSION = KegboardManager.class.getCanonicalName()
       + ".ACTION_USB_PERMISSION";
 
+  /** Default interval for scanning the USB device tree. */
   private static final long USB_REFRESH_INTERVAL_MILLIS = TimeUnit.SECONDS.toMillis(5);
 
   private static final int MIN_FIRMWARE_VERSION = 17;
-
-  public static final String CONTROLLER_STATUS_OK = "ok";
-  public static final String CONTROLLER_STATUS_NEED_UPDATE = "need-update";
-  public static final String CONTROLLER_STATUS_NEED_SERIAL_NUMBER = "need-serial-number";
-  public static final String CONTROLLER_STATUS_UNRESPONSIVE = "unresponsive";
-  public static final String CONTROLLER_STATUS_OPEN_ERROR = "open-error";
 
   private static final ProbeTable PROBE_TABLE = UsbSerialProber.getDefaultProbeTable();
   static {
@@ -98,8 +93,13 @@ public class KegboardManager extends BackgroundManager {
 
   private Context mContext;
 
+  /** Callback interface to parent {@link HardwareManager}. */
   private final HardwareManager.Listener mListener;
 
+  /**
+   * {@link SystemClock#uptimeMillis()} value at which the USB device tree
+   * will be rescanned.
+   */
   private long mNextUsbRefreshUptimeMillis = Long.MIN_VALUE;
 
   /**
@@ -111,9 +111,18 @@ public class KegboardManager extends BackgroundManager {
   /** Maps USB subsystem device IDs to open connections. */
   private final Map<UsbSerialDriver, UsbDeviceConnection> mOpenConnections = Maps
       .newLinkedHashMap();
-  private final Map<UsbSerialPort, KegboardController> mControllers = Maps.newLinkedHashMap();
-  private final Map<UsbSerialPort, String> mStatusByPort = Maps.newLinkedHashMap();
 
+  /** Maps active {@link UsbSerialPort}s to {@link Controller} instances. */
+  private final Map<UsbSerialPort, KegboardController> mControllers = Maps.newLinkedHashMap();
+
+  /**
+   * Queue of controllers pending removal.
+   * <p>
+   * Controllers are added to this queue by their service thread (via
+   * {@link #handleControllerError(KegboardController, Exception)}) and
+   * removed in {@link #serviceControllers()}.
+   * </p>
+   */
   private final Queue<KegboardController> mControllerErrors = Queues.newLinkedBlockingQueue();
 
   private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
@@ -333,20 +342,20 @@ public class KegboardManager extends BackgroundManager {
     String status;
     if (verified == null) {
       // Board is unresponsive.
-      status = CONTROLLER_STATUS_UNRESPONSIVE;
+      status = Controller.STATUS_UNRESPONSIVE;
     } else if (verified.getFirmwareVersion() < MIN_FIRMWARE_VERSION) {
       // Board firmware too old.
-      status = CONTROLLER_STATUS_NEED_UPDATE;
+      status = Controller.STATUS_NEED_UPDATE;
     } else if (Strings.isNullOrEmpty(verified.getSerialNumber())) {
       // Board needs a serial number.
-      status = CONTROLLER_STATUS_NEED_SERIAL_NUMBER;
+      status = Controller.STATUS_NEED_SERIAL_NUMBER;
     } else {
       // All good! This baby's ready to report!
-      status = CONTROLLER_STATUS_OK;
+      status = Controller.STATUS_OK;
     }
-    mStatusByPort.put(port, status);
+    controller.setStatus(status);
 
-    if (CONTROLLER_STATUS_OK.equals(status)) {
+    if (Controller.STATUS_OK.equals(status)) {
       mControllers.put(port, controller);
       mListener.onControllerAttached(controller);
     }
@@ -379,7 +388,6 @@ public class KegboardManager extends BackgroundManager {
     if (controller != null) {
       removeController(controller);
     }
-    mStatusByPort.remove(port);
     closePort(port);
   }
 
@@ -450,7 +458,7 @@ public class KegboardManager extends BackgroundManager {
   private boolean serviceControllers() {
     boolean didIo = false;
     for (final KegboardController controller : mControllers.values()) {
-      if (!CONTROLLER_STATUS_OK.equals(mStatusByPort.get(controller.getPort()))) {
+      if (!Controller.STATUS_OK.equals(controller.getStatues())) {
         continue;
       }
 
@@ -516,20 +524,12 @@ public class KegboardManager extends BackgroundManager {
 
   private void handleControllerError(final KegboardController controller, final Exception e) {
     Log.w(TAG, String.format("Marking controller %s disabled to error: %s", controller, e));
-    mStatusByPort.put(controller.getPort(), CONTROLLER_STATUS_OPEN_ERROR);
+    controller.setStatus(Controller.STATUS_OPEN_ERROR);
     mControllerErrors.add(controller);
   }
 
   @Override
   protected void dump(IndentingPrintWriter writer) {
-    writer.println("# Port Status:\n");
-    writer.increaseIndent();
-    for (final Map.Entry<UsbSerialPort, String> entry : mStatusByPort.entrySet()) {
-      writer.printPair(String.valueOf(entry.getKey()), entry.getValue()).println();
-    }
-    writer.decreaseIndent();
-    writer.println();
-
     writer.printPair("numControllers", Integer.valueOf(mControllers.size())).println();
     for (final KegboardController controller : mControllers.values()) {
       writer.printf("  %s", controller).println();

@@ -43,6 +43,7 @@ public class KegboardController implements Controller {
 
   private final UsbSerialPort mSerialPort;
 
+  private String mStatus = STATUS_UNKNOWN;
   private String mName = DEFAULT_BOARD_NAME;
   private String mSerialNumber = "";
 
@@ -65,13 +66,17 @@ public class KegboardController implements Controller {
 
   @Override
   public String toString() {
-    return String.format("<Kegboard '%s': port=%s serial_number=%s>",
-        getName(), mSerialPort, mSerialNumber);
+    return String.format("<Kegboard '%s': port=%s serial_number=%s status=%s>",
+        getName(), mSerialPort, mSerialNumber, mStatus);
   }
 
   @Override
-  public String getState() {
-    return STATE_CONNECTED;
+  public String getStatues() {
+    return mStatus;
+  }
+
+  void setStatus(String status) {
+    mStatus = status;
   }
 
   @Override
