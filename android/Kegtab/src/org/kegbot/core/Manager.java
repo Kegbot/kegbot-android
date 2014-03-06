@@ -18,6 +18,7 @@
 package org.kegbot.core;
 
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import com.squareup.otto.Bus;
@@ -35,7 +36,7 @@ public abstract class Manager {
 
   private final String mName;
   private final Bus mBus;
-  private final Handler mHandler = new Handler();
+  private final Handler mMainThreadHandler = new Handler();
 
   public Manager(Bus bus) {
     mBus = bus;
@@ -84,12 +85,18 @@ public abstract class Manager {
   }
 
   protected void postOnMainThread(final Object event) {
-    mHandler.post(new Runnable() {
-      @Override
-      public void run() {
-        getBus().post(event);
-      }
-    });
+    if (Looper.getMainLooper() == Looper.myLooper()) {
+      // Called from the main thread.
+      getBus().post(event);
+    } else {
+      // Called from some other thread, enqueue on Handler.
+      mMainThreadHandler.post(new Runnable() {
+        @Override
+        public void run() {
+          getBus().post(event);
+        }
+      });
+    }
   }
 
   /**
