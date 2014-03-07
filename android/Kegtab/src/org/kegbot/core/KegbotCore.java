@@ -30,9 +30,11 @@ import android.util.Log;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 import com.squareup.otto.ThreadEnforcer;
 
 import org.kegbot.api.KegbotApiImpl;
+import org.kegbot.app.AuthenticatingActivity;
 import org.kegbot.app.KegbotApplication;
 import org.kegbot.app.alert.AlertCore;
 import org.kegbot.app.config.AppConfiguration;
@@ -44,6 +46,9 @@ import org.kegbot.app.util.Utils;
 import org.kegbot.backend.Backend;
 import org.kegbot.core.FlowManager.Clock;
 import org.kegbot.core.hardware.HardwareManager;
+import org.kegbot.core.hardware.ThermoSensorUpdateEvent;
+import org.kegbot.core.hardware.TokenAttachedEvent;
+import org.kegbot.proto.Api.RecordTemperatureRequest;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -62,6 +67,7 @@ public class KegbotCore {
   private static KegbotCore sInstance;
 
   private final Bus mBus;
+  private final BusListener mBusListener = new BusListener();
   private final Handler mBusHandler = new Handler();
 
   private final SharedPreferences mSharedPreferences;
@@ -132,6 +138,7 @@ public class KegbotCore {
 
   public synchronized void start() {
     if (!mStarted) {
+      mBus.register(mBusListener);
       Log.i(TAG, "Starting up, backend:" + mBackend);
       mBackend.start(mContext);
       for (final Manager manager : mManagers) {
@@ -144,6 +151,7 @@ public class KegbotCore {
 
   public synchronized void stop() {
     if (mStarted) {
+      mBus.unregister(mBusListener);
       for (final Manager manager : mManagers) {
         Log.d(TAG, "Stopping " + manager.getName());
         manager.stop();
@@ -330,6 +338,33 @@ public class KegbotCore {
       }
     }
     return sInstance;
+  }
+
+  private class BusListener {
+
+    @Subscribe
+    public void onTokenAdded(TokenAttachedEvent event) {
+      final AuthenticationToken token = event.getToken();
+      final Runnable r = new Runnable() {
+        @Override
+        public void run() {
+          Log.d(TAG, "onTokenAttached: running");
+          AuthenticatingActivity.startAndAuthenticate(mContext,
+              token.getAuthDevice(), token.getTokenValue());
+        }
+      };
+      mBusHandler.post(r);
+    }
+
+    @Subscribe
+    public void onThermoSensorUpdate(final ThermoSensorUpdateEvent event) {
+      final ThermoSensor sensor = event.getSensor();
+      Log.d(TAG, "Sensor update for sensor: " + sensor);
+      final RecordTemperatureRequest request = RecordTemperatureRequest.newBuilder()
+          .setSensorName(sensor.getName()).setTempC((float) sensor.getTemperatureC())
+          .buildPartial();
+      mSyncManager.recordTemperatureAsync(request);
+    }
   }
 
 }

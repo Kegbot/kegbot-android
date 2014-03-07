@@ -35,26 +35,17 @@ import android.os.SystemClock;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.squareup.otto.Subscribe;
-
-import org.kegbot.app.AuthenticatingActivity;
 import org.kegbot.app.HomeActivity;
 import org.kegbot.app.PourInProgressActivity;
 import org.kegbot.app.R;
 import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.app.event.ConnectivityChangedEvent;
 import org.kegbot.app.event.FlowUpdateEvent;
-import org.kegbot.core.AuthenticationToken;
 import org.kegbot.core.Flow;
 import org.kegbot.core.FlowManager;
 import org.kegbot.core.KegbotCore;
 import org.kegbot.core.SyncManager;
-import org.kegbot.core.ThermoSensor;
-import org.kegbot.core.hardware.ControllerAttachedEvent;
 import org.kegbot.core.hardware.HardwareManager;
-import org.kegbot.core.hardware.ThermoSensorUpdateEvent;
-import org.kegbot.core.hardware.TokenAttachedEvent;
-import org.kegbot.proto.Api.RecordTemperatureRequest;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
@@ -91,41 +82,6 @@ public class KegbotCoreService extends Service {
   private BroadcastReceiver mBroadcastReceiver;
 
   private final Handler mHandler = new Handler();
-
-  @Subscribe
-  public void onTokenAdded(TokenAttachedEvent event) {
-    final AuthenticationToken token = event.getToken();
-    final Runnable r = new Runnable() {
-      @Override
-      public void run() {
-        Log.d(TAG, "onTokenAttached: running");
-        AuthenticatingActivity.startAndAuthenticate(KegbotCoreService.this,
-            token.getAuthDevice(), token.getTokenValue());
-      }
-    };
-    mHandler.post(r);
-  }
-
-  @Subscribe
-  public void onThermoSensorUpdate(final ThermoSensorUpdateEvent event) {
-    final ThermoSensor sensor = event.getSensor();
-    final Runnable r = new Runnable() {
-      @Override
-      public void run() {
-        Log.d(TAG, "Sensor update for sensor: " + sensor);
-        final RecordTemperatureRequest request = RecordTemperatureRequest.newBuilder()
-            .setSensorName(sensor.getName()).setTempC((float) sensor.getTemperatureC())
-            .buildPartial();
-        mApiManager.recordTemperatureAsync(request);
-      }
-    };
-    mExecutorService.submit(r);
-  }
-
-  @Subscribe
-  public void onControllerAttached(ControllerAttachedEvent event) {
-    Log.d(TAG, "Controller attached: " + event.getController());
-  }
 
   private final FlowManager.Listener mFlowListener = new FlowManager.Listener() {
     @Override
