@@ -35,6 +35,7 @@ import com.squareup.otto.ThreadEnforcer;
 
 import org.kegbot.api.KegbotApiImpl;
 import org.kegbot.app.AuthenticatingActivity;
+import org.kegbot.app.NewControllerActivity;
 import org.kegbot.app.KegbotApplication;
 import org.kegbot.app.alert.AlertCore;
 import org.kegbot.app.config.AppConfiguration;
@@ -45,6 +46,8 @@ import org.kegbot.app.util.IndentingPrintWriter;
 import org.kegbot.app.util.Utils;
 import org.kegbot.backend.Backend;
 import org.kegbot.core.FlowManager.Clock;
+import org.kegbot.core.hardware.Controller;
+import org.kegbot.core.hardware.ControllerAttachedEvent;
 import org.kegbot.core.hardware.HardwareManager;
 import org.kegbot.core.hardware.ThermoSensorUpdateEvent;
 import org.kegbot.core.hardware.TokenAttachedEvent;
@@ -365,6 +368,51 @@ public class KegbotCore {
           .buildPartial();
       mSyncManager.recordTemperatureAsync(request);
     }
+
+    @Subscribe
+    public void onControllerAttached(ControllerAttachedEvent event) {
+      final Controller controller = event.getController();
+      Log.d(TAG, "Controller attached: " + controller + " status='" + controller.getStatus() + "'");
+
+      final String alertId = String.format("controller-%s", Integer.valueOf(controller.hashCode()));
+      if (controller.getStatus().equals(Controller.STATUS_NAME_CONFLICT)) {
+        final AlertCore.Alert alert = AlertCore.newBuilder("Controller conflict")
+            .setDescription("Multiple controllers named " + controller.getName() +
+                " are attached.  Only the first controller is enabled.")
+            .severityError()
+            .setId(alertId)
+            .build();
+        getAlertCore().postAlert(alert);
+        return;
+      }
+
+      if (controller.getStatus().equals(Controller.STATUS_NEED_UPDATE)) {
+        Log.d(TAG, "Ignoring controller: needs update.");
+        final AlertCore.Alert alert = AlertCore.newBuilder("Controller disabled")
+            .setDescription("Controller firmware too old; controller is disabled.")
+            .severityError()
+            .setId(alertId)
+            .build();
+        getAlertCore().postAlert(alert);
+        return;
+      }
+
+      getAlertCore().cancelAlert(alertId);
+
+      for (final org.kegbot.proto.Models.Controller backendController :
+          mSyncManager.getCurrentControllers()) {
+        if (backendController.getName().equals(controller.getName())) {
+          Log.d(TAG, "Success! Known controller.");
+          mHardwareManager.enableController(controller);
+          return;
+        }
+      }
+
+      // Start activity, unknown controller.
+      NewControllerActivity.startForNewController(mContext, controller.getName(),
+          controller.getSerialNumber(), controller.getDeviceType());
+    }
+
   }
 
 }

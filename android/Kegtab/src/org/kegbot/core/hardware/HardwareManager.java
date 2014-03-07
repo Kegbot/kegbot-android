@@ -128,10 +128,6 @@ public class HardwareManager extends Manager {
     }
     mControllers.put(controller, Boolean.FALSE);
     postOnMainThread(new ControllerAttachedEvent(controller));
-
-    postAlert(AlertCore.newBuilder("Controller Attached")
-        .setId(controller.getName())
-        .build());
   }
 
   private synchronized void onControllerEvent(Controller controller, Event event) {
