@@ -1,6 +1,7 @@
 
 package org.kegbot.app;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
@@ -21,8 +22,7 @@ import android.view.MenuItem;
  * This activity also implements the required {@link TapListFragment.Callbacks}
  * interface to listen for item selections.
  */
-public class TapListActivity extends CoreActivity
-    implements TapListFragment.Callbacks {
+public class TapListActivity extends CoreActivity implements TapListFragment.Callbacks {
 
   /**
    * Whether or not the activity is in two-pane mode, i.e. running on a tablet
@@ -96,5 +96,11 @@ public class TapListActivity extends CoreActivity
       detailIntent.putExtra(TapDetailFragment.ARG_ITEM_ID, id);
       startActivity(detailIntent);
     }
+  }
+
+  public static void startActivity(Context context) {
+    final Intent intent = new Intent(context, TapListActivity.class);
+    intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+    PinActivity.startThroughPinActivity(context, intent);
   }
 }

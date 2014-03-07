@@ -206,8 +206,8 @@ public class HomeActivity extends CoreActivity {
       case R.id.settings:
         SettingsActivity.startSettingsActivity(this);
         return true;
-      case R.id.manageTap:
-        showTapEditor(this, "");
+      case R.id.manageTaps:
+        TapListActivity.startActivity(this);
         return true;
       case R.id.bugreport:
         BugreportActivity.startBugreportActivity(this);

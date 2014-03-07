@@ -30,7 +30,7 @@
     <string name="tap_name"><xliff id="tap_name">%s</xliff>: <xliff id="beverage_name">%s</xliff></string>
     <string name="empty_tap"><i>empty</i></string>
     <string name="menu_settings">Settings</string>
-    <string name="menu_manage_tap">Manage Tap</string>
+    <string name="menu_manage_taps">Manage Taps</string>
     <string name="settings_name">Settings</string>
     <string name="settings_general_header">General</string>
     <string name="settings_kegerator_header">Kegerator</string>

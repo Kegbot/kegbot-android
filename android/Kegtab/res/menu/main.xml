@@ -21,37 +21,33 @@
 
     <item
         android:id="@+id/alertUpdate"
+        android:icon="@drawable/icon_download"
         android:showAsAction="ifRoom|withText"
         android:title="@string/update_available"
-        android:icon="@drawable/icon_download"
         android:visible="false"/>
-    
     <item
         android:id="@+id/alertGeneral"
+        android:icon="@drawable/icon_warning"
         android:showAsAction="ifRoom|withText"
         android:title="@string/update_available"
-        android:icon="@drawable/icon_warning"
         android:visible="false"/>
-    
     <item
         android:id="@+id/alertNetwork"
+        android:icon="@drawable/icon_warning"
         android:showAsAction="ifRoom|withText"
         android:title="@string/alert_network"
-        android:icon="@drawable/icon_warning"
         android:visible="false"/>
-    
     <item
         android:id="@+id/settings"
         android:showAsAction="never"
         android:title="@string/menu_settings"/>
-        <item
-        android:id="@+id/manageTap"
+    <item
+        android:id="@+id/manageTaps"
         android:showAsAction="never"
-        android:title="@string/menu_manage_tap"/>
-    
+        android:title="@string/menu_manage_taps"/>
     <item
         android:id="@+id/bugreport"
         android:showAsAction="never"
         android:title="@string/menu_bugreport"/>
-    
+
 </menu>

@@ -53,8 +53,6 @@ public class TapStatusFragment extends ListFragment {
 
   private View mView;
 
-  private static final int SELECT_DRINKER = 100;
-
   private static final int CHILD_INACTIVE = 1;
   private static final int CHILD_ACTIVE = 2;
 
@@ -96,7 +94,7 @@ public class TapStatusFragment extends ListFragment {
     flipper.setOnLongClickListener(new View.OnLongClickListener() {
       @Override
       public boolean onLongClick(View v) {
-        HomeActivity.showTapEditor(getActivity(), mTapDetail.getMeterName());
+        TapListActivity.startActivity(getActivity());
         return true;
       }
     });
