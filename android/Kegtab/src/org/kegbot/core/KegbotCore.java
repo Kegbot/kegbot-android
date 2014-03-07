@@ -42,7 +42,6 @@ import org.kegbot.app.util.ImageDownloader;
 import org.kegbot.app.util.IndentingPrintWriter;
 import org.kegbot.app.util.Utils;
 import org.kegbot.backend.Backend;
-import org.kegbot.core.FlowManager.Clock;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -86,13 +85,6 @@ public class KegbotCore {
 
   private boolean mStarted = false;
 
-  private final FlowManager.Clock mClock = new Clock() {
-    @Override
-    public long elapsedRealtime() {
-      return System.currentTimeMillis();
-    }
-  };
-
   private KegbotCore(Context context) {
     mContext = context.getApplicationContext();
     mBus = new Bus(ThreadEnforcer.MAIN);
@@ -109,7 +101,7 @@ public class KegbotCore {
         SharedPreferencesConfigurationStore.fromName(mContext, "tap_manager_prefs"));
     mManagers.add(mTapManager);
 
-    mFlowManager = new FlowManager(mBus, mTapManager, mConfig, mClock);
+    mFlowManager = new FlowManager(mBus, mTapManager, mConfig);
     mManagers.add(mFlowManager);
 
     mSyncManager = new SyncManager(mBus, context, mBackend);
