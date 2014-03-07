@@ -28,6 +28,7 @@ import android.net.NetworkInfo;
 import android.os.SystemClock;
 import android.util.Log;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.protobuf.AbstractMessage;
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -38,8 +39,10 @@ import com.squareup.otto.Subscribe;
 import org.codehaus.jackson.JsonNode;
 import org.kegbot.api.KegbotApiException;
 import org.kegbot.app.event.ConnectivityChangedEvent;
+import org.kegbot.app.event.ControllerListUpdateEvent;
 import org.kegbot.app.event.CurrentSessionChangedEvent;
 import org.kegbot.app.event.DrinkPostedEvent;
+import org.kegbot.app.event.FlowMeterListUpdateEvent;
 import org.kegbot.app.event.SoundEventListUpdateEvent;
 import org.kegbot.app.event.SystemEventListUpdateEvent;
 import org.kegbot.app.event.TapListUpdateEvent;
@@ -51,7 +54,9 @@ import org.kegbot.backend.NotFoundException;
 import org.kegbot.proto.Api.RecordDrinkRequest;
 import org.kegbot.proto.Api.RecordTemperatureRequest;
 import org.kegbot.proto.Internal.PendingPour;
+import org.kegbot.proto.Models.Controller;
 import org.kegbot.proto.Models.Drink;
+import org.kegbot.proto.Models.FlowMeter;
 import org.kegbot.proto.Models.KegTap;
 import org.kegbot.proto.Models.Session;
 import org.kegbot.proto.Models.SoundEvent;
@@ -81,6 +86,8 @@ public class SyncManager extends BackgroundManager {
   private List<KegTap> mLastKegTapList = Lists.newArrayList();
   private List<SystemEvent> mLastSystemEventList = Lists.newArrayList();
   private List<SoundEvent> mLastSoundEventList = Lists.newArrayList();
+  private List<Controller> mLastControllers = Lists.newArrayList();
+  private List<FlowMeter> mLastFlowMeters = Lists.newArrayList();
   @Nullable private Session mLastSession = null;
   @Nullable private JsonNode mLastSessionStats = null;
 
@@ -232,6 +239,14 @@ public class SyncManager extends BackgroundManager {
   @Produce
   public SoundEventListUpdateEvent produceSoundEvents() {
     return new SoundEventListUpdateEvent(mLastSoundEventList);
+  }
+
+  public List<Controller> getCurrentControllers() {
+    return ImmutableList.copyOf(mLastControllers);
+  }
+
+  public List<FlowMeter> getCurrentFlowMeters() {
+    return ImmutableList.copyOf(mLastFlowMeters);
   }
 
   @Subscribe
@@ -514,6 +529,32 @@ public class SyncManager extends BackgroundManager {
       }
     } catch (BackendException e) {
       Log.w(TAG, "Error syncing sound events: " + e);
+      error = true;
+    }
+
+    // Controllers
+    try {
+      List<Controller> controllers = mBackend.getControllers();
+      if (!controllers.equals(mLastControllers)) {
+        mLastControllers.clear();
+        mLastControllers.addAll(controllers);
+        postOnMainThread(new ControllerListUpdateEvent(mLastControllers));
+      }
+    } catch (BackendException e) {
+      Log.w(TAG, "Error syncing controllers: " + e);
+      error = true;
+    }
+
+    // Flow Meters
+    try {
+      List<FlowMeter> meters = mBackend.getFlowMeters();
+      if (!meters.equals(mLastFlowMeters)) {
+        mLastFlowMeters.clear();
+        mLastFlowMeters.addAll(meters);
+        postOnMainThread(new FlowMeterListUpdateEvent(mLastFlowMeters));
+      }
+    } catch (BackendException e) {
+      Log.w(TAG, "Error syncing flow meters: " + e);
       error = true;
     }
 
