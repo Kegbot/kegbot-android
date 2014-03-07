@@ -24,6 +24,7 @@
 			<attribute name="javadoc_location" value="jar:platform:/resource/Kegtab/libs/http-request/http-request-5.5-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="libs/butterknife/butterknife-4.0.1.jar"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/UsbSerialLibrary"/>
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/GooglePlayServices"/>
