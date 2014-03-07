@@ -105,4 +105,17 @@
     <string name="register_username_description">Pick a username. It\'s public and permanent!</string>
     <string name="register_photo_description">Almost there! How about a mugshot? (It\'s optional.)</string>
     <string name="register_email_description">We need your e-mail address!</string>
+    <string name="title_tap_list">Taps</string>
+    <string name="title_tap_detail">Tap Detail</string>
+    <string name="tap_detail_tap_empty">Idle Tap</string>
+    <string name="end_keg_button">End Current Keg</string>
+    <string name="tap_keg_button">Start New Keg</string>
+    <string name="controller_alert_title_new">New Hardware Detected</string>
+    <string name="new_controller_title">New Controller Connected</string>
+    <string name="new_controller_controller_name">Controller Name: </string>
+    <string name="new_controller_num_meters_title">How many meters does this controller support?</string>
+    <string name="new_controller_status_adding">Adding new controller&#8230;</string>
+    <string name="new_controller_status_added">Controller added successfully.</string>
+    <string name="new_controller_button_add">Add</string>
+    <string name="new_controller_button_cancel">Cancel</string>
 </resources>

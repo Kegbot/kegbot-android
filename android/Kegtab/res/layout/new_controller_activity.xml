@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:background="@color/gray80pct"
+    android:gravity="center"
+    android:minHeight="256dip"
+    android:minWidth="384dip"
+    android:orientation="vertical"
+    android:paddingBottom="32dip"
+    android:paddingLeft="64dip"
+    android:paddingRight="64dip"
+    android:paddingTop="32dip" >
+
+    <TextView
+        android:id="@+id/new_controller_title"
+        style="@style/header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dip"
+        android:text="@string/new_controller_title"
+        android:textColor="@android:color/holo_blue_light" />
+
+    <TextView
+        android:id="@+id/new_controller_subtitle"
+        style="@style/header2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dip"
+        android:layout_weight="1"
+        android:ellipsize="none"
+        android:maxLines="100"
+        android:scrollHorizontally="false"
+        android:text="@string/new_controller_controller_name" />
+
+    <LinearLayout
+        android:id="@+id/new_controller_num_meters_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/new_controller_num_meters_title"
+            style="@style/normalText"
+            android:layout_width="256sp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="16dp"
+            android:text="@string/new_controller_num_meters_title"
+            android:textAlignment="textEnd" />
+
+        <NumberPicker
+            android:id="@+id/new_controller_num_meters"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/new_controller_progbar"
+        style="@android:style/Widget.Holo.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:id="@+id/new_controller_button_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dip"
+        android:orientation="vertical" >
+
+        <Button
+            android:id="@+id/new_controller_add_button"
+            style="@style/mediumButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Add Controller" />
+
+        <Button
+            android:id="@+id/new_controller_cancel_button"
+            style="@style/mediumButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Cancel" />
+    </LinearLayout>
+
+</LinearLayout>
