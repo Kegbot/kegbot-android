@@ -248,7 +248,7 @@
         <!-- BROADCAST RECEIVERS -->
         <!-- ################### -->
 
-        <receiver android:name="org.kegbot.app.UserAuthedReceiver" >
+        <receiver android:name="org.kegbot.app.DebugBroadcastReceiver" >
             <intent-filter android:priority="1" >
                 <action android:name="org.kegbot.action.USER_AUTHED" />
                 <action android:name="org.kegbot.action.METER_UPDATE" />
@@ -256,7 +256,7 @@
                 <action android:name="org.kegbot.action.CONTROLLER_ADDED" />
                 <action android:name="org.kegbot.action.CONTROLLER_REMOVED" />
                 <action android:name="org.kegbot.action.THERMO_UPDATE" />
-                </intent-filter>
+            </intent-filter>
         </receiver>
         <receiver
             android:name="org.kegbot.app.service.GCMBroadcastReceiver"
@@ -293,8 +293,10 @@
             android:parentActivityName="org.kegbot.app.HomeActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
+
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="org.kegbot.app.HomeActivity" />
