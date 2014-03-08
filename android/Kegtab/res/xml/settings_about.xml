@@ -31,7 +31,7 @@
     </Preference>
         <Preference
         android:key="copyright"
-        android:summary="Copyright Mike Wakerly 2011-2013."
+        android:summary="Copyright Bevbot LLC 2014."
         android:title="Legal" >
     </Preference>
     

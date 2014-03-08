@@ -25,14 +25,10 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
-import android.preference.EditTextPreference;
 import android.preference.Preference;
-import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.MenuItem;
 
 import org.kegbot.app.service.KegbotCoreService;
@@ -40,7 +36,6 @@ import org.kegbot.app.settings.ThirdPartyLicensesActivity;
 import org.kegbot.app.setup.SetupActivity;
 
 import java.util.List;
-import java.util.regex.Pattern;
 
 public class SettingsActivity extends PreferenceActivity {
 
@@ -84,47 +79,10 @@ public class SettingsActivity extends PreferenceActivity {
   }
 
   public static class KegeratorFragment extends PreferenceFragment {
-    private static final Pattern KEGBOARD_NAME_PATTERN = Pattern.compile("^\\w+$");
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
       addPreferencesFromResource(R.xml.settings_kegerator);
-
-      final EditTextPreference kegboardName =
-          (EditTextPreference) findPreference("config:KEGBOARD_NAME");
-
-      // Prevent illegal characters.
-      kegboardName.getEditText().addTextChangedListener(new TextWatcher() {
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-        }
-
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-        }
-
-        @Override
-        public void afterTextChanged(Editable s) {
-          String text = s.toString();
-          if (text.isEmpty()) {
-            return;
-          }
-
-          if (!KEGBOARD_NAME_PATTERN.matcher(text).matches()) {
-            int length = text.length();
-            s.delete(length - 1, length);
-          }
-        }
-      });
-
-      kegboardName.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-        @Override
-        public boolean onPreferenceChange(Preference preference, Object newValue) {
-          String value = (String) newValue;
-          return KEGBOARD_NAME_PATTERN.matcher(value).matches();
-        }
-      });
     }
   }
 

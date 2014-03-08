@@ -92,7 +92,7 @@
             android:key="config:ALLOW_MANUAL_LOGIN"
             android:summaryOff="Check to enable the main screen&apos;s &apos;Beer Me&apos; button"
             android:summaryOn="Uncheck to disable the main screen&apos;s &apos;Beer Me&apos; button"
-            android:title="Allow Manual Login" >
+            android:title="Allow On-Screen Login" >
         </CheckBoxPreference>
         <CheckBoxPreference
             android:defaultValue="true"
@@ -107,8 +107,8 @@
                 android:dependency="config:RUN_CORE"
                 android:key="config:ATTRACT_MODE"
                 android:summaryOff="Taps on the main screen will not be auto rotated"
-                android:summaryOn="When left alone Kegbot will cycle taps on the main screen."
-                android:title="Attract Mode" >
+                android:summaryOn="Kegbot will cycle taps on the main screen when idle"
+                android:title="Rotate Taps" >
         </CheckBoxPreference>
     </PreferenceCategory>
     <PreferenceCategory android:title="Advanced" >
@@ -128,15 +128,6 @@
             android:summaryOn="The screen will stay on"
             android:title="Keep Screen On" >
         </CheckBoxPreference>
-         <EditTextPreference
-            android:defaultValue="kegboard"
-            android:dependency="config:RUN_CORE"
-            android:inputType="text|textNoSuggestions"
-            android:key="config:KEGBOARD_NAME"
-            android:maxLength="16"
-            android:summary="Name prefixed to all sensor readings"
-            android:title="Kegboard Name" >
-        </EditTextPreference>
     </PreferenceCategory>
 
 </PreferenceScreen>
