@@ -17,12 +17,10 @@
  */
 package org.kegbot.app.setup;
 
+import android.app.Fragment;
+
 import org.kegbot.app.R;
 import org.kegbot.app.config.AppConfiguration;
-import org.kegbot.core.KegbotCore;
-
-import android.app.Fragment;
-import android.content.Context;
 
 /**
  * All steps involved in application setup. Each steps represents a screen in
@@ -37,7 +35,7 @@ public enum SetupTask {
    */
   WELCOME {
     @Override
-    public SetupTask next() {
+    public SetupTask next(AppConfiguration config) {
       return LICENSE;
     }
 
@@ -57,7 +55,7 @@ public enum SetupTask {
    */
   UPGRADE {
     @Override
-    public SetupTask next() {
+    public SetupTask next(AppConfiguration config) {
       return LICENSE;
     }
 
@@ -79,8 +77,8 @@ public enum SetupTask {
     private final SetupLicenseFragment mFragment = new SetupLicenseFragment();
 
     @Override
-    public SetupTask next() {
-      return KEGBOT_URL;
+    public SetupTask next(AppConfiguration config) {
+      return SELECT_BACKEND;
     }
 
     @Override
@@ -99,6 +97,34 @@ public enum SetupTask {
     }
   },
 
+  SELECT_BACKEND {
+    private final SetupSelectBackendFragment mFragment = new SetupSelectBackendFragment();
+
+    @Override
+    public Fragment getFragment() {
+      return mFragment;
+    }
+
+    @Override
+    public int getTitle() {
+     return R.string.setup_select_backend_title;
+    }
+
+    @Override
+    public int getDescription() {
+      return R.string.setup_select_backend_description;
+    }
+
+    @Override
+    public SetupTask next(AppConfiguration config) {
+      if (config.isLocalBackend()) {
+        return SET_PIN;
+      } else {
+        return KEGBOT_URL;
+      }
+    }
+
+  },
 
   /**
    * Requests and validates the Kegbot URL.
@@ -107,7 +133,7 @@ public enum SetupTask {
     private final SetupKegbotUrlFragment mFragment = new SetupKegbotUrlFragment();
 
     @Override
-    public SetupTask next() {
+    public SetupTask next(AppConfiguration config) {
       return LOGIN;
     }
 
@@ -146,7 +172,7 @@ public enum SetupTask {
     }
 
     @Override
-    public SetupTask next() {
+    public SetupTask next(AppConfiguration config) {
       return RUN_CORE;
     }
   },
@@ -170,7 +196,7 @@ public enum SetupTask {
     }
 
     @Override
-    public SetupTask next() {
+    public SetupTask next(AppConfiguration config) {
       return SET_PIN;
     }
   },
@@ -194,7 +220,7 @@ public enum SetupTask {
     }
 
     @Override
-    public SetupTask next() {
+    public SetupTask next(AppConfiguration config) {
       return FINISHED;
     }
   },
@@ -211,18 +237,17 @@ public enum SetupTask {
     }
 
     @Override
-    public void onExitSuccess(Context context) {
-      AppConfiguration prefs = KegbotCore.getInstance(context).getConfiguration();
-      prefs.setSetupVersion(SETUP_VERSION);
+    public void onExitSuccess(AppConfiguration config) {
+      config.setSetupVersion(SETUP_VERSION);
     }
 
     @Override
-    public SetupTask next() {
+    public SetupTask next(AppConfiguration config) {
       return null;
     }
   };
 
-  public static final SetupTask FIRST_SETUP_STEP = KEGBOT_URL;
+  public static final SetupTask FIRST_SETUP_STEP = SELECT_BACKEND;
 
   public static final int SETUP_VERSION = 6;
 
@@ -255,9 +280,9 @@ public enum SetupTask {
    *
    * @return the next {@link SetupTask}
    */
-  public abstract SetupTask next();
+  public abstract SetupTask next(AppConfiguration config);
 
-  protected void onExitSuccess(Context context) {
+  protected void onExitSuccess(AppConfiguration config) {
   }
 
 }

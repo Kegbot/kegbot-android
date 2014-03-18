@@ -18,11 +18,6 @@
  */
 package org.kegbot.app.setup;
 
-import java.util.List;
-
-import org.kegbot.app.R;
-import org.kegbot.app.service.KegbotCoreService;
-
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.DialogFragment;
@@ -43,6 +38,13 @@ import android.widget.Button;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+
+import org.kegbot.app.R;
+import org.kegbot.app.config.AppConfiguration;
+import org.kegbot.app.service.KegbotCoreService;
+import org.kegbot.core.KegbotCore;
+
+import java.util.List;
 
 /**
  *
@@ -211,10 +213,11 @@ public class SetupActivity extends Activity {
   }
 
   private void onValidationResult(final String result) {
+    final AppConfiguration config = KegbotCore.getInstance(this).getConfiguration();
     if (Strings.isNullOrEmpty(result)) {
       Log.d(TAG, "Validation for " + mCurrentTask + " successful!");
-      mCurrentTask.onExitSuccess(this);
-      setTask(mCurrentTask.next());
+      mCurrentTask.onExitSuccess(config);
+      setTask(mCurrentTask.next(config));
     } else {
       Log.d(TAG, "Validation for " + mCurrentTask + " unsuccessful: " + result);
       final Fragment fragment = mCurrentTask.getFragment();

@@ -18,6 +18,7 @@
   with Kegtab. If not, see <http://www.gnu.org/licenses/>.
 -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/setup_activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="top|left"
@@ -38,6 +39,8 @@
         android:layout_margin="5dip"
         android:background="#1FFFFFFF" />
 
+    <!-- 2 column group -->
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -46,49 +49,53 @@
         android:orientation="horizontal"
         android:weightSum="1.0" >
 
-        <!-- Left col: Description & nav. -->
+        <!-- Left column: Text and buttons. -->
 
-        <ScrollView
-            android:layout_width="0dip"
+        <RelativeLayout
+            android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="0.6" >
 
             <LinearLayout
-                android:layout_width="match_parent"
+                android:id="@+id/setup_button_group"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="top|left"
-                android:orientation="vertical" >
+                android:layout_alignParentBottom="true"
+                android:layout_marginTop="16dip"
+                android:orientation="horizontal" >
+
+                <Button
+                    android:id="@+id/setupBackButton"
+                    android:layout_width="256dip"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left"
+                    android:text="Back"
+                    android:textSize="24sp" />
+
+                <Button
+                    android:id="@+id/setupNextButton"
+                    android:layout_width="256dip"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:text="Next"
+                    android:textSize="24sp" />
+            </LinearLayout>
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_above="@+id/setup_button_group"
+                android:layout_alignParentTop="true"
+                android:fadeScrollbars="false" >
 
                 <FrameLayout
                     android:id="@+id/setupTextFragment"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
+            </ScrollView>
+        </RelativeLayout>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom"
-                    android:layout_marginTop="16dip"
-                    android:orientation="horizontal" >
-
-                    <Button
-                        android:id="@+id/setupBackButton"
-                        android:layout_width="256dip"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="left"
-                        android:text="Back"
-                        android:textSize="24dip" />
-
-                    <Button
-                        android:id="@+id/setupNextButton"
-                        android:layout_width="256dip"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="right"
-                        android:text="Next"
-                        android:textSize="24dip" />
-                </LinearLayout>
-            </LinearLayout>
-        </ScrollView>
+        <!-- Right column: Step body. -->
 
         <FrameLayout
             android:id="@+id/setupBodyFragment"
