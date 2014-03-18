@@ -53,9 +53,6 @@
     <string name="setup_log_in_description">In order to talk to your Kegbot server, the Kegtab application needs an API key.\n\nPlease log in with a manager account in order to accquire an API key for this application. Your password will not be saved.</string>
     <string name="setup_finished_title">Done!</string>
     <string name="setup_finished_description">You\'re all set! Your Kegtab is now configured. Press Next to finish. Please drink responsibly.</string>
-    <string name="setup_run_core_title">Run Core</string>
-    <string name="setup_run_core_description">Do you want to run this system as a Kegbot Core?\n\nWhen running as the <i>Kegbot Core</i>, the Kegtab application will read hardware and report drinks back to your Kegbot system.\n\nIf you say No, Kegtab will run in browser-only mode, allowing you to look at your Kegbot data. Most people should say Yes.</string>
-    <string name="setup_run_core_name">Run Core?</string>
     <string name="setup_manager_pin_title">Manager Pin (Optional)</string>
     <string name="setup_manager_pin_description">Set a manager PIN to prevent unauthorized access to Kegtab application settings.\n\nThis value is only used locally. If you forget the PIN value, you will need to reset Kegtab.</string>
     <string name="setup_select_backend_title">Configure Data Storage</string>

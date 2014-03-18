@@ -36,6 +36,7 @@ public enum SetupTask {
   WELCOME {
     @Override
     public SetupTask next(AppConfiguration config) {
+      config.setRunCore(true);
       return LICENSE;
     }
 
@@ -164,30 +165,6 @@ public enum SetupTask {
     @Override
     public int getDescription() {
       return R.string.setup_log_in_description;
-    }
-
-    @Override
-    public Fragment getFragment() {
-      return mFragment;
-    }
-
-    @Override
-    public SetupTask next(AppConfiguration config) {
-      return RUN_CORE;
-    }
-  },
-
-  RUN_CORE {
-    private final SetupRunCoreFragment mFragment = new SetupRunCoreFragment();
-
-    @Override
-    public int getTitle() {
-      return R.string.setup_run_core_title;
-    }
-
-    @Override
-    public int getDescription() {
-      return R.string.setup_run_core_description;
     }
 
     @Override
