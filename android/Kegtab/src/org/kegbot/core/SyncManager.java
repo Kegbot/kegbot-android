@@ -53,6 +53,7 @@ import org.kegbot.backend.BackendException;
 import org.kegbot.backend.NotFoundException;
 import org.kegbot.proto.Api.RecordDrinkRequest;
 import org.kegbot.proto.Api.RecordTemperatureRequest;
+import org.kegbot.proto.Api.SyncResponse;
 import org.kegbot.proto.Internal.PendingPour;
 import org.kegbot.proto.Models.Controller;
 import org.kegbot.proto.Models.Drink;
@@ -73,8 +74,8 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
 
 /**
- * Wraps a {@link Backend}, performing asynchronous and periodic work against
- * it.
+ * Performs asynchronous work against a {@link Backend} and provides
+ * non-blocking cached data from it.
  */
 public class SyncManager extends BackgroundManager {
 
@@ -83,6 +84,7 @@ public class SyncManager extends BackgroundManager {
   private final Backend mBackend;
   private final Context mContext;
 
+  @Nullable private SyncResponse mLastSync;
   private List<KegTap> mLastKegTapList = Lists.newArrayList();
   private List<SystemEvent> mLastSystemEventList = Lists.newArrayList();
   private List<SoundEvent> mLastSoundEventList = Lists.newArrayList();

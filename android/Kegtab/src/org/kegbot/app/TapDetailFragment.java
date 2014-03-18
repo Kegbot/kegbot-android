@@ -4,6 +4,7 @@ package org.kegbot.app;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -13,8 +14,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.TextView;
+
+import butterknife.ButterKnife;
 
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
@@ -23,9 +28,13 @@ import org.kegbot.app.event.TapListUpdateEvent;
 import org.kegbot.backend.Backend;
 import org.kegbot.backend.BackendException;
 import org.kegbot.core.KegbotCore;
+import org.kegbot.core.SyncManager;
 import org.kegbot.core.TapManager;
+import org.kegbot.proto.Models.FlowMeter;
 import org.kegbot.proto.Models.Keg;
 import org.kegbot.proto.Models.KegTap;
+
+import java.util.List;
 
 /**
  * A fragment representing a single Tap detail screen. This fragment is either
@@ -44,6 +53,10 @@ public class TapDetailFragment extends Fragment {
   private View mView;
   private Bus mBus;
   private TapManager mTapManager;
+
+  private Spinner mMeterSelect;
+  private List<FlowMeter> mMeters;
+  private ArrayAdapter<FlowMeter> mMeterSelectAdapter;
 
   /**
    * The dummy content this fragment is presenting.
@@ -116,8 +129,20 @@ public class TapDetailFragment extends Fragment {
     final TextView title = (TextView) mView.findViewById(R.id.tapDetailTitle);
     title.setText(mItem.getName());
 
-    final TextView onTapTitle = (TextView) mView.findViewById(R.id.onTapTitle);
-    final Button onTapButton = (Button) mView.findViewById(R.id.tapKegButton);
+    final TextView onTapTitle = ButterKnife.findById(mView, R.id.onTapTitle);
+    final Button onTapButton = ButterKnife.findById(mView, R.id.tapKegButton);
+    final Spinner meterSelect = ButterKnife.findById(mView, R.id.meterSelect);
+
+    final ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
+        R.layout.keg_size_spinner_item);
+
+    final SyncManager syncManager = KegbotCore.getInstance(getActivity()).getSyncManager();
+    mMeters = syncManager.getCurrentFlowMeters();
+    meterSelect.setAdapter(adapter);
+
+    for (final FlowMeter meter : syncManager.getCurrentFlowMeters()) {
+      adapter.add(meter.getName());
+    }
 
     if (mItem.hasCurrentKeg()) {
       final Keg currentKeg = mItem.getCurrentKeg();
@@ -138,7 +163,6 @@ public class TapDetailFragment extends Fragment {
       onTapTitle.setText(R.string.tap_detail_tap_empty);
       onTapButton.setText(R.string.tap_keg_button);
       onTapButton.setOnClickListener(new View.OnClickListener() {
-
         @Override
         public void onClick(View v) {
           onStartKeg();
@@ -150,6 +174,28 @@ public class TapDetailFragment extends Fragment {
   private void onStartKeg() {
     startActivity(NewKegActivity.getStartIntent(getActivity(), mItem.getMeterName()));
     //getFragmentManager().popBackStackImmediate();
+  }
+
+  private class FlowMeterAdapter extends ArrayAdapter<FlowMeter> {
+
+    public FlowMeterAdapter(Context context) {
+      super(context, android.R.layout.simple_spinner_item);
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+      // TODO hack - inflate view here
+      final View view = super.getView(position, convertView, parent);
+      final FlowMeter item = getItem(position);
+      final TextView text = ButterKnife.findById(view, android.R.id.text1);
+      if (item == null) {
+        text.setText("Not connected.");
+      } else {
+        text.setText(item.getName());
+      }
+      return view;
+    }
+
   }
 
   /** Called when the "end keg" button is pressed. */

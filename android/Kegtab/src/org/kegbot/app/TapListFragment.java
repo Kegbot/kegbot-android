@@ -205,8 +205,6 @@ public class TapListFragment extends ListFragment {
       return view;
     }
 
-
-
   }
 
 }

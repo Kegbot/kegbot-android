@@ -1,76 +1,158 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".TapDetailFragment" >
 
-    <TextView
-        android:id="@+id/tapDetailTitle"
-        style="@style/header"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:text="Main Tap" />
-
     <RelativeLayout
-        android:id="@+id/onTapGroup"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/tapDetailTitle"
-        android:layout_marginBottom="32dp"
-        android:layout_marginLeft="64dp"
-        android:layout_marginRight="64dp"
-        android:layout_marginTop="16dp" >
+        tools:context=".TapDetailFragment" >
 
         <TextView
-            android:id="@+id/onTapTitle"
-            style="@style/header2"
+            android:id="@+id/tapDetailTitle"
+            style="@style/header"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-            android:text="On Tap: Sierra Nevada (12% full)"
-            android:textAllCaps="true" />
+            android:text="Main Tap" />
 
-        <View
-            android:id="@+id/divider1"
-            android:layout_width="match_parent"
-            android:layout_height="2dip"
-            android:layout_below="@+id/onTapTitle"
-            android:layout_marginBottom="8dp"
-            android:background="#1FFFFFFF" />
-
-        <Button
-            android:id="@+id/tapKegButton"
-            style="@style/mediumButton"
-            android:layout_below="@+id/divider1"
-            android:text="End Keg" />
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:id="@+id/tapSettingsGroup"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/onTapGroup"
-        android:layout_marginBottom="32dp"
-        android:layout_marginLeft="64dp"
-        android:layout_marginRight="64dp" >
-
-        <TextView
-            android:id="@+id/tapSettingsTitle"
-            style="@style/header2"
+        <RelativeLayout
+            android:id="@+id/onTapGroup"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:text="Tap Settings"
-            android:textAllCaps="true" />
+            android:layout_below="@+id/tapDetailTitle"
+            android:layout_marginBottom="32dp"
+            android:layout_marginLeft="64dp"
+            android:layout_marginRight="64dp"
+            android:layout_marginTop="16dp" >
 
-        <View
-            android:id="@+id/divider2"
-            android:layout_width="match_parent"
-            android:layout_height="2dip"
-            android:layout_below="@+id/tapSettingsTitle"
-            android:layout_marginBottom="8dp"
-            android:background="#1FFFFFFF" />
+            <TextView
+                android:id="@+id/onTapTitle"
+                style="@style/header2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:text="On Tap: Sierra Nevada (12% full)"
+                android:textAllCaps="true" />
+
+            <View
+                android:id="@+id/divider1"
+                android:layout_width="match_parent"
+                android:layout_height="2dip"
+                android:layout_below="@+id/onTapTitle"
+                android:layout_marginBottom="8dp"
+                android:background="#1FFFFFFF" />
+
+            <Button
+                android:id="@+id/tapKegButton"
+                style="@style/mediumButton"
+                android:layout_below="@+id/divider1"
+                android:text="End Keg" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/tapSettingsGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/onTapGroup"
+            android:layout_marginBottom="32dp"
+            android:layout_marginLeft="64dp"
+            android:layout_marginRight="64dp" >
+
+            <TextView
+                android:id="@+id/tapSettingsTitle"
+                style="@style/header2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:text="Display Settings"
+                android:textAllCaps="true" />
+
+            <View
+                android:id="@+id/divider2"
+                android:layout_width="match_parent"
+                android:layout_height="2dip"
+                android:layout_below="@+id/tapSettingsTitle"
+                android:layout_marginBottom="8dp"
+                android:background="#1FFFFFFF" />
+
+            <CheckBox
+                android:id="@+id/showTapCheckbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/divider2"
+                android:layout_marginBottom="16dp"
+                android:layout_marginRight="4dp" />
+
+            <TextView
+                android:id="@+id/showTapText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/showTapCheckbox"
+                android:layout_below="@+id/divider2"
+                android:layout_marginBottom="16dp"
+                android:layout_toRightOf="@+id/showTapCheckbox"
+                android:text="Display and use this tap." />
+
+            <CheckBox
+                android:id="@+id/pinTapCheckbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/showTapText"
+                android:layout_marginRight="4dp" />
+
+            <TextView
+                android:id="@+id/pinTapText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/pinTapCheckbox"
+                android:layout_below="@+id/showTapText"
+                android:layout_toRightOf="@+id/pinTapCheckbox"
+                android:text="Pin this tap on the home screen." />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/tapHardwareGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tapSettingsGroup"
+            android:layout_marginBottom="32dp"
+            android:layout_marginLeft="64dp"
+            android:layout_marginRight="64dp" >
+
+            <TextView
+                android:id="@+id/tapHardwareTitle"
+                style="@style/header2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:text="Hardware Settings"
+                android:textAllCaps="true" />
+
+            <View
+                android:id="@+id/divider3"
+                android:layout_width="match_parent"
+                android:layout_height="2dip"
+                android:layout_below="@+id/tapHardwareTitle"
+                android:layout_marginBottom="8dp"
+                android:background="#1FFFFFFF" />
+
+            <TextView
+                android:id="@+id/meterTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/divider3"
+                android:layout_marginBottom="4dp"
+                android:text="Flow sensor connected to this tap:" />
+
+            <Spinner
+                android:id="@+id/meterSelect"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/meterTitle"
+                android:layout_marginBottom="16dp" />
+        </RelativeLayout>
     </RelativeLayout>
 
-</RelativeLayout>
+</ScrollView>

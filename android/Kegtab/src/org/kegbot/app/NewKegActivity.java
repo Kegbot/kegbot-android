@@ -114,7 +114,7 @@ public class NewKegActivity extends Activity {
     });
 
     mSize = (Spinner) findViewById(R.id.newKegSize);
-    mSizeAdapter = new ArrayAdapter<KegSizeItem>(this, R.layout.keg_size_spinner_item);
+    mSizeAdapter = new ArrayAdapter<KegSizeItem>(this, android.R.layout.simple_spinner_item);
 
     mSize.setAdapter(mSizeAdapter);
     for (final Map.Entry<String, String> entry : KegSizes.DESCRIPTIONS.entrySet()) {
