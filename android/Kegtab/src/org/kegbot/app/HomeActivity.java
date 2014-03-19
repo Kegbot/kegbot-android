@@ -304,6 +304,10 @@ public class HomeActivity extends CoreActivity {
   }
 
   private void rotateDisplay() {
+    final int count = mTapStatusAdapter.getCount();
+    if (count <= 1) {
+      return;
+    }
     final int nextItem = (mTapStatusPager.getCurrentItem() + 1) % mTapStatusAdapter.getCount();
     mTapStatusPager.setCurrentItem(nextItem);
   }
