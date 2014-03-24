@@ -33,7 +33,6 @@ import android.os.IBinder;
 import android.os.PowerManager;
 import android.os.SystemClock;
 import android.util.Log;
-import android.widget.Toast;
 
 import org.kegbot.app.HomeActivity;
 import org.kegbot.app.PourInProgressActivity;
@@ -280,7 +279,6 @@ public class KegbotCoreService extends Service {
 
   private void debugNotice(String message) {
     Log.d(TAG, message);
-    Toast.makeText(KegbotCoreService.this, message, Toast.LENGTH_SHORT).show();
   }
 
 }
