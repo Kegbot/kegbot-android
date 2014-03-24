@@ -369,8 +369,9 @@ public class HomeActivity extends CoreActivity {
       if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
         Log.i(LOG_TAG, "GCM error: " + resultCode);
         if (resultCode != mLastShownGooglePlayServicesError) {
-          GooglePlayServicesUtil.getErrorDialog(
-              resultCode, this, REQUEST_PLAY_SERVICES_UPDATE).show();
+          Log.w(LOG_TAG, GooglePlayServicesUtil.getErrorString(resultCode));
+          //GooglePlayServicesUtil.getErrorDialog(
+          //    resultCode, this, REQUEST_PLAY_SERVICES_UPDATE).show();
           mLastShownGooglePlayServicesError = resultCode;
         }
       }
