@@ -63,7 +63,6 @@ public class NewKegActivity extends Activity {
   private ArrayAdapter<KegSizeItem> mSizeAdapter;
   private Button mActivateButton;
 
-  private KegSizeItem mSelectedSize;
   private Backend mBackend;
 
   private static class KegSizeItem {
@@ -197,7 +196,6 @@ public class NewKegActivity extends Activity {
 
   static Intent getStartIntent(Context context, final KegTap tap) {
     // TODO(mikey): Handle tap meter null.
-
     final Intent intent = new Intent(context, NewKegActivity.class);
     intent.putExtra(EXTRA_METER_NAME, tap.getMeter().getName());
     intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);

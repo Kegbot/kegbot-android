@@ -5,20 +5,20 @@
 
     <TextView
         android:id="@+id/tapInactiveTitle"
-        android:layout_alignParentTop="true"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
         android:text="Tap Offline"
         android:textSize="48dip"
         android:textStyle="bold" />
 
-    <TextView
-        android:id="@+id/tapInactiveSubtitle"
-        android:layout_below="@+id/tapInactiveTitle"
-        android:layout_width="match_parent"
+    <Button
+        android:id="@+id/tapKegButton"
+        style="@style/largeButton"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="No Keg Active"
-        android:textColor="#888"
-        android:textSize="36dip" />
+        android:layout_below="@+id/tapInactiveTitle"
+        android:layout_centerInParent="true"
+        android:text="Start a Keg" />
 
 </RelativeLayout>

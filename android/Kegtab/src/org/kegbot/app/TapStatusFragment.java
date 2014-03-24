@@ -20,6 +20,7 @@ package org.kegbot.app;
 
 import android.app.Activity;
 import android.app.ListFragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.format.DateUtils;
 import android.util.Log;
@@ -27,9 +28,12 @@ import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
+
+import butterknife.ButterKnife;
 
 import com.google.common.base.Strings;
 
@@ -63,17 +67,17 @@ public class TapStatusFragment extends ListFragment {
     mImageDownloader = mCore.getImageDownloader();
   }
 
-
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     mView = inflater.inflate(R.layout.tap_detail, container, false);
+
     if (mTapDetail != null) {
       setTapDetail(mTapDetail);
     }
     return mView;
   }
 
-  public void setTapDetail(KegTap tap) {
+  public void setTapDetail(final KegTap tap) {
     mTapDetail = tap;
     if (mView == null) {
       return;
@@ -83,10 +87,19 @@ public class TapStatusFragment extends ListFragment {
       return;
     }
 
-    final TextView title = (TextView) mView.findViewById(R.id.tapTitle);
-    final TextView subtitle = (TextView) mView.findViewById(R.id.tapSubtitle);
-    final TextView tapNotes = (TextView) mView.findViewById(R.id.tapNotes);
-    final ViewFlipper flipper = (ViewFlipper) mView.findViewById(R.id.tapStatusFlipper);
+    final TextView title = ButterKnife.findById(mView, R.id.tapTitle);
+    final TextView subtitle = ButterKnife.findById(mView, R.id.tapSubtitle);
+    final TextView tapNotes = ButterKnife.findById(mView, R.id.tapNotes);
+    final ViewFlipper flipper = ButterKnife.findById(mView, R.id.tapStatusFlipper);
+
+    final Button button = ButterKnife.findById(mView, R.id.tapKegButton);
+    button.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        final Intent intent = NewKegActivity.getStartIntent(getActivity(), tap);
+        startActivity(intent);
+      }
+    });
 
     tapNotes.setText("Last synced: " + DateUtils.formatDateTime(activity, System.currentTimeMillis(),
         DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME));
@@ -122,12 +135,12 @@ public class TapStatusFragment extends ListFragment {
     }
 
     final Keg keg = tap.getCurrentKeg();
-    title.setText(keg.getType().getName());
+    title.setText(keg.getBeverage().getName());
 
     final ImageView tapImage = (ImageView) mView.findViewById(R.id.tapImage);
     tapImage.setImageResource(R.drawable.kegbot_unknown_square_2);
-    if (keg.getType().hasImage()) {
-      final Image image = keg.getType().getImage();
+    if (keg.getBeverage().hasPicture()) {
+      final Image image = keg.getBeverage().getPicture();
       final String imageUrl = image.getUrl();
       mImageDownloader.download(imageUrl, tapImage);
     }
@@ -135,7 +148,7 @@ public class TapStatusFragment extends ListFragment {
     // TODO(mikey): proper units support
     // Badge 1: Pints Poured
     final BadgeView badge1 = (BadgeView) mView.findViewById(R.id.tapStatsBadge1);
-    double mlPoured = keg.getSizeVolumeMl() * (100.0 - keg.getPercentFull()) / 100.0;
+    double mlPoured = keg.getServedVolumeMl();
     Pair<String, String> qtyPoured = Units.localize(mCore.getConfiguration(), mlPoured);
 
     badge1.setBadgeValue(qtyPoured.first);
