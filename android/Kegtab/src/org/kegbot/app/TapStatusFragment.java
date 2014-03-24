@@ -144,7 +144,7 @@ public class TapStatusFragment extends ListFragment {
     // Badge 2: Pints Remain
     final BadgeView badge2 = (BadgeView) mView.findViewById(R.id.tapStatsBadge2);
     Pair<String, String> qtyRemain = Units.localize(mCore.getConfiguration(),
-        keg.getVolumeMlRemain());
+        keg.getRemainingVolumeMl());
 
     badge2.setBadgeValue(qtyRemain.first);
     badge2.setBadgeCaption(Units.capitalizeUnits(qtyRemain.second) + " Left");
