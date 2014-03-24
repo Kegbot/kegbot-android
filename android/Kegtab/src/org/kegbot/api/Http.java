@@ -17,21 +17,6 @@
  */
 package org.kegbot.api;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.util.List;
-import java.util.Map;
-
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
-
 import android.os.SystemClock;
 import android.util.Log;
 import android.util.Pair;
@@ -40,6 +25,22 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.io.ByteStreams;
 import com.squareup.okhttp.OkHttpClient;
+
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.map.ObjectMapper;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Convenience class for making {@link Request}s against an {@link OkHttpClient}.
@@ -119,7 +120,13 @@ class Http {
   private static String getUrlParamsString(Request request) {
     final List<String> parts = Lists.newArrayList();
     for (Pair<String, String> part : request.getParameters()) {
-      parts.add(String.format("%s=%s", URLEncoder.encode(part.first), URLEncoder.encode(part.second)));
+      try {
+        parts.add(String.format("%s=%s",
+            URLEncoder.encode(part.first, "utf-8"),
+            URLEncoder.encode(part.second, "utf-8")));
+      } catch (UnsupportedEncodingException e) {
+        throw new RuntimeException(e);
+      }
     }
     return Joiner.on('&').join(parts);
   }

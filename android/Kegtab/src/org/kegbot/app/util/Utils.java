@@ -18,13 +18,8 @@
  */
 package org.kegbot.app.util;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
 import android.annotation.TargetApi;
+import android.app.Notification;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -33,6 +28,12 @@ import android.content.pm.Signature;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.view.View;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 public class Utils {
 
@@ -148,7 +149,7 @@ public class Utils {
     }
     return getFingerprintForSignature(info.signatures[0]).equals(fingerprint);
   }
-  
+
   @SuppressWarnings("deprecation")
   @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
   public static void setBackground(View view, Drawable background) {
@@ -156,6 +157,16 @@ public class Utils {
       view.setBackground(background);
     } else {
       view.setBackgroundDrawable(background);
+    }
+  }
+
+  @SuppressWarnings("deprecation")
+  @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+  public static Notification buildNotification(final Notification.Builder builder) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+      return builder.build();
+    } else {
+      return builder.getNotification();
     }
   }
 

@@ -96,11 +96,10 @@ public class HardwareManager extends Manager {
     }
   };
 
-  private final Backend mBackend;
-
   public HardwareManager(Bus bus, Context context, AppConfiguration config, Backend backend) {
     super(bus);
-    mBackend = backend;
+
+    // TODO(mikey): Still need backend?
 
     mManagers.add(new KegboardManager(getBus(), context, mListener));
     mManagers.add(new FakeControllerManager(getBus(), mListener));

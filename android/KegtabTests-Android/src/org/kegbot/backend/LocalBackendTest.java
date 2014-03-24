@@ -117,6 +117,7 @@ public class LocalBackendTest extends AndroidTestCase {
   public void testPourDrink() throws BackendException {
     KegTap tap = mBackend.startKeg("kegboard.flow0", "Test Beer", "Test Brewer", "Test Style",
         KegSizes.HALF_BARREL);
+    assertNotNull(tap);
     
     final double fullVolume = KegSizes.getVolumeMl(KegSizes.HALF_BARREL);
     Keg keg = mBackend.getTaps().get(0).getCurrentKeg();

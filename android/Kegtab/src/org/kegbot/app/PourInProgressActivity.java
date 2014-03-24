@@ -89,17 +89,12 @@ public class PourInProgressActivity extends CoreActivity {
   private static final int REQUEST_AUTH_DRINKER = 100;
   private static final String EXTRA_FLOW_ID = "flow_id";
 
-  /** Constant identifying {@link #mIdleDetectedDialog}. */
-  private static final int DIALOG_IDLE_WARNING = 1;
-
   private KegbotCore mCore;
   private FlowManager mFlowManager;
   private AppConfiguration mConfig;
   private ImageDownloader mImageDownloader;
 
   private CameraFragment mCameraFragment;
-
-  private AlertDialog mIdleDetectedDialog;
 
   private final Handler mHandler = new Handler();
 
@@ -112,6 +107,32 @@ public class PourInProgressActivity extends CoreActivity {
   private TextView mShoutText;
   private Button mDoneButton;
   private ViewPager mTapPager;
+
+  private final DialogFragment mIdleDialogFragment = new DialogFragment() {
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+      AlertDialog.Builder builder = new AlertDialog.Builder(PourInProgressActivity.this);
+      builder.setMessage("Hey, are you still pouring?").setCancelable(false).setPositiveButton(
+          "Continue Pouring", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+              for (final Flow flow : mFlowManager.getAllActiveFlows()) {
+                flow.pokeActivity();
+              }
+              dialog.cancel();
+            }
+          }).setNegativeButton("Done Pouring", new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+          for (final Flow flow : mFlowManager.getAllActiveFlows()) {
+            mFlowManager.endFlow(flow);
+          }
+          dialog.cancel();
+        }
+      });
+      return builder.create();
+    }
+  };
 
   private final Object mTapsLock = new Object();
 
@@ -336,28 +357,6 @@ public class PourInProgressActivity extends CoreActivity {
 
     mCameraFragment = (CameraFragment) getFragmentManager().findFragmentById(R.id.camera);
 
-    AlertDialog.Builder builder = new AlertDialog.Builder(this);
-    builder.setMessage("Hey, are you still pouring?").setCancelable(false).setPositiveButton(
-        "Continue Pouring", new DialogInterface.OnClickListener() {
-          @Override
-          public void onClick(DialogInterface dialog, int which) {
-            for (final Flow flow : mFlowManager.getAllActiveFlows()) {
-              flow.pokeActivity();
-            }
-            dialog.cancel();
-          }
-        }).setNegativeButton("Done Pouring", new DialogInterface.OnClickListener() {
-      @Override
-      public void onClick(DialogInterface dialog, int which) {
-        for (final Flow flow : mFlowManager.getAllActiveFlows()) {
-          mFlowManager.endFlow(flow);
-        }
-        dialog.cancel();
-      }
-    });
-
-    mIdleDetectedDialog = builder.create();
-
     refreshFlows();
   }
 
@@ -427,14 +426,6 @@ public class PourInProgressActivity extends CoreActivity {
         Utils.setBackground(mDrinkerImage, getResources().getDrawable(R.drawable.unknown_drinker));
       }
     }
-  }
-
-  @Override
-  protected Dialog onCreateDialog(int id) {
-    if (id == DIALOG_IDLE_WARNING) {
-      return mIdleDetectedDialog;
-    }
-    return super.onCreateDialog(id);
   }
 
   @Override
@@ -645,17 +636,13 @@ public class PourInProgressActivity extends CoreActivity {
   }
 
   private void sendIdleWarning() {
-    if (mIdleDetectedDialog.isShowing()) {
-      return;
-    }
-    showDialog(DIALOG_IDLE_WARNING);
+    mIdleDialogFragment.show(getFragmentManager(), "idle");
   }
 
   private void cancelIdleWarning() {
-    if (!mIdleDetectedDialog.isShowing()) {
-      return;
+    if (mIdleDialogFragment.isVisible()) {
+      mIdleDialogFragment.dismiss();
     }
-    dismissDialog(DIALOG_IDLE_WARNING);
   }
 
   public static Intent getStartIntent(Context context) {

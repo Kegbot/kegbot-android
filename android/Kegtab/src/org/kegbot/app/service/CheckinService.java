@@ -34,6 +34,7 @@ import android.util.Log;
 import org.kegbot.app.R;
 import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.app.util.CheckinClient;
+import org.kegbot.app.util.Utils;
 import org.kegbot.core.KegbotCore;
 
 import java.io.FileDescriptor;
@@ -163,17 +164,18 @@ public class CheckinService extends IntentService {
       int titleRes = updateRequired ? R.string.checkin_update_required_title
           : R.string.checkin_update_available_title;
 
-      Notification noti = new Notification.Builder(this)
+      final Notification.Builder builder = new Notification.Builder(this)
         .setSmallIcon(updateRequired ? R.drawable.icon_warning : R.drawable.icon_download)
         .setContentTitle(getString(titleRes))
         .setContentText(getString(R.string.checkin_update_description))
         .setContentIntent(contentIntent)
         .setOnlyAlertOnce(true)
-        .setAutoCancel(true)
-        .getNotification();
+        .setAutoCancel(true);
+
+      final Notification notification = Utils.buildNotification(builder);
 
       Log.d(TAG, "Posting notification.");
-      nm.notify(CHECKIN_NOTIFICATION_ID, noti);
+      nm.notify(CHECKIN_NOTIFICATION_ID, notification);
     } else {
       nm.cancel(CHECKIN_NOTIFICATION_ID);
     }

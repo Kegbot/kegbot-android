@@ -64,7 +64,7 @@ public class HomeActivity extends CoreActivity {
 
   private static final String LOG_TAG = HomeActivity.class.getSimpleName();
 
-  private static final int REQUEST_PLAY_SERVICES_UPDATE = 100;
+  //private static final int REQUEST_PLAY_SERVICES_UPDATE = 100;
   private static final String GCM_SENDER_ID = "209039242857";
 
   private static final String ACTION_SHOW_TAP_EDITOR = "show_editor";

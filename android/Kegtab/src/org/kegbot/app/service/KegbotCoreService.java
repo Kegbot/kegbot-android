@@ -40,6 +40,7 @@ import org.kegbot.app.R;
 import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.app.event.ConnectivityChangedEvent;
 import org.kegbot.app.event.FlowUpdateEvent;
+import org.kegbot.app.util.Utils;
 import org.kegbot.core.Flow;
 import org.kegbot.core.FlowManager;
 import org.kegbot.core.KegbotCore;
@@ -251,13 +252,12 @@ public class KegbotCoreService extends Service {
     intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
     final PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent,
         PendingIntent.FLAG_CANCEL_CURRENT);
-    final Notification notification = new Notification.Builder(this)
+    final Notification notification = Utils.buildNotification(new Notification.Builder(this)
         .setOngoing(true)
         .setSmallIcon(R.drawable.icon)
         .setWhen(System.currentTimeMillis())
         .setContentTitle(getString(R.string.kegbot_core_running))
-        .setContentIntent(pendingIntent)
-        .getNotification();
+        .setContentIntent(pendingIntent));
     return notification;
   }
 

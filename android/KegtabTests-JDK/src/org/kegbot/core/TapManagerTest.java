@@ -59,6 +59,7 @@ public class TapManagerTest extends TestCase {
     super.tearDown();
   }
 
+  @SuppressWarnings("deprecation")
   public void testBasics() {
     assertEquals(0, mTapManager.getTaps().size());
     assertEquals(0, mTapManager.getVisibleTaps().size());

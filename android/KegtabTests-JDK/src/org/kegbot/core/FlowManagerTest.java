@@ -147,6 +147,7 @@ public class FlowManagerTest extends TestCase {
     assertNull(mFlowManager.getFlowForTap(mTap1));
   }
 
+  @SuppressWarnings("deprecation")
   public void testGetFlowForMeterName() {
     List<Flow> flows = mFlowManager.getAllActiveFlows();
     assertEquals(0, flows.size());
