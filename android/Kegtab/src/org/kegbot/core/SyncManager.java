@@ -38,6 +38,7 @@ import com.squareup.otto.Subscribe;
 
 import org.codehaus.jackson.JsonNode;
 import org.kegbot.api.KegbotApiException;
+import org.kegbot.api.KegbotApiImpl;
 import org.kegbot.app.event.ConnectivityChangedEvent;
 import org.kegbot.app.event.ControllerListUpdateEvent;
 import org.kegbot.app.event.CurrentSessionChangedEvent;
@@ -355,6 +356,7 @@ public class SyncManager extends BackgroundManager {
 
     Log.d(TAG, "<<< Success, drink posted: " + drink);
     postOnMainThread(new DrinkPostedEvent(drink));
+    requestSync();
   }
 
   /**
@@ -456,10 +458,12 @@ public class SyncManager extends BackgroundManager {
   private boolean syncNow() {
     boolean error = false;
 
-    if (!isConnected()) {
-      error = true;
-      Log.d(TAG, "Network not connected.");
-      return error;
+    if (mBackend instanceof KegbotApiImpl) {
+      if (!isConnected()) {
+        error = true;
+        Log.d(TAG, "Network not connected.");
+        return error;
+      }
     }
 
     postDeferredPoursAsync();
