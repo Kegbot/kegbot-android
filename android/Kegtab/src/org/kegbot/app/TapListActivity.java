@@ -76,13 +76,13 @@ public class TapListActivity extends CoreActivity implements TapListFragment.Cal
    * item with the given ID was selected.
    */
   @Override
-  public void onItemSelected(String id) {
+  public void onItemSelected(int tapId) {
     if (mTwoPane) {
       // In two-pane mode, show the detail view in this activity by
       // adding or replacing the detail fragment using a
       // fragment transaction.
       Bundle arguments = new Bundle();
-      arguments.putString(TapDetailFragment.ARG_ITEM_ID, id);
+      arguments.putInt(TapDetailFragment.ARG_ITEM_ID, tapId);
       TapDetailFragment fragment = new TapDetailFragment();
       fragment.setArguments(arguments);
       getFragmentManager().beginTransaction()
@@ -93,7 +93,7 @@ public class TapListActivity extends CoreActivity implements TapListFragment.Cal
       // In single-pane mode, simply start the detail activity
       // for the selected item ID.
       Intent detailIntent = new Intent(this, TapDetailActivity.class);
-      detailIntent.putExtra(TapDetailFragment.ARG_ITEM_ID, id);
+      detailIntent.putExtra(TapDetailFragment.ARG_ITEM_ID, tapId);
       startActivity(detailIntent);
     }
   }

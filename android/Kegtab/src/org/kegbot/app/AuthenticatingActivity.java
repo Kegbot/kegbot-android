@@ -61,7 +61,7 @@ public class AuthenticatingActivity extends Activity {
   private static final String EXTRA_USERNAME = "username";
   private static final String EXTRA_AUTH_DEVICE = "auth_device";
   private static final String EXTRA_TOKEN_VALUE = "token";
-  private static final String EXTRA_TAP = "tap";
+  private static final String EXTRA_TAP_ID = "tap";
 
   private KegbotCore mCore;
   private AppConfiguration mConfig;
@@ -219,9 +219,9 @@ public class AuthenticatingActivity extends Activity {
   }
 
   private void activateUser(String username) {
-    final String tapName = getIntent().getStringExtra(EXTRA_TAP);
-    if (tapName != null) {
-      final KegTap tap = mCore.getTapManager().getTapForMeterName(tapName);
+    final int tapId = getIntent().getIntExtra(EXTRA_TAP_ID, 0);
+    if (tapId > 0) {
+      final KegTap tap = mCore.getTapManager().getTap(tapId);
       mFlowManager.activateUserAtTap(tap, username);
     } else {
       mFlowManager.activateUserAmbiguousTap(username);
@@ -327,7 +327,7 @@ public class AuthenticatingActivity extends Activity {
     intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
     intent.putExtra(EXTRA_USERNAME, username);
     if (tap != null) {
-      intent.putExtra(EXTRA_TAP, tap.getMeterName());
+      intent.putExtra(EXTRA_TAP_ID, Integer.valueOf(tap.getId()));
     }
     context.startActivity(intent);
   }

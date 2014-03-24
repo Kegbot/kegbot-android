@@ -365,10 +365,10 @@ public class CalibrationActivity extends CoreActivity {
     return String.format("%.2f", Double.valueOf(Units.volumeMlToOunces(getVolumeMl())));
   }
 
-  static Intent getStartIntent(Context context, String meterName, String relayName, float mlPerTick) {
+  static Intent getStartIntent(final Context context, final KegTap tap) {
     final Intent intent = new Intent(context, CalibrationActivity.class);
-    intent.putExtra(EXTRA_METER_NAME, meterName);
-    intent.putExtra(EXTRA_ML_PER_TICK, mlPerTick);
+    intent.putExtra(EXTRA_METER_NAME, tap.getMeter().getName());
+    intent.putExtra(EXTRA_ML_PER_TICK, 1 / tap.getMeter().getTicksPerMl());
     intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
     return intent;
   }

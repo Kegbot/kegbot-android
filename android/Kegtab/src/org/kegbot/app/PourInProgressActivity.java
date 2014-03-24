@@ -169,7 +169,7 @@ public class PourInProgressActivity extends CoreActivity {
     public void onPageSelected(int position) {
       PourStatusFragment frag = (PourStatusFragment) mPouringTapAdapter.getItem(position);
       final KegTap tap = frag.getTap();
-      Log.d(TAG, "Swiped to tap: " + tap.getMeterName());
+      Log.d(TAG, "Swiped to tap: " + tap.getId());
       updateControlsForFlow(getCurrentlyFocusedFlow());
     }
 
@@ -198,7 +198,7 @@ public class PourInProgressActivity extends CoreActivity {
 
       final PourStatusFragment frag = new PourStatusFragment();
       frag.setTap(tap);
-      final Flow flow = mFlowManager.getFlowForMeterName(tap.getMeterName());
+      final Flow flow = mFlowManager.getFlowForTap(tap);
       if (flow != null) {
         frag.updateWithFlow(flow);
       }
@@ -368,7 +368,7 @@ public class PourInProgressActivity extends CoreActivity {
       if (tap == null) {
         return null;
       }
-      return mFlowManager.getFlowForMeterName(tap.getMeterName());
+      return mFlowManager.getFlowForTap(tap);
     }
   }
 
@@ -529,25 +529,29 @@ public class PourInProgressActivity extends CoreActivity {
 
   private void scrollToMostActiveTap() {
     final Flow currentFlow = getCurrentlyFocusedFlow();
+
+    // Current flow is active; don't scroll.
     if (currentFlow != null && currentFlow.getIdleTimeMs() < IDLE_SCROLL_TIMEOUT_MILLIS) {
-      // Current flow is active; don't scroll.
       return;
     }
 
+    // Current flow is most active; still don't scroll.
     final KegTap mostActive = getMostActiveTap();
+    if (currentFlow != null && mostActive == currentFlow.getTap()) {
+      return;
+    }
 
+    // No active taps.
     if (mostActive == null) {
       Log.d(TAG, "Could not find an active tap.");
       return;
-    } else if (currentFlow != null &&
-        mostActive.getMeterName().equals(currentFlow.getTap().getMeterName())) {
-      return;
     }
 
-    final Flow candidateFlow = mFlowManager.getFlowForMeterName(mostActive.getMeterName());
+    // We have a candidate.
+    final Flow candidateFlow = mFlowManager.getFlowForTap(mostActive);
     if (candidateFlow != null) {
       synchronized (mTapsLock) {
-        final int position = mTapIndexMap.get(candidateFlow.getTap().getMeterName()).intValue();
+        final int position = mTapIndexMap.get(mostActive.getMeter().getName()).intValue();
         scrollToPosition(position);
       }
     }
@@ -579,7 +583,7 @@ public class PourInProgressActivity extends CoreActivity {
 
       synchronized (mTapsLock) {
         final KegTap tap = flow.getTap();
-        Integer index = mTapIndexMap.get(tap.getMeterName());
+        Integer index = mTapIndexMap.get(tap.getMeter().getName());
 
         // Grab the tap for the flow and determine if we need to show a new one.
         if (index != null) {
@@ -591,7 +595,7 @@ public class PourInProgressActivity extends CoreActivity {
           }
         } else {
           mTaps.add(tap);
-          mTapIndexMap.put(tap.getMeterName(), Integer.valueOf(mTaps.size() - 1));
+          mTapIndexMap.put(tap.getMeter().getName(), Integer.valueOf(mTaps.size() - 1));
           Log.d(TAG, "+++ Added newly active tap "  + tap);
           mPouringTapAdapter.notifyDataSetChanged();
         }

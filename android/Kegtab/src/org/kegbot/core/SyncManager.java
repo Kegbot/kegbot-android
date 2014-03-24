@@ -565,7 +565,7 @@ public class SyncManager extends BackgroundManager {
 
   private static RecordDrinkRequest getRequestForFlow(final Flow ended) {
     return RecordDrinkRequest.newBuilder()
-        .setTapName(ended.getTap().getMeterName())
+        .setTapName(ended.getTap().getMeter().getName())
         .setTicks(ended.getTicks())
         .setVolumeMl((float) ended.getVolumeMl())
         .setUsername(ended.getUsername())

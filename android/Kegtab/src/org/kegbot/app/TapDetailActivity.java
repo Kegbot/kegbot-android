@@ -38,8 +38,8 @@ public class TapDetailActivity extends FragmentActivity {
       // Create the detail fragment and add it to the activity
       // using a fragment transaction.
       Bundle arguments = new Bundle();
-      arguments.putString(TapDetailFragment.ARG_ITEM_ID,
-          getIntent().getStringExtra(TapDetailFragment.ARG_ITEM_ID));
+      arguments.putInt(TapDetailFragment.ARG_ITEM_ID,
+          getIntent().getIntExtra(TapDetailFragment.ARG_ITEM_ID, 0));
       TapDetailFragment fragment = new TapDetailFragment();
       fragment.setArguments(arguments);
       getFragmentManager().beginTransaction()

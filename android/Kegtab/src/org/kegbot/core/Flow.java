@@ -31,8 +31,6 @@ import java.util.List;
 
 /**
  * A flow holds all state about an active pour in progress.
- *
- * @author mikey
  */
 public class Flow {
 
@@ -105,7 +103,7 @@ public class Flow {
     StringBuilder builder = new StringBuilder("Flow")
         .append(" id=").append(mFlowId)
         .append(" finished=").append(mIsFinished)
-        .append(" tap=").append(mTap.getMeterName())
+        .append(" tap=").append(mTap.getId())
         .append(" user=").append(mUsername)
         .append(" ticks=").append(getTicks())
         .append(" volume_ml=").append(getVolumeMl());
@@ -156,7 +154,11 @@ public class Flow {
   }
 
   public double getVolumeMl() {
-    return mTicks * mTap.getMlPerTick();
+    final double factor = mTap.getMeter().getTicksPerMl();
+    if (factor <= 0) {
+      return 0;
+    }
+    return mTicks / factor;
   }
 
   public int getTicks() {

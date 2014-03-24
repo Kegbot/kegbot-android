@@ -42,6 +42,7 @@ import org.kegbot.app.util.KegSizes;
 import org.kegbot.backend.Backend;
 import org.kegbot.backend.BackendException;
 import org.kegbot.core.KegbotCore;
+import org.kegbot.proto.Models.KegTap;
 
 import java.util.Map;
 
@@ -194,9 +195,11 @@ public class NewKegActivity extends Activity {
     }.execute();
   }
 
-  static Intent getStartIntent(Context context, String meterName) {
+  static Intent getStartIntent(Context context, final KegTap tap) {
+    // TODO(mikey): Handle tap meter null.
+
     final Intent intent = new Intent(context, NewKegActivity.class);
-    intent.putExtra(EXTRA_METER_NAME, meterName);
+    intent.putExtra(EXTRA_METER_NAME, tap.getMeter().getName());
     intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
     return intent;
   }

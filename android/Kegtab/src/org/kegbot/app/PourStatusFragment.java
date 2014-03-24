@@ -17,18 +17,6 @@
  */
 package org.kegbot.app;
 
-import java.util.concurrent.TimeUnit;
-
-import org.kegbot.app.event.FlowUpdateEvent;
-import org.kegbot.app.util.ImageDownloader;
-import org.kegbot.app.util.Units;
-import org.kegbot.app.view.BadgeView;
-import org.kegbot.core.AuthenticationManager;
-import org.kegbot.core.Flow;
-import org.kegbot.core.KegbotCore;
-import org.kegbot.proto.Models.Keg;
-import org.kegbot.proto.Models.KegTap;
-
 import android.app.Activity;
 import android.app.ListFragment;
 import android.content.Intent;
@@ -45,6 +33,18 @@ import android.widget.TextView;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.squareup.otto.Subscribe;
+
+import org.kegbot.app.event.FlowUpdateEvent;
+import org.kegbot.app.util.ImageDownloader;
+import org.kegbot.app.util.Units;
+import org.kegbot.app.view.BadgeView;
+import org.kegbot.core.AuthenticationManager;
+import org.kegbot.core.Flow;
+import org.kegbot.core.KegbotCore;
+import org.kegbot.proto.Models.Keg;
+import org.kegbot.proto.Models.KegTap;
+
+import java.util.concurrent.TimeUnit;
 
 public class PourStatusFragment extends ListFragment {
 
@@ -177,7 +177,7 @@ public class PourStatusFragment extends ListFragment {
   @Subscribe
   public void onFlowUpdate(FlowUpdateEvent event) {
     final Flow flow = event.getFlow();
-    if (mTap != null && mTap.getMeterName().equals(flow.getTap().getMeterName())) {
+    if (mTap != null && mTap.getId() == flow.getTap().getId()) {
       if (flow.isFinished()) {
         setEnded();
       } else {

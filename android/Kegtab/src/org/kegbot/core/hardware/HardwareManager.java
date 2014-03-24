@@ -23,7 +23,6 @@ import android.content.Context;
 import android.util.Log;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.squareup.otto.Bus;
@@ -34,6 +33,7 @@ import org.kegbot.app.event.Event;
 import org.kegbot.app.util.IndentingPrintWriter;
 import org.kegbot.backend.Backend;
 import org.kegbot.core.Manager;
+import org.kegbot.proto.Models.FlowToggle;
 import org.kegbot.proto.Models.KegTap;
 
 import java.util.Map;
@@ -170,14 +170,15 @@ public class HardwareManager extends Manager {
 
   public void toggleOutput(final KegTap tap, final boolean enable) {
     Preconditions.checkNotNull(tap);
-    Log.d(TAG, "setTapRelayEnabled tap=" + tap.getMeterName() + " enabled=" + enable);
+    Log.d(TAG, "toggleOutput tap=" + tap.getId() + " enabled=" + enable);
 
-    final String outputName = tap.getRelayName();
-    if (Strings.isNullOrEmpty(outputName)) {
-      Log.d(TAG, "No output configured for tap.");
+    final FlowToggle toggle = tap.getToggle();
+    if (toggle == null) {
+      Log.d(TAG, "No toggle bound to tap.");
       return;
     }
-    //mKegboardManager.toggleOutput(outputName, enable);
+
+    //mKegboardManager.toggleOutput(toggle.getName(), enable);
   }
 
   @Override

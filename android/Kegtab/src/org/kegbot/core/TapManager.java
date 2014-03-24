@@ -50,7 +50,7 @@ public class TapManager extends Manager {
   @VisibleForTesting
   protected static final String KEY_HIDDEN_TAP_IDS = "hidden_tap_ids";
 
-  private final Map<String, KegTap> mTaps = Maps.newLinkedHashMap();
+  private final Map<Integer, KegTap> mTaps = Maps.newLinkedHashMap();
 
   private ConfigurationStore mLocalConfig;
 
@@ -90,7 +90,7 @@ public class TapManager extends Manager {
     if (mFocusedTap == null) {
       mFocusedTap = newTap;
     }
-    return mTaps.put(newTap.getMeterName(), newTap) != null;
+    return mTaps.put(Integer.valueOf(newTap.getId()), newTap) != null;
   }
 
   /**
@@ -105,7 +105,7 @@ public class TapManager extends Manager {
     if (mFocusedTap == tap) {
       mFocusedTap = null;
     }
-    return mTaps.remove(tap.getMeterName()) != null;
+    return mTaps.remove(Integer.valueOf(tap.getId())) != null;
   }
 
   /**
@@ -116,18 +116,27 @@ public class TapManager extends Manager {
   }
 
   /**
-   * Sets the currently focused tap to the tap matching {@code meterName}, or
-   * {@code null} if that tap does not exist.
-   *
-   * @param meterName the name of the focused tap
+   * Sets the currently focused tap.
    */
-  public synchronized void setFocusedTap(final String meterName) {
-    mFocusedTap = getTapForMeterName(meterName);
+  public synchronized void setFocusedTap(final KegTap tap) {
+    if (!mTaps.containsValue(tap)) {
+      Log.w(TAG, "setFocusedTap: tap unknown: " + tap);
+      return;
+    }
+    mFocusedTap = tap;
   }
 
+  public synchronized KegTap getTap(int tapId) {
+    return mTaps.get(Integer.valueOf(tapId));
+  }
+
+  @Deprecated
   public synchronized KegTap getTapForMeterName(final String meterName) {
     for (final KegTap tap : mTaps.values()) {
-      if (meterName.equals(tap.getMeterName())) {
+      if (!tap.hasMeter()) {
+        continue;
+      }
+      if (meterName.equals(tap.getMeter().getName())) {
         return tap;
       }
     }
@@ -164,22 +173,22 @@ public class TapManager extends Manager {
 
   @Subscribe
   public synchronized void onTapSyncResults(TapListUpdateEvent event) {
-    List<KegTap> taps = event.getTaps();
-    Set<String> removedTaps = Sets.newLinkedHashSet(mTaps.keySet());
+    final List<KegTap> taps = event.getTaps();
+    final Set<Integer> removedTaps = Sets.newLinkedHashSet(mTaps.keySet());
 
     for (final KegTap tap : taps) {
-      final KegTap existingTap = getTapForMeterName(tap.getMeterName());
-      removedTaps.remove(tap.getMeterName());
+      final KegTap existingTap = getTap(tap.getId());
+      removedTaps.remove(Integer.valueOf(tap.getId()));
 
       if (existingTap == null || !existingTap.equals(tap)) {
-        Log.i(TAG, "Adding/updating tap " + tap.getMeterName());
+        Log.i(TAG, "Adding/updating tap " + tap.getId());
         addTap(tap);
       }
     }
 
-    for (String tapName : removedTaps) {
-      Log.i(TAG, "Removing tap: " + tapName);
-      removeTap(getTapForMeterName(tapName));
+    for (final Integer tapId : removedTaps) {
+      Log.i(TAG, "Removing tap: " + tapId);
+      removeTap(getTap(tapId.intValue()));
     }
   }
 
@@ -211,9 +220,7 @@ public class TapManager extends Manager {
       writer.println();
       writer.increaseIndent();
       for (final KegTap tap : mTaps.values()) {
-        writer.printPair("meterName", tap.getMeterName()).println();
-        writer.printPair("mlPerTick", Double.valueOf(tap.getMlPerTick())).println();
-        writer.printPair("relayName", tap.getRelayName()).println();
+        writer.printPair("tap", tap).println();
         writer.println();
       }
       writer.decreaseIndent();

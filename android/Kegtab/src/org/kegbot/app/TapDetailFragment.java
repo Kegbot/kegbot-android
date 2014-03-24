@@ -80,9 +80,9 @@ public class TapDetailFragment extends Fragment {
 
     mBus.register(this);
 
-    final String tapId = getArguments().getString(ARG_ITEM_ID);
-    if (tapId != null) {
-      updateTapDetails(mTapManager.getTapForMeterName(tapId));
+    final int tapId = getArguments().getInt(ARG_ITEM_ID, 0);
+    if (tapId != 0) {
+      updateTapDetails(mTapManager.getTap(tapId));
     }
   }
 
@@ -172,7 +172,10 @@ public class TapDetailFragment extends Fragment {
   }
 
   private void onStartKeg() {
-    startActivity(NewKegActivity.getStartIntent(getActivity(), mItem.getMeterName()));
+    if (!mItem.hasMeter()) {
+      Log.w(TAG, "Can't start keg, no meter.");
+    }
+    startActivity(NewKegActivity.getStartIntent(getActivity(), mItem));
     //getFragmentManager().popBackStackImmediate();
   }
 

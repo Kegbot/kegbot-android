@@ -27,6 +27,7 @@ import com.squareup.otto.Bus;
 import junit.framework.TestCase;
 
 import org.kegbot.app.config.ConfigurationStore;
+import org.kegbot.proto.Models.Controller;
 import org.kegbot.proto.Models.FlowMeter;
 import org.kegbot.proto.Models.KegTap;
 
@@ -65,13 +66,15 @@ public class TapManagerTest extends TestCase {
     final KegTap tap = KegTap.newBuilder()
         .setId(1)
         .setName("Test Tap")
-        .setMeterName("test.flow0")
-        .setMlPerTick(1.0f)
         .setMeter(FlowMeter.newBuilder()
             .setId(1)
             .setName("test.flow0")
             .setPortName("flow0")
             .setTicksPerMl(1.0f)
+            .setController(Controller.newBuilder()
+                .setId(1)
+                .setName("test")
+                .build())
             .build())
         .build();
 

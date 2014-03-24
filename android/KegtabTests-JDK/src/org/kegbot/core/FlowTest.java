@@ -21,6 +21,8 @@ import junit.framework.TestCase;
 
 import org.kegbot.app.util.TimeSeries;
 import org.kegbot.core.FlowManager.Clock;
+import org.kegbot.proto.Models.Controller;
+import org.kegbot.proto.Models.FlowMeter;
 import org.kegbot.proto.Models.KegTap;
 
 /**
@@ -39,13 +41,19 @@ public class FlowTest extends TestCase {
     }
   };
 
-  private static final int FAKE_ML_PER_TICK = 3;
   private static final KegTap FAKE_TAP = KegTap.newBuilder()
       .setId(1)
-      .setName("fake-tap")
-      .setMlPerTick(FAKE_ML_PER_TICK)
-      .setMeterName("fake-meter")
-      .setRelayName("fake-relay")
+      .setName("Test Tap")
+      .setMeter(FlowMeter.newBuilder()
+          .setId(1)
+          .setName("test.flow0")
+          .setPortName("flow0")
+          .setTicksPerMl(1/3.0f)
+          .setController(Controller.newBuilder()
+              .setId(1)
+              .setName("test")
+              .build())
+          .build())
       .build();
 
 

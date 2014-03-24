@@ -26,6 +26,8 @@ import junit.framework.TestCase;
 
 import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.core.FlowManager.Clock;
+import org.kegbot.proto.Models.Controller;
+import org.kegbot.proto.Models.FlowMeter;
 import org.kegbot.proto.Models.KegTap;
 
 import java.util.List;
@@ -59,8 +61,36 @@ public class FlowManagerTest extends TestCase {
     mBus = mock(Bus.class);
 
     mTapManager = new TapManager(mBus, null);
-    mTap0 = KegTap.newBuilder().setId(1).setName("tap0").setMlPerTick(1).setMeterName("kegboard.flow0").build();
-    mTap1 = KegTap.newBuilder().setId(2).setName("tap1").setMlPerTick(1).setMeterName("kegboard.flow1").build();
+    mTap0 = KegTap.newBuilder()
+        .setId(1)
+        .setName("Test Tap 0")
+        .setMeter(FlowMeter.newBuilder()
+            .setId(1)
+            .setPortName("flow0")
+            .setName("test.flow0")
+            .setTicksPerMl(1)
+            .setController(Controller.newBuilder()
+                .setId(1)
+                .setName("test")
+                .build())
+            .build())
+        .build();
+
+    mTap1 = KegTap.newBuilder()
+        .setId(2)
+        .setName("Test Tap 1")
+        .setMeter(FlowMeter.newBuilder()
+            .setId(1)
+            .setPortName("flow1")
+            .setName("test.flow1")
+            .setTicksPerMl(1)
+            .setController(Controller.newBuilder()
+                .setId(1)
+                .setName("test")
+                .build())
+            .build())
+        .build();
+
     mTapManager.addTap(mTap0);
     mTapManager.addTap(mTap1);
 
@@ -125,8 +155,8 @@ public class FlowManagerTest extends TestCase {
     flows = mFlowManager.getAllActiveFlows();
     assertEquals(1, flows.size());
 
-    assertEquals(flow, mFlowManager.getFlowForMeterName(mTap0.getMeterName()));
-    assertNull(mFlowManager.getFlowForMeterName(mTap1.getMeterName()));
+    assertEquals(flow, mFlowManager.getFlowForMeterName(mTap0.getMeter().getName()));
+    assertNull(mFlowManager.getFlowForMeterName(mTap1.getMeter().getName()));
   }
 
   public void testGetFlowForFlowId() {
@@ -146,7 +176,7 @@ public class FlowManagerTest extends TestCase {
     List<Flow> flows = mFlowManager.getAllActiveFlows();
     assertEquals(0, flows.size());
 
-    Flow flow = mFlowManager.handleMeterActivity(mTap0.getMeterName(), 100);
+    Flow flow = mFlowManager.handleMeterActivity(mTap0.getMeter().getName(), 100);
 
     flows = mFlowManager.getAllActiveFlows();
     assertEquals(1, flows.size());
@@ -154,16 +184,16 @@ public class FlowManagerTest extends TestCase {
     assertEquals(0, flow.getTicks());
     assertEquals(1, flow.getFlowId());
 
-    Flow updatedFlow = mFlowManager.handleMeterActivity(mTap0.getMeterName(), 200);
+    Flow updatedFlow = mFlowManager.handleMeterActivity(mTap0.getMeter().getName(), 200);
     assertSame(flow, updatedFlow);
     assertEquals(100, flow.getTicks());
 
     // Rolling the flow meter backwards does not increase flow ticks; zeroes
     // meter on new value.
-    updatedFlow = mFlowManager.handleMeterActivity(mTap0.getMeterName(), 10);
+    updatedFlow = mFlowManager.handleMeterActivity(mTap0.getMeter().getName(), 10);
     assertSame(flow, updatedFlow);
     assertEquals(100, flow.getTicks());
-    mFlowManager.handleMeterActivity(mTap0.getMeterName(), 11);
+    mFlowManager.handleMeterActivity(mTap0.getMeter().getName(), 11);
     assertEquals(101, flow.getTicks());
 
     mFlowManager.endFlow(flow);

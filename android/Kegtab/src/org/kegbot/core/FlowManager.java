@@ -20,10 +20,7 @@ package org.kegbot.core;
 import android.util.Log;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Function;
 import com.google.common.base.Predicate;
-import com.google.common.base.Strings;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -61,13 +58,6 @@ public class FlowManager extends Manager {
     }
   };
 
-  private Function<Flow, KegTap> FLOW_TO_METER_NAME = new Function<Flow, KegTap>() {
-    @Override
-    public KegTap apply(Flow flow) {
-      return mTapManager.getTapForMeterName(flow.getTap().getMeterName());
-    }
-  };
-
   private final TapManager mTapManager;
   private final AppConfiguration mConfig;
   private final Clock mClock;
@@ -78,9 +68,14 @@ public class FlowManager extends Manager {
   private int mNextFlowId = 1;
 
   /**
-   * Records the last reading for each tap, by meter name.
+   * Map of all flows, keyed by the tap id owning the flow.
    */
-  private final Map<String, Integer> mLastTapReading = Maps.newLinkedHashMap();
+  private final Map<Integer, Flow> mFlowsByTapId = Maps.newLinkedHashMap();
+
+  /**
+   * Records the last reading for each tap, by tap id.
+   */
+  private final Map<Integer, Integer> mLastTapReading = Maps.newLinkedHashMap();
 
   /**
    * All flow listeners.
@@ -126,11 +121,6 @@ public class FlowManager extends Manager {
     public void onFlowUpdate(Flow flow);
 
   }
-
-  /**
-   * Map of all flows, keyed by the tap owning the flow.
-   */
-  private final Map<String, Flow> mFlowsByTap = Maps.newLinkedHashMap();
 
   /**
    * Executor that checks for idle flows.
@@ -198,14 +188,18 @@ public class FlowManager extends Manager {
    * @return
    */
   public List<Flow> getAllActiveFlows() {
-    synchronized (mFlowsByTap) {
-      return ImmutableList.copyOf(mFlowsByTap.values());
+    synchronized (mFlowsByTapId) {
+      return ImmutableList.copyOf(mFlowsByTapId.values());
     }
   }
 
   /** @return all taps with an active {@link Flow}.*/
   public List<KegTap> getAllActiveTaps() {
-    return Lists.newArrayList(Collections2.transform(getAllActiveFlows(), FLOW_TO_METER_NAME));
+    final List<KegTap> result = Lists.newArrayList();
+    for (final Flow flow : getAllActiveFlows()) {
+      result.add(flow.getTap());
+    }
+    return result;
   }
 
   /**
@@ -214,30 +208,32 @@ public class FlowManager extends Manager {
    * @return
    */
   public List<Flow> getIdleFlows() {
-    synchronized (mFlowsByTap) {
-      return ImmutableList.copyOf(Iterables.filter(mFlowsByTap.values(), PREDICATE_IDLE));
+    synchronized (mFlowsByTapId) {
+      return ImmutableList.copyOf(Iterables.filter(mFlowsByTapId.values(), PREDICATE_IDLE));
     }
   }
 
   @VisibleForTesting
-  protected Flow getFlowForTap(final KegTap tap) {
-    synchronized (mFlowsByTap) {
-      return mFlowsByTap.get(tap.getMeterName());
+  public Flow getFlowForTap(final KegTap tap) {
+    synchronized (mFlowsByTapId) {
+      return mFlowsByTapId.get(Integer.valueOf(tap.getId()));
     }
   }
 
+  @Deprecated
   public Flow getFlowForMeterName(final String meterName) {
-    final KegTap tap = mTapManager.getTapForMeterName(meterName);
-    if (tap == null) {
-      return null;
+    for (final Flow flow : mFlowsByTapId.values()) {
+      if (flow.getTap().getMeter().getName().equals(meterName)) {
+        return flow;
+      }
     }
-    return getFlowForTap(tap);
+    return null;
   }
 
   /** Returns the active flow with the given id, or {@code null}. */
   public Flow getFlowForFlowId(final long flowId) {
-    synchronized (mFlowsByTap) {
-      for (final Flow flow : mFlowsByTap.values()) {
+    synchronized (mFlowsByTapId) {
+      for (final Flow flow : mFlowsByTapId.values()) {
         if (flow.getFlowId() == (int) flowId) {
           return flow;
         }
@@ -259,7 +255,8 @@ public class FlowManager extends Manager {
       return null;
     }
 
-    final Integer lastReading = mLastTapReading.get(tap.getMeterName());
+    final Integer tapId = Integer.valueOf(tap.getId());
+    final Integer lastReading = mLastTapReading.get(tapId);
     int delta;
     if (lastReading == null || lastReading.intValue() > ticks) {
       // First report for this meter.
@@ -268,7 +265,7 @@ public class FlowManager extends Manager {
       delta = Math.max(0, ticks - lastReading.intValue());
     }
 
-    mLastTapReading.put(tap.getMeterName(), Integer.valueOf(ticks));
+    mLastTapReading.put(tapId, Integer.valueOf(ticks));
 
     Log.d(TAG, "handleMeterActivity: lastReading=" + lastReading + ", ticks=" + ticks + ", delta="
         + delta);
@@ -277,7 +274,7 @@ public class FlowManager extends Manager {
         tapName, Integer.valueOf(ticks), Integer.valueOf(ticks), Integer.valueOf(delta)));
 
     Flow flow = null;
-    synchronized (mFlowsByTap) {
+    synchronized (mFlowsByTapId) {
       flow = getFlowForTap(tap);
       if (flow == null) {
         if (!mConfig.getEnableFlowAutoStart()) {
@@ -307,7 +304,7 @@ public class FlowManager extends Manager {
    */
   public synchronized void activateUserAtTap(final KegTap tap, final String username) {
     Flow flow = getFlowForTap(tap);
-    Log.d(TAG, "Activating username=" + username + " at tap=" + tap.getMeterName()
+    Log.d(TAG, "Activating username=" + username + " at tap=" + tap.getId()
         + " current flow=" + flow);
 
     if (flow != null) {
@@ -359,7 +356,7 @@ public class FlowManager extends Manager {
     final KegTap focusedTap = mTapManager.getFocusedTap();
     if (focusedTap != null && focusedTap.hasCurrentKeg()) {
       Log.d(TAG, String.format("activateUserAmbiguousTap: using focused tap: %s",
-          focusedTap.getMeterName()));
+          Integer.valueOf(focusedTap.getId())));
       activateTaps.add(focusedTap);
     }
 
@@ -367,10 +364,10 @@ public class FlowManager extends Manager {
       if (tap == focusedTap) {
         continue;
       }
-      if (Strings.isNullOrEmpty(tap.getRelayName())) {
+      if (!tap.hasToggle()) {
         if (tap.hasCurrentKeg()) {
           Log.d(TAG, String.format("activateUserAmbiguousTap: also activating at unmanaged tap: %s",
-              tap.getMeterName()));
+              Integer.valueOf(tap.getId())));
           activateTaps.add(tap);
         }
       }
@@ -394,9 +391,9 @@ public class FlowManager extends Manager {
    */
   public Flow endFlow(final Flow flow) {
     final Flow endedFlow;
-    synchronized (mFlowsByTap) {
-      endedFlow = mFlowsByTap.remove(flow.getTap().getMeterName());
-      if (mFlowsByTap.isEmpty()) {
+    synchronized (mFlowsByTapId) {
+      endedFlow = mFlowsByTapId.remove(Integer.valueOf(flow.getTap().getId()));
+      if (mFlowsByTapId.isEmpty()) {
         stopIdleChecker();
       }
     }
@@ -413,14 +410,14 @@ public class FlowManager extends Manager {
   }
 
   public Flow startFlow(final KegTap tap, final long maxIdleTimeMs) {
-    Log.d(TAG, "Starting flow on tap " + tap.getMeterName());
+    Log.d(TAG, "Starting flow on tap " + tap.getId());
     final Flow flow = new Flow(mClock, mNextFlowId++, tap, maxIdleTimeMs);
     mRecentFlows.addLast(flow);
     if (mRecentFlows.size() > MAX_RECENT_FLOWS) {
       mRecentFlows.removeFirst();
     }
-    synchronized (mFlowsByTap) {
-      mFlowsByTap.put(tap.getMeterName(), flow);
+    synchronized (mFlowsByTapId) {
+      mFlowsByTapId.put(Integer.valueOf(tap.getId()), flow);
       flow.pokeActivity();
       publishFlowStart(flow);
     }
@@ -474,7 +471,6 @@ public class FlowManager extends Manager {
     writer.printPair("timeSeries", flow.getTickTimeSeries().asString())
         .println();
     writer.println();
-
   }
 
   /**

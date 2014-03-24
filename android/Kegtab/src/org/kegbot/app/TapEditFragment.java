@@ -204,7 +204,7 @@ public class TapEditFragment extends Fragment {
       // TODO(mikey): Clean up.
       return;
     }
-    startActivity(NewKegActivity.getStartIntent(getActivity(), mTap.getMeterName()));
+    startActivity(NewKegActivity.getStartIntent(getActivity(), mTap));
     getFragmentManager().popBackStackImmediate();
   }
 
@@ -218,9 +218,7 @@ public class TapEditFragment extends Fragment {
       // TODO(mikey): synchronize with button click listeners, etc
       return;
     }
-    final Intent intent =
-        CalibrationActivity.getStartIntent(getActivity(), tap.getMeterName(), tap.getRelayName(),
-            tap.getMlPerTick());
+    final Intent intent = CalibrationActivity.getStartIntent(getActivity(), tap);
     startActivity(intent);
     getFragmentManager().popBackStackImmediate();
   }
