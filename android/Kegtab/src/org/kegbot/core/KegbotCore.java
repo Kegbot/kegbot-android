@@ -169,6 +169,7 @@ public class KegbotCore {
       }
       mStarted = false;
     }
+    sInstance = null;
   }
 
   public Bus getBus() {
@@ -368,6 +369,13 @@ public class KegbotCore {
       }
     }
     return sInstance;
+  }
+
+  /** Like {@link #getInstance(Context)}, but does not create the instance. */
+  public static KegbotCore getRunningInstance(Context context) {
+    synchronized (KegbotCore.class) {
+      return sInstance;
+    }
   }
 
   private class BusListener {

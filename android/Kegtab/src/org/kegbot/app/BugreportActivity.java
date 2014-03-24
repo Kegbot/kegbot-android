@@ -45,8 +45,6 @@ public class BugreportActivity extends Activity {
 
   private static final String BUGREPORT_FILENAME = "bugreport.txt";
 
-  private KegbotCore mCore;
-
   private final ExecutorService mExecutor = Executors.newSingleThreadExecutor();
   private ProgressBar mProgressBar;
   private TextView mMessageText;
@@ -67,8 +65,6 @@ public class BugreportActivity extends Activity {
     mProgressBar.setIndeterminate(true);
     mMessageText = (TextView) findViewById(R.id.bugreportMessage);
     mDetailText = (TextView) findViewById(R.id.bugreportDetail);
-
-    mCore = KegbotCore.getInstance(this);
   }
 
   @Override
@@ -195,7 +191,13 @@ public class BugreportActivity extends Activity {
         writer.println();
         writer.flush();
 
-        mCore.dump(writer);
+        final KegbotCore core = KegbotCore.getRunningInstance(BugreportActivity.this);
+        if (core == null) {
+          writer.println("Not running.");
+          writer.println();
+        } else {
+          core.dump(writer);
+        }
 
         writer.println("--- System logs ---");
         writer.println();

@@ -291,6 +291,10 @@ public class SetupActivity extends Activity {
   @Override
   protected void onStop() {
     super.onStop();
+    final KegbotCore core = KegbotCore.getRunningInstance(this);
+    if (core != null) {
+      core.stop();
+    }
     KegbotCoreService.startService(this);
     EasyTracker.getInstance().activityStop(this);
   }
