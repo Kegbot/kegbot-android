@@ -53,7 +53,7 @@ import java.util.Set;
  * <p>
  * When a controller is attached, the subordinate manager will deliver a
  * callback to {@link HardwareManager} via
- * {@link Listener#onControllerAttached(Controller)}. This callback will be
+ * {@link #onControllerAttached(Controller)}. This callback will be
  * issued regardless of the controller's operational status (
  * {@link Controller#getStatus()}), in other words, the controller may be
  * attached in a non-functional state.

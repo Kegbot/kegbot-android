@@ -102,7 +102,7 @@ public class LocalBackendTest extends AndroidTestCase {
       assertEquals(0.0, keg.getSpilledVolumeMl());
       
       // End the keg.
-      keg = mBackend.endKeg(keg.getId());
+      keg = mBackend.endKeg(keg);
       assertFalse(keg.getOnline());
       
       KegTap endedTap = mBackend.getTaps().get(0);

@@ -238,14 +238,13 @@ public class KegbotApiImpl implements Backend {
   }
 
   @Override
-  public KegTap createTap(String meterName, double mlPerTick, String relayName, String description)
-      throws BackendException {
+  public KegTap createTap(String tapName) throws BackendException {
     // TODO Auto-generated method stub
     return null;
   }
 
   @Override
-  public void removeTap(String meterName) {
+  public void deleteTap(KegTap tap) {
     // TODO Auto-generated method stub
 
   }
@@ -258,8 +257,8 @@ public class KegbotApiImpl implements Backend {
   }
 
   @Override
-  public Keg endKeg(int kegId) throws KegbotApiException {
-    return (Keg) postProto("/kegs/" + kegId + "/end/", Keg.newBuilder(), null);
+  public Keg endKeg(Keg keg) throws KegbotApiException {
+    return (Keg) postProto("/kegs/" + keg.getId() + "/end/", Keg.newBuilder(), null);
   }
 
   @Override

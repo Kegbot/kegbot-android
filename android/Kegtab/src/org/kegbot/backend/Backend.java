@@ -46,7 +46,7 @@ import javax.annotation.Nullable;
  */
 public interface Backend {
 
-  /** Initialization stuff. */
+  /** Backend-specific initialization. */
   public void start(Context context);
 
   /** Activates a new keg on the specified tap. */
@@ -65,7 +65,7 @@ public interface Backend {
       throws BackendException;
 
   /** Ends the given keg. */
-  public Keg endKeg(int kegId) throws BackendException;
+  public Keg endKeg(Keg keg) throws BackendException;
 
   /**
    * Returns the authentication token record for the given token.
@@ -102,17 +102,14 @@ public interface Backend {
   /**
    * Creates a new tap.
    *
-   * @param meterName the flow meter name; must be unique.
-   * @param mlPerTick flow meter calibration
-   * @param relayName relay name, if any
-   * @param description descriptive name, like "Right Tap"
+   * @param tapName the name of the tap, like "Main Tap".
    * @return the newly-created instance
    * @throws BackendException on error creating the tap.
    */
-  public KegTap createTap(String meterName, double mlPerTick, String relayName, String description)
-      throws BackendException;
+  public KegTap createTap(String tapName) throws BackendException;
 
-  public void removeTap(String meterName) throws BackendException;
+  /** Deletes a previously-created tap. */
+  public void deleteTap(KegTap tap) throws BackendException;
 
   /**
    * Retrieves information about a single user.
@@ -128,24 +125,24 @@ public interface Backend {
 
   /**
    * Saves a new drink record from given pour data.
-   *
    * <p>
    * Either or both of {@code volumeMl} and {@code ticks} should be specified.
    * </p>
    *
    * @param tapName the tap used for this pour (required).
-   * @param volumeMl
-   * @param ticks
-   * @param shout
-   * @param username
-   * @param recordDate
-   * @param durationMillis
-   * @param timeSeries
-   * @param picture
-   * @return
+   * @param volumeMl the pour volume.
+   * @param ticks the number of ticks observed.
+   * @param shout an optional user-generated message.
+   * @param username the user that recorded the drink.
+   * @param recordDate ISO8601 timestamp for the pour.
+   * @param durationMillis pour duration (informational).
+   * @param timeSeries pour meter time series (informational).
+   * @param picture optional picture with the pour.
+   * @return a new {@link Drink} instance, or {@code null} if the backend
+   *         refused to record the drink for some reason
    * @throws BackendException
    */
-  public Drink recordDrink(String tapName, long volumeMl, long ticks, @Nullable String shout,
+  public @Nullable Drink recordDrink(String tapName, long volumeMl, long ticks, @Nullable String shout,
       @Nullable String username, @Nullable String recordDate, long durationMillis,
       @Nullable TimeSeries timeSeries, @Nullable File picture) throws BackendException;
 
@@ -157,18 +154,24 @@ public interface Backend {
   public KegTap setTapMlPerTick(String tapName, double mlPerTick)
       throws BackendException;
 
+  /** Creates a new {@link Controller}. */
   public Controller createController(String name, String serialNumber, String deviceType)
       throws BackendException;
 
+  /** Returns all {@link Controller Controllers} known to the backend. */
   public List<Controller> getControllers() throws BackendException;
 
+  /** Updates an existing {@link Controller}. */
   public Controller updateController(Controller controller) throws BackendException;
 
+  /** Creates a new {@link FlowMeter} on the specified {@link Controller}. */
   public FlowMeter createFlowMeter(Controller controller, String portName, double ticksPerMl)
       throws BackendException;
 
+  /** Returns all {@link FlowMeter FlowMeters} known to the backend. */
   public List<FlowMeter> getFlowMeters() throws BackendException;
 
+  /** Updates an existing {@link FlowMeter}. */
   public FlowMeter updateFlowMeter(FlowMeter flowMeter) throws BackendException;
 
 }

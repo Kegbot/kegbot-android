@@ -243,14 +243,14 @@ public class TapDetailFragment extends Fragment {
     dialog.setMessage("Please wait ...");
     dialog.show();
 
-    final int kegId = mItem.getCurrentKeg().getId();
+    final Keg keg = mItem.getCurrentKeg();
 
     new AsyncTask<Void, Void, Void>() {
       @Override
       protected Void doInBackground(Void... params) {
         Backend api = KegbotCore.getInstance(getActivity()).getBackend();
         try {
-          api.endKeg(kegId);
+          api.endKeg(keg);
         } catch (BackendException e) {
           Log.w(TAG, "Error ending keg: " + e, e);
         }
