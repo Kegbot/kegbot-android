@@ -48,7 +48,7 @@ public class SetupLicenseFragment extends SetupFragment {
     CheckBox privacyBox = (CheckBox) mView.findViewById(R.id.agreePrivacy);
 
     if (!licenseBox.isChecked() || !privacyBox.isChecked()) {
-      return "You must agree to continue.";
+      return getActivity().getString(R.string.setup_license_error);
     }
 
     Context context = getActivity();
