@@ -37,7 +37,6 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import org.kegbot.app.service.KegbotCoreService;
 import org.kegbot.app.util.KegSizes;
 import org.kegbot.backend.Backend;
 import org.kegbot.backend.BackendException;
@@ -89,7 +88,6 @@ public class NewKegActivity extends Activity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     mBackend = KegbotCore.getInstance(this).getBackend();
-    KegbotCoreService.stopService(this);
 
     mMeterName = getIntent().getStringExtra(EXTRA_METER_NAME);
 
@@ -180,6 +178,7 @@ public class NewKegActivity extends Activity {
         dialog.dismiss();
         if (result.isEmpty()) {
           Log.d(TAG, "Calibrated successfully!");
+          KegbotCore.getInstance(NewKegActivity.this).getSyncManager().requestSync();
           finish();
           return;
         }
