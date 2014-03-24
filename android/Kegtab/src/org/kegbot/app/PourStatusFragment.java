@@ -200,7 +200,7 @@ public class PourStatusFragment extends ListFragment {
     final Keg keg = tap.getCurrentKeg();
 
     if (keg != null) {
-      final String beerName = keg.getType().getName();
+      final String beerName = keg.getBeverage().getName();
 
       // Set beer name.
       if (!Strings.isNullOrEmpty(beerName) && mTapTitle != null) {
@@ -208,8 +208,8 @@ public class PourStatusFragment extends ListFragment {
       }
 
       // Set beer image.
-      if (keg.getType().hasImage()) {
-        mImageDownloader.download(keg.getType().getImage().getUrl(), mBeerImage);
+      if (keg.getBeverage().hasPicture()) {
+        mImageDownloader.download(keg.getBeverage().getPicture().getUrl(), mBeerImage);
       }
       mTapSubtitle.setText(mTap.getName());
     } else {

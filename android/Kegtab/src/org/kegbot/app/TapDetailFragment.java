@@ -146,8 +146,8 @@ public class TapDetailFragment extends Fragment {
 
     if (mItem.hasCurrentKeg()) {
       final Keg currentKeg = mItem.getCurrentKeg();
-      if (currentKeg.hasType()) {
-        onTapTitle.setText(currentKeg.getType().getName());
+      if (currentKeg.hasBeverage()) {
+        onTapTitle.setText(currentKeg.getBeverage().getName());
       } else {
         onTapTitle.setText(String.format("Keg %s", Integer.valueOf(currentKeg.getId())));
       }
@@ -213,7 +213,7 @@ public class TapDetailFragment extends Fragment {
         String.format(
             "Are you sure you want end <b>Keg %s</b> (<i>%s</i>) on tap <b>%s</b>?",
             Integer.valueOf(keg.getId()),
-            keg.getType().getName(),
+            keg.getBeverage().getName(),
             mItem.getName()));
 
     final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());

@@ -146,7 +146,7 @@ public class TapEditFragment extends Fragment {
         String.format(
             "Are you sure you want end <b>Keg %s</b> (<i>%s</i>) on tap <b>%s</b>?",
             Integer.valueOf(keg.getId()),
-            keg.getType().getName(),
+            keg.getBeverage().getName(),
             mTap.getName()));
 
     final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
