@@ -389,36 +389,43 @@ public class PourInProgressActivity extends CoreActivity {
       return;
     }
 
-    boolean imageWasReplaced = false;
-    mClaimPourButton.setEnabled(true);
-    if (flow.isAnonymous()) {
-      mClaimPourButton.setVisibility(View.VISIBLE);
-      mDrinkerName.setVisibility(View.GONE);
-    } else {
-      final String username = flow.getUsername();
+    if (!mConfig.useAccounts()) {
       mClaimPourButton.setVisibility(View.GONE);
-      mDrinkerName.setVisibility(View.VISIBLE);
-      mDrinkerName.setText("Pouring: " + username);
-
-      final AuthenticationManager authManager = mCore.getAuthenticationManager();
-      final User user = authManager.getUserDetail(username);
-      if (user != null && user.hasImage()) {
-        // NOTE(mikey): Use the full-sized image rather than the thumbnail;
-        // in many cases the former will already be in the cache from
-        // DrinkerSelectActivity.
-        final String thumbnailUrl = user.getImage().getThumbnailUrl();
-        if (!Strings.isNullOrEmpty(thumbnailUrl)) {
-          mImageDownloader.download(thumbnailUrl, mDrinkerImage);
-          imageWasReplaced = true;
-        }
+      mShoutText.setVisibility(View.GONE);
+      mDrinkerName.setVisibility(View.GONE);
+      mDrinkerImage.setVisibility(View.GONE);
+    } else {
+      boolean imageWasReplaced = false;
+      mClaimPourButton.setEnabled(true);
+      if (flow.isAnonymous()) {
+        mClaimPourButton.setVisibility(View.VISIBLE);
+        mDrinkerName.setVisibility(View.GONE);
       } else {
-        Log.d(TAG, "No user info.");
-      }
-    }
+        final String username = flow.getUsername();
+        mClaimPourButton.setVisibility(View.GONE);
+        mDrinkerName.setVisibility(View.VISIBLE);
+        mDrinkerName.setText("Pouring: " + username);
 
-    if (!imageWasReplaced) {
-      mDrinkerImage.setImageBitmap(null);
-      Utils.setBackground(mDrinkerImage, getResources().getDrawable(R.drawable.unknown_drinker));
+        final AuthenticationManager authManager = mCore.getAuthenticationManager();
+        final User user = authManager.getUserDetail(username);
+        if (user != null && user.hasImage()) {
+          // NOTE(mikey): Use the full-sized image rather than the thumbnail;
+          // in many cases the former will already be in the cache from
+          // DrinkerSelectActivity.
+          final String thumbnailUrl = user.getImage().getThumbnailUrl();
+          if (!Strings.isNullOrEmpty(thumbnailUrl)) {
+            mImageDownloader.download(thumbnailUrl, mDrinkerImage);
+            imageWasReplaced = true;
+          }
+        } else {
+          Log.d(TAG, "No user info.");
+        }
+      }
+
+      if (!imageWasReplaced) {
+        mDrinkerImage.setImageBitmap(null);
+        Utils.setBackground(mDrinkerImage, getResources().getDrawable(R.drawable.unknown_drinker));
+      }
     }
   }
 

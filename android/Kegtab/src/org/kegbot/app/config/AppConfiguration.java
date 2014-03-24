@@ -278,4 +278,8 @@ public class AppConfiguration {
     setBoolean(ConfigKey.LOCAL_BACKEND, value);
   }
 
+  public boolean useAccounts() {
+    return !isLocalBackend();
+  }
+
 }

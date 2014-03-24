@@ -18,9 +18,6 @@
  */
 package org.kegbot.app;
 
-import org.kegbot.app.config.AppConfiguration;
-import org.kegbot.core.KegbotCore;
-
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
@@ -33,6 +30,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.google.common.base.Strings;
+
+import org.kegbot.app.config.AppConfiguration;
+import org.kegbot.core.KegbotCore;
 
 /**
  * Fragment showing default controls for the home screen.
@@ -56,8 +56,12 @@ public class HomeControlsFragment extends Fragment {
   private final OnClickListener mOnBeerMeClickedListener = new OnClickListener() {
     @Override
     public void onClick(View v) {
-      final Intent intent = KegtabCommon.getAuthDrinkerActivityIntent(getActivity());
-      startActivityForResult(intent, REQUEST_AUTHENTICATE);
+      if (mConfig.useAccounts()) {
+        final Intent intent = KegtabCommon.getAuthDrinkerActivityIntent(getActivity());
+        startActivityForResult(intent, REQUEST_AUTHENTICATE);
+      } else {
+        mCore.getFlowManager().activateUserAmbiguousTap("");
+      }
     }
   };
 
@@ -101,7 +105,7 @@ public class HomeControlsFragment extends Fragment {
       mBeerMeButton.setVisibility(View.GONE);
     }
 
-    if (mConfig.getAllowRegistration()) {
+    if (mConfig.getAllowRegistration() && mConfig.useAccounts()) {
       mNewDrinkerButton.setVisibility(View.VISIBLE);
       showControls = true;
     } else {
