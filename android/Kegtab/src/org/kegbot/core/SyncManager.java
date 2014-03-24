@@ -39,6 +39,7 @@ import com.squareup.otto.Subscribe;
 import org.codehaus.jackson.JsonNode;
 import org.kegbot.api.KegbotApiException;
 import org.kegbot.api.KegbotApiImpl;
+import org.kegbot.app.BuildConfig;
 import org.kegbot.app.event.ConnectivityChangedEvent;
 import org.kegbot.app.event.ControllerListUpdateEvent;
 import org.kegbot.app.event.CurrentSessionChangedEvent;
@@ -81,6 +82,7 @@ import javax.annotation.Nullable;
 public class SyncManager extends BackgroundManager {
 
   private static String TAG = SyncManager.class.getSimpleName();
+  private static final boolean DEBUG = BuildConfig.DEBUG;
 
   private final Backend mBackend;
   private final Context mContext;
@@ -472,6 +474,13 @@ public class SyncManager extends BackgroundManager {
     try {
       List<KegTap> newTaps = mBackend.getTaps();
       if (!newTaps.equals(mLastKegTapList)) {
+        if (DEBUG) {
+          Log.d(TAG, "Updated taps:");
+          for (final KegTap tap : newTaps) {
+            Log.d(TAG, "TAP: " + tap);
+            Log.d(TAG, "################");
+          }
+        }
         mLastKegTapList = newTaps;
         postOnMainThread(new TapListUpdateEvent(newTaps));
       }
