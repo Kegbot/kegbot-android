@@ -18,13 +18,6 @@
  */
 package org.kegbot.app;
 
-import java.util.List;
-import java.util.regex.Pattern;
-
-import org.kegbot.app.service.KegbotCoreService;
-import org.kegbot.app.settings.ThirdPartyLicensesActivity;
-import org.kegbot.app.setup.SetupActivity;
-
 import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
@@ -42,6 +35,13 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.MenuItem;
 
+import org.kegbot.app.service.KegbotCoreService;
+import org.kegbot.app.settings.ThirdPartyLicensesActivity;
+import org.kegbot.app.setup.SetupActivity;
+
+import java.util.List;
+import java.util.regex.Pattern;
+
 public class SettingsActivity extends PreferenceActivity {
 
   @Override
@@ -53,6 +53,11 @@ public class SettingsActivity extends PreferenceActivity {
   @Override
   public void onBuildHeaders(List<Header> target) {
     loadHeadersFromResource(R.xml.settings_headers, target);
+  }
+
+  @Override
+  protected boolean isValidFragment(String fragmentName) {
+    return true;
   }
 
   public static class GeneralFragment extends PreferenceFragment {
