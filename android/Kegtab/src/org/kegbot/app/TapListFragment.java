@@ -5,11 +5,16 @@ import android.app.Activity;
 import android.app.ListFragment;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import butterknife.ButterKnife;
 
 import com.google.common.collect.Lists;
 import com.squareup.otto.Bus;
@@ -32,6 +37,8 @@ import java.util.List;
  * interface.
  */
 public class TapListFragment extends ListFragment {
+
+  private static final String TAG = TapListFragment.class.getSimpleName();
 
   /**
    * The serialization (saved instance state) Bundle key representing the
@@ -104,8 +111,24 @@ public class TapListFragment extends ListFragment {
     super.onDestroy();
   }
 
+  @Override
+  public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    final View view = inflater.inflate(R.layout.tap_list_fragment_layout, container);
+
+    final Button addButton = ButterKnife.findById(view, R.id.addTapButton);
+    addButton.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View arg0) {
+        startActivity(NewTapActivity.getStartIntent(getActivity()));
+      }
+    });
+
+    return view;
+  }
+
   @Subscribe
   public void onTapsListUpdated(final TapListUpdateEvent event) {
+    Log.d(TAG, "onTapsListUpdated");
     if (getListAdapter() == null) {
       setListAdapter(mAdapter);
     }

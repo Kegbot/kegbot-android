@@ -20,6 +20,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import butterknife.ButterKnife;
+import butterknife.InjectView;
 
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
@@ -58,6 +59,9 @@ public class TapDetailFragment extends Fragment {
   private List<FlowMeter> mMeters;
   private ArrayAdapter<FlowMeter> mMeterSelectAdapter;
 
+  @InjectView(R.id.deleteTapButton)
+  Button mDeleteTapButton;
+
   /**
    * The dummy content this fragment is presenting.
    */
@@ -91,10 +95,18 @@ public class TapDetailFragment extends Fragment {
       Bundle savedInstanceState) {
     Log.d(TAG, "onCreateView");
     mView = inflater.inflate(R.layout.fragment_tap_detail, container, false);
+    ButterKnife.inject(this, mView);
 
     if (mItem != null) {
       updateTapDetails(mItem);
     }
+
+    mDeleteTapButton.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View arg0) {
+        confirmDeleteTap();
+      }
+    });
 
     return mView;
   }
@@ -155,7 +167,7 @@ public class TapDetailFragment extends Fragment {
       onTapButton.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View arg0) {
-          onEndKeg();
+          confirmEndKeg();
         }
       });
 
@@ -202,7 +214,7 @@ public class TapDetailFragment extends Fragment {
   }
 
   /** Called when the "end keg" button is pressed. */
-  private void onEndKeg() {
+  private void confirmEndKeg() {
     if (mItem == null || !mItem.hasCurrentKeg()) {
       Log.w(TAG, "No tap/keg, hmm.");
       return;
@@ -253,6 +265,64 @@ public class TapDetailFragment extends Fragment {
           api.endKeg(keg);
         } catch (BackendException e) {
           Log.w(TAG, "Error ending keg: " + e, e);
+        }
+        return null;
+      }
+
+      @Override
+      protected void onPostExecute(Void result) {
+        dialog.dismiss();
+        KegbotCore.getInstance(getActivity()).getSyncManager().requestSync();
+      }
+
+    }.execute();
+  }
+
+  private void confirmDeleteTap() {
+    if (mItem == null) {
+      Log.wtf(TAG, "No tap, hmm.");
+      return;
+    }
+
+    final Spanned message = Html.fromHtml(
+        String.format("Are you sure you want delete tap <b>%s</b>?", mItem.getName()));
+
+    final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+    builder.setMessage(message)
+       .setCancelable(false)
+       .setPositiveButton("Delete Tap", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface arg0, int arg1) {
+              doDeleteTap();
+            }
+       })
+       .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+       });
+
+    final AlertDialog alert = builder.create();
+    alert.show();
+
+  }
+
+  private void doDeleteTap() {
+    final ProgressDialog dialog = new ProgressDialog(getActivity());
+    dialog.setIndeterminate(true);
+    dialog.setCancelable(false);
+    dialog.setTitle("Deleting Tap");
+    dialog.setMessage("Please wait ...");
+    dialog.show();
+
+    new AsyncTask<Void, Void, Void>() {
+      @Override
+      protected Void doInBackground(Void... params) {
+        Backend api = KegbotCore.getInstance(getActivity()).getBackend();
+        try {
+          api.deleteTap(mItem);
+        } catch (BackendException e) {
+          Log.w(TAG, "Error ending tap: " + e, e);
         }
         return null;
       }

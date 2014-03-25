@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <TextView
+        android:id="@+id/newTapHeader"
+        style="@style/header"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:text="Create New Tap" />
+
+    <TextView
+        android:id="@+id/newTapDescription"
+        style="@style/subheader"
+        android:layout_below="@+id/newTapHeader"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:maxWidth="700dp"
+        android:singleLine="false"
+        android:text="Enter the new tap name below." />
+
+    <RelativeLayout
+        android:id="@+id/newTapInputs"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/newTapDescription"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="32dp"
+        android:layout_marginTop="32dp"
+        android:background="@drawable/shape_rounded_rect" >
+
+        <AutoCompleteTextView
+            android:id="@+id/newTapName"
+            style="@style/jumboText"
+            android:layout_width="512dp"
+            android:layout_height="wrap_content"
+            android:hint="Name"
+            android:imeOptions="actionNext"
+            android:inputType="textCapWords" />
+
+
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/newTapButton"
+        style="@style/largeButton"
+        android:layout_width="512dp"
+        android:layout_below="@+id/newTapInputs"
+        android:layout_centerInParent="true"
+        android:text="Activate" />
+
+</RelativeLayout>

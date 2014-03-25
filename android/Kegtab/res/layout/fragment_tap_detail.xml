@@ -58,7 +58,8 @@
             android:layout_below="@+id/onTapGroup"
             android:layout_marginBottom="32dp"
             android:layout_marginLeft="64dp"
-            android:layout_marginRight="64dp" >
+            android:layout_marginRight="64dp"
+            android:visibility="gone" >
 
             <TextView
                 android:id="@+id/tapSettingsTitle"
@@ -152,6 +153,40 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/meterTitle"
                 android:layout_marginBottom="16dp" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/dangerZoneGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tapHardwareGroup"
+            android:layout_marginBottom="32dp"
+            android:layout_marginLeft="64dp"
+            android:layout_marginRight="64dp"
+            android:layout_marginTop="16dp" >
+
+            <TextView
+                android:id="@+id/dangerZoneTitle"
+                style="@style/header2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:text="Danger Zone"
+                android:textAllCaps="true" />
+
+            <View
+                android:id="@+id/divider4"
+                android:layout_width="match_parent"
+                android:layout_height="2dip"
+                android:layout_below="@+id/dangerZoneTitle"
+                android:layout_marginBottom="8dp"
+                android:background="#1FFFFFFF" />
+
+            <Button
+                android:id="@+id/deleteTapButton"
+                style="@style/mediumButton"
+                android:layout_below="@+id/divider4"
+                android:text="Delete Tap" />
         </RelativeLayout>
     </RelativeLayout>
 

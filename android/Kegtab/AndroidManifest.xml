@@ -188,6 +188,14 @@
             android:windowSoftInputMode="adjustPan" >
         </activity>
         <activity
+            android:name="org.kegbot.app.NewTapActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTop"
+            android:screenOrientation="sensorLandscape"
+            android:theme="@android:style/Theme.Holo.NoActionBar"
+            android:windowSoftInputMode="adjustPan" >
+        </activity>
+        <activity
             android:name="org.kegbot.app.setup.SetupActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
