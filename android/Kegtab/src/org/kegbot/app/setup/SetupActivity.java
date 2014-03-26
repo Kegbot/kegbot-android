@@ -295,7 +295,6 @@ public class SetupActivity extends Activity {
     if (core != null) {
       core.stop();
     }
-    KegbotCoreService.startService(this);
     EasyTracker.getInstance().activityStop(this);
   }
 
