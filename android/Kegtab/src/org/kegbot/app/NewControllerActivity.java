@@ -56,9 +56,6 @@ public class NewControllerActivity extends Activity {
   private static final String EXTRA_SERIAL_NUMBER = "serial";
   private static final String EXTRA_DEVICE_TYPE = "type";
 
-  private Backend mBackend;
-  private SyncManager mSyncManager;
-
   private String mControllerName;
   private String mSerialNumber;
   private String mDeviceType;
@@ -85,9 +82,6 @@ public class NewControllerActivity extends Activity {
     super.onCreate(savedInstanceState);
     requestWindowFeature(Window.FEATURE_NO_TITLE);
     setContentView(R.layout.new_controller_activity);
-
-    mBackend = KegbotCore.getInstance(this).getBackend();
-    mSyncManager = KegbotCore.getInstance(this).getSyncManager();
 
     ButterKnife.inject(this);
 
@@ -124,9 +118,11 @@ public class NewControllerActivity extends Activity {
       @Override
       protected String doInBackground(Void... params) {
         Log.d(TAG, "Creating controller...");
+
+        final Backend backend = KegbotCore.getInstance(NewControllerActivity.this).getBackend();
         try {
           final Controller controller =
-              mBackend.createController(mControllerName, mSerialNumber, mDeviceType);
+              backend.createController(mControllerName, mSerialNumber, mDeviceType);
 
           final int numMeters = mNumMeters.getValue();
           for (int portNum = 0; portNum < numMeters; portNum++) {
@@ -134,7 +130,9 @@ public class NewControllerActivity extends Activity {
                 String.format("flow%d", Integer.valueOf(portNum)), 5.4d);
           }
 
-          mSyncManager.requestSync();
+          final SyncManager syncManager =
+              KegbotCore.getInstance(NewControllerActivity.this).getSyncManager();
+          syncManager.requestSync();
           Log.d(TAG, "Done!");
           return null;
         } catch (BackendException e) {

@@ -76,8 +76,6 @@ public class HomeControlsFragment extends Fragment {
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    mCore = KegbotCore.getInstance(getActivity());
-    mConfig = mCore.getConfiguration();
   }
 
   @Override
@@ -96,6 +94,9 @@ public class HomeControlsFragment extends Fragment {
   @Override
   public void onResume() {
     super.onResume();
+
+    mCore = KegbotCore.getInstance(getActivity());
+    mConfig = mCore.getConfiguration();
 
     boolean showControls = false;
     if (mConfig.getAllowManualLogin()) {

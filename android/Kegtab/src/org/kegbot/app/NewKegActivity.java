@@ -62,8 +62,6 @@ public class NewKegActivity extends Activity {
   private ArrayAdapter<KegSizeItem> mSizeAdapter;
   private Button mActivateButton;
 
-  private Backend mBackend;
-
   private static class KegSizeItem {
     private String mName;
     private String mDescription;
@@ -87,7 +85,6 @@ public class NewKegActivity extends Activity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    mBackend = KegbotCore.getInstance(this).getBackend();
 
     mMeterName = getIntent().getStringExtra(EXTRA_METER_NAME);
 
@@ -163,7 +160,8 @@ public class NewKegActivity extends Activity {
           return "No Selection.";
         }
         try {
-          mBackend.startKeg(mMeterName, mName.getText().toString(),
+          final Backend backend = KegbotCore.getInstance(NewKegActivity.this).getBackend();
+          backend.startKeg(mMeterName, mName.getText().toString(),
               mBrewerName.getText().toString(), mStyle.getText().toString(),
               selected.getName());
           return "";

@@ -18,19 +18,6 @@
  */
 package org.kegbot.app;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import org.kegbot.app.config.AppConfiguration;
-import org.kegbot.app.event.SystemEventListUpdateEvent;
-import org.kegbot.app.util.ImageDownloader;
-import org.kegbot.app.util.Units;
-import org.kegbot.core.KegbotCore;
-import org.kegbot.core.SyncManager;
-import org.kegbot.proto.Models.Drink;
-import org.kegbot.proto.Models.SystemEvent;
-
 import android.app.Activity;
 import android.app.ListFragment;
 import android.content.Context;
@@ -56,6 +43,19 @@ import android.widget.TextView;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.squareup.otto.Subscribe;
+
+import org.kegbot.app.config.AppConfiguration;
+import org.kegbot.app.event.SystemEventListUpdateEvent;
+import org.kegbot.app.util.ImageDownloader;
+import org.kegbot.app.util.Units;
+import org.kegbot.core.KegbotCore;
+import org.kegbot.core.SyncManager;
+import org.kegbot.proto.Models.Drink;
+import org.kegbot.proto.Models.SystemEvent;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Lists recent events.
@@ -233,6 +233,7 @@ public class EventListFragment extends ListFragment {
   public void onResume() {
     super.onResume();
     mHandler.postDelayed(mTimeUpdateRunnable, REFRESH_INTERVAL_MILLIS);
+    mCore = KegbotCore.getInstance(getActivity());
     mCore.getBus().register(this);
   }
 
@@ -271,7 +272,6 @@ public class EventListFragment extends ListFragment {
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    mCore = KegbotCore.getInstance(getActivity());
   }
 
 }

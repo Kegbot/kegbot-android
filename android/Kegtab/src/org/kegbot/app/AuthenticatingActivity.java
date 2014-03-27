@@ -92,8 +92,6 @@ public class AuthenticatingActivity extends Activity {
     requestWindowFeature(Window.FEATURE_NO_TITLE);
     setContentView(R.layout.authenticating_activity);
 
-    mCore = KegbotCore.getInstance(this);
-    mConfig = mCore.getConfiguration();
     mAuthManager = mCore.getAuthenticationManager();
     mFlowManager = mCore.getFlowManager();
 
@@ -112,20 +110,6 @@ public class AuthenticatingActivity extends Activity {
     });
 
     mAssignButton = (Button) findViewById(R.id.assignButton);
-
-    if (mConfig.getAllowRegistration()) {
-      mAssignButton.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-          final Intent intent = KegtabCommon
-              .getAuthDrinkerActivityIntent(AuthenticatingActivity.this);
-          Log.d(TAG, "Starting auth drinker activity");
-          startActivityForResult(intent, REQUEST_SELECT_USER_TO_BIND);
-        }
-      });
-    } else {
-      mAssignButton.setVisibility(View.GONE);
-    }
 
     // getWindow().setBackgroundDrawable(new ColorDrawable(0));
 
@@ -252,6 +236,26 @@ public class AuthenticatingActivity extends Activity {
       mMessage.setVisibility(View.GONE);
     }
     mHandler.postDelayed(mFinishRunnable, AUTO_FINISH_DELAY_MILLIS);
+  }
+
+  @Override
+  protected void onResume() {
+    super.onResume();
+    mCore = KegbotCore.getInstance(this);
+    mConfig = mCore.getConfiguration();
+    if (mConfig.getAllowRegistration()) {
+      mAssignButton.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+          final Intent intent = KegtabCommon
+              .getAuthDrinkerActivityIntent(AuthenticatingActivity.this);
+          Log.d(TAG, "Starting auth drinker activity");
+          startActivityForResult(intent, REQUEST_SELECT_USER_TO_BIND);
+        }
+      });
+    } else {
+      mAssignButton.setVisibility(View.GONE);
+    }
   }
 
   @Override

@@ -61,10 +61,8 @@ public class DrinkerSelectActivity extends CoreActivity implements LoaderCallbac
   /** Activity will auto-finish after this timeout. */
   private static final long TIMEOUT_MILLIS = TimeUnit.MINUTES.toMillis(2);
 
-  private KegbotCore mCore;
   private GridView mGridView;
   private ArrayAdapter<User> mAdapter;
-  private ImageDownloader mImageDownloader;
 
   private final Handler mHandler = new Handler();
   private final Runnable mTimeoutRunnable = new Runnable() {
@@ -79,8 +77,6 @@ public class DrinkerSelectActivity extends CoreActivity implements LoaderCallbac
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     Log.v(TAG, "onCreate");
-    mCore = KegbotCore.getInstance(this);
-    mImageDownloader = mCore.getImageDownloader();
 
     setContentView(R.layout.select_drinker_fragment_inner);
     mGridView = (GridView) findViewById(R.id.drinkerGridView);
@@ -120,10 +116,12 @@ public class DrinkerSelectActivity extends CoreActivity implements LoaderCallbac
           imageUrl = "";
         }
 
+        final ImageDownloader downloader =
+            KegbotCore.getInstance(DrinkerSelectActivity.this).getImageDownloader();
         if (!Strings.isNullOrEmpty(imageUrl)) {
-          mImageDownloader.download(imageUrl, icon);
+          downloader.download(imageUrl, icon);
         } else {
-          mImageDownloader.cancelDownloadForView(icon);
+          downloader.cancelDownloadForView(icon);
           icon.setBackgroundResource(R.drawable.unknown_drinker);
           icon.setAlpha(1.0f);
         }

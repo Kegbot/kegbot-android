@@ -50,12 +50,9 @@ public class NewTapActivity extends Activity {
   @InjectView(R.id.newTapButton)
   Button mActivateButton;
 
-  private Backend mBackend;
-
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    mBackend = KegbotCore.getInstance(this).getBackend();
     setContentView(R.layout.new_tap_activity);
     ButterKnife.inject(this);
 
@@ -89,7 +86,8 @@ public class NewTapActivity extends Activity {
       @Override
       protected String doInBackground(Void... params) {
         try {
-          mBackend.createTap(mName.getText().toString());
+          final Backend backend = KegbotCore.getInstance(NewTapActivity.this).getBackend();
+          backend.createTap(mName.getText().toString());
           return "";
         } catch (BackendException e) {
           Log.w(TAG, "Activation failed.", e);

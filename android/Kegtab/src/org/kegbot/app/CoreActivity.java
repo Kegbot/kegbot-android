@@ -99,6 +99,9 @@ public class CoreActivity extends Activity {
     super.onStart();
     EasyTracker.getInstance().activityStart(this);
 
+    mConfig = KegbotCore.getInstance(this).getConfiguration();
+    mBus = KegbotCore.getInstance(this).getBus();
+    mAlertCore = KegbotCore.getInstance(this).getAlertCore();
     mBus.register(mCoreListener);
   }
 

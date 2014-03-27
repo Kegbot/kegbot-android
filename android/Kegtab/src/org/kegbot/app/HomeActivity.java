@@ -133,9 +133,6 @@ public class HomeActivity extends CoreActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.main_activity);
 
-    mCore = KegbotCore.getInstance(this);
-    mConfig = mCore.getConfiguration();
-
     mControls = new HomeControlsFragment();
     mEvents = new EventListFragment();
     mSession = new SessionStatsFragment();
@@ -182,6 +179,8 @@ public class HomeActivity extends CoreActivity {
   protected void onResume() {
     Log.d(LOG_TAG, "onResume");
     super.onResume();
+    mCore = KegbotCore.getInstance(this);
+    mConfig = mCore.getConfiguration();
     mCore.getBus().register(this);
     mCore.getHardwareManager().refreshSoon();
     startAttractMode();

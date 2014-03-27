@@ -133,7 +133,7 @@ public class DrinkerRegistrationActivity extends CoreActivity {
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    mCore = KegbotCore.getInstance(this);
+
     final ActionBar actionBar = getActionBar();
     if (actionBar != null) {
       actionBar.hide();
@@ -206,6 +206,12 @@ public class DrinkerRegistrationActivity extends CoreActivity {
         }
       }
     });
+  }
+
+  @Override
+  protected void onResume() {
+    super.onResume();
+    mCore = KegbotCore.getInstance(this);
   }
 
   private void onEmailAddressEntered() {
