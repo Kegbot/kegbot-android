@@ -93,7 +93,6 @@ public class HomeActivity extends CoreActivity {
   private MyAdapter mTapStatusAdapter;
   private ViewPager mTapStatusPager;
   private AppConfiguration mConfig;
-  private TapEditFragment mTapEditor;
 
   /**
    * Keep track of Google Play Services error codes, and don't annoy when the
@@ -136,7 +135,6 @@ public class HomeActivity extends CoreActivity {
     mControls = new HomeControlsFragment();
     mEvents = new EventListFragment();
     mSession = new SessionStatsFragment();
-    mTapEditor = new TapEditFragment();
 
     getFragmentManager().beginTransaction()
         .add(R.id.rightNav, mControls)
@@ -222,22 +220,7 @@ public class HomeActivity extends CoreActivity {
   protected void onNewIntent(Intent intent) {
     Log.d(LOG_TAG, "onNewIntent: Got intent: " + intent);
 
-    if (ACTION_SHOW_TAP_EDITOR.equals(intent.getAction())) {
-      String meterName = intent.getStringExtra(EXTRA_METER_NAME);
-      if (getFragmentManager().getBackStackEntryCount() > 0) {
-        Log.d(LOG_TAG, "Editor already showing.");
-        return;
-      }
-      Log.d(LOG_TAG, "Showing tap editor for tap: " + meterName);
-      final FragmentTransaction transaction = getFragmentManager().beginTransaction();
-      transaction.remove(mControls);
-      transaction.remove(mSession);
-      transaction.remove(mEvents);
-      transaction.add(R.id.rightNav, mTapEditor);
-      transaction.addToBackStack("status");
-      transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-      transaction.commit();
-    } else if (intent.hasExtra(NfcAdapter.EXTRA_TAG)) {
+    if (intent.hasExtra(NfcAdapter.EXTRA_TAG)) {
       Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
       byte[] id = tag.getId();
       if (id != null && id.length > 0) {
@@ -280,7 +263,6 @@ public class HomeActivity extends CoreActivity {
   private void setFocusedTap(KegTap tap) {
     Log.d(LOG_TAG, "Set/replaced focused tap: " + tap.getId());
     mCore.getTapManager().setFocusedTap(tap);
-    mTapEditor.setTapDetail(tap);
   }
 
   /**
