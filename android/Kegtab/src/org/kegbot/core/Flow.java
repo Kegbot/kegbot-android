@@ -29,6 +29,8 @@ import org.kegbot.proto.Models.KegTap;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 /**
  * A flow holds all state about an active pour in progress.
  */
@@ -37,11 +39,14 @@ public class Flow {
   /** Clock instance, used for updating timekeeping. */
   private Clock mClock;
 
+  /** All flows are reported on a meter. */
+  private final String mMeterName;
+
   /** Flow id for this instance. */
   private final int mFlowId;
 
-  /** Tap for this flow. */
-  private final KegTap mTap;
+  /** Tap for this flow; may be null if tap was unknown at time of flow. */
+  @Nullable private final KegTap mTap;
 
   /** Authenticated user for this flow. If unset, the flow is anonymous. */
   private String mUsername;
@@ -85,8 +90,9 @@ public class Flow {
 
   private final TimeSeries.Builder mTimeSeries = TimeSeries.newBuilder(100, true);
 
-  public Flow(Clock clock, int flowId, KegTap tap, long maxIdleTimeMs) {
+  public Flow(Clock clock, String meterName, int flowId, KegTap tap, long maxIdleTimeMs) {
     mClock = clock;
+    mMeterName = meterName;
     mFlowId = flowId;
     mTap = tap;
     mMaxIdleTimeMillis = maxIdleTimeMs;
@@ -101,12 +107,15 @@ public class Flow {
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder("Flow")
-        .append(" id=").append(mFlowId)
+    .append(" id=").append(mFlowId)
+        .append(" meterName=").append(mMeterName)
         .append(" finished=").append(mIsFinished)
-        .append(" tap=").append(mTap.getId())
         .append(" user=").append(mUsername)
         .append(" ticks=").append(getTicks())
         .append(" volume_ml=").append(getVolumeMl());
+    if (mTap != null) {
+      builder.append(" tap=").append(mTap.getId());
+    }
     if (!mImages.isEmpty()) {
       builder.append(" numImages=").append(mImages.size());
     }
@@ -136,6 +145,10 @@ public class Flow {
     mTimeSeries.add(now, ticks);
   }
 
+  public String getMeterName() {
+    return mMeterName;
+  }
+
   public String getUsername() {
     return mUsername;
   }
@@ -154,6 +167,9 @@ public class Flow {
   }
 
   public double getVolumeMl() {
+    if (mTap == null) {
+      return 0;
+    }
     final double factor = mTap.getMeter().getTicksPerMl();
     if (factor <= 0) {
       return 0;

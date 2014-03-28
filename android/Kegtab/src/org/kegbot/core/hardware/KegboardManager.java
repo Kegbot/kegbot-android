@@ -496,9 +496,11 @@ public class KegboardManager extends BackgroundManager implements ControllerMana
     } else if (message instanceof KegboardMeterStatusMessage) {
       final KegboardMeterStatusMessage meterStatus = (KegboardMeterStatusMessage) message;
 
-      final String meterName = meterStatus.getMeterName();
+      final String meterName = String.format("%s.%s", controller.getName(), meterStatus.getMeterName());
       final FlowMeter meter = controller.getFlowMeter(meterName);
-      controllerEvent = new MeterUpdateEvent(meter);
+      if (meter != null) {
+        controllerEvent = new MeterUpdateEvent(meter);
+      }
     } else if (message instanceof KegboardTemperatureReadingMessage) {
       final KegboardTemperatureReadingMessage tempMessage =
           (KegboardTemperatureReadingMessage) message;

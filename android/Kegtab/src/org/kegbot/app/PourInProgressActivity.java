@@ -169,7 +169,7 @@ public class PourInProgressActivity extends CoreActivity {
   }
 
   @Subscribe
-  public void onFlowUpdatEvent(FlowUpdateEvent event) {
+  public void onFlowUpdateEvent(FlowUpdateEvent event) {
     refreshFlows();
   }
 
@@ -517,7 +517,7 @@ public class PourInProgressActivity extends CoreActivity {
 
     for (Flow flow : mFlowManager.getAllActiveFlows()) {
       final KegTap flowTap = flow.getTap();
-      if (flow.getIdleTimeMs() < leastIdle) {
+      if (flowTap != null && flow.getIdleTimeMs() < leastIdle) {
         tap = flowTap;
         leastIdle = flow.getIdleTimeMs();
       }
@@ -575,6 +575,10 @@ public class PourInProgressActivity extends CoreActivity {
 
     long largestIdleTime = Long.MIN_VALUE;
     for (final Flow flow : mActiveFlows) {
+      if (flow.getTap() == null) {
+        continue;
+      }
+
       if (DEBUG) {
         Log.d(TAG, "Refreshing with flow: " + flow);
       }

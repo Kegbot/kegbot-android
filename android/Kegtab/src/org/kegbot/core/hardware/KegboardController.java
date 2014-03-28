@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 /**
  * A directly-attached Kegboard (Arduino or Pro Mini) USB controller.
@@ -42,6 +43,8 @@ public class KegboardController implements Controller {
 
   private static final long OUTPUT_REFRESH_INTERVAL = TimeUnit.SECONDS.toMillis(5);
 
+  private static final Pattern PORT_NAME_PATTERN = Pattern.compile("[a-zA-Z]+(\\d+)");
+
   private final UsbSerialPort mSerialPort;
 
   private String mStatus = STATUS_UNKNOWN;
@@ -52,10 +55,7 @@ public class KegboardController implements Controller {
 
   private final KegboardMessageFactory mReader = new KegboardMessageFactory();
 
-  private final List<FlowMeter> mFlowMeters = ImmutableList.<FlowMeter>builder()
-       .add(new FlowMeter(METER_0))
-       .add(new FlowMeter(METER_1))
-       .build();
+  private final Map<String, FlowMeter> mFlowMetersByName = Maps.newLinkedHashMap();
 
   private final Map<String, ThermoSensor> mThermoSensors = Maps.newLinkedHashMap();
 
@@ -100,17 +100,12 @@ public class KegboardController implements Controller {
 
   @Override
   public Collection<FlowMeter> getFlowMeters() {
-    return mFlowMeters;
+    return ImmutableList.copyOf(mFlowMetersByName.values());
   }
 
   @Override
-  public FlowMeter getFlowMeter(String meterName) {
-    if (METER_0.equals(meterName)) {
-      return mFlowMeters.get(0);
-    } else if (METER_1.equals(meterName)) {
-      return mFlowMeters.get(1);
-    }
-    return null;
+  public FlowMeter getFlowMeter(final String meterName) {
+    return mFlowMetersByName.get(meterName);
   }
 
   @Override
@@ -256,14 +251,15 @@ public class KegboardController implements Controller {
     } else if (message instanceof KegboardMeterStatusMessage) {
       final KegboardMeterStatusMessage meterStatus = (KegboardMeterStatusMessage) message;
 
-      final String meterName = meterStatus.getMeterName();
+      final String portName = meterStatus.getMeterName();
+      final String meterName = String.format("%s.%s", getName(), portName);
+
       final FlowMeter meter;
-      if (METER_0.equals(meterName)) {
-        meter = mFlowMeters.get(0);
-      } else if (METER_1.equals(meterName)) {
-        meter = mFlowMeters.get(1);
+      if (mFlowMetersByName.containsKey(meterName)) {
+        meter = mFlowMetersByName.get(meterName);
       } else {
-        return;
+        meter = new FlowMeter(meterName);
+        mFlowMetersByName.put(meterName, meter);
       }
       meter.setTicks(meterStatus.getMeterReading());
     } else if (message instanceof KegboardTemperatureReadingMessage) {

@@ -39,6 +39,9 @@ import java.util.List;
  */
 public class FlowManagerTest extends TestCase {
 
+  private static final String METER_0 = "test.flow0";
+  private static final String METER_1 = "test.flow1";
+
   private TapManager mTapManager;
   private AppConfiguration mConfig;
   private Bus mBus;
@@ -67,7 +70,7 @@ public class FlowManagerTest extends TestCase {
         .setMeter(FlowMeter.newBuilder()
             .setId(1)
             .setPortName("flow0")
-            .setName("test.flow0")
+            .setName(METER_0)
             .setTicksPerMl(1)
             .setController(Controller.newBuilder()
                 .setId(1)
@@ -82,7 +85,7 @@ public class FlowManagerTest extends TestCase {
         .setMeter(FlowMeter.newBuilder()
             .setId(1)
             .setPortName("flow1")
-            .setName("test.flow1")
+            .setName(METER_1)
             .setTicksPerMl(1)
             .setController(Controller.newBuilder()
                 .setId(1)
@@ -109,7 +112,7 @@ public class FlowManagerTest extends TestCase {
     List<Flow> flows = mFlowManager.getAllActiveFlows();
     assertEquals(0, flows.size());
 
-    mFlowManager.startFlow(mTap0, 10000);
+    mFlowManager.startFlow(METER_0, 10000);
     flows = mFlowManager.getAllActiveFlows();
     assertEquals(1, flows.size());
 
@@ -126,7 +129,7 @@ public class FlowManagerTest extends TestCase {
     List<Flow> flows = mFlowManager.getAllActiveFlows();
     assertEquals(0, flows.size());
 
-    final Flow flow = mFlowManager.startFlow(mTap0, 10000);
+    final Flow flow = mFlowManager.startFlow(METER_0, 10000);
     flows = mFlowManager.getAllActiveFlows();
     assertEquals(1, flows.size());
 
@@ -139,7 +142,7 @@ public class FlowManagerTest extends TestCase {
     List<Flow> flows = mFlowManager.getAllActiveFlows();
     assertEquals(0, flows.size());
 
-    final Flow flow = mFlowManager.startFlow(mTap0, 10000);
+    final Flow flow = mFlowManager.startFlow(METER_0, 10000);
     flows = mFlowManager.getAllActiveFlows();
     assertEquals(1, flows.size());
 
@@ -152,7 +155,7 @@ public class FlowManagerTest extends TestCase {
     List<Flow> flows = mFlowManager.getAllActiveFlows();
     assertEquals(0, flows.size());
 
-    final Flow flow = mFlowManager.startFlow(mTap0, 10000);
+    final Flow flow = mFlowManager.startFlow(METER_0, 10000);
     flows = mFlowManager.getAllActiveFlows();
     assertEquals(1, flows.size());
 
@@ -164,7 +167,7 @@ public class FlowManagerTest extends TestCase {
     List<Flow> flows = mFlowManager.getAllActiveFlows();
     assertEquals(0, flows.size());
 
-    final Flow flow = mFlowManager.startFlow(mTap0, 10000);
+    final Flow flow = mFlowManager.startFlow(METER_0, 10000);
     flows = mFlowManager.getAllActiveFlows();
     assertEquals(1, flows.size());
     assertEquals(1, flow.getFlowId());
@@ -203,7 +206,7 @@ public class FlowManagerTest extends TestCase {
   }
 
   public void testAuthentication() {
-    Flow flow = mFlowManager.startFlow(mTap0, 10000);
+    Flow flow = mFlowManager.startFlow(METER_0, 10000);
     List<Flow> flows = mFlowManager.getAllActiveFlows();
     assertEquals(1, flows.size());
 

@@ -18,17 +18,18 @@
  */
 package org.kegbot.core;
 
+
 /**
  * Holds the state of a flow meter input managed by a kegboard.
  */
 public class FlowMeter {
 
-  private final String mName;
+  private final String mMeterName;
 
   private long mTicks;
 
-  public FlowMeter(String name) {
-    mName = name;
+  public FlowMeter(final String meterName) {
+    mMeterName = meterName;
     mTicks = 0;
   }
 
@@ -40,8 +41,8 @@ public class FlowMeter {
     mTicks = ticks;
   }
 
-  public String getName() {
-    return mName;
+  public String getMeterName() {
+    return mMeterName;
   }
 
 }

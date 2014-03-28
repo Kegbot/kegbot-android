@@ -41,12 +41,14 @@ public class FlowTest extends TestCase {
     }
   };
 
+  private static final String FAKE_METER_NAME = "test.flow0";
+
   private static final KegTap FAKE_TAP = KegTap.newBuilder()
       .setId(1)
       .setName("Test Tap")
       .setMeter(FlowMeter.newBuilder()
           .setId(1)
-          .setName("test.flow0")
+          .setName(FAKE_METER_NAME)
           .setPortName("flow0")
           .setTicksPerMl(1/3.0f)
           .setController(Controller.newBuilder()
@@ -69,7 +71,7 @@ public class FlowTest extends TestCase {
   }
 
   public void testTickKeeping() {
-    Flow flow = new Flow(mFakeClock, 1, FAKE_TAP, 100);
+    Flow flow = new Flow(mFakeClock, FAKE_METER_NAME, 1, FAKE_TAP, 100);
 
     assertEquals(0, flow.getTicks());
     assertEquals(0, flow.getVolumeMl(), 0.000001);
@@ -99,7 +101,7 @@ public class FlowTest extends TestCase {
   }
 
   public void testTimeKeeping() {
-    Flow flow = new Flow(mFakeClock, 1, FAKE_TAP, 100);
+    Flow flow = new Flow(mFakeClock, FAKE_METER_NAME, 1, FAKE_TAP, 100);
 
     assertEquals(0, flow.getDurationMs());
     assertFalse(flow.isIdle());
@@ -120,7 +122,7 @@ public class FlowTest extends TestCase {
   }
 
   public void testShout() {
-    Flow flow = new Flow(mFakeClock, 1, FAKE_TAP, 100);
+    Flow flow = new Flow(mFakeClock, FAKE_METER_NAME, 1, FAKE_TAP, 100);
 
     assertEquals("", flow.getShout());
     flow.setShout("Foo");
@@ -139,7 +141,7 @@ public class FlowTest extends TestCase {
 
   public void testTimeSeries() {
     mElapsedRealtime = 1000;
-    Flow flow = new Flow(mFakeClock, 1, FAKE_TAP, 100);
+    Flow flow = new Flow(mFakeClock, FAKE_METER_NAME, 1, FAKE_TAP, 100);
     assertEquals(TimeSeries.fromString("0:0"), flow.getTickTimeSeries());
 
     flow.addTicks(1);

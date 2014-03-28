@@ -87,6 +87,11 @@ public class KegbotCoreService extends Service {
     @Override
     public void onFlowStart(final Flow flow) {
       Log.d(TAG, "onFlowStart: " + flow);
+      if (flow.getTap() == null) {
+        Log.d(TAG, "Unbound flow; no updated will be posted.");
+        return;
+      }
+
       if (flow.isAuthenticated()) {
         mHardwareManager.toggleOutput(flow.getTap(), true);
       }
@@ -96,6 +101,9 @@ public class KegbotCoreService extends Service {
 
     @Override
     public void onFlowUpdate(final Flow flow) {
+      if (flow.getTap() == null) {
+        return;
+      }
       if (flow.isAuthenticated()) {
         mHardwareManager.toggleOutput(flow.getTap(), true);
       }
@@ -105,6 +113,9 @@ public class KegbotCoreService extends Service {
     @Override
     public void onFlowEnd(final Flow flow) {
       Log.d(TAG, "onFlowEnd" + flow);
+      if (flow.getTap() == null) {
+        return;
+      }
       mHardwareManager.toggleOutput(flow.getTap(), false);
       final Runnable r = new Runnable() {
         @Override
