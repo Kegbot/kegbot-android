@@ -18,11 +18,6 @@
  */
 package org.kegbot.app;
 
-import org.kegbot.app.config.AppConfiguration;
-import org.kegbot.app.setup.SetupActivity;
-import org.kegbot.app.setup.SetupTask;
-import org.kegbot.core.KegbotCore;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
@@ -30,6 +25,10 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.google.analytics.tracking.android.EasyTracker;
+
+import org.kegbot.app.config.AppConfiguration;
+import org.kegbot.app.setup.SetupActivity;
+import org.kegbot.app.setup.SetupTask;
 
 /**
  * Main launcher activity; simply redirects to {@link SetupActivity} or
@@ -48,7 +47,7 @@ public class KegtabLauncherActivity extends Activity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    mConfig = KegbotCore.getInstance(this).getConfiguration();
+    mConfig = ((KegbotApplication) getApplication()).getConfig();
   }
 
   @Override

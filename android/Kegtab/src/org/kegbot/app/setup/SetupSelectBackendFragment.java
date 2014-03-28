@@ -29,9 +29,9 @@ import android.widget.RadioGroup;
 
 import butterknife.ButterKnife;
 
+import org.kegbot.app.KegbotApplication;
 import org.kegbot.app.R;
 import org.kegbot.app.config.AppConfiguration;
-import org.kegbot.core.KegbotCore;
 
 /**
  * Shows a choice of
@@ -57,7 +57,7 @@ public class SetupSelectBackendFragment extends SetupFragment {
     mView = inflater.inflate(R.layout.setup_select_backend_fragment, null);
 
     final RadioGroup group = ButterKnife.findById(mView, R.id.backend_group);
-    final AppConfiguration prefs = KegbotCore.getInstance(getActivity()).getConfiguration();
+    final AppConfiguration prefs = ((KegbotApplication) getActivity().getApplication()).getConfig();
     if (prefs.isLocalBackend()) {
       group.check(R.id.radio_backend_local);
     } else {
@@ -77,7 +77,7 @@ public class SetupSelectBackendFragment extends SetupFragment {
 
   @Override
   public String validate() {
-    final AppConfiguration prefs = KegbotCore.getInstance(getActivity()).getConfiguration();
+    final AppConfiguration prefs = ((KegbotApplication) getActivity().getApplication()).getConfig();
     final RadioGroup group = ButterKnife.findById(mView, R.id.backend_group);
     final int checkedId = group.getCheckedRadioButtonId();
 

@@ -24,7 +24,6 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Handler;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.google.common.base.Strings;
@@ -75,8 +74,8 @@ public class KegbotCore {
   private final BusListener mBusListener = new BusListener();
   private final Handler mBusHandler = new Handler();
 
-  private final SharedPreferences mSharedPreferences;
   private final AppConfiguration mConfig;
+  private final SharedPreferences mSharedPreferences;
 
   private final Set<Manager> mManagers = Sets.newLinkedHashSet();
   private final TapManager mTapManager;
@@ -108,8 +107,8 @@ public class KegbotCore {
     mContext = context.getApplicationContext();
     mBus = new Bus(ThreadEnforcer.MAIN);
 
-    mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
-    mConfig = new AppConfiguration(new SharedPreferencesConfigurationStore(mSharedPreferences));
+    mConfig = ((KegbotApplication) mContext.getApplicationContext()).getConfig();
+    mSharedPreferences = ((KegbotApplication) mContext.getApplicationContext()).getSharedPreferences();
 
     if (mConfig.isLocalBackend()) {
       Log.d(TAG, "Using local backend.");
@@ -148,6 +147,7 @@ public class KegbotCore {
   }
 
   public synchronized void start() {
+    Log.d(TAG, "start");
     if (!mStarted) {
       mBus.register(mBusListener);
       Log.i(TAG, "Starting up, backend:" + mBackend);
@@ -161,6 +161,7 @@ public class KegbotCore {
   }
 
   public synchronized void stop() {
+    Log.d(TAG, "stop");
     if (mStarted) {
       mBus.unregister(mBusListener);
       for (final Manager manager : mManagers) {

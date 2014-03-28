@@ -4,11 +4,15 @@
 package org.kegbot.app;
 
 import android.app.Application;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 
+import org.kegbot.app.config.AppConfiguration;
+import org.kegbot.app.config.SharedPreferencesConfigurationStore;
 import org.kegbot.app.service.CheckinService;
 import org.kegbot.app.util.Utils;
 
@@ -25,6 +29,9 @@ public class KegbotApplication extends Application {
 
   private boolean mReleaseBuild = !BuildConfig.DEBUG;
 
+  private SharedPreferences mSharedPreferences;
+  private AppConfiguration mConfig;
+
   @Override
   public void onCreate() {
     super.onCreate();
@@ -34,6 +41,8 @@ public class KegbotApplication extends Application {
       final PackageInfo packageInfo = Utils.getOwnPackageInfo(this);
       mReleaseBuild &= Utils.packageMatchesFingerprint(packageInfo, RELEASE_SIGNATURE);
     }
+    mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+    mConfig = new AppConfiguration(new SharedPreferencesConfigurationStore(mSharedPreferences));
 
     if (mReleaseBuild) {
       try {
@@ -50,6 +59,14 @@ public class KegbotApplication extends Application {
     System.setProperty("http.agent", userAgent);
 
     CheckinService.startCheckinService(this, false);
+  }
+
+  public AppConfiguration getConfig() {
+    return mConfig;
+  }
+
+  public SharedPreferences getSharedPreferences() {
+    return mSharedPreferences;
   }
 
   public boolean isReleaseBuild() {

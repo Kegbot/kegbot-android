@@ -39,10 +39,10 @@ import com.google.analytics.tracking.android.EasyTracker;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
+import org.kegbot.app.KegbotApplication;
 import org.kegbot.app.R;
 import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.app.service.KegbotCoreService;
-import org.kegbot.core.KegbotCore;
 
 import java.util.List;
 
@@ -213,7 +213,7 @@ public class SetupActivity extends Activity {
   }
 
   private void onValidationResult(final String result) {
-    final AppConfiguration config = KegbotCore.getInstance(this).getConfiguration();
+    final AppConfiguration config = ((KegbotApplication) getApplication()).getConfig();
     if (Strings.isNullOrEmpty(result)) {
       Log.d(TAG, "Validation for " + mCurrentTask + " successful!");
       mCurrentTask.onExitSuccess(config);
@@ -286,6 +286,7 @@ public class SetupActivity extends Activity {
   protected void onStart() {
     super.onStart();
     EasyTracker.getInstance().activityStart(this);
+    KegbotCoreService.stopService(this);
   }
 
   @Override

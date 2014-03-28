@@ -27,10 +27,10 @@ import android.widget.EditText;
 
 import com.google.common.base.Strings;
 
+import org.kegbot.app.KegbotApplication;
 import org.kegbot.app.R;
 import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.app.service.CheckinService;
-import org.kegbot.core.KegbotCore;
 
 public class SetupKegbotUrlFragment extends SetupFragment {
 
@@ -41,7 +41,7 @@ public class SetupKegbotUrlFragment extends SetupFragment {
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     mView = inflater.inflate(R.layout.setup_kegbot_url_fragment, null);
-    AppConfiguration prefs = KegbotCore.getInstance(getActivity()).getConfiguration();
+    final AppConfiguration prefs = ((KegbotApplication) getActivity().getApplication()).getConfig();
     EditText text = (EditText) mView.findViewById(R.id.kegbotUrl);
     final String existingUrl = prefs.getKegbotUrl();
     if (!Strings.isNullOrEmpty(existingUrl)) {
@@ -70,7 +70,7 @@ public class SetupKegbotUrlFragment extends SetupFragment {
 
     Log.d(TAG, "Got base URL: " + baseUrl);
 
-    AppConfiguration prefs = KegbotCore.getInstance(getActivity()).getConfiguration();
+    final AppConfiguration prefs = ((KegbotApplication) getActivity().getApplication()).getConfig();
     CheckinService.requestImmediateCheckin(getActivity());
     prefs.setKegbotUrl(baseUrl);
     return "";

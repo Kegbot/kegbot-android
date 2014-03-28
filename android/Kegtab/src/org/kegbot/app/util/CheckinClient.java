@@ -29,8 +29,8 @@ import com.google.common.collect.ImmutableMap;
 
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.kegbot.app.KegbotApplication;
 import org.kegbot.app.config.AppConfiguration;
-import org.kegbot.core.KegbotCore;
 
 import java.io.File;
 import java.io.IOException;
@@ -55,8 +55,8 @@ public class CheckinClient {
   }
 
   public static CheckinClient fromContext(final Context context) {
-    final KegbotCore core = KegbotCore.getInstance(context);
-    final AppConfiguration config = core.getConfiguration();
+    final AppConfiguration config =
+        ((KegbotApplication) context.getApplicationContext()).getConfig();
     final PackageInfo pinfo = Utils.getOwnPackageInfo(context);
     final String userAgent = Utils.getUserAgent(context);
 

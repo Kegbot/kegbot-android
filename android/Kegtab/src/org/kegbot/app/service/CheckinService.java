@@ -31,11 +31,11 @@ import android.os.PowerManager.WakeLock;
 import android.os.SystemClock;
 import android.util.Log;
 
+import org.kegbot.app.KegbotApplication;
 import org.kegbot.app.R;
 import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.app.util.CheckinClient;
 import org.kegbot.app.util.Utils;
-import org.kegbot.core.KegbotCore;
 
 import java.io.FileDescriptor;
 import java.io.IOException;
@@ -68,8 +68,7 @@ public class CheckinService extends IntentService {
   public void onCreate() {
     super.onCreate();
 
-    mConfig = KegbotCore.getInstance(this).getConfiguration();
-
+    mConfig = ((KegbotApplication) getApplication()).getConfig();
     final PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
     mWakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "kbcheckin");
 
