@@ -151,7 +151,7 @@ public interface Backend {
       throws BackendException;
 
   /** Sets the meter calibration factor. */
-  public KegTap setTapMlPerTick(String tapName, double mlPerTick)
+  public FlowMeter calibrateMeter(FlowMeter meter, double ticksPerMl)
       throws BackendException;
 
   /** Creates a new {@link Controller}. */
@@ -174,4 +174,9 @@ public interface Backend {
   /** Updates an existing {@link FlowMeter}. */
   public FlowMeter updateFlowMeter(FlowMeter flowMeter) throws BackendException;
 
+  /** Connect a meter to a tap. */
+  public KegTap connectMeter(KegTap tap, FlowMeter meter);
+
+  /** Disconnect a meter. */
+  public KegTap disconnectMeter(KegTap tap);
 }

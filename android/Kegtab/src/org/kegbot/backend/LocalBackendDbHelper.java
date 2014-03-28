@@ -441,6 +441,36 @@ public class LocalBackendDbHelper extends SQLiteOpenHelper {
     return createOrUpdateFlowMeter(meter, db);
   }
 
+  KegTap connectTapToMeter(final KegTap tap, @Nullable final FlowMeter meter) {
+    Log.d(TAG, "connectTapToMeter: " + tap.getName() + " meter: " + (meter != null ? meter.getId() : null));
+    // Unlink a meter.
+    if (meter == null) {
+      return createOrUpdateTap(KegTap.newBuilder(tap)
+          .clearMeter()
+          .clearMeterName()
+          .build());
+    }
+
+    Log.d(TAG, "Assigning tap " + tap.getName() + " to meter " + meter.getName());
+
+    // Unlink meter on any other taps (should be just one).
+    for (final KegTap otherTap : getAllTaps()) {
+      if (!otherTap.hasMeter()) {
+        continue;
+      }
+      if (otherTap.getMeter().getId() != meter.getId()) {
+        continue;
+      }
+      Log.d(TAG, "-- unlinking tap " + otherTap.getName());
+      connectTapToMeter(otherTap, null);
+    }
+
+    return createOrUpdateTap(KegTap.newBuilder(tap)
+        .setMeter(meter)
+        .setMeterName(meter.getName())
+        .build());
+  }
+
   boolean deleteTap(KegTap tap) {
     Preconditions.checkArgument(tap.getId() != 0);
     return deleteRow(TABLE_TAPS, tap.getId());
@@ -669,6 +699,8 @@ public class LocalBackendDbHelper extends SQLiteOpenHelper {
     values.put(COLUMN_TAP_CURRENT_KEG, Integer.valueOf(tap.getCurrentKegId()));
     if (tap.hasMeter() && tap.getMeter().getId() > 0) {
       values.put(COLUMN_TAP_FLOW_METER_ID, Integer.valueOf(tap.getMeter().getId()));
+    } else {
+      values.put(COLUMN_TAP_FLOW_METER_ID, Integer.valueOf(0));
     }
     return values;
   }

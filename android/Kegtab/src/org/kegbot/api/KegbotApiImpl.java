@@ -291,11 +291,11 @@ public class KegbotApiImpl implements Backend {
   }
 
   @Override
-  public KegTap setTapMlPerTick(String tapName, double mlPerTick) throws KegbotApiException {
-    final Request.Builder builder = newRequest("/taps/" + tapName + "/calibrate/")
+  public FlowMeter calibrateMeter(FlowMeter meter, double ticksPerMl) throws BackendException {
+    final Request.Builder builder = newRequest("/flow-meters/" + meter.getId())
         .setMethod(Http.POST)
-        .addParameter("ml_per_tick", Double.valueOf(mlPerTick).toString());
-    return getSingleProto(KegTap.newBuilder(), requestJson(builder.build()).get("object"));
+        .addParameter("ml_per_tick", Double.valueOf(1.0/ticksPerMl).toString());
+    return getSingleProto(FlowMeter.newBuilder(), requestJson(builder.build()).get("object"));
   }
 
   @Override
@@ -487,6 +487,18 @@ public class KegbotApiImpl implements Backend {
     params.put("port_name", portName);
     params.put("ticks_per_ml", String.valueOf(ticksPerMl));
     return (FlowMeter) postProto("/flow-meters/", FlowMeter.newBuilder(), params);
+  }
+
+  @Override
+  public KegTap connectMeter(KegTap tap, FlowMeter meter) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public KegTap disconnectMeter(KegTap tap) {
+    // TODO Auto-generated method stub
+    return null;
   }
 
 }

@@ -44,11 +44,30 @@
                 android:layout_marginBottom="8dp"
                 android:background="#1FFFFFFF" />
 
-            <Button
-                android:id="@+id/tapKegButton"
-                style="@style/mediumButton"
+            <LinearLayout
+                android:id="@+id/kegButtons"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_below="@+id/divider1"
-                android:text="End Keg" />
+                android:orientation="horizontal"
+                android:weightSum="2" >
+
+                <Button
+                    android:id="@+id/tapKegButton"
+                    style="@style/mediumButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="End Keg" />
+
+                <Button
+                    android:id="@+id/calibrateButton"
+                    style="@style/mediumButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Calibrate Meter" />
+            </LinearLayout>
         </RelativeLayout>
 
         <RelativeLayout
@@ -139,20 +158,33 @@
                 android:layout_marginBottom="8dp"
                 android:background="#1FFFFFFF" />
 
-            <TextView
-                android:id="@+id/meterTitle"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/kegButtons"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/divider3"
-                android:layout_marginBottom="4dp"
-                android:text="Flow sensor connected to this tap:" />
+                android:orientation="horizontal"
+                android:weightSum="2" >
 
-            <Spinner
-                android:id="@+id/meterSelect"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/meterTitle"
-                android:layout_marginBottom="16dp" />
+                <TextView
+                    android:id="@+id/meterTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right|center_vertical"
+                    android:layout_marginBottom="4dp"
+                    android:layout_weight="1"
+                    style="@style/smallText"
+                    android:text="Flow sensor connected to this tap:"
+                    android:textAlignment="gravity" />
+
+                <Spinner
+                    android:id="@+id/meterSelect"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/meterTitle"
+                    android:layout_marginBottom="16dp"
+                    android:layout_weight="1" />
+            </LinearLayout>
         </RelativeLayout>
 
         <RelativeLayout

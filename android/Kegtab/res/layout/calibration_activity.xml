@@ -78,31 +78,31 @@
         android:layout_centerHorizontal="true" >
 
         <TextView
-            android:id="@+id/calibratedMlPerTickLabel"
+            android:id="@+id/calibratedTicksPerMlLabel"
             style="@style/normalText"
             android:layout_marginRight="8sp"
             android:text="Calibrated mL/Tick:"
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/calibratedMlPerTick"
+            android:id="@+id/calibratedTicksPerMl"
             style="@style/normalText"
-            android:layout_toRightOf="@+id/calibratedMlPerTickLabel"
+            android:layout_toRightOf="@+id/calibratedTicksPerMlLabel"
             android:text="0" />
 
         <TextView
-            android:id="@+id/originalMlPerTickLabel"
+            android:id="@+id/originalTicksPerMlLabel"
             style="@style/normalText"
-            android:layout_below="@+id/calibratedMlPerTickLabel"
+            android:layout_below="@+id/calibratedTicksPerMlLabel"
             android:layout_marginRight="8sp"
             android:text="Original mL/Tick:"
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/originalMlPerTick"
+            android:id="@+id/originalTicksPerMl"
             style="@style/normalText"
-            android:layout_below="@+id/calibratedMlPerTickLabel"
-            android:layout_toRightOf="@+id/originalMlPerTickLabel"
+            android:layout_below="@+id/calibratedTicksPerMlLabel"
+            android:layout_toRightOf="@+id/originalTicksPerMlLabel"
             android:text="0" />
     </RelativeLayout>
 

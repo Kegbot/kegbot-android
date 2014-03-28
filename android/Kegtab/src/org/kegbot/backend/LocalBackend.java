@@ -224,20 +224,14 @@ public class LocalBackend implements Backend {
   }
 
   @Override
-  public KegTap setTapMlPerTick(String tapName, double mlPerTick) throws BackendException {
-    final KegTap tap = mDb.getTap(tapName);
-    if (tap == null) {
-      Log.w(TAG, "Can't find tap for meter " + tapName);
-      return null;
-    }
-    final FlowMeter meter = FlowMeter.newBuilder(tap.getMeter())
-        .setTicksPerMl((float) (1.0f/mlPerTick))
+  public FlowMeter calibrateMeter(FlowMeter meter, double ticksPerMl) throws BackendException {
+    final FlowMeter newMeter = FlowMeter.newBuilder(meter)
+        .setTicksPerMl(ticksPerMl)
         .build();
     try {
-      mDb.createOrUpdateFlowMeter(meter);
-      return mDb.getTap(tapName);
+      return mDb.createOrUpdateFlowMeter(newMeter);
     } catch (SQLiteException e) {
-      throw new BackendException("Error updating tap", e);
+      throw new BackendException("Error updating meter", e);
     }
   }
 
@@ -286,6 +280,16 @@ public class LocalBackend implements Backend {
   @Override
   public FlowMeter updateFlowMeter(FlowMeter flowMeter) throws BackendException {
     return mDb.createOrUpdateFlowMeter(flowMeter);
+  }
+
+  @Override
+  public KegTap connectMeter(KegTap tap, FlowMeter meter) {
+    return mDb.connectTapToMeter(tap, meter);
+  }
+
+  @Override
+  public KegTap disconnectMeter(KegTap tap) {
+    return mDb.connectTapToMeter(tap, null);
   }
 
 }

@@ -62,6 +62,9 @@ public class FlowManager extends Manager {
   private final AppConfiguration mConfig;
   private final Clock mClock;
 
+  /** When paused, meter activity does not create new flows. */
+  private boolean mPaused = false;
+
   /** Cache of current and recent flows, for debugging. */
   private final Deque<Flow> mRecentFlows = new ArrayDeque<Flow>(MAX_RECENT_FLOWS);
 
@@ -247,7 +250,8 @@ public class FlowManager extends Manager {
     handleMeterActivity(event.getMeter().getName(), (int) event.getMeter().getTicks());
   }
 
-  public Flow handleMeterActivity(final String tapName, final int ticks) {
+  @VisibleForTesting
+  protected Flow handleMeterActivity(final String tapName, final int ticks) {
     final KegTap tap = mTapManager.getTapForMeterName(tapName);
     if (tap == null || tapName == null) {
       Log.d(TAG, String.format("handleMeterActivity: tap=%s ticks=%s: unknown tap, dropping.",
@@ -267,11 +271,12 @@ public class FlowManager extends Manager {
 
     mLastTapReading.put(tapId, Integer.valueOf(ticks));
 
-    Log.d(TAG, "handleMeterActivity: lastReading=" + lastReading + ", ticks=" + ticks + ", delta="
-        + delta);
-
     Log.d(TAG, String.format("handleMeterActivity: tap=%s ticks=%s last=%s delta=%s",
         tapName, Integer.valueOf(ticks), Integer.valueOf(ticks), Integer.valueOf(delta)));
+
+    if (mPaused) {
+      return null;
+    }
 
     Flow flow = null;
     synchronized (mFlowsByTapId) {
@@ -428,8 +433,9 @@ public class FlowManager extends Manager {
   @Override
   protected void dump(IndentingPrintWriter writer) {
     List<Flow> activeFlows = getAllActiveFlows();
+    writer.printPair("paused", Boolean.valueOf(mPaused)).println();
     writer.printPair("numActiveFlows", Integer.valueOf(activeFlows.size()))
-        .println();
+    .println();
     writer.printPair("totalFlowsProcessed", Integer.valueOf(mNextFlowId - 1))
         .println();
     writer.println();
@@ -484,6 +490,11 @@ public class FlowManager extends Manager {
     synchronized (mListeners) {
       return mListeners.add(listener);
     }
+  }
+
+  public void setPaused(final boolean paused) {
+    Log.d(TAG, "setPaused: " + paused);
+    mPaused = paused;
   }
 
   /**

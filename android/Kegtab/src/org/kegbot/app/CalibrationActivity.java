@@ -25,7 +25,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -35,9 +34,6 @@ import android.widget.TextView;
 
 import com.squareup.otto.Subscribe;
 
-import org.kegbot.api.KegbotApiImpl;
-import org.kegbot.app.config.AppConfiguration;
-import org.kegbot.app.config.SharedPreferencesConfigurationStore;
 import org.kegbot.app.util.Units;
 import org.kegbot.app.view.BadgeView;
 import org.kegbot.backend.Backend;
@@ -68,8 +64,9 @@ public class CalibrationActivity extends CoreActivity {
 
   private KegTap mTap;
   private String mMeterName;
-  private double mMlPerTick;
-  private double mExistingMlPerTick;
+
+  private double mTicksPerMl;
+  private double mExistingTicksPerMl;
 
   private BadgeView mTicksBadge;
   private SeekBar mSeekBar;
@@ -87,7 +84,7 @@ public class CalibrationActivity extends CoreActivity {
   @Subscribe
   public void onMeterUpdate(MeterUpdateEvent event) {
     final FlowMeter meter = event.getMeter();
-    final String name = meter.getName();
+    final String name = meter.getMeterName();
     Log.d(TAG, "Meter update: " + name);
     if (name.equals(mMeterName)) {
       handleMeterUpdate(meter.getTicks());
@@ -98,9 +95,21 @@ public class CalibrationActivity extends CoreActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.calibration_activity);
+  }
 
+  @Override
+  protected void onStart() {
+    super.onStart();
     mMeterName = getIntent().getStringExtra(EXTRA_METER_NAME);
-    mExistingMlPerTick = mMlPerTick = getIntent().getFloatExtra(EXTRA_ML_PER_TICK, 0);
+    mTap = KegbotCore.getInstance(this).getTapManager().getTapForMeterName(mMeterName);
+    if (mTap == null || mTap.getMeter() == null) {
+      Log.e(TAG, "No tap for meter name: " + mMeterName);
+      finish();
+      return;
+    }
+
+    mExistingTicksPerMl = mTap.getMeter().getTicksPerMl();
+    mTicksPerMl = mExistingTicksPerMl;
 
     mTicksBadge = (BadgeView) findViewById(R.id.ticksBadge);
     mTicksBadge.setBadgeCaption("Ticks");
@@ -118,10 +127,10 @@ public class CalibrationActivity extends CoreActivity {
     });
 
     mPercentText = (TextView) findViewById(R.id.calibratePercent);
-    mCalibratedMlTickText = (TextView) findViewById(R.id.calibratedMlPerTick);
-    mOriginalMlTickText = (TextView) findViewById(R.id.originalMlPerTick);
-    mOriginalMlTickText.setText(Double.valueOf(mExistingMlPerTick).toString());
-    mOriginalMlTickText.setText(String.format("%.5f", Double.valueOf(mExistingMlPerTick)));
+    mCalibratedMlTickText = (TextView) findViewById(R.id.calibratedTicksPerMl);
+    mOriginalMlTickText = (TextView) findViewById(R.id.originalTicksPerMl);
+    mOriginalMlTickText.setText(Double.valueOf(mExistingTicksPerMl).toString());
+    mOriginalMlTickText.setText(String.format("%.2f", Double.valueOf(mExistingTicksPerMl)));
 
     mSeekBar = (SeekBar) findViewById(R.id.calibrateSeekBar);
     mSeekBar.setMax(99);
@@ -137,7 +146,7 @@ public class CalibrationActivity extends CoreActivity {
       @Override
       public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         double mult = getMultiplier();
-        mMlPerTick = mExistingMlPerTick * mult;
+        mTicksPerMl = mExistingTicksPerMl * mult;
         updateMetrics();
         if (DEBUG) Log.d(TAG, "onProgressCchanged: progress=" + progress + " mult=" + mult);
       }
@@ -166,12 +175,13 @@ public class CalibrationActivity extends CoreActivity {
   @Override
   protected void onResume() {
     super.onResume();
-    Log.d(TAG, "onResume, swapping hardware listeners");
+    Log.d(TAG, "onResume");
     mHardwareManager = KegbotCore.getInstance(getApplicationContext()).getHardwareManager();
     mHardwareManager.toggleOutput(mTap, true);
 
     final KegbotCore core = KegbotCore.getInstance(this);
     core.getBus().register(this);
+    core.getFlowManager().setPaused(true);
 
     mTap = KegbotCore.getInstance(getApplicationContext()).getTapManager().getTapForMeterName(
         mMeterName);
@@ -182,7 +192,8 @@ public class CalibrationActivity extends CoreActivity {
   protected void onPause() {
     mHardwareManager.toggleOutput(mTap, false);
     final KegbotCore core = KegbotCore.getInstance(this);
-    core.getBus().register(this);
+    core.getFlowManager().setPaused(false);
+    core.getBus().unregister(this);
     super.onPause();
   }
 
@@ -216,12 +227,12 @@ public class CalibrationActivity extends CoreActivity {
   private void updateMetrics() {
     mTicksBadge.setBadgeValue(String.valueOf(mTicks));
     mVolumeBadge.setBadgeValue(getDisplayVolume());
-    mCalibratedMlTickText.setText(String.format("%.5f", Double.valueOf(mMlPerTick)));
+    mCalibratedMlTickText.setText(String.format("%.2f", Double.valueOf(mTicksPerMl)));
 
     Integer percent = Integer.valueOf((int) (getMultiplier() * 100));
     mPercentText.setText(String.format("%s%%", percent));
 
-    if (mMlPerTick != mExistingMlPerTick) {
+    if (mTicksPerMl != mExistingTicksPerMl) {
       mResetButton.setEnabled(true);
       mDoneButton.setEnabled(true);
     } else {
@@ -231,7 +242,7 @@ public class CalibrationActivity extends CoreActivity {
   }
 
   private void resetCalibration() {
-    mMlPerTick = mExistingMlPerTick;
+    mTicksPerMl = mExistingTicksPerMl;
     mSeekBar.setEnabled(true);
     mSeekBar.setProgress(50);
     mResetButton.setEnabled(false);
@@ -239,7 +250,7 @@ public class CalibrationActivity extends CoreActivity {
   }
 
   private void finishCalibration() {
-    if (mExistingMlPerTick == mMlPerTick) {
+    if (mExistingTicksPerMl == mTicksPerMl) {
       Log.d(TAG, "No change.");
       finish();
       return;
@@ -255,15 +266,12 @@ public class CalibrationActivity extends CoreActivity {
     new AsyncTask<Void, Void, String>() {
       @Override
       protected String doInBackground(Void... params) {
-        AppConfiguration config =
-            new AppConfiguration(
-                new SharedPreferencesConfigurationStore(
-                    PreferenceManager.getDefaultSharedPreferences(getApplicationContext())));
-
-        Backend api = new KegbotApiImpl(config);
+        final KegbotCore core = KegbotCore.getInstance(CalibrationActivity.this);
+        final Backend backend = core.getBackend();
 
         try {
-          api.setTapMlPerTick(mMeterName, mMlPerTick);
+          backend.calibrateMeter(mTap.getMeter(), mTicksPerMl);
+          core.getSyncManager().requestSync();
           return "";
         } catch (BackendException e) {
           Log.w(TAG, "Error calibrating: " + e, e);
@@ -345,7 +353,7 @@ public class CalibrationActivity extends CoreActivity {
       return;
     }
 
-    mMlPerTick = Units.volumeOuncesToMl(value.doubleValue()) / mTicks;
+    mTicksPerMl = mTicks / Units.volumeOuncesToMl(value.doubleValue());
 
     mVolumeBadge.setBadgeValue(String.format("%.2f", value));
     mSeekBar.setEnabled(false);
@@ -353,12 +361,12 @@ public class CalibrationActivity extends CoreActivity {
     updateMetrics();
   }
 
-  private double getMlPerTick() {
-    return getMultiplier() * mMlPerTick;
+  private double getTicksPerMl() {
+    return getMultiplier() * mTicksPerMl;
   }
 
   private double getVolumeMl() {
-    return getMlPerTick() * mTicks;
+    return mTicks / getTicksPerMl();
   }
 
   private String getDisplayVolume() {

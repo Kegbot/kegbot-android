@@ -6,6 +6,7 @@ import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Html;
@@ -14,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
@@ -22,6 +24,7 @@ import android.widget.TextView;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
+import com.google.common.collect.Lists;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
@@ -30,7 +33,6 @@ import org.kegbot.backend.Backend;
 import org.kegbot.backend.BackendException;
 import org.kegbot.core.KegbotCore;
 import org.kegbot.core.SyncManager;
-import org.kegbot.core.TapManager;
 import org.kegbot.proto.Models.FlowMeter;
 import org.kegbot.proto.Models.Keg;
 import org.kegbot.proto.Models.KegTap;
@@ -53,24 +55,17 @@ public class TapDetailFragment extends Fragment {
 
   private View mView;
   private Bus mBus;
-  private TapManager mTapManager;
 
   private Spinner mMeterSelect;
-  private List<FlowMeter> mMeters;
-  private ArrayAdapter<FlowMeter> mMeterSelectAdapter;
+  private final List<FlowMeter> mMeters = Lists.newArrayList();
+  private FlowMeterAdapter mAdapter;
+
+  private KegTap mTap;
+  private int mTapId;
 
   @InjectView(R.id.deleteTapButton)
   Button mDeleteTapButton;
 
-  /**
-   * The dummy content this fragment is presenting.
-   */
-  private KegTap mItem;
-
-  /**
-   * Mandatory empty constructor for the fragment manager to instantiate the
-   * fragment (e.g. upon screen orientation changes).
-   */
   public TapDetailFragment() {
   }
 
@@ -80,14 +75,14 @@ public class TapDetailFragment extends Fragment {
 
     final KegbotCore core = KegbotCore.getInstance(getActivity());
     mBus = core.getBus();
-    mTapManager = core.getTapManager();
 
     mBus.register(this);
 
-    final int tapId = getArguments().getInt(ARG_ITEM_ID, 0);
-    if (tapId != 0) {
-      updateTapDetails(mTapManager.getTap(tapId));
-    }
+    mMeters.add(null); // "not connected"
+    final SyncManager syncManager = KegbotCore.getInstance(getActivity()).getSyncManager();
+    mMeters.addAll(syncManager.getCurrentFlowMeters());
+
+    mTapId = getArguments().getInt(ARG_ITEM_ID, 0);
   }
 
   @Override
@@ -97,9 +92,48 @@ public class TapDetailFragment extends Fragment {
     mView = inflater.inflate(R.layout.fragment_tap_detail, container, false);
     ButterKnife.inject(this, mView);
 
-    if (mItem != null) {
-      updateTapDetails(mItem);
-    }
+    mAdapter = new FlowMeterAdapter(getActivity());
+    mMeterSelect = ButterKnife.findById(mView, R.id.meterSelect);
+    mMeterSelect.setAdapter(mAdapter);
+    mAdapter.addAll(mMeters);
+
+    mMeterSelect.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+      @Override
+      public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        Log.d(TAG, "onItemSelected: position=" + position + " id=" + id);
+
+        final FlowMeter meter = mMeters.get(position);
+        if (meter == mTap.getMeter() ||
+            (meter != null && mTap.hasMeter() && meter.getId() == mTap.getMeter().getId())) {
+          Log.d(TAG, "Not changed.");
+          return;
+        }
+
+        new AsyncTask<Void, Void, Void>() {
+          @Override
+          protected Void doInBackground(Void... params) {
+            final KegbotCore core = KegbotCore.getInstance(getActivity());
+            final Backend backend = core.getBackend();
+            final SyncManager sync = core.getSyncManager();
+
+            if (meter == null) {
+              Log.d(TAG, "Disconnecting meter on tap.");
+              backend.disconnectMeter(mTap);
+            } else {
+              Log.d(TAG, "Connecting meter on tap.");
+              backend.connectMeter(mTap, meter);
+            }
+            sync.requestSync();
+            return null;
+          }
+        }.execute((Void) null);
+      }
+
+      @Override
+      public void onNothingSelected(AdapterView<?> parent) {
+        Log.d(TAG, "onNothingSelected");
+      }
+    });
 
     mDeleteTapButton.setOnClickListener(new View.OnClickListener() {
       @Override
@@ -107,6 +141,11 @@ public class TapDetailFragment extends Fragment {
         confirmDeleteTap();
       }
     });
+
+    if (mTapId != 0) {
+      mTap = KegbotCore.getInstance(getActivity()).getTapManager().getTap(mTapId);
+      updateTapDetails(mTap);
+    }
 
     return mView;
   }
@@ -119,11 +158,12 @@ public class TapDetailFragment extends Fragment {
 
   @Subscribe
   public void onTapUpdatedEvent(TapListUpdateEvent event) {
-    if (mItem == null) {
+    Log.d(TAG, "onTapUpdatedEvent");
+    if (mTap == null) {
       return;
     }
     for (final KegTap tap : event.getTaps()) {
-      if (tap.getId() == mItem.getId()) {
+      if (tap.getId() == mTap.getId()) {
         updateTapDetails(tap);
         return;
       }
@@ -132,32 +172,33 @@ public class TapDetailFragment extends Fragment {
 
   private void updateTapDetails(final KegTap tap) {
     Log.d(TAG, "updateTapDetails");
-    mItem = tap;
+    mTap = tap;
     if (mView == null) {
       Log.w(TAG, "updateTapDetails: No rootview!");
       return;
     }
 
+    Log.d(TAG, "Updating tap! + " + mTap);
+
     final TextView title = (TextView) mView.findViewById(R.id.tapDetailTitle);
-    title.setText(mItem.getName());
+    title.setText(mTap.getName());
+
+    int position = 0;
+    final FlowMeter currentMeter = mTap.getMeter();
+    for (final FlowMeter meter : mMeters) {
+      if ((meter == null && currentMeter == null) ||
+          (meter != null && meter.getId() == currentMeter.getId())) {
+        mMeterSelect.setSelection(position);
+        break;
+      }
+      position += 1;
+    }
 
     final TextView onTapTitle = ButterKnife.findById(mView, R.id.onTapTitle);
     final Button onTapButton = ButterKnife.findById(mView, R.id.tapKegButton);
-    final Spinner meterSelect = ButterKnife.findById(mView, R.id.meterSelect);
 
-    final ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
-        R.layout.keg_size_spinner_item);
-
-    final SyncManager syncManager = KegbotCore.getInstance(getActivity()).getSyncManager();
-    mMeters = syncManager.getCurrentFlowMeters();
-    meterSelect.setAdapter(adapter);
-
-    for (final FlowMeter meter : syncManager.getCurrentFlowMeters()) {
-      adapter.add(meter.getName());
-    }
-
-    if (mItem.hasCurrentKeg()) {
-      final Keg currentKeg = mItem.getCurrentKeg();
+    if (mTap.hasCurrentKeg()) {
+      final Keg currentKeg = mTap.getCurrentKeg();
       if (currentKeg.hasBeverage()) {
         onTapTitle.setText(currentKeg.getBeverage().getName());
       } else {
@@ -181,52 +222,44 @@ public class TapDetailFragment extends Fragment {
         }
       });
     }
+
+    final Button calibrateButton = ButterKnife.findById(mView, R.id.calibrateButton);
+    if (tap.hasMeter()) {
+      calibrateButton.setEnabled(true);
+      calibrateButton.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View arg0) {
+          final Intent intent = CalibrationActivity.getStartIntent(getActivity(), tap);
+          startActivity(intent);
+        }
+      });
+    } else {
+      calibrateButton.setEnabled(false);
+    }
   }
 
   private void onStartKeg() {
-    if (!mItem.hasMeter()) {
+    if (!mTap.hasMeter()) {
       Log.w(TAG, "Can't start keg, no meter.");
     }
-    startActivity(NewKegActivity.getStartIntent(getActivity(), mItem));
+    startActivity(NewKegActivity.getStartIntent(getActivity(), mTap));
     //getFragmentManager().popBackStackImmediate();
-  }
-
-  private class FlowMeterAdapter extends ArrayAdapter<FlowMeter> {
-
-    public FlowMeterAdapter(Context context) {
-      super(context, android.R.layout.simple_spinner_item);
-    }
-
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-      // TODO hack - inflate view here
-      final View view = super.getView(position, convertView, parent);
-      final FlowMeter item = getItem(position);
-      final TextView text = ButterKnife.findById(view, android.R.id.text1);
-      if (item == null) {
-        text.setText("Not connected.");
-      } else {
-        text.setText(item.getName());
-      }
-      return view;
-    }
-
   }
 
   /** Called when the "end keg" button is pressed. */
   private void confirmEndKeg() {
-    if (mItem == null || !mItem.hasCurrentKeg()) {
+    if (mTap == null || !mTap.hasCurrentKeg()) {
       Log.w(TAG, "No tap/keg, hmm.");
       return;
     }
 
-    final Keg keg = mItem.getCurrentKeg();
+    final Keg keg = mTap.getCurrentKeg();
     final Spanned message = Html.fromHtml(
         String.format(
             "Are you sure you want end <b>Keg %s</b> (<i>%s</i>) on tap <b>%s</b>?",
             Integer.valueOf(keg.getId()),
             keg.getBeverage().getName(),
-            mItem.getName()));
+            mTap.getName()));
 
     final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
     builder.setMessage(message)
@@ -255,7 +288,7 @@ public class TapDetailFragment extends Fragment {
     dialog.setMessage("Please wait ...");
     dialog.show();
 
-    final Keg keg = mItem.getCurrentKeg();
+    final Keg keg = mTap.getCurrentKeg();
 
     new AsyncTask<Void, Void, Void>() {
       @Override
@@ -279,13 +312,13 @@ public class TapDetailFragment extends Fragment {
   }
 
   private void confirmDeleteTap() {
-    if (mItem == null) {
+    if (mTap == null) {
       Log.wtf(TAG, "No tap, hmm.");
       return;
     }
 
     final Spanned message = Html.fromHtml(
-        String.format("Are you sure you want delete tap <b>%s</b>?", mItem.getName()));
+        String.format("Are you sure you want delete tap <b>%s</b>?", mTap.getName()));
 
     final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
     builder.setMessage(message)
@@ -304,7 +337,6 @@ public class TapDetailFragment extends Fragment {
 
     final AlertDialog alert = builder.create();
     alert.show();
-
   }
 
   private void doDeleteTap() {
@@ -320,7 +352,7 @@ public class TapDetailFragment extends Fragment {
       protected Void doInBackground(Void... params) {
         Backend api = KegbotCore.getInstance(getActivity()).getBackend();
         try {
-          api.deleteTap(mItem);
+          api.deleteTap(mTap);
         } catch (BackendException e) {
           Log.w(TAG, "Error ending tap: " + e, e);
         }
@@ -334,6 +366,63 @@ public class TapDetailFragment extends Fragment {
       }
 
     }.execute();
+  }
+
+  private class FlowMeterAdapter extends ArrayAdapter<FlowMeter> {
+    public FlowMeterAdapter(Context context) {
+      super(context, android.R.layout.simple_spinner_item);
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+      final View view;
+      if (convertView != null) {
+        view = convertView;
+      } else {
+        final LayoutInflater inflater =
+            (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        view = inflater.inflate(android.R.layout.simple_list_item_1, null);
+      }
+
+      final FlowMeter item = getItem(position);
+      final TextView text = ButterKnife.findById(view, android.R.id.text1);
+      if (item == null) {
+        text.setText("Not connected.");
+      } else {
+        text.setText(item.getName());
+      }
+      return view;
+    }
+
+    @Override
+    public View getDropDownView(int position, View convertView, ViewGroup parent) {
+      final View view;
+      if (convertView != null) {
+        view = convertView;
+      } else {
+        final LayoutInflater inflater =
+            (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        view = inflater.inflate(android.R.layout.simple_list_item_1, null);
+      }
+
+      final FlowMeter item = getItem(position);
+      final TextView text = ButterKnife.findById(view, android.R.id.text1);
+      if (item == null) {
+        text.setText("Not connected.");
+      } else {
+        text.setText(item.getName());
+      }
+      return view;
+    }
+
+    @Override
+    public long getItemId(int position) {
+      if (position == 0) {
+        return 0;
+      }
+      return mMeters.get(position).getId();
+    }
+
   }
 
 }
