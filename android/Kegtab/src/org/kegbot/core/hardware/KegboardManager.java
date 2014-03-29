@@ -60,6 +60,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import javax.annotation.concurrent.GuardedBy;
+
 /**
  * Monitors a serial Kegboard device, sending updates to any attached listener.
  *
@@ -106,6 +108,7 @@ public class KegboardManager extends BackgroundManager implements ControllerMana
    * Maps a connected device ID to the supporting driver, or {@code null} if
    * unsupported.
    */
+  @GuardedBy("this")
   private final Map<Integer, UsbSerialDriver> mConnectedDeviceToDriver = Maps.newLinkedHashMap();
 
   /** Maps USB subsystem device IDs to open connections. */
@@ -250,7 +253,7 @@ public class KegboardManager extends BackgroundManager implements ControllerMana
   /**
    * Loads any new controllers.
    */
-  private void findNewControllers() {
+  private synchronized void findNewControllers() {
     final Collection<UsbDevice> devices = mUsbManager.getDeviceList().values();
     final Set<Integer> connectedIds = Sets.newLinkedHashSet();
 
@@ -282,7 +285,7 @@ public class KegboardManager extends BackgroundManager implements ControllerMana
    *
    * @param device the newly-detected device.
    */
-  private void onDeviceAdded(UsbDevice device) {
+  private synchronized void onDeviceAdded(UsbDevice device) {
     final Integer deviceId = Integer.valueOf(device.getDeviceId());
     if (mConnectedDeviceToDriver.containsKey(deviceId)) {
       Log.wtf(TAG, "Device already known?!");
@@ -362,7 +365,7 @@ public class KegboardManager extends BackgroundManager implements ControllerMana
     }
   }
 
-  private void removeDevice(final UsbDevice device) {
+  private synchronized void removeDevice(final UsbDevice device) {
     Log.d(TAG, "- Removing device " + device);
     final UsbSerialDriver driver =
         mConnectedDeviceToDriver.remove(Integer.valueOf(device.getDeviceId()));
