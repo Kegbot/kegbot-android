@@ -1,4 +1,5 @@
-/ Copyright 2012 Mike Wakerly <opensource@hoho.com>.
+/*
+ * Copyright 2012 Mike Wakerly <opensource@hoho.com>.
  *
  * This file is part of the Kegtab package from the Kegbot project. For
  * more information on Kegtab or Kegbot, see <http://kegbot.org/>.
