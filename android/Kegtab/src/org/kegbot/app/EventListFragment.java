@@ -70,6 +70,7 @@ public class EventListFragment extends ListFragment {
   private static final int MAX_EVENTS = 20;
   private static final long REFRESH_INTERVAL_MILLIS = TimeUnit.MINUTES.toMillis(1);
 
+  private View mView;
   private ArrayAdapter<SystemEvent> mAdapter;
   private KegbotCore mCore;
   private ImageDownloader mImageDownloader;
@@ -262,11 +263,20 @@ public class EventListFragment extends ListFragment {
       mAdapter.clear();
       mAdapter.addAll(mCachedEvents);
     }
+
+    if (mView != null) {
+      if (mCachedEvents.isEmpty()) {
+        mView.setVisibility(View.GONE);
+      } else {
+        mView.setVisibility(View.VISIBLE);
+      }
+    }
   }
 
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    return inflater.inflate(R.layout.event_list_fragment_layout, container, false);
+    mView = inflater.inflate(R.layout.event_list_fragment_layout, container, false);
+    return mView;
   }
 
   @Override
