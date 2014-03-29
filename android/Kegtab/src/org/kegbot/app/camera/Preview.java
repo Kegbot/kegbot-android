@@ -1,5 +1,4 @@
-/*
- * Copyright 2012 Mike Wakerly <opensource@hoho.com>.
+/ Copyright 2012 Mike Wakerly <opensource@hoho.com>.
  *
  * This file is part of the Kegtab package from the Kegbot project. For
  * more information on Kegtab or Kegbot, see <http://kegbot.org/>.
@@ -87,7 +86,6 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback {
       }
       requestLayout();
     }
-
   }
 
   private void init(Context context) {
@@ -98,7 +96,6 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback {
       mHolder.addCallback(this);
     }
   }
-
 
   @Override
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
@@ -237,5 +234,4 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback {
     mCamera.setParameters(parameters);
     mCamera.startPreview();
   }
-
 }
