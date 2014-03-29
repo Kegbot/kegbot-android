@@ -83,6 +83,7 @@ public class LocalBackendDbHelper extends SQLiteOpenHelper {
   private static final String COLUMN_DRINK_VOLUME_ML = "volume_ml";
   private static final String COLUMN_DRINK_TIME = "time";
   private static final String COLUMN_DRINK_USERNAME = "username";
+  private static final String COLUMN_DRINK_PICTURE_URL = "picture_url";
   private static final String COLUMN_DRINK_SHOUT = "shout";
 
   private static final String TABLE_CONTROLLERS = "controllers";
@@ -133,6 +134,7 @@ public class LocalBackendDbHelper extends SQLiteOpenHelper {
         + COLUMN_DRINK_VOLUME_ML + " INTEGER NOT NULL, "
         + COLUMN_DRINK_TIME + " DATETIME DEFAULT CURRENT_TIMESTAMP, "
         + COLUMN_DRINK_USERNAME + " STRING, "
+        + COLUMN_DRINK_PICTURE_URL + " STRING, "
         + COLUMN_DRINK_SHOUT + " TEXT)");
 
     Log.d(TAG, "Creating table " + TABLE_CONTROLLERS);
@@ -342,7 +344,7 @@ public class LocalBackendDbHelper extends SQLiteOpenHelper {
 
   Drink recordDrink(String tapName, long volumeMl, long ticks, @Nullable String shout,
       @Nullable String username, @Nullable String recordDate, long durationMillis,
-      @Nullable TimeSeries timeSeries) throws NotFoundException {
+      @Nullable TimeSeries timeSeries, @Nullable String pictureUrl) throws NotFoundException {
     if (!Strings.isNullOrEmpty(username)) {
       Log.w(TAG, "recordDrink: Ignoring username.");
     }
@@ -378,6 +380,9 @@ public class LocalBackendDbHelper extends SQLiteOpenHelper {
     values.put(COLUMN_DRINK_SHOUT, shout);
     values.put(COLUMN_DRINK_USERNAME, username); // TODO
     values.put(COLUMN_DRINK_VOLUME_ML, Long.valueOf(volumeMl));
+    if (!Strings.isNullOrEmpty(pictureUrl)) {
+      values.put(COLUMN_DRINK_PICTURE_URL, pictureUrl);
+    }
     final long drinkId = db.insert(TABLE_DRINKS, null, values);
     if (drinkId < 0) {
       // TODO: handle differently?

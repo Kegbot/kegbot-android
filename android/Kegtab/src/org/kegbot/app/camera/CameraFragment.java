@@ -229,11 +229,9 @@ public class CameraFragment extends Fragment {
       final String baseName = "pour-" + format.format(pourDate);
 
       File imageFile = new File(imageDir, baseName + ".jpg");
-      imageFile.setReadable(true, false);
       int ext = 2;
       while (imageFile.exists()) {
         imageFile = new File(imageDir, baseName + "-" + (ext++) + ".jpg");
-        imageFile.setReadable(true, false);
       }
 
       try {
@@ -249,6 +247,8 @@ public class CameraFragment extends Fragment {
 
       final String savedImage = imageFile.getAbsolutePath();
       Log.i(TAG, "Saved pour image: " + savedImage);
+      // Make file readable so LocalBackend can export it to the gallery.
+      imageFile.setReadable(true, false);
       return savedImage;
     }
 

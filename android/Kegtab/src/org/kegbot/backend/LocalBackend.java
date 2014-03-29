@@ -1,7 +1,9 @@
 package org.kegbot.backend;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.database.sqlite.SQLiteException;
+import android.provider.MediaStore;
 import android.util.Log;
 
 import com.google.common.base.Preconditions;
@@ -27,6 +29,7 @@ import org.kegbot.proto.Models.ThermoLog;
 import org.kegbot.proto.Models.User;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Collections;
 import java.util.List;
 
@@ -38,10 +41,12 @@ public class LocalBackend implements Backend {
   private static final String TAG = LocalBackend.class.getSimpleName();
 
   private LocalBackendDbHelper mDb;
+  private ContentResolver mContentResolver;
 
   @Override
   public void start(Context context) {
     mDb = new LocalBackendDbHelper(context);
+    mContentResolver = context.getContentResolver();
   }
 
   @Override
@@ -206,15 +211,28 @@ public class LocalBackend implements Backend {
   public Drink recordDrink(String tapName, long volumeMl, long ticks, @Nullable String shout,
       @Nullable String username, @Nullable String recordDate, long durationMillis,
       @Nullable TimeSeries timeSeries, @Nullable File picture) throws BackendException {
+    final Drink drink;
+
+    String pictureUrl = "";
     if (picture != null) {
-      Log.w(TAG, "recordDrink: Ignoring picture.");
+      final String imagePath = picture.getAbsolutePath();
+      Log.d(TAG, "Storing image, path=" + imagePath + " exists=" + picture.exists());
+
+      try {
+        pictureUrl = MediaStore.Images.Media.insertImage(mContentResolver, imagePath,
+            picture.getName(), "Kegbot drink snapshot");
+      } catch (FileNotFoundException e) {
+        Log.w(TAG, "Storing image '" + imagePath + "' failed: " + e);
+      }
     }
     try {
-      return mDb.recordDrink(tapName, volumeMl, ticks, shout, username, recordDate, durationMillis,
-          timeSeries);
+      drink = mDb.recordDrink(tapName, volumeMl, ticks, shout, username, recordDate, durationMillis,
+          timeSeries, Strings.nullToEmpty(pictureUrl));
     } catch (SQLiteException e) {
       throw new BackendException("Error recording drink", e);
     }
+
+    return drink;
   }
 
   @Override
