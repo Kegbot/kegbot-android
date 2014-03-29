@@ -87,7 +87,6 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback {
       }
       requestLayout();
     }
-
   }
 
   private void init(Context context) {
@@ -98,7 +97,6 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback {
       mHolder.addCallback(this);
     }
   }
-
 
   @Override
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
@@ -237,5 +235,4 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback {
     mCamera.setParameters(parameters);
     mCamera.startPreview();
   }
-
 }
