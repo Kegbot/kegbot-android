@@ -218,7 +218,6 @@ public class LocalBackendDbHelper extends SQLiteOpenHelper {
         cursor.close();
       }
     } finally {
-      db.close();
     }
     return result;
   }
@@ -229,7 +228,6 @@ public class LocalBackendDbHelper extends SQLiteOpenHelper {
     try {
       return getController(controllerId, db);
     } finally {
-      db.close();
     }
   }
 
@@ -257,7 +255,6 @@ public class LocalBackendDbHelper extends SQLiteOpenHelper {
         cursor.close();
       }
     } finally {
-      db.close();
     }
     return result;
   }
@@ -291,7 +288,6 @@ public class LocalBackendDbHelper extends SQLiteOpenHelper {
         cursor.close();
       }
     } finally {
-      db.close();
     }
     return result;
   }
@@ -301,7 +297,6 @@ public class LocalBackendDbHelper extends SQLiteOpenHelper {
     try {
       return getTap(tapId, db);
     } finally {
-      db.close();
     }
   }
 
@@ -324,7 +319,6 @@ public class LocalBackendDbHelper extends SQLiteOpenHelper {
         cursor.close();
       }
     } finally {
-      db.close();
     }
   }
 
@@ -338,7 +332,6 @@ public class LocalBackendDbHelper extends SQLiteOpenHelper {
         cursor.close();
       }
     } finally {
-      db.close();
     }
   }
 
