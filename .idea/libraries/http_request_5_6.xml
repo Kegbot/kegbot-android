@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="http-request-5.6">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.kevinsawicki/http-request/5.6/168305b7a983142b6311a005f0ad96d3b34d92d/http-request-5.6.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.kevinsawicki/http-request/5.6/bbbc3964f55ea3b6d4209109ea97f21cc92a1829/http-request-5.6-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

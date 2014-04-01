@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="jscience-vm14">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/kegtab/libs/jscience/jscience-vm14.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

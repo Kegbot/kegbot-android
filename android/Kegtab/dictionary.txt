@@ -1,6 +1,0 @@
-backend
-mike
-wakerly
-kegtab
-kegbot
-hoho.com

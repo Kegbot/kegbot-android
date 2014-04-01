@@ -1,0 +1,4 @@
+include ':kegtab'
+
+include ':usbSerialLibrary'
+project(':usbSerialLibrary').projectDir = new File('/Users/mikey/git/usb-serial-for-android/usbSerialForAndroid')
