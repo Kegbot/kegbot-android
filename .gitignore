@@ -1,10 +1,21 @@
-android/*/bin
-android/*/gen
-android/*/.apt_generated
+# Studio/Gradle
+*.iml
+.gradle/
+build/
 
-docs/build
+# Intellij IDEA (see https://intellij-support.jetbrains.com/entries/23393067)
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/datasources.xml
+.idea/dataSources.ids
 
-.DS_Store
+# generated files
+bin/
+gen/
 
-android/Kegtap/res/values/build_strings.xml
-android/Kegtap/src/org/kegbot/app/build/BuildInfo.java
+# Eclipse/Android/Misc
+.metadata/
+local.properties
+*.DS_Store
+proguard/
+
