@@ -48,9 +48,9 @@ public class KegbotApplication extends Application {
       try {
         Crashlytics.start(this);
       } catch (Exception e) {
-        Log.w(TAG, "Crashlytics not started: " + e, e);
+        Log.w(TAG, "Crashlytics not started: " + e);
       } catch (NoClassDefFoundError e) {
-        Log.w(TAG, "Crashlytics not started: " + e, e);
+        Log.w(TAG, "Crashlytics not started: " + e);
       }
     }
 

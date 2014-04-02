@@ -309,6 +309,10 @@ public class KegboardManager extends BackgroundManager implements ControllerMana
   private void onDriverAdded(UsbSerialDriver driver) {
     final UsbDevice device = driver.getDevice();
 
+    if (!mUsbManager.hasPermission(device)) {
+      Log.d(TAG, "No permission for device: " + device);
+      return;
+    }
     final UsbDeviceConnection connection = mUsbManager.openDevice(device);
     if (connection == null) {
       Log.w(TAG, "Could not open connection to device: " + device);
@@ -466,7 +470,7 @@ public class KegboardManager extends BackgroundManager implements ControllerMana
         continue;
       }
 
-      Log.d(TAG, "Service controller " + controller);
+      //Log.d(TAG, "Service controller " + controller);
       // Refresh all enabled outputs. Best effort.
       try {
         controller.refreshOutputs();
