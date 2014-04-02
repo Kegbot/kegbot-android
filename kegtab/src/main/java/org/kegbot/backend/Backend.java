@@ -21,6 +21,7 @@ package org.kegbot.backend;
 import android.content.Context;
 
 import org.codehaus.jackson.JsonNode;
+import org.kegbot.api.KegbotApiException;
 import org.kegbot.app.util.TimeSeries;
 import org.kegbot.proto.Api.RecordTemperatureRequest;
 import org.kegbot.proto.Models.AuthenticationToken;
@@ -175,8 +176,8 @@ public interface Backend {
   public FlowMeter updateFlowMeter(FlowMeter flowMeter) throws BackendException;
 
   /** Connect a meter to a tap. */
-  public KegTap connectMeter(KegTap tap, FlowMeter meter);
+  public KegTap connectMeter(KegTap tap, FlowMeter meter) throws KegbotApiException;
 
   /** Disconnect a meter. */
-  public KegTap disconnectMeter(KegTap tap);
+  public KegTap disconnectMeter(KegTap tap) throws BackendException;
 }

@@ -490,15 +490,15 @@ public class KegbotApiImpl implements Backend {
   }
 
   @Override
-  public KegTap connectMeter(KegTap tap, FlowMeter meter) {
-    // TODO Auto-generated method stub
-    return null;
+  public KegTap connectMeter(KegTap tap, FlowMeter meter) throws KegbotApiException {
+      final Map<String, String> params = Maps.newLinkedHashMap();
+      params.put("meter", String.valueOf(meter.getId()));
+      return (KegTap) postProto("/taps/" + tap.getId() + "/connect-meter", KegTap.newBuilder(), params);
   }
 
   @Override
-  public KegTap disconnectMeter(KegTap tap) {
-    // TODO Auto-generated method stub
-    return null;
+  public KegTap disconnectMeter(KegTap tap) throws BackendException {
+      return (KegTap) postProto("/taps/" + tap.getId() + "/disconnect-meter", KegTap.newBuilder(), null);
   }
 
 }

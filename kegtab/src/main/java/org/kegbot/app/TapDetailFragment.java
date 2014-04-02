@@ -116,12 +116,16 @@ public class TapDetailFragment extends Fragment {
             final Backend backend = core.getBackend();
             final SyncManager sync = core.getSyncManager();
 
-            if (meter == null) {
-              Log.d(TAG, "Disconnecting meter on tap.");
-              backend.disconnectMeter(mTap);
-            } else {
-              Log.d(TAG, "Connecting meter on tap.");
-              backend.connectMeter(mTap, meter);
+            try {
+              if (meter == null) {
+                Log.d(TAG, "Disconnecting meter on tap.");
+                backend.disconnectMeter(mTap);
+              } else {
+                Log.d(TAG, "Connecting meter on tap.");
+                backend.connectMeter(mTap, meter);
+              }
+            } catch (BackendException e) {
+              Log.w(TAG, "Error: " + e, e);
             }
             sync.requestSync();
             return null;
