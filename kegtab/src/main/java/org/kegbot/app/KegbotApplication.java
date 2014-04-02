@@ -9,7 +9,7 @@ import android.content.pm.PackageInfo;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.crashlytics.android.Crashlytics;
+//import com.crashlytics.android.Crashlytics;
 
 import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.app.config.SharedPreferencesConfigurationStore;
@@ -46,7 +46,7 @@ public class KegbotApplication extends Application {
 
     if (mReleaseBuild) {
       try {
-        Crashlytics.start(this);
+        //Crashlytics.start(this);
       } catch (Exception e) {
         Log.w(TAG, "Crashlytics not started: " + e);
       } catch (NoClassDefFoundError e) {

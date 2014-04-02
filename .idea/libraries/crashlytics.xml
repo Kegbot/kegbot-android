@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="crashlytics">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/kegtab/libs/crashlytics.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>
