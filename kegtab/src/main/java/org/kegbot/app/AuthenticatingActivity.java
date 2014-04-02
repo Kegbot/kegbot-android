@@ -43,6 +43,7 @@ import org.kegbot.core.AuthenticationManager;
 import org.kegbot.core.AuthenticationToken;
 import org.kegbot.core.FlowManager;
 import org.kegbot.core.KegbotCore;
+import org.kegbot.core.TapManager;
 import org.kegbot.proto.Models.KegTap;
 import org.kegbot.proto.Models.User;
 
@@ -63,10 +64,8 @@ public class AuthenticatingActivity extends Activity {
   private static final String EXTRA_TOKEN_VALUE = "token";
   private static final String EXTRA_TAP_ID = "tap";
 
-  private KegbotCore mCore;
   private AppConfiguration mConfig;
-  private AuthenticationManager mAuthManager;
-  private FlowManager mFlowManager;
+  private KegbotCore mCore;
 
   private ViewGroup mButtonGroup;
   private TextView mBeginTitle;
@@ -92,9 +91,6 @@ public class AuthenticatingActivity extends Activity {
     requestWindowFeature(Window.FEATURE_NO_TITLE);
     setContentView(R.layout.authenticating_activity);
 
-    mAuthManager = mCore.getAuthenticationManager();
-    mFlowManager = mCore.getFlowManager();
-
     mBeginTitle = (TextView) findViewById(R.id.authenticatingBeginTitle);
     mFailTitle = (TextView) findViewById(R.id.authenticatingFailTitle);
     mMessage = (TextView) findViewById(R.id.authenticatingMessage);
@@ -116,7 +112,14 @@ public class AuthenticatingActivity extends Activity {
     handleIntent();
   }
 
-  @Override
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mConfig = ((KegbotApplication) getApplicationContext()).getConfig();
+        mCore = KegbotCore.getInstance(this);
+    }
+
+    @Override
   protected void onNewIntent(Intent intent) {
     super.onNewIntent(intent);
     Log.d(TAG, "onNewIntent: " + intent);
@@ -153,7 +156,7 @@ public class AuthenticatingActivity extends Activity {
   }
 
   /**
-   * Processes a launch request from {@link #startAndAuthenticate(Context, String)}.
+   * Processes a launch request from {@link #startAndAuthenticate(android.content.Context, String, String)}.
    *
    * @param username
    */
@@ -161,7 +164,7 @@ public class AuthenticatingActivity extends Activity {
     new AsyncTask<Void, Void, User>() {
       @Override
       protected User doInBackground(Void... params) {
-        return mAuthManager.authenticateUsername(username);
+        return mCore.getAuthenticationManager().authenticateUsername(username);
       }
 
       @Override
@@ -184,7 +187,7 @@ public class AuthenticatingActivity extends Activity {
     new AsyncTask<Void, Void, User>() {
       @Override
       protected User doInBackground(Void... params) {
-        return mAuthManager.authenticateToken(authToken);
+        return mCore.getAuthenticationManager().authenticateToken(authToken);
       }
 
       @Override
@@ -206,9 +209,9 @@ public class AuthenticatingActivity extends Activity {
     final int tapId = getIntent().getIntExtra(EXTRA_TAP_ID, 0);
     if (tapId > 0) {
       final KegTap tap = mCore.getTapManager().getTap(tapId);
-      mFlowManager.activateUserAtTap(tap, username);
+      mCore.getFlowManager().activateUserAtTap(tap, username);
     } else {
-      mFlowManager.activateUserAmbiguousTap(username);
+      mCore.getFlowManager().activateUserAmbiguousTap(username);
     }
   }
 
@@ -241,8 +244,6 @@ public class AuthenticatingActivity extends Activity {
   @Override
   protected void onResume() {
     super.onResume();
-    mCore = KegbotCore.getInstance(this);
-    mConfig = mCore.getConfiguration();
     if (mConfig.getAllowRegistration()) {
       mAssignButton.setOnClickListener(new View.OnClickListener() {
         @Override
