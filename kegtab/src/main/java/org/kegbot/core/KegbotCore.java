@@ -44,6 +44,7 @@ import org.kegbot.app.util.ImageDownloader;
 import org.kegbot.app.util.IndentingPrintWriter;
 import org.kegbot.app.util.Utils;
 import org.kegbot.backend.Backend;
+import org.kegbot.backend.BackendException;
 import org.kegbot.backend.LocalBackend;
 import org.kegbot.core.FlowManager.Clock;
 import org.kegbot.core.hardware.Controller;
@@ -52,12 +53,15 @@ import org.kegbot.core.hardware.HardwareManager;
 import org.kegbot.core.hardware.ThermoSensorUpdateEvent;
 import org.kegbot.core.hardware.TokenAttachedEvent;
 import org.kegbot.proto.Api.RecordTemperatureRequest;
+import org.kegbot.proto.Models;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Top-level class implementing the Kegbot core.
@@ -76,6 +80,7 @@ public class KegbotCore {
 
   private final AppConfiguration mConfig;
   private final SharedPreferences mSharedPreferences;
+  private ExecutorService mExecutorService;
 
   private final Set<Manager> mManagers = Sets.newLinkedHashSet();
   private final TapManager mTapManager;
@@ -151,6 +156,7 @@ public class KegbotCore {
     if (!mStarted) {
       mBus.register(mBusListener);
       Log.i(TAG, "Starting up, backend:" + mBackend);
+      mExecutorService = Executors.newSingleThreadExecutor();
       mBackend.start(mContext);
       for (final Manager manager : mManagers) {
         Log.d(TAG, "Starting " + manager.getName());
@@ -164,6 +170,8 @@ public class KegbotCore {
     Log.d(TAG, "stop");
     if (mStarted) {
       mBus.unregister(mBusListener);
+      mExecutorService.shutdown();
+      mExecutorService = null;
       for (final Manager manager : mManagers) {
         Log.d(TAG, "Stopping " + manager.getName());
         manager.stop();
@@ -410,7 +418,9 @@ public class KegbotCore {
       final Controller controller = event.getController();
       Log.d(TAG, "Controller attached: " + controller + " status='" + controller.getStatus() + "'");
 
-      final String alertId = String.format("controller-%s", Integer.valueOf(controller.hashCode()));
+      final String alertId = controller.getName();
+      getAlertCore().cancelAlert(alertId);
+
       if (controller.getStatus().equals(Controller.STATUS_NAME_CONFLICT)) {
         final AlertCore.Alert alert = AlertCore.newBuilder("Controller conflict")
             .setDescription("Multiple controllers named " + controller.getName() +
@@ -433,20 +443,33 @@ public class KegbotCore {
         return;
       }
 
-      getAlertCore().cancelAlert(alertId);
+      final AlertCore.Alert alert = AlertCore.newBuilder("Controller attached")
+          .setDescription(String.format("Controller \"%s\" attached.", controller.getName()))
+          .severityInfo()
+          .setId(alertId)
+          .build();
+      getAlertCore().postAlert(alert);
 
-      for (final org.kegbot.proto.Models.Controller backendController :
-          mSyncManager.getCurrentControllers()) {
-        if (backendController.getName().equals(controller.getName())) {
-          Log.d(TAG, "Success! Known controller.");
-          mHardwareManager.enableController(controller);
-          return;
+      mExecutorService.submit(new Runnable() {
+        @Override
+        public void run() {
+          Log.d(TAG, "Searching known controllers ...");
+          try {
+            for (final Models.Controller existingController : mBackend.getControllers()) {
+              if (controller.getName().equals(existingController.getName())) {
+                Log.d(TAG, "Success! Known controller.");
+                return;
+              }
+            }
+          } catch (BackendException e) {
+            Log.w(TAG, "Error finding controller: " + e);
+          }
+
+          // Start activity, unknown controller.
+          NewControllerActivity.startForNewController(mContext, controller.getName(),
+              controller.getSerialNumber(), controller.getDeviceType());
         }
-      }
-
-      // Start activity, unknown controller.
-      NewControllerActivity.startForNewController(mContext, controller.getName(),
-          controller.getSerialNumber(), controller.getDeviceType());
+      });
     }
 
   }

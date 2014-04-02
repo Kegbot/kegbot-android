@@ -119,6 +119,12 @@ public class KegboardManager extends BackgroundManager implements ControllerMana
   @GuardedBy("this")
   private final Map<Integer, UsbSerialDriver> mConnectedDeviceToDriver = Maps.newLinkedHashMap();
 
+  /**
+   * Connected devices for which we are awaiting permission.
+   */
+  @GuardedBy("this")
+  private final Map<Integer, UsbDevice> mConnectedDevicesNeedingPermission = Maps.newLinkedHashMap();
+
   /** Maps USB subsystem device IDs to open connections. */
   private final Map<UsbSerialDriver, UsbDeviceConnection> mOpenConnections = Maps
       .newLinkedHashMap();
@@ -275,8 +281,20 @@ public class KegboardManager extends BackgroundManager implements ControllerMana
       if (mConnectedDeviceToDriver.containsKey(deviceId)) {
         // We already know about this device; ignore it.
         continue;
+      } else if (mConnectedDevicesNeedingPermission.containsKey(deviceId)) {
+        // We're waiting for permission to use this device.
+        if (!mUsbManager.hasPermission(device)) {
+          continue;
+        }
       }
-      onDeviceAdded(device);
+
+      if (!mUsbManager.hasPermission(device)) {
+        Log.i(TAG, "No permission for device: " + deviceId);
+        onNeedDevicePermission(device);
+      } else {
+        mConnectedDevicesNeedingPermission.remove(deviceId);
+        onDeviceAdded(device);
+      }
     }
 
     final Set<Integer> removedIds = Sets.newLinkedHashSet(mConnectedDeviceToDriver.keySet());
@@ -286,6 +304,12 @@ public class KegboardManager extends BackgroundManager implements ControllerMana
     for (final Integer deviceId : removedIds) {
       onDeviceRemoved(deviceId);
     }
+  }
+
+  private synchronized void onNeedDevicePermission(UsbDevice device) {
+    // We use an intent-filter to capture devices, so no need to request
+    // permission: Android will do it for us.
+    mConnectedDevicesNeedingPermission.put(Integer.valueOf(device.getDeviceId()), device);
   }
 
   /**
@@ -549,10 +573,35 @@ public class KegboardManager extends BackgroundManager implements ControllerMana
   }
 
   @Override
-  public void dump(IndentingPrintWriter writer) {
-    writer.printPair("numControllers", Integer.valueOf(mControllers.size())).println();
-    for (final KegboardController controller : mControllers.values()) {
-      writer.printf("  %s", controller).println();
+  public synchronized void dump(IndentingPrintWriter writer) {
+    if (mControllers.isEmpty()) {
+      writer.println("Controllers: none.");
+    } else {
+      writer.println("Controllers: ");
+      writer.increaseIndent();
+      int i = 1;
+      for (final KegboardController controller : mControllers.values()) {
+        writer.print(i++);
+        writer.print(": ");
+        writer.println(controller);
+      }
+      writer.decreaseIndent();
+      writer.println();
+    }
+
+    if (mConnectedDevicesNeedingPermission.isEmpty()) {
+      writer.println("Devices needing permission: none.");
+    } else {
+      writer.println("Devices needing permission: ");
+      writer.increaseIndent();
+      int i = 1;
+      for (final Map.Entry<Integer, UsbDevice> entry : mConnectedDevicesNeedingPermission.entrySet()) {
+        writer.print(i++);
+        writer.print(": ");
+        writer.println(entry.getValue());
+      }
+      writer.decreaseIndent();
+      writer.println();
     }
   }
 
