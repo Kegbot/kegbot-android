@@ -124,4 +124,5 @@
     <string name="new_controller_status_added">Controller added successfully.</string>
     <string name="new_controller_button_add">Add</string>
     <string name="new_controller_button_cancel">Cancel</string>
+    <string name="bugreport_email">Follow-up email address (optional)</string>
 </resources>

@@ -25,6 +25,7 @@ import android.util.Log;
 
 import com.github.kevinsawicki.http.HttpRequest;
 import com.github.kevinsawicki.http.HttpRequest.HttpRequestException;
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 
 import org.codehaus.jackson.JsonNode;
@@ -104,12 +105,13 @@ public class CheckinClient {
     }
   }
 
-  public void submitBugreport(String message, File reportData) throws IOException {
+  public void submitBugreport(String message, File reportData, String email) throws IOException {
     final HttpRequest request = new HttpRequest(BUGREPORT_URL, "POST");
     request.header("User-Agent", mUserAgent);
     request.part("product", "kegtab-android");
     request.part("reg_id", mConfig.getRegistrationId());
     request.part("message", message);
+    request.part("email_address", Strings.nullToEmpty(email));
     request.part("data", reportData);
 
     if (mPackageInfo != null) {

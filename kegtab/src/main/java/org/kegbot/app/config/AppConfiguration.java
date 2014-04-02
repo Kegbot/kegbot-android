@@ -282,4 +282,12 @@ public class AppConfiguration {
     return !isLocalBackend();
   }
 
+  public String getEmailAddress() {
+    return get(ConfigKey.EMAIL_ADDRESS);
+  }
+
+  public void setEmailAddress(String emailAddress) {
+    set(ConfigKey.EMAIL_ADDRESS, emailAddress);
+  }
+
 }

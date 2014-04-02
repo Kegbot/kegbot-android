@@ -13,11 +13,13 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.common.base.Strings;
 
+import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.app.util.CheckinClient;
 import org.kegbot.core.KegbotCore;
 
@@ -31,6 +33,8 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import butterknife.ButterKnife;
 
 /**
  * Bug report activity.
@@ -46,9 +50,12 @@ public class BugreportActivity extends Activity {
   private static final String BUGREPORT_FILENAME = "bugreport.txt";
 
   private final ExecutorService mExecutor = Executors.newSingleThreadExecutor();
+  private AppConfiguration mConfig;
+
   private ProgressBar mProgressBar;
   private TextView mMessageText;
   private TextView mDetailText;
+  private EditText mEmailText;
   private File mBugreportFile;
 
   private Button mButton;
@@ -60,11 +67,14 @@ public class BugreportActivity extends Activity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.bugreport_activity);
 
-    mButton = (Button) findViewById(R.id.bugreportButton);
-    mProgressBar = (ProgressBar) findViewById(R.id.bugreportProgress);
+    mConfig = ((KegbotApplication) getApplicationContext()).getConfig();
+
+    mButton = ButterKnife.findById(this, R.id.bugreportButton);
+    mProgressBar = ButterKnife.findById(this, R.id.bugreportProgress);
     mProgressBar.setIndeterminate(true);
-    mMessageText = (TextView) findViewById(R.id.bugreportMessage);
-    mDetailText = (TextView) findViewById(R.id.bugreportDetail);
+    mMessageText = ButterKnife.findById(this, R.id.bugreportMessage);
+    mDetailText = ButterKnife.findById(this, R.id.bugreportDetail);
+    mEmailText = ButterKnife.findById(this, R.id.bugreportEmail);
   }
 
   @Override
@@ -80,6 +90,11 @@ public class BugreportActivity extends Activity {
     final ActionBar bar = getActionBar();
     if (bar != null) {
       bar.setTitle("");
+    }
+
+    final String email = mConfig.getEmailAddress();
+    if (!Strings.isNullOrEmpty(email)) {
+      mEmailText.setText(email);
     }
   }
 
@@ -97,12 +112,14 @@ public class BugreportActivity extends Activity {
     mMessageText.setText(R.string.bugreport_message_idle);
     mDetailText.setVisibility(View.GONE);
     mProgressBar.setVisibility(View.INVISIBLE);
+    mEmailText.setVisibility(View.GONE);
   }
 
   private void showCollectingBugreport() {
     mButton.setEnabled(false);
     mMessageText.setText(R.string.bugreport_message_running);
     mDetailText.setVisibility(View.GONE);
+    mEmailText.setVisibility(View.GONE);
     mProgressBar.setVisibility(View.VISIBLE);
   }
 
@@ -123,12 +140,15 @@ public class BugreportActivity extends Activity {
     mDetailText.setText("");
     mDetailText.setVisibility(View.VISIBLE);
     mDetailText.setEnabled(true);
+    mEmailText.setVisibility(View.VISIBLE);
+    mEmailText.setEnabled(true);
   }
 
   private void showSubmittingBugreport() {
     mButton.setEnabled(false);
     mMessageText.setText(R.string.bugreport_message_running);
     mDetailText.setEnabled(false);
+    mEmailText.setEnabled(false);
     mProgressBar.setVisibility(View.VISIBLE);
     mProgressBar.setIndeterminate(true);
   }
@@ -245,8 +265,12 @@ public class BugreportActivity extends Activity {
     protected IOException doInBackground(File... params) {
       final String messageText = Strings.nullToEmpty(mDetailText.getText().toString());
       final CheckinClient client = CheckinClient.fromContext(getApplicationContext());
+      final String email = mEmailText.getText().toString();
+      if (!Strings.isNullOrEmpty(email)) {
+        mConfig.setEmailAddress(email);
+      }
       try {
-        client.submitBugreport(messageText, mBugreportFile);
+        client.submitBugreport(messageText, mBugreportFile, email);
       } catch (IOException e) {
         return e;
       }

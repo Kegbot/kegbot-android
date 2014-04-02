@@ -65,6 +65,8 @@ enum ConfigKey {
 
   STAY_AWAKE(TRUE),
   KEEP_SCREEN_ON(TRUE),
+
+  EMAIL_ADDRESS(""),
   ;
 
   private final String mDefaultValue;

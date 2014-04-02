@@ -161,8 +161,7 @@
             android:name="org.kegbot.app.BugreportActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
-            android:screenOrientation="sensorLandscape"
-            android:windowSoftInputMode="adjustResize" >
+            android:screenOrientation="sensorLandscape" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
