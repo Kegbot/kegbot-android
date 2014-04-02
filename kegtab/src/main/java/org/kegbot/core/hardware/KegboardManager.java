@@ -29,6 +29,7 @@ import android.hardware.usb.UsbManager;
 import android.os.SystemClock;
 import android.util.Log;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Queues;
@@ -107,6 +108,13 @@ public class KegboardManager extends BackgroundManager implements ControllerMana
   /**
    * Maps a connected device ID to the supporting driver, or {@code null} if
    * unsupported.
+   *
+   * <p/>
+   * This structure effectively mirrors
+   * {@link android.hardware.usb.UsbManager#getDeviceList()}, containing an entry
+   * for all attached devices.
+   *
+   * @see #findNewControllers()
    */
   @GuardedBy("this")
   private final Map<Integer, UsbSerialDriver> mConnectedDeviceToDriver = Maps.newLinkedHashMap();
@@ -225,7 +233,7 @@ public class KegboardManager extends BackgroundManager implements ControllerMana
     try {
       while (true) {
         while (mControllerErrors.size() > 0) {
-          removePort(mControllerErrors.remove().getPort());
+          removeSerialPort(mControllerErrors.remove().getPort());
         }
 
         final long now = SystemClock.uptimeMillis();
@@ -251,12 +259,15 @@ public class KegboardManager extends BackgroundManager implements ControllerMana
   }
 
   /**
-   * Loads any new controllers.
+   * Refreshes the internal list of controllers, by identifying
+   * newly-added and removed controllers via
+   * {@link android.hardware.usb.UsbManager#getDeviceList()}.
    */
   private synchronized void findNewControllers() {
     final Collection<UsbDevice> devices = mUsbManager.getDeviceList().values();
     final Set<Integer> connectedIds = Sets.newLinkedHashSet();
 
+    // Call onDeviceAdded for each added device.
     for (final UsbDevice device : devices) {
       final Integer deviceId = Integer.valueOf(device.getDeviceId());
       connectedIds.add(deviceId);
@@ -268,32 +279,32 @@ public class KegboardManager extends BackgroundManager implements ControllerMana
       onDeviceAdded(device);
     }
 
-    for (final Map.Entry<Integer, UsbSerialDriver> entry : mConnectedDeviceToDriver.entrySet()) {
-      final Integer deviceId = entry.getKey();
-      final UsbSerialDriver driver = entry.getValue();
-      if (connectedIds.contains(deviceId)) {
-        continue; // still here
-      }
-      if (driver != null) {
-        removeDevice(driver.getDevice());
-      }
+    final Set<Integer> removedIds = Sets.newLinkedHashSet(mConnectedDeviceToDriver.keySet());
+    removedIds.removeAll(connectedIds);
+
+    // Call onDeviceRemoved for each removed device.
+    for (final Integer deviceId : removedIds) {
+      onDeviceRemoved(deviceId);
     }
   }
 
   /**
    * Called when a new {@link UsbDevice} has been detected on the system.
+   * This method will establish whether the device is supported, by finding a
+   * compatible UsbSerialDriver.
+   * <p/>
+   * This method always creates an entry in {@link #mConnectedDeviceToDriver},
+   * with key matching the {@link android.hardware.usb.UsbDevice UsbDevice's}
+   * device ID.
    *
    * @param device the newly-detected device.
    */
   private synchronized void onDeviceAdded(UsbDevice device) {
     final Integer deviceId = Integer.valueOf(device.getDeviceId());
-    if (mConnectedDeviceToDriver.containsKey(deviceId)) {
-      Log.wtf(TAG, "Device already known?!");
-      return;
-    }
+    Preconditions.checkArgument(!mConnectedDeviceToDriver.containsKey(deviceId),
+        "BUG: onDeviceAdded called with already-added device");
 
-    Log.d(TAG, "Probing newly-added UsbDevice: " + device);
-
+    Log.i(TAG, "onDeviceAdded: " + deviceId);
     final UsbSerialDriver driver = PROBER.probeDevice(device);
     mConnectedDeviceToDriver.put(Integer.valueOf(device.getDeviceId()), driver);
 
@@ -303,10 +314,10 @@ public class KegboardManager extends BackgroundManager implements ControllerMana
     }
 
     Log.d(TAG, "  Driver match: " + driver);
-    onDriverAdded(driver);
+    addDriver(driver);
   }
 
-  private void onDriverAdded(UsbSerialDriver driver) {
+  private void addDriver(UsbSerialDriver driver) {
     final UsbDevice device = driver.getDevice();
 
     if (!mUsbManager.hasPermission(device)) {
@@ -321,11 +332,11 @@ public class KegboardManager extends BackgroundManager implements ControllerMana
     mOpenConnections.put(driver, connection);
 
     for (final UsbSerialPort port : driver.getPorts()) {
-      onSerialPortAdded(connection, port);
+      addSerialPort(connection, port);
     }
   }
 
-  private void onSerialPortAdded(final UsbDeviceConnection connection, final UsbSerialPort port) {
+  private void addSerialPort(final UsbDeviceConnection connection, final UsbSerialPort port) {
     final KegboardController controller;
     final KegboardHelloMessage verified;
     try {
@@ -369,10 +380,9 @@ public class KegboardManager extends BackgroundManager implements ControllerMana
     }
   }
 
-  private synchronized void removeDevice(final UsbDevice device) {
-    Log.d(TAG, "- Removing device " + device);
-    final UsbSerialDriver driver =
-        mConnectedDeviceToDriver.remove(Integer.valueOf(device.getDeviceId()));
+  private synchronized void onDeviceRemoved(final Integer deviceId) {
+    Log.i(TAG, "onDeviceRemoved: " + deviceId);
+    final UsbSerialDriver driver = mConnectedDeviceToDriver.remove(deviceId);
     if (driver != null) {
       removeDriver(driver);
       final UsbDeviceConnection connection = mOpenConnections.remove(driver);
@@ -385,12 +395,12 @@ public class KegboardManager extends BackgroundManager implements ControllerMana
   private void removeDriver(final UsbSerialDriver driver) {
     Log.d(TAG, "-- Removing driver " + driver);
     for (final UsbSerialPort port : driver.getPorts()) {
-      removePort(port);
+      removeSerialPort(port);
     }
     mOpenConnections.remove(driver);
   }
 
-  private void removePort(final UsbSerialPort port) {
+  private void removeSerialPort(final UsbSerialPort port) {
     Log.d(TAG, "--- Removing port " + port);
     final KegboardController controller = mControllers.get(port);
     if (controller != null) {
