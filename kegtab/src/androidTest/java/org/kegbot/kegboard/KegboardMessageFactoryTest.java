@@ -17,11 +17,14 @@
  */
 package org.kegbot.kegboard;
 
+import android.test.InstrumentationTestCase;
+
 import junit.framework.TestCase;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -30,16 +33,14 @@ import java.util.Map;
  *
  * @author mike
  */
-public class KegboardMessageFactoryTest extends TestCase {
+public class KegboardMessageFactoryTest extends InstrumentationTestCase {
 
   private KegboardMessageFactory mFactory;
-  private File mTestDataFile;
 
   @Override
   protected void setUp() throws Exception {
     super.setUp();
     mFactory = new KegboardMessageFactory();
-    mTestDataFile = new File("one_flow_active.bin");
   }
 
   @Override
@@ -50,12 +51,12 @@ public class KegboardMessageFactoryTest extends TestCase {
   public void testReader() throws IOException {
     List<KegboardMessage> messages = new ArrayList<KegboardMessage>();
 
-    System.out.println(System.getProperty("user.dir"));
-    FileInputStream fis = new FileInputStream(mTestDataFile);
+    InputStream is =
+        getInstrumentation().getTargetContext().getResources().getAssets().open("one_flow_active.bin");
     try {
       byte[] buf = new byte[76];
       while (true) {
-        int amt = fis.read(buf);
+        int amt = is.read(buf);
         if (amt < 0) {
           break;
         }
@@ -85,7 +86,7 @@ public class KegboardMessageFactoryTest extends TestCase {
         System.out.println(message);
       }
     } finally {
-      fis.close();
+      is.close();
     }
 
   }

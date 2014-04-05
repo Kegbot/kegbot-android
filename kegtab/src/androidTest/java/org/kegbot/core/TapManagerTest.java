@@ -17,6 +17,8 @@
  */
 package org.kegbot.core;
 
+import android.test.InstrumentationTestCase;
+
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -39,7 +41,7 @@ import java.util.Set;
  *
  * @author mike wakerly (opensource@hoho.com)
  */
-public class TapManagerTest extends TestCase {
+public class TapManagerTest extends InstrumentationTestCase {
 
   private TapManager mTapManager;
   private Bus mMockBus;
@@ -48,6 +50,10 @@ public class TapManagerTest extends TestCase {
   @Override
   protected void setUp() throws Exception {
     super.setUp();
+
+    // http://stackoverflow.com/q/12267572
+    System.setProperty("dexmaker.dexcache",
+        getInstrumentation().getTargetContext().getCacheDir().getPath());
 
     mMockBus = mock(Bus.class);
     mMockConfigStore = mock(ConfigurationStore.class);

@@ -45,4 +45,7 @@ dependencies {
     compile 'com.google.protobuf:protobuf-java:2.5.0'
     compile 'joda-time:joda-time:2.3'
     androidTestCompile 'com.jayway.android.robotium:robotium-solo:5.1'
+    androidTestCompile 'org.mockito:mockito-core:1.9.5'
+    androidTestCompile 'com.google.dexmaker:dexmaker:1.0'
+    androidTestCompile 'com.google.dexmaker:dexmaker-mockito:1.0'
 }

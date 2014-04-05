@@ -6,6 +6,8 @@ import android.widget.RadioButton;
 
 import com.robotium.solo.Solo;
 
+import org.kegbot.app.*;
+import org.kegbot.app.R;
 import org.kegbot.app.setup.SetupActivity;
 
 public class SetupActivityRobotiumTest extends ActivityInstrumentationTestCase2<SetupActivity> {
@@ -44,6 +46,8 @@ public class SetupActivityRobotiumTest extends ActivityInstrumentationTestCase2<
     mSolo.waitForText(getText(org.kegbot.app.R.string.setup_select_backend_title));
 
     mSolo.clickOnRadioButton(1);
+    mSolo.waitForText(getText(R.string.setup_select_backend_local_warning_ok));
+    mSolo.clickOnButton(getText(R.string.setup_select_backend_local_warning_ok));
     Button button = mSolo.getButton(getText(org.kegbot.app.R.string.setup_select_backend_local));
     assertNotNull(button);
     RadioButton radio = (RadioButton) button;

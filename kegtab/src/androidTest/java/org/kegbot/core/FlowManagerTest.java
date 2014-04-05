@@ -17,6 +17,8 @@
  */
 package org.kegbot.core;
 
+import android.test.InstrumentationTestCase;
+
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -37,7 +39,7 @@ import java.util.List;
  *
  * @author mike wakerly (opensource@hoho.com)
  */
-public class FlowManagerTest extends TestCase {
+public class FlowManagerTest extends InstrumentationTestCase {
 
   private static final String METER_0 = "test.flow0";
   private static final String METER_1 = "test.flow1";
@@ -60,6 +62,10 @@ public class FlowManagerTest extends TestCase {
   @Override
   protected void setUp() throws Exception {
     super.setUp();
+
+    // http://stackoverflow.com/q/12267572
+    System.setProperty("dexmaker.dexcache",
+        getInstrumentation().getTargetContext().getCacheDir().getPath());
 
     mBus = mock(Bus.class);
 
