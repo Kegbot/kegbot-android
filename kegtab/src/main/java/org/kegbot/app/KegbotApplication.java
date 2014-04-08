@@ -4,6 +4,7 @@
 package org.kegbot.app;
 
 import android.app.Application;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.preference.PreferenceManager;
@@ -71,6 +72,10 @@ public class KegbotApplication extends Application {
 
   public boolean isReleaseBuild() {
     return mReleaseBuild;
+  }
+
+  public static KegbotApplication get(final Context context) {
+    return (KegbotApplication) context.getApplicationContext();
   }
 
 }
