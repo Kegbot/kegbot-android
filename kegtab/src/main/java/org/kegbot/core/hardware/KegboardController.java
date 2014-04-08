@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -35,6 +36,9 @@ import java.util.regex.Pattern;
 public class KegboardController implements Controller {
 
   private static final String TAG = KegboardController.class.getSimpleName();
+
+  private static final Pattern SERIAL_RE =
+      Pattern.compile("^KB-([0-9a-fA-F]{4})-([0-9a-fA-F]{4})-([0-9a-fA-F]{4,8})$");
 
   static final String METER_0 = "flow0";
   static final String METER_1 = "flow1";
@@ -193,8 +197,19 @@ public class KegboardController implements Controller {
           mSerialNumber, serialNumber));
       return;
     }
-    mSerialNumber = serialNumber;
-    mName = getShortNameFromSerialNumber(mSerialNumber);
+
+    final Matcher matcher = SERIAL_RE.matcher(serialNumber);
+    if (matcher.matches()) {
+      final String g1 = matcher.group(1);
+      final String g2 = matcher.group(2);
+      final String g3 = Strings.padStart(matcher.group(3), 8, '0');
+
+      Log.d(TAG, "setSerialNumber: " + mSerialNumber);
+      mSerialNumber = String.format("KB-%s-%s-%s", g1, g2, g3);
+      mName = getShortNameFromSerialNumber(mSerialNumber);
+    } else {
+      Log.w(TAG, "Unknown serial number, ignoring: " + serialNumber);
+    }
   }
 
   private static String getShortNameFromSerialNumber(final String serialNumber) {
@@ -236,7 +251,7 @@ public class KegboardController implements Controller {
       Log.w(TAG, "Error!");
       throw new IOException("Device closed.");
     }
-    Log.d("XXX", "Read bytes: " + HexDump.dumpHexString(mReadBuffer, 0, amtRead));
+    //Log.d(TAG, "Read bytes: " + HexDump.dumpHexString(mReadBuffer, 0, amtRead));
     mReader.addBytes(mReadBuffer, amtRead);
   }
 
