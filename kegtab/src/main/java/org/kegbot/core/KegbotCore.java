@@ -368,6 +368,22 @@ public class KegbotCore {
     } finally {
       writer.close();
     }
+
+    writer.println("## Threads:");
+    writer.increaseIndent();
+    for (final Map.Entry<Thread, StackTraceElement[]> entry : Thread.getAllStackTraces().entrySet()) {
+      final Thread thr = entry.getKey();
+      final StackTraceElement[] elements = entry.getValue();
+
+      writer.println(thr.toString());
+      writer.increaseIndent();
+      for (final StackTraceElement elem : elements) {
+        writer.println(elem);
+      }
+      writer.decreaseIndent();
+      writer.println();
+    }
+
     printWriter.write(baseWriter.toString());
   }
 
