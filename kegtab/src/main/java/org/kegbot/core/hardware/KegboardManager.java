@@ -60,7 +60,9 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.GuardedBy;
 
 /**
@@ -87,7 +89,7 @@ public class KegboardManager extends BackgroundManager implements ControllerMana
 
   private static final UsbSerialProber PROBER = new UsbSerialProber(PROBE_TABLE);
 
-  private final ExecutorService mExecutorService = Executors.newCachedThreadPool();
+  private ExecutorService mExecutorService;
 
   /**
    * The system's USB service.
@@ -95,6 +97,8 @@ public class KegboardManager extends BackgroundManager implements ControllerMana
   private UsbManager mUsbManager;
 
   private Context mContext;
+
+  private final AtomicBoolean mRunning = new AtomicBoolean(false);
 
   /** Callback interface to parent {@link HardwareManager}. */
   private final ControllerManager.Listener mListener;
@@ -161,6 +165,9 @@ public class KegboardManager extends BackgroundManager implements ControllerMana
   public synchronized void start() {
     Log.d(TAG, "Starting ...");
 
+    mRunning.set(true);
+    mExecutorService = Executors.newCachedThreadPool();
+
     final IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
     filter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED);
     filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED); // never fired by framework :(
@@ -172,7 +179,16 @@ public class KegboardManager extends BackgroundManager implements ControllerMana
   @Override
   public synchronized void stop() {
     Log.d(TAG, "Stopping ...");
+    mRunning.set(false);
+
+    for (final UsbSerialDriver driver : mConnectedDeviceToDriver.values()) {
+      removeDriver(driver);
+    }
+    mConnectedDevicesNeedingPermission.clear();
+
     mContext.unregisterReceiver(mUsbReceiver);
+    mExecutorService.shutdown();
+    mExecutorService = null;
 
     super.stop();
   }
@@ -234,10 +250,10 @@ public class KegboardManager extends BackgroundManager implements ControllerMana
       return;
     }
 
-    Log.d(TAG, "Main loop running.");
+    Log.d(TAG, "runInBackground(): running.");
 
     try {
-      while (true) {
+      while (mRunning.get()) {
         while (mControllerErrors.size() > 0) {
           removeSerialPort(mControllerErrors.remove().getPort());
         }
@@ -260,7 +276,7 @@ public class KegboardManager extends BackgroundManager implements ControllerMana
         }
       }
     } finally {
-      Log.d(TAG, "Main loop exiting.");
+      Log.d(TAG, "runInBackground(): exiting.");
     }
   }
 
@@ -270,6 +286,7 @@ public class KegboardManager extends BackgroundManager implements ControllerMana
    * {@link android.hardware.usb.UsbManager#getDeviceList()}.
    */
   private synchronized void findNewControllers() {
+    Log.d(TAG, "findNewControllers");
     final Collection<UsbDevice> devices = mUsbManager.getDeviceList().values();
     final Set<Integer> connectedIds = Sets.newLinkedHashSet();
 
@@ -341,7 +358,7 @@ public class KegboardManager extends BackgroundManager implements ControllerMana
     addDriver(driver);
   }
 
-  private void addDriver(UsbSerialDriver driver) {
+  private synchronized void addDriver(UsbSerialDriver driver) {
     final UsbDevice device = driver.getDevice();
 
     if (!mUsbManager.hasPermission(device)) {
@@ -360,7 +377,7 @@ public class KegboardManager extends BackgroundManager implements ControllerMana
     }
   }
 
-  private void addSerialPort(final UsbDeviceConnection connection, final UsbSerialPort port) {
+  private synchronized void addSerialPort(final UsbDeviceConnection connection, final UsbSerialPort port) {
     final KegboardController controller;
     final KegboardHelloMessage verified;
     try {
@@ -416,7 +433,7 @@ public class KegboardManager extends BackgroundManager implements ControllerMana
     }
   }
 
-  private void removeDriver(final UsbSerialDriver driver) {
+  private synchronized void removeDriver(final UsbSerialDriver driver) {
     Log.d(TAG, "-- Removing driver " + driver);
     for (final UsbSerialPort port : driver.getPorts()) {
       removeSerialPort(port);
@@ -424,7 +441,7 @@ public class KegboardManager extends BackgroundManager implements ControllerMana
     mOpenConnections.remove(driver);
   }
 
-  private void removeSerialPort(final UsbSerialPort port) {
+  private synchronized void removeSerialPort(final UsbSerialPort port) {
     Log.d(TAG, "--- Removing port " + port);
     final KegboardController controller = mControllers.get(port);
     if (controller != null) {
@@ -433,7 +450,7 @@ public class KegboardManager extends BackgroundManager implements ControllerMana
     closePort(port);
   }
 
-  private void removeController(final KegboardController controller) {
+  private synchronized void removeController(final KegboardController controller) {
     Log.d(TAG, "---- Removing controller " + controller);
     mControllers.remove(controller.getPort());
     mListener.onControllerRemoved(controller);
@@ -480,18 +497,24 @@ public class KegboardManager extends BackgroundManager implements ControllerMana
     mExecutorService.submit(new Runnable() {
       @Override
       public void run() {
+        Thread.currentThread().setName("kegboard-thr:" + controller.getName());
         final String threadName = Thread.currentThread().getName();
-        final String controllerName = String.valueOf(controller);
-        Log.d(TAG, String.format("Thread %s servicing controller %s", threadName, controllerName));
-        while (true) {
-          try {
-            controller.blockingRead();
-          } catch (IOException e) {
-            handleControllerError(controller, e);
-            Log.d(TAG, String.format("Thread %s finishing, controller closed: %s",
-                threadName, controllerName));
-            return;
+        try {
+          final String controllerName = String.valueOf(controller);
+          Log.d(TAG, String.format("Thread %s servicing controller %s", threadName, controllerName));
+          while (mRunning.get()) {
+            try {
+              controller.blockingRead();
+            } catch (IOException e) {
+              handleControllerError(controller, e);
+              Log.d(TAG, String.format("Thread %s finishing, controller closed: %s",
+                  threadName, controllerName));
+              return;
+            }
           }
+        } catch (Throwable t) {
+          Log.wtf(TAG, String.format("Uncaught exception in thread %s: %s", threadName, t));
+          throw new RuntimeException(t);
         }
       }
     });
@@ -566,7 +589,7 @@ public class KegboardManager extends BackgroundManager implements ControllerMana
     }
   }
 
-  private void handleControllerError(final KegboardController controller, final Exception e) {
+  private void handleControllerError(final KegboardController controller, @Nullable final Exception e) {
     Log.w(TAG, String.format("Marking controller %s disabled to error: %s", controller, e));
     controller.setStatus(Controller.STATUS_OPEN_ERROR);
     mControllerErrors.add(controller);
