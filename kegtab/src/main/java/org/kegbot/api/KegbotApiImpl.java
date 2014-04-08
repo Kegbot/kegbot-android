@@ -294,6 +294,7 @@ public class KegbotApiImpl implements Backend {
   public FlowMeter calibrateMeter(FlowMeter meter, double ticksPerMl) throws BackendException {
     final Request.Builder builder = newRequest("/flow-meters/" + meter.getId())
         .setMethod(Http.POST)
+        .addParameter("ticks_per_ml", Double.valueOf(ticksPerMl).toString())
         .addParameter("ml_per_tick", Double.valueOf(1.0/ticksPerMl).toString());
     return getSingleProto(FlowMeter.newBuilder(), requestJson(builder.build()).get("object"));
   }
