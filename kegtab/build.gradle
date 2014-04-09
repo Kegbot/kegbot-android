@@ -12,9 +12,16 @@ android {
         testInstrumentationRunner "android.test.InstrumentationTestRunner"
     }
 
+    lintOptions {
+        checkReleaseBuilds true
+        abortOnError false
+    }
+
     buildTypes {
         release {
             runProguard true
+            debuggable false
+            jniDebugBuild false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-project.txt'
         }
     }
