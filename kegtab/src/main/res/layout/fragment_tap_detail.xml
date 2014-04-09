@@ -159,7 +159,7 @@
                 android:background="#1FFFFFFF" />
 
             <LinearLayout
-                android:id="@+id/kegButtons"
+                android:id="@+id/hardwareSettings"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/divider3"
