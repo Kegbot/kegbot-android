@@ -221,6 +221,8 @@ public class NewControllerActivity extends Activity {
     Log.d(TAG, "Handling intent: " + intent);
 
     mControllerName = intent.getStringExtra(EXTRA_CONTROLLER_NAME);
+    mSerialNumber = Strings.nullToEmpty(intent.getStringExtra(EXTRA_SERIAL_NUMBER));
+    mDeviceType = Strings.nullToEmpty(intent.getStringExtra(EXTRA_DEVICE_TYPE));
     mSubtitle.setText(String.format("%s %s", mSubtitle.getText(), mControllerName));
   }
 
