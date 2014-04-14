@@ -19,17 +19,9 @@
 -->
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
-    <PreferenceCategory android:title="General" >
-        <SwitchPreference
-            android:key="config:RUN_CORE"
-            android:summaryOff="Read-only mode; Kegtab will not monitor sensors"
-            android:summaryOn="Kegtab will monitor sensors and record drinks"
-            android:title="Run Kegbot Core" />
-    </PreferenceCategory>
     <PreferenceCategory android:title="Pour Processing" >
         <EditTextPreference
             android:defaultValue="10"
-            android:dependency="config:RUN_CORE"
             android:inputType="number"
             android:key="config:FLOW_MINIMUM_VOLUME_ML"
             android:summary="Pours less than this amount will be ignored"
@@ -37,7 +29,6 @@
         </EditTextPreference>
         <EditTextPreference
             android:defaultValue="60"
-            android:dependency="config:RUN_CORE"
             android:inputType="number"
             android:key="config:FLOW_IDLE_WARNING_SECONDS"
             android:summary="After this many idle seconds, a warning will be issued"
@@ -45,7 +36,6 @@
         </EditTextPreference>
         <EditTextPreference
             android:defaultValue="90"
-            android:dependency="config:RUN_CORE"
             android:inputType="number"
             android:key="config:FLOW_IDLE_TIMEOUT_SECONDS"
             android:summary="After this many idle seconds, a pour will be ended"
@@ -54,7 +44,6 @@
 
         <CheckBoxPreference
             android:defaultValue="true"
-            android:dependency="config:RUN_CORE"
             android:key="config:ENABLE_AUTOMATIC_FLOW_START"
             android:summaryOff="New pours will only start when a user authenticates"
             android:summaryOn="A new pour will start any time meter activity is detected"
@@ -62,7 +51,6 @@
         </CheckBoxPreference>
         <CheckBoxPreference
             android:defaultValue="true"
-            android:dependency="config:RUN_CORE"
             android:key="config:AUTO_TAKE_PHOTOS"
             android:summaryOff="Camera will not trigger unless requested"
             android:summaryOn="Camera will automatically trigger during a pour"
@@ -70,7 +58,6 @@
         </CheckBoxPreference>
         <CheckBoxPreference
             android:defaultValue="true"
-            android:dependency="config:RUN_CORE"
             android:key="config:ENABLE_CAMERA_SOUNDS"
             android:summaryOff="Sounds will not be played when taking photos"
             android:summaryOn="Sounds will be played when taking photos"
@@ -80,7 +67,6 @@
     <PreferenceCategory android:title="User Interface" >
         <CheckBoxPreference
             android:defaultValue="true"
-            android:dependency="config:RUN_CORE"
             android:key="config:ALLOW_REGISTRATION"
             android:summaryOff="New users cannot register from the main screen"
             android:summaryOn="New users can register from the main screen"
@@ -88,7 +74,6 @@
         </CheckBoxPreference>
         <CheckBoxPreference
             android:defaultValue="true"
-            android:dependency="config:RUN_CORE"
             android:key="config:ALLOW_MANUAL_LOGIN"
             android:summaryOff="Check to enable the main screen&apos;s &apos;Beer Me&apos; button"
             android:summaryOn="Uncheck to disable the main screen&apos;s &apos;Beer Me&apos; button"
@@ -96,7 +81,6 @@
         </CheckBoxPreference>
         <CheckBoxPreference
             android:defaultValue="true"
-            android:dependency="config:RUN_CORE"
             android:key="config:CACHE_CREDENTIALS"
             android:summaryOff="Authentication tokens will always be checked against the server"
             android:summaryOn="Authentication tokens will be locally cached"
@@ -104,7 +88,6 @@
         </CheckBoxPreference>
         <CheckBoxPreference
                 android:defaultValue="true"
-                android:dependency="config:RUN_CORE"
                 android:key="config:ATTRACT_MODE"
                 android:summaryOff="Taps on the main screen will not be auto rotated"
                 android:summaryOn="Kegbot will cycle taps on the main screen when idle"
@@ -114,7 +97,6 @@
     <PreferenceCategory android:title="Advanced" >
          <CheckBoxPreference
             android:defaultValue="true"
-            android:dependency="config:RUN_CORE"
             android:key="config:STAY_AWAKE"
             android:summaryOff="The device will go to sleep even if Kegbot is running"
             android:summaryOn="The device will stay awake when Kegbot is running"
