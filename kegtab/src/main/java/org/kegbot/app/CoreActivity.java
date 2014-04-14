@@ -170,6 +170,11 @@ public class CoreActivity extends Activity {
       return;
     }
 
+    // TODO(mikey): Enable for everyone.
+    if (!BuildConfig.DEBUG) {
+      return;
+    }
+
     final List<Alert> alerts = mAlertCore.getAlerts();
     if (mCachedAlerts.equals(alerts)) {
       return;
