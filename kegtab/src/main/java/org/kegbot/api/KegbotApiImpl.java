@@ -262,9 +262,9 @@ public class KegbotApiImpl implements Backend {
   }
 
   @Override
-  public KegTap startKeg(String tapName, String beerName, String brewerName, String styleName,
+  public KegTap startKeg(KegTap tap, String beerName, String brewerName, String styleName,
       String kegType) throws KegbotApiException {
-    final Request.Builder builder = newRequest("/taps/" + tapName + "/activate/")
+    final Request.Builder builder = newRequest("/taps/" + tap.getId() + "/activate/")
         .setMethod(Http.POST)
         .addParameter("beer_name", beerName)
         .addParameter("brewer_name", brewerName)

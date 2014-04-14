@@ -71,8 +71,9 @@ public class LocalBackendTest extends AndroidTestCase {
   /** Starts several kegs, one for each {@link KegSizes KegSize}. */
   public void testStartKeg() throws BackendException {
     int expectedKegId = 1;
+    KegTap tap = mBackend.getTaps().get(0);
     for (final String kegSize : KegSizes.allLabelsAscendingVolume()) {
-      KegTap tap = mBackend.startKeg("kegboard.flow0", "Test Beer", "Test Brewer", "Test Style",
+      tap = mBackend.startKeg(tap, "Test Beer", "Test Brewer", "Test Style",
           kegSize);
       assertNotNull(tap);
       
@@ -115,7 +116,9 @@ public class LocalBackendTest extends AndroidTestCase {
   }
   
   public void testPourDrink() throws BackendException {
-    KegTap tap = mBackend.startKeg("kegboard.flow0", "Test Beer", "Test Brewer", "Test Style",
+    KegTap tap = mBackend.getTaps().get(0);
+
+    tap = mBackend.startKeg(tap, "Test Beer", "Test Brewer", "Test Style",
         KegSizes.HALF_BARREL);
     assertNotNull(tap);
     

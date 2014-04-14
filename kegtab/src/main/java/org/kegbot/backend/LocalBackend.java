@@ -50,15 +50,8 @@ public class LocalBackend implements Backend {
   }
 
   @Override
-  public KegTap startKeg(String tapName, String beerName, String brewerName, String styleName,
+  public KegTap startKeg(KegTap tap, String beerName, String brewerName, String styleName,
       String kegType) throws BackendException {
-    final KegTap tap = mDb.getTap(tapName);
-
-    if (tap == null) {
-      Log.wtf(TAG, "No tap named " + tapName);
-      return null;
-    }
-
     if (tap.hasCurrentKeg()) {
       endKeg(tap.getCurrentKeg());
     }

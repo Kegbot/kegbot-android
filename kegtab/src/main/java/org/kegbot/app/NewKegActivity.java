@@ -51,9 +51,9 @@ import java.util.Map;
 public class NewKegActivity extends Activity {
   private static final String TAG = NewKegActivity.class.getSimpleName();
 
-  private static final String EXTRA_METER_NAME = "meter_name";
+  private static final String EXTRA_TAP_ID = "tap_id";
 
-  private String mMeterName;
+  private KegTap mTap;
 
   private AutoCompleteTextView mName;
   private AutoCompleteTextView mBrewerName;
@@ -85,8 +85,6 @@ public class NewKegActivity extends Activity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-
-    mMeterName = getIntent().getStringExtra(EXTRA_METER_NAME);
 
     setContentView(R.layout.new_keg_activity);
 
@@ -136,6 +134,13 @@ public class NewKegActivity extends Activity {
   @Override
   protected void onResume() {
     super.onResume();
+
+    final int tapId = getIntent().getIntExtra(EXTRA_TAP_ID, 0);
+    mTap = KegbotCore.getInstance(this).getTapManager().getTap(tapId);
+    if (mTap == null) {
+      Log.e(TAG, "Could not find tap for id: " + tapId);
+      finish();
+    }
   }
 
   @Override
@@ -161,7 +166,7 @@ public class NewKegActivity extends Activity {
         }
         try {
           final Backend backend = KegbotCore.getInstance(NewKegActivity.this).getBackend();
-          backend.startKeg(mMeterName, mName.getText().toString(),
+          backend.startKeg(mTap, mName.getText().toString(),
               mBrewerName.getText().toString(), mStyle.getText().toString(),
               selected.getName());
           return "";
@@ -194,7 +199,7 @@ public class NewKegActivity extends Activity {
   static Intent getStartIntent(Context context, final KegTap tap) {
     // TODO(mikey): Handle tap meter null.
     final Intent intent = new Intent(context, NewKegActivity.class);
-    intent.putExtra(EXTRA_METER_NAME, tap.getMeter().getName());
+    intent.putExtra(EXTRA_TAP_ID, tap.getId());
     intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
     return intent;
   }
