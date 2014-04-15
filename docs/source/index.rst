@@ -11,5 +11,5 @@ features, compatibility, and basic usage.
    :maxdepth: 2
 
    overview
-   usage
+   install
    changelog
