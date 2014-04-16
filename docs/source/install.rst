@@ -81,7 +81,7 @@ through a web interface.
 Server mode has the most powerful Kegbot features, but in order to do so it
 required a separate machine running Kegbot Server.  (For more information
 on setting up your own Kegbot Server, see the
-`Kegbot Server Guide <https://kegbot.org/docs/server`_).
+`Kegbot Server Guide <https://kegbot.org/docs/server>`_).
 
 This option is recommended for users comfortable running a server.
 
