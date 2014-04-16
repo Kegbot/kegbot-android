@@ -35,7 +35,7 @@ android {
 }
 
 dependencies {
-    compile project(':usbSerialLibrary')
+    compile files('libs/usbSerialForAndroid.jar')
     compile 'com.google.android.gms:play-services:+'
     //compile files('libs/crashlytics.jar')
     compile files('libs/GoogleAnalytics/libGoogleAnalyticsV2.jar')
