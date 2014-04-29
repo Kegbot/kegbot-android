@@ -1,4 +1,5 @@
 option java_package = "org.kegbot.proto";
+option optimize_for = CODE_SIZE;
 
 // An authentication token, which a drinker uses to authenticate to the system.
 message AuthenticationToken {
@@ -545,32 +546,6 @@ message User {
 message SiteInfo {
   optional string title = 1;
   optional string server_version = 2;
-}
-
-// A SessionChunk describes a specific user's contribution to a specific Keg, in
-// a specific Session.
-message SessionChunk {
-
-  // The unique identifier for this chunk.
-  required uint32 id = 1;
-
-  // The session id that this chunk corresponds to.
-  required uint32 session_id = 2;
-
-  // The username that this chunk corresponds to.
-  required string username = 3;
-
-  // The keg id that this chunk corresponds to.
-  required uint32 keg_id = 4;
-
-  // The time this user joined this session, as an ISO8061 UTC timestamp.
-  required string start_time = 5;
-
-  // The last activity for this user in this session, as an ISO8061 timestamp.
-  required string end_time = 6;
-
-  // The total volume poured by the user.
-  required double volume_ml = 7;
 }
 
 // Describes various events that happen in the system.
