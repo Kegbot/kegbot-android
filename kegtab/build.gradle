@@ -1,4 +1,5 @@
 apply plugin: 'android'
+apply plugin: 'crashlytics'
 
 android {
     compileSdkVersion 19
@@ -18,10 +19,14 @@ android {
     }
 
     buildTypes {
+        debug {
+            ext.enableCrashlytics = false
+        }
         release {
             runProguard true
             debuggable false
             jniDebugBuild false
+            ext.enableCrashlytics = true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-project.txt'
         }
     }
@@ -37,7 +42,6 @@ android {
 dependencies {
     compile project(':usbSerialLibrary')
     compile 'com.google.android.gms:play-services:+'
-    //compile files('libs/crashlytics.jar')
     compile files('libs/GoogleAnalytics/libGoogleAnalyticsV2.jar')
     compile files('libs/jscience/jscience-vm14.jar')
     compile files('libs/kegbot-api/kegbot-api.jar')
@@ -51,6 +55,8 @@ dependencies {
     compile 'com.google.code.findbugs:jsr305:2.0.3'
     compile 'com.google.protobuf:protobuf-java:2.5.0'
     compile 'joda-time:joda-time:2.3'
+    compile 'com.crashlytics.android:crashlytics:1.+'
+
     androidTestCompile 'com.jayway.android.robotium:robotium-solo:5.1'
     androidTestCompile 'org.mockito:mockito-core:1.9.5'
     androidTestCompile 'com.google.dexmaker:dexmaker:1.0'

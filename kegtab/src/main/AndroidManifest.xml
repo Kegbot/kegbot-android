@@ -293,10 +293,6 @@
         <service android:name="org.kegbot.app.service.CheckinService" />
         <service android:name="org.kegbot.app.service.GCMService" />
 
-        <meta-data
-            android:name="com.crashlytics.ApiKey"
-            android:value="ba357635725e4d9077107ee8df6b7da3ade3cd6c" />
-
         <activity
             android:name="org.kegbot.app.TapListActivity"
             android:label="@string/title_tap_list"

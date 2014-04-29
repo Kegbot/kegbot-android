@@ -12,6 +12,8 @@ import android.util.Log;
 
 //import com.crashlytics.android.Crashlytics;
 
+import com.crashlytics.android.Crashlytics;
+
 import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.app.config.SharedPreferencesConfigurationStore;
 import org.kegbot.app.service.CheckinService;
@@ -46,12 +48,14 @@ public class KegbotApplication extends Application {
     mConfig = new AppConfiguration(new SharedPreferencesConfigurationStore(mSharedPreferences));
 
     if (mReleaseBuild) {
+      Log.d(TAG, "Activating crashlytics ...");
       try {
-        //Crashlytics.start(this);
+        Crashlytics.start(this);
+        Log.d(TAG, "Crashlytics activated.");
       } catch (Exception e) {
-        Log.w(TAG, "Crashlytics not started: " + e);
+        Log.w(TAG, "Crashlytics not activated: " + e, e);
       } catch (NoClassDefFoundError e) {
-        Log.w(TAG, "Crashlytics not started: " + e);
+        Log.w(TAG, "Crashlytics not activated: " + e, e);
       }
     }
 
