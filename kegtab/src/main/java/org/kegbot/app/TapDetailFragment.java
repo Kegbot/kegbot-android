@@ -33,6 +33,7 @@ import org.kegbot.backend.Backend;
 import org.kegbot.backend.BackendException;
 import org.kegbot.core.KegbotCore;
 import org.kegbot.core.SyncManager;
+import org.kegbot.proto.Models;
 import org.kegbot.proto.Models.FlowMeter;
 import org.kegbot.proto.Models.Keg;
 import org.kegbot.proto.Models.KegTap;
@@ -57,8 +58,11 @@ public class TapDetailFragment extends Fragment {
   private Bus mBus;
 
   private Spinner mMeterSelect;
+  private Spinner mToggleSelect;
   private final List<FlowMeter> mMeters = Lists.newArrayList();
+  private final List<Models.FlowToggle> mToggles = Lists.newArrayList();
   private FlowMeterAdapter mAdapter;
+  private FlowToggleAdapter mToggleAdapter;
 
   private KegTap mTap;
   private int mTapId;
@@ -81,6 +85,9 @@ public class TapDetailFragment extends Fragment {
     final SyncManager syncManager = KegbotCore.getInstance(getActivity()).getSyncManager();
     mMeters.addAll(syncManager.getCurrentFlowMeters());
 
+    mToggles.add(null); // "none"
+    mToggles.addAll(syncManager.getCurrentFlowToggles());
+
     mTapId = getArguments().getInt(ARG_ITEM_ID, 0);
   }
 
@@ -94,7 +101,13 @@ public class TapDetailFragment extends Fragment {
     mAdapter = new FlowMeterAdapter(getActivity());
     mMeterSelect = ButterKnife.findById(mView, R.id.meterSelect);
     mMeterSelect.setAdapter(mAdapter);
+
+    mToggleAdapter = new FlowToggleAdapter(getActivity());
+    mToggleSelect = ButterKnife.findById(mView, R.id.toggleSelect);
+    mToggleSelect.setAdapter(mToggleAdapter);
+
     mAdapter.addAll(mMeters);
+    mToggleAdapter.addAll(mToggles);
     mDeleteTapButton = ButterKnife.findById(mView, R.id.deleteTapButton);
 
     mMeterSelect.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -123,6 +136,48 @@ public class TapDetailFragment extends Fragment {
               } else {
                 Log.d(TAG, "Connecting meter on tap.");
                 backend.connectMeter(mTap, meter);
+              }
+            } catch (BackendException e) {
+              Log.w(TAG, "Error: " + e, e);
+            }
+            sync.requestSync();
+            return null;
+          }
+        }.execute((Void) null);
+      }
+
+      @Override
+      public void onNothingSelected(AdapterView<?> parent) {
+        Log.d(TAG, "onNothingSelected");
+      }
+    });
+
+    mToggleSelect.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+      @Override
+      public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        Log.d(TAG, "toggle selected: position=" + position + " id=" + id);
+
+        final Models.FlowToggle toggle = mToggles.get(position);
+        if (toggle == mTap.getToggle() ||
+            (toggle != null && mTap.hasToggle() && toggle.getId() == mTap.getToggle().getId())) {
+          Log.d(TAG, "Not changed.");
+          return;
+        }
+
+        new AsyncTask<Void, Void, Void>() {
+          @Override
+          protected Void doInBackground(Void... params) {
+            final KegbotCore core = KegbotCore.getInstance(getActivity());
+            final Backend backend = core.getBackend();
+            final SyncManager sync = core.getSyncManager();
+
+            try {
+              if (toggle == null) {
+                Log.d(TAG, "Disconnecting toggle on tap.");
+                backend.disconnectToggle(mTap);
+              } else {
+                Log.d(TAG, "Connecting toggle on tap.");
+                backend.connectToggle(mTap, toggle);
               }
             } catch (BackendException e) {
               Log.w(TAG, "Error: " + e, e);
@@ -198,6 +253,18 @@ public class TapDetailFragment extends Fragment {
       position += 1;
     }
 
+    position = 0;
+    final Models.FlowToggle currentToggle = mTap.getToggle();
+    for (final Models.FlowToggle toggle : mToggles) {
+      if ((toggle == null && currentToggle == null) ||
+          (toggle != null && toggle.getId() == currentToggle.getId())) {
+        mToggleSelect.setSelection(position);
+        break;
+      }
+      position += 1;
+    }
+
+
     final TextView onTapTitle = ButterKnife.findById(mView, R.id.onTapTitle);
     final Button onTapButton = ButterKnife.findById(mView, R.id.tapKegButton);
 
@@ -247,7 +314,6 @@ public class TapDetailFragment extends Fragment {
       Log.w(TAG, "Can't start keg, no meter.");
     }
     startActivity(NewKegActivity.getStartIntent(getActivity(), mTap));
-    //getFragmentManager().popBackStackImmediate();
   }
 
   /** Called when the "end keg" button is pressed. */
@@ -400,6 +466,25 @@ public class TapDetailFragment extends Fragment {
 
     @Override
     public View getDropDownView(int position, View convertView, ViewGroup parent) {
+      return getView(position, convertView, parent);
+    }
+
+    @Override
+    public long getItemId(int position) {
+      if (position == 0) {
+        return 0;
+      }
+      return mMeters.get(position).getId();
+    }
+
+  }
+  private class FlowToggleAdapter extends ArrayAdapter<Models.FlowToggle> {
+    public FlowToggleAdapter(Context context) {
+      super(context, android.R.layout.simple_spinner_item);
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
       final View view;
       if (convertView != null) {
         view = convertView;
@@ -409,10 +494,10 @@ public class TapDetailFragment extends Fragment {
         view = inflater.inflate(android.R.layout.simple_list_item_1, null);
       }
 
-      final FlowMeter item = getItem(position);
+      final Models.FlowToggle item = getItem(position);
       final TextView text = ButterKnife.findById(view, android.R.id.text1);
       if (item == null) {
-        text.setText("Not connected.");
+        text.setText("None.");
       } else {
         text.setText(item.getName());
       }
@@ -420,11 +505,16 @@ public class TapDetailFragment extends Fragment {
     }
 
     @Override
+    public View getDropDownView(int position, View convertView, ViewGroup parent) {
+      return getView(position, convertView, parent);
+    }
+
+    @Override
     public long getItemId(int position) {
       if (position == 0) {
         return 0;
       }
-      return mMeters.get(position).getId();
+      return mToggles.get(position).getId();
     }
 
   }

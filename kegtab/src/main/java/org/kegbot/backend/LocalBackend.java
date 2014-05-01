@@ -10,9 +10,11 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 
 import org.codehaus.jackson.JsonNode;
+import org.kegbot.api.KegbotApiException;
 import org.kegbot.app.util.KegSizes;
 import org.kegbot.app.util.TimeSeries;
 import org.kegbot.proto.Api.RecordTemperatureRequest;
+import org.kegbot.proto.Models;
 import org.kegbot.proto.Models.AuthenticationToken;
 import org.kegbot.proto.Models.Beverage;
 import org.kegbot.proto.Models.BeverageProducer;
@@ -303,4 +305,23 @@ public class LocalBackend implements Backend {
     return mDb.connectTapToMeter(tap, null);
   }
 
+  @Override
+  public List<Models.FlowToggle> getFlowToggles() throws BackendException {
+    return mDb.getAllFlowToggles();
+  }
+
+  @Override
+  public Models.FlowToggle updateFlowToggle(Models.FlowToggle flowToggle) throws BackendException {
+    return mDb.createOrUpdateFlowToggle(flowToggle);
+  }
+
+  @Override
+  public KegTap connectToggle(KegTap tap, Models.FlowToggle flowToggle) throws BackendException {
+    return mDb.connectTapToToggle(tap, flowToggle);
+  }
+
+  @Override
+  public KegTap disconnectToggle(KegTap tap) throws BackendException {
+    return mDb.connectTapToToggle(tap, null);
+  }
 }

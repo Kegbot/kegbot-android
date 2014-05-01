@@ -45,6 +45,7 @@ import org.kegbot.app.event.ControllerListUpdateEvent;
 import org.kegbot.app.event.CurrentSessionChangedEvent;
 import org.kegbot.app.event.DrinkPostedEvent;
 import org.kegbot.app.event.FlowMeterListUpdateEvent;
+import org.kegbot.app.event.FlowToggleListUpdateEvent;
 import org.kegbot.app.event.SoundEventListUpdateEvent;
 import org.kegbot.app.event.SystemEventListUpdateEvent;
 import org.kegbot.app.event.TapListUpdateEvent;
@@ -57,6 +58,7 @@ import org.kegbot.proto.Api.RecordDrinkRequest;
 import org.kegbot.proto.Api.RecordTemperatureRequest;
 import org.kegbot.proto.Api.SyncResponse;
 import org.kegbot.proto.Internal.PendingPour;
+import org.kegbot.proto.Models;
 import org.kegbot.proto.Models.Controller;
 import org.kegbot.proto.Models.Drink;
 import org.kegbot.proto.Models.FlowMeter;
@@ -93,6 +95,7 @@ public class SyncManager extends BackgroundManager {
   private List<SoundEvent> mLastSoundEventList = Lists.newArrayList();
   private List<Controller> mLastControllers = Lists.newArrayList();
   private List<FlowMeter> mLastFlowMeters = Lists.newArrayList();
+  private List<Models.FlowToggle> mLastFlowToggles = Lists.newArrayList();
   @Nullable private Session mLastSession = null;
   @Nullable private JsonNode mLastSessionStats = null;
 
@@ -252,6 +255,10 @@ public class SyncManager extends BackgroundManager {
 
   public List<FlowMeter> getCurrentFlowMeters() {
     return ImmutableList.copyOf(mLastFlowMeters);
+  }
+
+  public List<Models.FlowToggle> getCurrentFlowToggles() {
+    return ImmutableList.copyOf(mLastFlowToggles);
   }
 
   @Subscribe
@@ -570,6 +577,19 @@ public class SyncManager extends BackgroundManager {
       }
     } catch (BackendException e) {
       Log.w(TAG, "Error syncing flow meters: " + e);
+      error = true;
+    }
+
+    // Flow Toggles
+    try {
+      List<Models.FlowToggle> toggles = mBackend.getFlowToggles();
+      if (!toggles.equals(mLastFlowToggles)) {
+        mLastFlowToggles.clear();
+        mLastFlowToggles.addAll(toggles);
+        postOnMainThread(new FlowToggleListUpdateEvent(mLastFlowToggles));
+      }
+    } catch (BackendException e) {
+      Log.w(TAG, "Error syncing flow toggles: " + e);
       error = true;
     }
 

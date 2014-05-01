@@ -24,10 +24,12 @@ import org.codehaus.jackson.JsonNode;
 import org.kegbot.api.KegbotApiException;
 import org.kegbot.app.util.TimeSeries;
 import org.kegbot.proto.Api.RecordTemperatureRequest;
+import org.kegbot.proto.Models;
 import org.kegbot.proto.Models.AuthenticationToken;
 import org.kegbot.proto.Models.Controller;
 import org.kegbot.proto.Models.Drink;
 import org.kegbot.proto.Models.FlowMeter;
+import org.kegbot.proto.Models.FlowToggle;
 import org.kegbot.proto.Models.Image;
 import org.kegbot.proto.Models.Keg;
 import org.kegbot.proto.Models.KegTap;
@@ -176,8 +178,22 @@ public interface Backend {
   public FlowMeter updateFlowMeter(FlowMeter flowMeter) throws BackendException;
 
   /** Connect a meter to a tap. */
-  public KegTap connectMeter(KegTap tap, FlowMeter meter) throws KegbotApiException;
+  public KegTap connectMeter(KegTap tap, FlowMeter meter) throws BackendException;
 
   /** Disconnect a meter. */
   public KegTap disconnectMeter(KegTap tap) throws BackendException;
+
+  /** Returns all {@link FlowMeter FlowMeters} known to the backend. */
+  public List<FlowToggle> getFlowToggles() throws BackendException;
+
+  /** Updates an existing {@link FlowToggle}. */
+  public FlowToggle updateFlowToggle(FlowToggle flowToggle) throws BackendException;
+
+  /** Connect a toggle to a tap. */
+  public KegTap connectToggle(KegTap tap, FlowToggle toggle) throws BackendException;
+
+  /** Disconnect a toggle. */
+  public KegTap disconnectToggle(KegTap tap) throws BackendException;
+
+
 }

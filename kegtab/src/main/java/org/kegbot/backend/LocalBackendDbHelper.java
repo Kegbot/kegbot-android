@@ -38,6 +38,7 @@ import org.kegbot.proto.Models.BeverageProducer;
 import org.kegbot.proto.Models.Controller;
 import org.kegbot.proto.Models.Drink;
 import org.kegbot.proto.Models.FlowMeter;
+import org.kegbot.proto.Models.FlowToggle;
 import org.kegbot.proto.Models.Keg;
 import org.kegbot.proto.Models.KegTap;
 
@@ -53,7 +54,7 @@ public class LocalBackendDbHelper extends SQLiteOpenHelper {
 
   private static final String TAG = LocalBackendDbHelper.class.getSimpleName();
 
-  private static final int DATABASE_VERSION = 2;
+  private static final int DATABASE_VERSION = 3;
 
   @VisibleForTesting
   static final String DATABASE_NAME = "local_backend.db";
@@ -96,6 +97,10 @@ public class LocalBackendDbHelper extends SQLiteOpenHelper {
   private static final String COLUMN_FLOW_METER_PORT_NAME = "port_name";
   private static final String COLUMN_FLOW_METER_TICKS_PER_ML = "ticks_per_ml";
 
+  private static final String TABLE_FLOW_TOGGLES = "flow_toggles";
+  private static final String COLUMN_FLOW_TOGGLE_CONTROLLER_ID = "controller_id";
+  private static final String COLUMN_FLOW_TOGGLE_PORT_NAME = "port_name";
+
   /**
    * @param context
    */
@@ -105,53 +110,72 @@ public class LocalBackendDbHelper extends SQLiteOpenHelper {
 
   @Override
   public void onCreate(SQLiteDatabase db) {
-    Log.d(TAG, "Creating table " + TABLE_KEGS);
-    db.execSQL("CREATE TABLE " + TABLE_KEGS + " ("
-        + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-        + COLUMN_KEG_START_TIME + " DATETIME DEFAULT CURRENT_TIMESTAMP, "
-        + COLUMN_KEG_END_TIME + " DATETIME DEFAULT CURRENT_TIMESTAMP, "
-        + COLUMN_KEG_BEER_TYPE_NAME + " TEXT NOT NULL, "
-        + COLUMN_KEG_BEER_BREWER_NAME + " TEXT NOT NULL, "
-        + COLUMN_KEG_BEER_STYLE_NAME + " TEXT NOT NULL, "
-        + COLUMN_KEG_ONLINE + " INTEGER NOT NULL DEFAULT 1, "
-        + COLUMN_KEG_KEG_TYPE + " TEXT NOT NULL, "
-        + COLUMN_KEG_FULL_VOLUME_ML + " REAL NOT NULL, "
-        + COLUMN_KEG_SERVED_VOLUME_ML + " REAL NOT NULL)");
-
-    Log.d(TAG, "Creating table " + TABLE_TAPS);
-    db.execSQL("CREATE TABLE " + TABLE_TAPS + " ("
-        + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-        + COLUMN_TAP_TAP_NAME + " TEXT NOT NULL, "
-        + COLUMN_TAP_SORT_ORDER + " INTEGER NOT NULL DEFAULT 0, "
-        + COLUMN_TAP_FLOW_METER_ID + " INTEGER, "
-        + COLUMN_TAP_CURRENT_KEG + " INTEGER)");
-
-    Log.d(TAG, "Creating table " + TABLE_DRINKS);
-    db.execSQL("CREATE TABLE " + TABLE_DRINKS + " ("
-        + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-        + COLUMN_DRINK_KEG_ID + " INTEGER NOT NULL, "
-        + COLUMN_DRINK_TICKS + " INTEGER NOT NULL, "
-        + COLUMN_DRINK_VOLUME_ML + " INTEGER NOT NULL, "
-        + COLUMN_DRINK_TIME + " DATETIME DEFAULT CURRENT_TIMESTAMP, "
-        + COLUMN_DRINK_USERNAME + " STRING, "
-        + COLUMN_DRINK_PICTURE_URL + " STRING, "
-        + COLUMN_DRINK_SHOUT + " TEXT)");
-
-    Log.d(TAG, "Creating table " + TABLE_CONTROLLERS);
-    db.execSQL("CREATE TABLE " + TABLE_CONTROLLERS + " ("
-        + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-        + COLUMN_CONTROLLER_NAME + " STRING UNIQUE NOT NULL, "
-        + COLUMN_CONTROLLER_MODEL_NAME + " STRING, "
-        + COLUMN_CONTROLLER_SERIAL_NUMBER + " STRING)");
-
-    Log.d(TAG, "Creating table " + TABLE_FLOW_METERS);
-    db.execSQL("CREATE TABLE " + TABLE_FLOW_METERS + " ("
-        + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-        + COLUMN_FLOW_METER_CONTROLLER_ID + " INTEGER NOT NULL, "
-        + COLUMN_FLOW_METER_PORT_NAME + " STRING NOT NULL, "
-        + COLUMN_FLOW_METER_TICKS_PER_ML + " REAL)");
-
+    upgrade(db, 0);
     setDefaults(db);
+  }
+
+  private void upgrade(SQLiteDatabase db, int currentVersion) {
+    if (currentVersion < 2) {
+      currentVersion = 2;
+      Log.i(TAG, "Updating to schema version " + currentVersion + " ...");
+
+      Log.d(TAG, "Creating table " + TABLE_KEGS);
+      db.execSQL("CREATE TABLE " + TABLE_KEGS + " ("
+          + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+          + COLUMN_KEG_START_TIME + " DATETIME DEFAULT CURRENT_TIMESTAMP, "
+          + COLUMN_KEG_END_TIME + " DATETIME DEFAULT CURRENT_TIMESTAMP, "
+          + COLUMN_KEG_BEER_TYPE_NAME + " TEXT NOT NULL, "
+          + COLUMN_KEG_BEER_BREWER_NAME + " TEXT NOT NULL, "
+          + COLUMN_KEG_BEER_STYLE_NAME + " TEXT NOT NULL, "
+          + COLUMN_KEG_ONLINE + " INTEGER NOT NULL DEFAULT 1, "
+          + COLUMN_KEG_KEG_TYPE + " TEXT NOT NULL, "
+          + COLUMN_KEG_FULL_VOLUME_ML + " REAL NOT NULL, "
+          + COLUMN_KEG_SERVED_VOLUME_ML + " REAL NOT NULL)");
+
+      Log.d(TAG, "Creating table " + TABLE_TAPS);
+      db.execSQL("CREATE TABLE " + TABLE_TAPS + " ("
+          + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+          + COLUMN_TAP_TAP_NAME + " TEXT NOT NULL, "
+          + COLUMN_TAP_SORT_ORDER + " INTEGER NOT NULL DEFAULT 0, "
+          + COLUMN_TAP_FLOW_METER_ID + " INTEGER, "
+          + COLUMN_TAP_CURRENT_KEG + " INTEGER)");
+
+      Log.d(TAG, "Creating table " + TABLE_DRINKS);
+      db.execSQL("CREATE TABLE " + TABLE_DRINKS + " ("
+          + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+          + COLUMN_DRINK_KEG_ID + " INTEGER NOT NULL, "
+          + COLUMN_DRINK_TICKS + " INTEGER NOT NULL, "
+          + COLUMN_DRINK_VOLUME_ML + " INTEGER NOT NULL, "
+          + COLUMN_DRINK_TIME + " DATETIME DEFAULT CURRENT_TIMESTAMP, "
+          + COLUMN_DRINK_USERNAME + " STRING, "
+          + COLUMN_DRINK_PICTURE_URL + " STRING, "
+          + COLUMN_DRINK_SHOUT + " TEXT)");
+
+      Log.d(TAG, "Creating table " + TABLE_CONTROLLERS);
+      db.execSQL("CREATE TABLE " + TABLE_CONTROLLERS + " ("
+          + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+          + COLUMN_CONTROLLER_NAME + " STRING UNIQUE NOT NULL, "
+          + COLUMN_CONTROLLER_MODEL_NAME + " STRING, "
+          + COLUMN_CONTROLLER_SERIAL_NUMBER + " STRING)");
+
+      Log.d(TAG, "Creating table " + TABLE_FLOW_METERS);
+      db.execSQL("CREATE TABLE " + TABLE_FLOW_METERS + " ("
+          + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+          + COLUMN_FLOW_METER_CONTROLLER_ID + " INTEGER NOT NULL, "
+          + COLUMN_FLOW_METER_PORT_NAME + " STRING NOT NULL, "
+          + COLUMN_FLOW_METER_TICKS_PER_ML + " REAL)");
+    }
+
+    if (currentVersion < 3) {
+      currentVersion = 3;
+      Log.i(TAG, "Updating to schema version " + currentVersion + " ...");
+
+      Log.d(TAG, "Creating table " + TABLE_FLOW_TOGGLES);
+      db.execSQL("CREATE TABLE " + TABLE_FLOW_TOGGLES + " ("
+          + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+          + COLUMN_FLOW_TOGGLE_CONTROLLER_ID + " INTEGER NOT NULL, "
+          + COLUMN_FLOW_TOGGLE_PORT_NAME + " STRING NOT NULL)");
+    }
   }
 
   private void setDefaults(SQLiteDatabase db) {
@@ -184,14 +208,11 @@ public class LocalBackendDbHelper extends SQLiteOpenHelper {
   @Override
   public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
     Log.w(TAG, "Upgrading database from version " + oldVersion + " to " + newVersion);
-    if (oldVersion != newVersion) {
-      db.execSQL("DROP TABLE IF EXISTS "  + TABLE_DRINKS);
-      db.execSQL("DROP TABLE IF EXISTS "  + TABLE_TAPS);
-      db.execSQL("DROP TABLE IF EXISTS "  + TABLE_KEGS);
-      db.execSQL("DROP TABLE IF EXISTS "  + TABLE_CONTROLLERS);
-      db.execSQL("DROP TABLE IF EXISTS "  + TABLE_FLOW_METERS);
-      onCreate(db);
+    if (oldVersion >= DATABASE_VERSION) {
+      Log.wtf(TAG, "Unknown database version, maximum is " + DATABASE_VERSION);
+      return;
     }
+    upgrade(db, oldVersion);
   }
 
   List<Controller> getAllControllers() {
@@ -262,6 +283,39 @@ public class LocalBackendDbHelper extends SQLiteOpenHelper {
   FlowMeter getFlowMeter(int flowMeterId) {
     final SQLiteDatabase db = getReadableDatabase();
     return getFlowMeter(flowMeterId, db);
+  }
+
+  List<FlowToggle> getAllFlowToggles() {
+    final SQLiteDatabase db = getReadableDatabase();
+    final List<FlowToggle> result = Lists.newArrayList();
+    try {
+      final Cursor cursor =
+          db.query(TABLE_FLOW_TOGGLES,
+              null, null, null, null, null, COLUMN_ID + " ASC");
+      try {
+        if (cursor.getCount() == 0) {
+          return result;
+        }
+
+        Log.d(TAG, "getAllFlowToggles: count=" + cursor.getCount());
+
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+          final FlowToggle toggle = flowToggleFromCursor(cursor, db);
+          result.add(toggle);
+          cursor.moveToNext();
+        }
+      } finally {
+        cursor.close();
+      }
+    } finally {
+    }
+    return result;
+  }
+
+  FlowToggle getFlowToggle(int flowToggleId) {
+    final SQLiteDatabase db = getReadableDatabase();
+    return getFlowToggle(flowToggleId, db);
   }
 
   List<KegTap> getAllTaps() {
@@ -439,6 +493,21 @@ public class LocalBackendDbHelper extends SQLiteOpenHelper {
     return createOrUpdateFlowMeter(meter, db);
   }
 
+  FlowToggle createOrUpdateFlowToggle(FlowToggle toggle, SQLiteDatabase db) {
+    final long result = db.insertWithOnConflict(TABLE_FLOW_METERS, null, toContentValues(toggle),
+        SQLiteDatabase.CONFLICT_REPLACE);
+    if (result < 0) {
+      throw new SQLiteException("Error during insert: " + result);
+    }
+    Log.d(TAG, "Created/updated toggle, id: " + result);
+    return getFlowToggle((int) result, db);
+  }
+
+  FlowToggle createOrUpdateFlowToggle(FlowToggle toggle) {
+    final SQLiteDatabase db = getWritableDatabase();
+    return createOrUpdateFlowToggle(toggle, db);
+  }
+
   KegTap connectTapToMeter(final KegTap tap, @Nullable final FlowMeter meter) {
     Log.d(TAG, "connectTapToMeter: " + tap.getName() + " meter: " + (meter != null ? meter.getId() : null));
     // Unlink a meter.
@@ -459,13 +528,44 @@ public class LocalBackendDbHelper extends SQLiteOpenHelper {
       if (otherTap.getMeter().getId() != meter.getId()) {
         continue;
       }
-      Log.d(TAG, "-- unlinking tap " + otherTap.getName());
+      Log.d(TAG, "-- unlinking  meter on tap " + otherTap.getName());
       connectTapToMeter(otherTap, null);
     }
 
     return createOrUpdateTap(KegTap.newBuilder(tap)
         .setMeter(meter)
         .setMeterName(meter.getName())
+        .build());
+  }
+
+  KegTap connectTapToToggle(final KegTap tap, @Nullable final FlowToggle toggle) {
+    Log.d(TAG, "connectTapToToggle: " + tap.getName() + " toggle: " +
+        (toggle != null ? toggle.getId() : null));
+    // Unlink a toggle.
+    if (toggle == null) {
+      return createOrUpdateTap(KegTap.newBuilder(tap)
+          .clearToggle()
+          .clearRelayName()
+          .build());
+    }
+
+    Log.d(TAG, "Assigning tap " + tap.getName() + " to toggle " + toggle.getName());
+
+    // Unlink toggle on any other taps (should be just one).
+    for (final KegTap otherTap : getAllTaps()) {
+      if (!otherTap.hasToggle()) {
+        continue;
+      }
+      if (otherTap.getToggle().getId() != toggle.getId()) {
+        continue;
+      }
+      Log.d(TAG, "-- unlinking toggle on tap " + otherTap.getName());
+      connectTapToToggle(otherTap, null);
+    }
+
+    return createOrUpdateTap(KegTap.newBuilder(tap)
+        .setToggle(toggle)
+        .setRelayName(toggle.getName())
         .build());
   }
 
@@ -517,6 +617,15 @@ public class LocalBackendDbHelper extends SQLiteOpenHelper {
     }
   }
 
+  private FlowToggle getFlowToggle(int flowToggleId, SQLiteDatabase db) {
+    final Cursor cursor = getRow(db, TABLE_FLOW_TOGGLES, flowToggleId);
+    try {
+      return flowToggleFromCursor(cursor, db);
+    } finally {
+      cursor.close();
+    }
+  }
+
   private KegTap getTap(int tapId, SQLiteDatabase db) {
     final Cursor cursor = getRow(db, TABLE_TAPS, tapId);
     try {
@@ -558,6 +667,25 @@ public class LocalBackendDbHelper extends SQLiteOpenHelper {
         .setName(String.format("%s.%s", controller.getName(), portName))
         .build();
     return flowMeter;
+  }
+
+  private FlowToggle flowToggleFromCursor(Cursor cursor, SQLiteDatabase db) {
+    final int id = cursor.getInt(cursor.getColumnIndex(COLUMN_ID));
+    if (id < 0) {
+      throw new IllegalStateException("Bad column id: " + id);
+    }
+
+    final int controllerId = cursor.getInt(cursor.getColumnIndex(COLUMN_FLOW_TOGGLE_CONTROLLER_ID));
+    final String portName = cursor.getString(cursor.getColumnIndex(COLUMN_FLOW_TOGGLE_PORT_NAME));
+
+    final Controller controller = getController(controllerId, db);
+    final FlowToggle flowToggle = FlowToggle.newBuilder()
+        .setId(id)
+        .setPortName(portName)
+        .setController(controller)
+        .setName(String.format("%s.%s", controller.getName(), portName))
+        .build();
+    return flowToggle;
   }
 
   private Keg kegFromCursor(final Cursor cursor) {
@@ -684,6 +812,16 @@ public class LocalBackendDbHelper extends SQLiteOpenHelper {
     values.put(COLUMN_FLOW_METER_CONTROLLER_ID, Integer.valueOf(meter.getController().getId()));
     values.put(COLUMN_FLOW_METER_PORT_NAME, meter.getPortName());
     values.put(COLUMN_FLOW_METER_TICKS_PER_ML, Double.valueOf(meter.getTicksPerMl()));
+    return values;
+  }
+
+  private static ContentValues toContentValues(final FlowToggle toggle) {
+    final ContentValues values = new ContentValues();
+    if (toggle.getId() != 0) {
+      values.put(COLUMN_ID, Integer.valueOf(toggle.getId()));
+    }
+    values.put(COLUMN_FLOW_TOGGLE_CONTROLLER_ID, Integer.valueOf(toggle.getController().getId()));
+    values.put(COLUMN_FLOW_TOGGLE_PORT_NAME, toggle.getPortName());
     return values;
   }
 

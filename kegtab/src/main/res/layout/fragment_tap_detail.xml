@@ -159,7 +159,7 @@
                 android:background="#1FFFFFFF" />
 
             <LinearLayout
-                android:id="@+id/hardwareSettings"
+                android:id="@+id/meterSettings"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/divider3"
@@ -182,6 +182,33 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/meterTitle"
+                    android:layout_marginBottom="16dp"
+                    android:layout_weight="1" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/toggleSettings"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/meterSettings"
+                android:orientation="horizontal"
+                android:weightSum="2" >
+
+                <TextView
+                    android:id="@+id/toggleTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right|center_vertical"
+                    android:layout_marginBottom="4dp"
+                    android:layout_weight="1"
+                    style="@style/smallText"
+                    android:text="Toggle connected to this tap (optional):"
+                    android:textAlignment="gravity" />
+
+                <Spinner
+                    android:id="@+id/toggleSelect"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
                     android:layout_weight="1" />
             </LinearLayout>

@@ -36,10 +36,12 @@ import org.kegbot.app.util.TimeSeries;
 import org.kegbot.backend.Backend;
 import org.kegbot.backend.BackendException;
 import org.kegbot.proto.Api.RecordTemperatureRequest;
+import org.kegbot.proto.Models;
 import org.kegbot.proto.Models.AuthenticationToken;
 import org.kegbot.proto.Models.Controller;
 import org.kegbot.proto.Models.Drink;
 import org.kegbot.proto.Models.FlowMeter;
+import org.kegbot.proto.Models.FlowToggle;
 import org.kegbot.proto.Models.Image;
 import org.kegbot.proto.Models.Keg;
 import org.kegbot.proto.Models.KegTap;
@@ -491,7 +493,7 @@ public class KegbotApiImpl implements Backend {
   }
 
   @Override
-  public KegTap connectMeter(KegTap tap, FlowMeter meter) throws KegbotApiException {
+  public KegTap connectMeter(KegTap tap, FlowMeter meter) throws BackendException {
       final Map<String, String> params = Maps.newLinkedHashMap();
       params.put("meter", String.valueOf(meter.getId()));
       return (KegTap) postProto("/taps/" + tap.getId() + "/connect-meter", KegTap.newBuilder(), params);
@@ -502,4 +504,30 @@ public class KegbotApiImpl implements Backend {
       return (KegTap) postProto("/taps/" + tap.getId() + "/disconnect-meter", KegTap.newBuilder(), null);
   }
 
+  @Override
+  public List<FlowToggle> getFlowToggles() throws BackendException {
+    return getProto("/flow-toggles/", FlowToggle.newBuilder());
+  }
+
+  @Override
+  public Models.FlowToggle updateFlowToggle(Models.FlowToggle flowToggle) throws BackendException {
+    final Map<String, String> params = Maps.newLinkedHashMap();
+    params.put("port_name", flowToggle.getPortName());
+
+    return (FlowToggle) postProto("/flow-toggles/" + flowToggle.getId(), FlowToggle.newBuilder(),
+        params);
+  }
+
+  @Override
+  public KegTap connectToggle(KegTap tap, Models.FlowToggle toggle) throws BackendException {
+    final Map<String, String> params = Maps.newLinkedHashMap();
+    params.put("toggle", String.valueOf(toggle.getId()));
+    return (KegTap) postProto("/taps/" + tap.getId() + "/connect-toggle", KegTap.newBuilder(), params);
+  }
+
+  @Override
+  public KegTap disconnectToggle(KegTap tap) throws BackendException {
+    return (KegTap) postProto("/taps/" + tap.getId() + "/disconnect-toggle", KegTap.newBuilder(),
+        null);
+  }
 }

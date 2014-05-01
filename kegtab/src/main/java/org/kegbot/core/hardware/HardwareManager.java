@@ -78,6 +78,7 @@ public class HardwareManager extends Manager {
   private final Map<Controller, Boolean> mControllers = Maps.newLinkedHashMap();
 
   private final Set<ControllerManager> mManagers = Sets.newLinkedHashSet();
+  private KegboardManager mKegboardManager;
 
   private final ControllerManager.Listener mListener = new ControllerManager.Listener() {
     @Override
@@ -101,7 +102,8 @@ public class HardwareManager extends Manager {
 
     // TODO(mikey): Still need backend?
 
-    mManagers.add(new KegboardManager(getBus(), context, mListener));
+    mKegboardManager = new KegboardManager(getBus(), context, mListener);
+    mManagers.add(mKegboardManager);
     mManagers.add(new FakeControllerManager(getBus(), mListener));
   }
 
@@ -177,7 +179,7 @@ public class HardwareManager extends Manager {
       return;
     }
 
-    //mKegboardManager.toggleOutput(toggle.getName(), enable);
+    mKegboardManager.toggleOutput(toggle.getName(), enable);
   }
 
   @Override
