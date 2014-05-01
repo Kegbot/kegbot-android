@@ -7,6 +7,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.hoho.android.usbserial.driver.UsbSerialPort;
 import com.hoho.android.usbserial.util.HexDump;
 
@@ -23,9 +24,11 @@ import org.kegbot.kegboard.KegboardTemperatureReadingMessage;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -63,7 +66,13 @@ public class KegboardController implements Controller {
 
   private final Map<String, ThermoSensor> mThermoSensors = Maps.newLinkedHashMap();
 
+  /**
+   * Map of toggle number to next desired "enable" refresh time.
+   */
   private final Map<Integer, Long> mEnabledOutputsToRefreshUptimeMillis = Maps.newLinkedHashMap();
+
+  /** Keys that were present in #mLastEnabledOutputs during last refreshOutputs call. */
+  private final Set<Integer> mLastEnabledOutputs = Sets.newLinkedHashSet();
 
   public KegboardController(UsbSerialPort port) {
     mSerialPort = port;
@@ -127,17 +136,15 @@ public class KegboardController implements Controller {
   }
 
   boolean scheduleToggleOutput(final int outputId, final boolean enable) {
+    Log.d(TAG, "scheduleToggleOutput: outputId=" + outputId + " enable=" + enable);
     if (outputId < 0 || outputId >= 4) {
-      Log.w(TAG, "Unknown output number.");
+      Log.w(TAG, "Unknown output number: " + outputId);
       return false;
     }
     final Integer outputInteger = Integer.valueOf(outputId);
 
     synchronized (mEnabledOutputsToRefreshUptimeMillis) {
       if (!enable) {
-        if (!mEnabledOutputsToRefreshUptimeMillis.containsKey(outputInteger)) {
-          return false;
-        }
         mEnabledOutputsToRefreshUptimeMillis.remove(outputInteger);
       } else {
         final Long nextRefresh = Long.valueOf(SystemClock.uptimeMillis() + OUTPUT_REFRESH_INTERVAL);
@@ -152,27 +159,8 @@ public class KegboardController implements Controller {
     if (outputId < 0 || outputId >= 4) {
       throw new IOException("Illegal output id.");
     }
-    final Integer outputInteger = Integer.valueOf(outputId);
-
-    synchronized (mEnabledOutputsToRefreshUptimeMillis) {
-      if (!enable) {
-        if (!mEnabledOutputsToRefreshUptimeMillis.containsKey(outputInteger)) {
-          return;
-        }
-        mEnabledOutputsToRefreshUptimeMillis.remove(outputInteger);
-      } else {
-        final Long nextRefresh = Long.valueOf(SystemClock.uptimeMillis() + OUTPUT_REFRESH_INTERVAL);
-        mEnabledOutputsToRefreshUptimeMillis.put(outputInteger, nextRefresh);
-      }
-    }
-
     final KegboardSetOutputCommand enableCmd = new KegboardSetOutputCommand(outputId, enable);
     mSerialPort.write(enableCmd.toBytes(), 500);
-  }
-
-  void ping() throws IOException {
-    final KegboardPingCommand cmd = new KegboardPingCommand();
-    mSerialPort.write(cmd.toBytes(), 500);
   }
 
   void refreshOutputs() throws IOException {
@@ -183,9 +171,28 @@ public class KegboardController implements Controller {
         final long deadline = entry.getValue().longValue();
         if (deadline >= now) {
           toggleOutput(outputId, true);
+          final Long nextRefresh = Long.valueOf(SystemClock.uptimeMillis() + OUTPUT_REFRESH_INTERVAL);
+          mEnabledOutputsToRefreshUptimeMillis.put(entry.getKey(), nextRefresh);
         }
       }
+
+      final Set<Integer> missing = new LinkedHashSet(mLastEnabledOutputs);
+      missing.removeAll(mEnabledOutputsToRefreshUptimeMillis.keySet());
+      if (!missing.isEmpty()) {
+        for (final Integer outputId : missing) {
+          Log.d(TAG, "refreshOutputs: missing id " + outputId);
+          toggleOutput(outputId.intValue(), false);
+        }
+      }
+
+      mLastEnabledOutputs.clear();
+      mLastEnabledOutputs.addAll(mEnabledOutputsToRefreshUptimeMillis.keySet());
     }
+  }
+
+  void ping() throws IOException {
+    final KegboardPingCommand cmd = new KegboardPingCommand();
+    mSerialPort.write(cmd.toBytes(), 500);
   }
 
   synchronized void setSerialNumber(final String serialNumber) {
@@ -251,7 +258,7 @@ public class KegboardController implements Controller {
       Log.w(TAG, "Error!");
       throw new IOException("Device closed.");
     }
-    //Log.d(TAG, "Read bytes: " + HexDump.dumpHexString(mReadBuffer, 0, amtRead));
+    Log.d(TAG, "Read bytes: " + HexDump.dumpHexString(mReadBuffer, 0, amtRead));
     mReader.addBytes(mReadBuffer, amtRead);
   }
 

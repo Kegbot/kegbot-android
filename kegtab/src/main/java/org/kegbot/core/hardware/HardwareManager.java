@@ -179,7 +179,7 @@ public class HardwareManager extends Manager {
       return;
     }
 
-    mKegboardManager.toggleOutput(toggle.getName(), enable);
+    mKegboardManager.toggleOutput(toggle, enable);
   }
 
   @Override

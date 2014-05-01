@@ -39,6 +39,7 @@ import com.hoho.android.usbserial.driver.ProbeTable;
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
 import com.hoho.android.usbserial.driver.UsbSerialPort;
 import com.hoho.android.usbserial.driver.UsbSerialProber;
+import com.hoho.android.usbserial.util.HexDump;
 import com.squareup.otto.Bus;
 
 import org.kegbot.app.event.Event;
@@ -51,8 +52,10 @@ import org.kegbot.kegboard.KegboardHelloMessage;
 import org.kegbot.kegboard.KegboardMessage;
 import org.kegbot.kegboard.KegboardMeterStatusMessage;
 import org.kegbot.kegboard.KegboardTemperatureReadingMessage;
+import org.kegbot.proto.Models;
 
 import java.io.IOException;
+import java.security.SecureRandom;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Queue;
@@ -61,6 +64,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.GuardedBy;
@@ -88,6 +93,8 @@ public class KegboardManager extends BackgroundManager implements ControllerMana
   }
 
   private static final UsbSerialProber PROBER = new UsbSerialProber(PROBE_TABLE);
+
+  private static final Pattern RELAY_PATTERN = Pattern.compile("relay(\\d+)");
 
   private ExecutorService mExecutorService;
 
@@ -199,42 +206,25 @@ public class KegboardManager extends BackgroundManager implements ControllerMana
     mNextUsbRefreshUptimeMillis = SystemClock.uptimeMillis();
   }
 
-  public boolean toggleOutput(final String outputName, final boolean enable) {
-    int sepIndex = outputName.indexOf(':');
-    if (sepIndex < 0) {
-      sepIndex = outputName.indexOf('.');
-    }
-    if (sepIndex < 0) {
-      Log.w(TAG, "Unrecognized output name, ignoring: " + outputName);
-      return false;
-    }
-    if ((sepIndex + 1) >= outputName.length()) {
-      Log.w(TAG, "Malformed output name, ignoring: " + outputName);
-      return false;
-    }
-
-    // Split board and output names.
-    final String boardName = outputName.substring(0, sepIndex);
-    final String relayName = outputName.substring(sepIndex + 1);
-    Log.d(TAG, "Enabling board=" + boardName + " relay=" + relayName);
-
-    // Parse relay name.
-    if (!relayName.startsWith("relay") || relayName.length() < 6 ||
-        !Character.isDigit(relayName.charAt(5))) {
-      Log.w(TAG, "Unrecognized output name: " + relayName);
-      return false;
-    }
-
-    final int outputNumber = relayName.charAt(5);
-
-    final KegboardController controller = getControllerByName(boardName);
+  public boolean toggleOutput(final Models.FlowToggle toggle, final boolean enable) {
+    Log.d(TAG, "toggleOutput: toggle=" + toggle.getName() + " enable=" + enable);
+    final String boardName = toggle.getController().getName();
+    final KegboardController controller = getControllerByName(toggle.getController().getName());
     if (controller == null) {
       Log.w(TAG, "No controller with name " + boardName);
       return false;
     }
 
+    final String portName = toggle.getPortName();
+    final Matcher matcher = RELAY_PATTERN.matcher(portName);
+    if (!matcher.matches()) {
+      Log.w(TAG, "Unrecognized port name " + portName);
+      return false;
+    }
+    final int portNumber = Integer.valueOf(matcher.group(1)).intValue();
+
     try {
-      return controller.scheduleToggleOutput(outputNumber, enable);
+      return controller.scheduleToggleOutput(portNumber, enable);
     } finally {
       refreshSoon();
     }
@@ -286,7 +276,6 @@ public class KegboardManager extends BackgroundManager implements ControllerMana
    * {@link android.hardware.usb.UsbManager#getDeviceList()}.
    */
   private synchronized void findNewControllers() {
-    Log.d(TAG, "findNewControllers");
     final Collection<UsbDevice> devices = mUsbManager.getDeviceList().values();
     final Set<Integer> connectedIds = Sets.newLinkedHashSet();
 
@@ -407,16 +396,26 @@ public class KegboardManager extends BackgroundManager implements ControllerMana
       // Board firmware too old.
       status = Controller.STATUS_NEED_UPDATE;
     } else if (Strings.isNullOrEmpty(verified.getSerialNumber())) {
-      // Board needs a serial number.
-      status = Controller.STATUS_NEED_SERIAL_NUMBER;
+      // Board needs a serial number.  OK for now.
+      status = Controller.STATUS_OK;
     } else {
       // All good! This baby's ready to report!
       status = Controller.STATUS_OK;
     }
+
+    for (final KegboardController existingController : mControllers.values()) {
+      if (existingController.getName().equals(controller.getName())) {
+        Log.w(TAG, "Already have a controller named " + controller.getName());
+        status = Controller.STATUS_NAME_CONFLICT;
+        break;
+      }
+    }
+
+    Log.d(TAG, "addSerialPort: setting controller status " + status);
     controller.setStatus(status);
+    mControllers.put(port, controller);
 
     if (Controller.STATUS_OK.equals(status)) {
-      mControllers.put(port, controller);
       mListener.onControllerAttached(controller);
     }
   }
@@ -466,12 +465,31 @@ public class KegboardManager extends BackgroundManager implements ControllerMana
   }
 
   private KegboardHelloMessage verifyFirmware(KegboardController controller) throws IOException {
-    Log.d(TAG, "Pinging controller: " + controller);
+    Log.d(TAG, "verifyFirmware: Pinging controller: " + controller);
 
-    for (int attempt = 0; attempt < 4; attempt++) {
-      SystemClock.sleep(500);
-      controller.ping();
+    final KegboardHelloMessage pingResponse = pingController(controller);
+    if (pingResponse == null) {
+      Log.w(TAG, "verifyFirmware: No response from controller: " + controller);
+      return null;
+    }
+
+    if (!Strings.isNullOrEmpty(pingResponse.getSerialNumber())) {
+      Log.d(TAG, "verifyFirmware: Success: " + pingResponse);
+      return pingResponse;
+    }
+
+    Log.d(TAG, "verifyFirmware: Board has no serial number, setting...");
+    return setControllerSerialNumber(controller);
+  }
+
+  private KegboardHelloMessage pingController(KegboardController controller) throws IOException {
+    final int maxAttempts = 4;
+
+    KegboardHelloMessage helloMessage = null;
+    for (int i=0; i < maxAttempts; i++) {
       SystemClock.sleep(200);
+      controller.ping();
+      SystemClock.sleep(500);
 
       for (final KegboardMessage message : controller.readMessages()) {
         if (message instanceof KegboardHelloMessage) {
@@ -480,8 +498,18 @@ public class KegboardManager extends BackgroundManager implements ControllerMana
       }
     }
 
-    Log.w(TAG, "No response to ping, disabling board.");
     return null;
+  }
+
+  private KegboardHelloMessage setControllerSerialNumber(final KegboardController controller) throws IOException {
+    final int randInt = new SecureRandom().nextInt();
+    final String randStr = HexDump.toHexString(randInt);
+    assert randStr.length() == 8;
+    final String serialNumber = String.format("KB-0000-0000-%s", randStr);
+
+    Log.i(TAG, "Setting serial number: " + serialNumber);
+    controller.setSerialNumber(serialNumber);
+    return pingController(controller);
   }
 
   private KegboardController getControllerByName(final String name) {
@@ -497,8 +525,11 @@ public class KegboardManager extends BackgroundManager implements ControllerMana
     mExecutorService.submit(new Runnable() {
       @Override
       public void run() {
-        Thread.currentThread().setName("kegboard-thr:" + controller.getName());
-        final String threadName = Thread.currentThread().getName();
+        final int deviceId = controller.getPort().getDriver().getDevice().getDeviceId();
+        final int portNumber = controller.getPort().getPortNumber();
+        final String threadName = String.format("kegboard-thr:%s-%s", deviceId, portNumber);
+        Thread.currentThread().setName(threadName);
+
         try {
           final String controllerName = String.valueOf(controller);
           Log.d(TAG, String.format("Thread %s servicing controller %s", threadName, controllerName));
@@ -513,7 +544,7 @@ public class KegboardManager extends BackgroundManager implements ControllerMana
             }
           }
         } catch (Throwable t) {
-          Log.wtf(TAG, String.format("Uncaught exception in thread %s: %s", threadName, t));
+          Log.wtf(TAG, String.format("Uncaught exception in thread %s: %s", threadName, t), t);
           throw new RuntimeException(t);
         }
       }
