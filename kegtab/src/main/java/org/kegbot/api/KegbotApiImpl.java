@@ -33,6 +33,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.codehaus.jackson.JsonNode;
 import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.app.util.TimeSeries;
+import org.kegbot.app.util.Version;
 import org.kegbot.backend.Backend;
 import org.kegbot.backend.BackendException;
 import org.kegbot.proto.Api.RecordTemperatureRequest;
@@ -202,6 +203,35 @@ public class KegbotApiImpl implements Backend {
   public Version getVersion() throws KegbotApiException {
     final String version = getJson("/version", null).get("object").get("server_version").getTextValue();
     return Version.fromString(version);
+  }
+
+  public boolean supportsDeviceLink() throws KegbotApiException {
+    try {
+      return getVersion().compareTo(Version.fromString("0.9.27")) >= 0;
+    } catch (KegbotApi404 e) {
+      return false;
+    }
+  }
+
+  public String startDeviceLink(final String deviceName) throws KegbotApiException {
+    final Map<String, String> params = Maps.newLinkedHashMap();
+    params.put("name", deviceName);
+    debug("Starting device link ...");
+    final JsonNode result = postJson("/devices/link/", params);
+    final String code = result.get("object").get("code").getTextValue();
+    if (Strings.isNullOrEmpty(code)) {
+      throw new KegbotApiException("Pairing code was empty.");
+    }
+    return code;
+  }
+
+  /** Returns an apikey once linked, {@code null} otherwise. */
+  public String pollDeviceLink(final String code) throws KegbotApiException {
+    final JsonNode response = getJson("/devices/link/status/" + code , null).get("object");
+    if (response.has("linked") && response.get("linked").getBooleanValue()) {
+      return response.get("api_key").getTextValue();
+    }
+    return null;
   }
 
   public void login(String username, String password) throws KegbotApiException {
