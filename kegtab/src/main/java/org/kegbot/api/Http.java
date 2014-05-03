@@ -66,8 +66,9 @@ class Http {
     mClient = client;
   }
 
-  public InputStream request(Request request) throws IOException {
+  public InputStream request(Request request) throws IOException, KegbotApiException {
     HttpURLConnection connection = null;
+    int responseCode = 0;
     try {
       // Prepare parameters and body.
       String url = request.getUrl();
@@ -86,27 +87,21 @@ class Http {
 
       // Execute request.
       buildBody(request, connection);
-      connection.getResponseCode();
+      responseCode = connection.getResponseCode();
+      if (responseCode == 404) {
+        throw new KegbotApi404();
+      } else if (responseCode == 405) {
+        throw new KegbotApi405();
+      }
       return connection.getInputStream();
     } finally {
-      boolean logged = false;
-      if (connection != null) {
-        try {
-          Log.d(TAG, String.format("--> %s %s [%s]", request.getMethod(), request.getUrl(),
-              Integer.valueOf(connection.getResponseCode())));
-          logged = true;
-        } catch (IOException e) {
-          // Ignore;
-        }
-      }
-      if (!logged) {
-        Log.d(TAG, String.format("--> %s %s [ERROR]", request.getMethod(), request.getUrl()));
-      }
+      Log.d(TAG, String.format("--> %s %s [%s]", request.getMethod(), request.getUrl(),
+          responseCode));
     }
   }
 
   public JsonNode requestJson(Request request)
-      throws IOException {
+      throws IOException, KegbotApiException {
     final InputStream input = request(request);
     try {
       final ObjectMapper mapper = new ObjectMapper();
