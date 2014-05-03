@@ -19,6 +19,7 @@
 package org.kegbot.app.setup;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,6 +35,8 @@ import org.kegbot.app.config.AppConfiguration;
 
 public class SetupLogInFragment extends SetupFragment {
 
+  private final String TAG = SetupLogInFragment.class.getSimpleName();
+
   private View mView;
 
   @Override
@@ -46,18 +49,20 @@ public class SetupLogInFragment extends SetupFragment {
     return mView;
   }
 
-  public String getUsername() {
+  private String getUsername() {
     EditText text = (EditText) mView.findViewById(R.id.apiUsername);
     return text.getText().toString();
   }
 
-  public String getPassword() {
+  private String getPassword() {
     EditText text = (EditText) mView.findViewById(R.id.apiPassword);
     return text.getText().toString();
   }
 
   @Override
   public String validate() {
+    final AppConfiguration prefs = ((KegbotApplication) getActivity().getApplication()).getConfig();
+
     final String username = getUsername();
     final String password = getPassword();
 
@@ -67,8 +72,9 @@ public class SetupLogInFragment extends SetupFragment {
       return "Please enter a password";
     }
 
-    final AppConfiguration prefs = ((KegbotApplication) getActivity().getApplication()).getConfig();
     final KegbotApiImpl api = new KegbotApiImpl(prefs);
+
+    Log.d(TAG, "Logging in ...");
 
     try {
       api.login(username, password);
@@ -85,7 +91,6 @@ public class SetupLogInFragment extends SetupFragment {
 
     prefs.setUsername(username);
     prefs.setApiKey(apiKey);
-
     return "";
   }
 

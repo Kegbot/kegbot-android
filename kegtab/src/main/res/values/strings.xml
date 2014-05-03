@@ -125,4 +125,10 @@
     <string name="new_controller_button_add">Add</string>
     <string name="new_controller_button_cancel">Cancel</string>
     <string name="bugreport_email">Follow-up email address (optional)</string>
+    <string name="setup_pair_title">Link This Device</string>
+    <string name="setup_pair_description">Please visit</string>
+    <string name="pairing_description_continued">and enter the code</string>
+    <string name="setup_button_next">Next</string>
+    <string name="setup_button_finish">Finish</string>
+    <string name="setup_pairing_code_placeholder">(generating code)</string>
 </resources>

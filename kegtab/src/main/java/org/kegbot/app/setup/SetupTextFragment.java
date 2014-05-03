@@ -20,7 +20,6 @@ package org.kegbot.app.setup;
 
 import org.kegbot.app.R;
 
-import android.annotation.SuppressLint;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -28,34 +27,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-/**
- * A simple fragment which shows a title and a description.
- *
- * @author mike wakerly (opensource@hoho.com)
- */
-@SuppressLint("ValidFragment")  // TODO(mikey): Remove ctor arguments
-public class SetupTextFragment extends Fragment {
+public abstract class SetupTextFragment extends Fragment {
 
-  final String mTitle;
-  final String mDescription;
+  public abstract String getTitle();
 
-  public SetupTextFragment() {
-    this("","");
-  }
-
-  public SetupTextFragment(String title, String description) {
-    mTitle = title;
-    mDescription = description;
-  }
+  public abstract String getDescription();
 
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     View view = inflater.inflate(R.layout.setup_text_fragment, null);
 
     TextView titleView = (TextView) view.findViewById(R.id.setupTitleText);
-    titleView.setText(mTitle);
+    titleView.setText(getTitle());
     TextView descriptionView = (TextView) view.findViewById(R.id.setupDescriptionText);
-    descriptionView.setText(mDescription);
+    descriptionView.setText(getDescription());
 
     return view;
   }

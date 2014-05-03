@@ -54,14 +54,16 @@ public class SetupActivity extends Activity {
 
   private static final String TAG = SetupActivity.class.getSimpleName();
 
-  private SetupTask mCurrentTask = null;
-  private final List<SetupTask> mTaskHistory = Lists.newArrayList();
+  public static final int SETUP_VERSION = 6;
+
+  private SetupStep mCurrentStep = null;
+  private final List<SetupStep> mTaskHistory = Lists.newArrayList();
 
   private Button mBackButton;
   private Button mNextButton;
   private DialogFragment mDialog;
 
-  private AsyncTask<Void, Void, String> mValidatorTask;
+  private AsyncTask<Void, Void, Void> mValidatorTask;
 
   public static final String EXTRA_REASON = "reason";
   public static final String EXTRA_REASON_UPGRADE = "upgrade";
@@ -70,6 +72,23 @@ public class SetupActivity extends Activity {
   private static final int MESSAGE_GO_BACK = 100;
   private static final int MESSAGE_START_VALIDATION = 101;
   private static final int MESSAGE_VALIDATION_ABORTED = 102;
+
+  public interface SetupState {
+    public void setNextButtonEnabled(boolean enabled);
+    public void setNextButtonText(int resource);
+  }
+
+  private final SetupState mSetupState = new SetupState() {
+    @Override
+    public void setNextButtonEnabled(boolean enabled) {
+      mNextButton.setEnabled(enabled);
+    }
+
+    @Override
+    public void setNextButtonText(int resource) {
+      mNextButton.setText(resource);
+    }
+  };
 
   private final Handler mHandler = new Handler() {
     @Override
@@ -133,17 +152,17 @@ public class SetupActivity extends Activity {
     mNextButton = (Button) findViewById(R.id.setupNextButton);
     mNextButton.setOnClickListener(mNextListener);
 
-    if (mCurrentTask == null) {
+    if (mCurrentStep == null) {
       final String reason = getIntent().getStringExtra(EXTRA_REASON);
-      final SetupTask initialTask;
+      final SetupStep initialStep;
       if (EXTRA_REASON_USER.equals(reason)) {
-        initialTask = SetupTask.FIRST_SETUP_STEP;
+        initialStep = new SetupSelectBackendStep(mSetupState);
       } else if (EXTRA_REASON_UPGRADE.equals(reason)) {
-        initialTask = SetupTask.UPGRADE;
+        initialStep = new SetupWelcomeStep(mSetupState);
       } else {
-        initialTask = SetupTask.WELCOME;
+        initialStep = new SetupWelcomeStep(mSetupState);
       }
-      setTask(initialTask);
+      setTask(initialStep);
     }
   }
 
@@ -172,33 +191,40 @@ public class SetupActivity extends Activity {
   }
 
   private void startValidation() {
-    Log.d(TAG, "Starting validation: " + mCurrentTask);
-    mValidatorTask = new AsyncTask<Void, Void, String>() {
+    Log.d(TAG, "Starting validation: " + mCurrentStep);
+    mValidatorTask = new AsyncTask<Void, Void, Void>() {
+
+      private SetupValidationException mValidationError;
+      private SetupStep mNextStep;
+
       @Override
       protected void onPreExecute() {
         showProgressDialog();
       }
 
       @Override
-      protected String doInBackground(Void... params) {
-        final Fragment fragment = mCurrentTask.getFragment();
-        String result = "";
-        if (fragment instanceof SetupFragment) {
-          final SetupFragment setupFragment = (SetupFragment) fragment;
-          result = setupFragment.validate();
-          if (Strings.isNullOrEmpty(result)) {
-            EasyTracker.getTracker().sendEvent("SetupTask", mCurrentTask.toString(), "",
-                Long.valueOf(1));
-          }
+      protected Void doInBackground(Void... params) {
+        mValidationError = null;
+        mNextStep = null;
+
+        try {
+          mNextStep = mCurrentStep.advance();
+        } catch (SetupValidationException e) {
+          mValidationError = e;
         }
-        return result;
+
+        return null;
       }
 
       @Override
-      protected void onPostExecute(String result) {
+      protected void onPostExecute(Void avoid) {
         if (!isCancelled()) {
           hideDialog();
-          onValidationResult(result);
+          if (mValidationError == null) {
+            onValidationSuccess(mNextStep);
+          } else {
+            onValidationFailure(mValidationError);
+          }
         }
       }
 
@@ -212,50 +238,41 @@ public class SetupActivity extends Activity {
     }
   }
 
-  private void onValidationResult(final String result) {
-    final AppConfiguration config = ((KegbotApplication) getApplication()).getConfig();
-    if (Strings.isNullOrEmpty(result)) {
-      Log.d(TAG, "Validation for " + mCurrentTask + " successful!");
-      mCurrentTask.onExitSuccess(config);
-      setTask(mCurrentTask.next(config));
-    } else {
-      Log.d(TAG, "Validation for " + mCurrentTask + " unsuccessful: " + result);
-      final Fragment fragment = mCurrentTask.getFragment();
-      if (fragment instanceof SetupFragment) {
-        final SetupFragment setupFragment = (SetupFragment) fragment;
-        setupFragment.onValidationFailed();
-      }
-      showAlertDialog(result);
-    }
+  private void onValidationFailure(final SetupValidationException error) {
+    Log.d(TAG, "Validation unsuccessful: " + error, error);
+    showAlertDialog(error.getMessage());
   }
 
-  private void setTask(SetupTask task) {
-    if (task == null) {
+  private void onValidationSuccess(final SetupStep nextStep) {
+    Log.d(TAG, "Validation successful, next step=" + nextStep);
+    setTask(nextStep);
+  }
+
+  private void setTask(SetupStep step) {
+    if (step == null) {
       Log.d(TAG, "Null task, finishing.");
+      KegbotApplication.get(this).getConfig().setSetupVersion(SETUP_VERSION);
       setResult(RESULT_OK);
       mTaskHistory.clear();
       finish();
       return;
     }
 
-    Log.d(TAG, "Loading SetupTask: " + task);
-    mTaskHistory.add(task);
+    Log.d(TAG, "Loading SetupStep: " + step);
+    step.onDisplay();
+    mCurrentStep = step;
 
-    Fragment bodyFragment = task.getFragment();
-    if (bodyFragment == null) {
-      bodyFragment = new SetupEmptyFragment();
+    mTaskHistory.add(step);
+    Fragment contentFragment = step.getContentFragment();
+    Fragment controlsFragment = step.getControlsFragment();
+    if (controlsFragment == null) {
+      controlsFragment = new SetupEmptyFragment();
     }
-
-    final String title = getResources().getString(task.getTitle());
-    final String description = getResources().getString(task.getDescription());
-    final SetupTextFragment textFragment = new SetupTextFragment(title, description);
-
-    mCurrentTask = task;
 
     FragmentManager fragmentManager = getFragmentManager();
     final FragmentTransaction transaction = fragmentManager.beginTransaction();
-    transaction.replace(R.id.setupTextFragment, textFragment);
-    transaction.replace(R.id.setupBodyFragment, bodyFragment);
+    transaction.replace(R.id.setupContentFragment, contentFragment);
+    transaction.replace(R.id.setupControlsFragment, controlsFragment);
     transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
     transaction.addToBackStack(null);
     transaction.commit();
@@ -264,16 +281,16 @@ public class SetupActivity extends Activity {
   private void popTask() {
     mTaskHistory.remove(mTaskHistory.size() - 1);
     if (!mTaskHistory.isEmpty()) {
-      mCurrentTask = mTaskHistory.get(mTaskHistory.size() - 1);
-      Log.d(TAG, "Popped task, current=" + mCurrentTask);
+      mCurrentStep = mTaskHistory.get(mTaskHistory.size() - 1);
     } else {
-      Log.d(TAG, "Popped last task.");
+      Log.d(TAG, "Popped last step.");
     }
   }
 
   @Override
   public void onBackPressed() {
     popTask();
+    mCurrentStep.onDisplay();
     if (mTaskHistory.isEmpty()) {
       setResult(RESULT_CANCELED);
       finish();

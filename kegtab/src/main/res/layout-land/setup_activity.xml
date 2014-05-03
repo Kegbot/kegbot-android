@@ -77,7 +77,7 @@
                     android:layout_width="256dip"
                     android:layout_height="wrap_content"
                     android:layout_gravity="right"
-                    android:text="Next"
+                    android:text="@string/setup_button_next"
                     android:textSize="24sp" />
             </LinearLayout>
 
@@ -89,7 +89,7 @@
                 android:fadeScrollbars="false" >
 
                 <FrameLayout
-                    android:id="@+id/setupTextFragment"
+                    android:id="@+id/setupContentFragment"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
             </ScrollView>
@@ -98,7 +98,7 @@
         <!-- Right column: Step body. -->
 
         <FrameLayout
-            android:id="@+id/setupBodyFragment"
+            android:id="@+id/setupControlsFragment"
             android:layout_width="0dip"
             android:layout_height="wrap_content"
             android:layout_gravity="top|center_horizontal"

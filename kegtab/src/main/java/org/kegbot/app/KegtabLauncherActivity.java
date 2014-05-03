@@ -28,7 +28,6 @@ import com.google.analytics.tracking.android.EasyTracker;
 
 import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.app.setup.SetupActivity;
-import org.kegbot.app.setup.SetupTask;
 
 /**
  * Main launcher activity; simply redirects to {@link SetupActivity} or
@@ -64,9 +63,9 @@ public class KegtabLauncherActivity extends Activity {
     }
 
     final int setupVersion = mConfig.getSetupVersion();
-    if (setupVersion < SetupTask.SETUP_VERSION) {
+    if (setupVersion < SetupActivity.SETUP_VERSION) {
       Log.d(TAG, "Setup is not complete, version=" + setupVersion + "current="
-          + SetupTask.SETUP_VERSION);
+          + SetupActivity.SETUP_VERSION);
 
       try {
         if (setupVersion == 0) {
@@ -77,7 +76,7 @@ public class KegtabLauncherActivity extends Activity {
               Long.valueOf(0));
         } else {
           EasyTracker.getTracker().sendEvent("Upgrade",
-              String.format("ToVersion %s", Integer.valueOf(SetupTask.SETUP_VERSION)),
+              String.format("ToVersion %s", Integer.valueOf(SetupActivity.SETUP_VERSION)),
               "", Long.valueOf(0));
         }
       } catch (Exception e) {

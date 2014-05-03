@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright 2012 Mike Wakerly <opensource@hoho.com>.
+  
+  This file is part of the Kegtab package from the Kegbot project. For
+  more information on Kegtab or Kegbot, see <http://kegbot.org/>.
+  
+  Kegtab is free software: you can redistribute it and/or modify it under
+  the terms of the GNU General Public License as published by the Free
+  Software Foundation, version 2.
+  
+  Kegtab is distributed in the hope that it will be useful, but WITHOUT
+  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+  more details.
+  
+  You should have received a copy of the GNU General Public License along
+  with Kegtab. If not, see <http://www.gnu.org/licenses/>.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/pairTitleText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dip"
+        android:text="Link This Device"
+        android:textSize="32dip"
+        android:textStyle="bold" >
+
+    </TextView>
+
+    <TextView
+        android:id="@+id/pairingPleaseVisit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:text="@string/setup_pair_description"
+        android:textSize="24dip" >
+    </TextView>
+
+    <TextView
+        android:id="@+id/pairingUrl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:textSize="24dip" >
+    </TextView>
+
+    <TextView
+        android:id="@+id/pairingAndEnter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:text="@string/pairing_description_continued"
+        android:textSize="24dip" >
+    </TextView>
+
+    <TextView
+        android:id="@+id/pairingCode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="@string/setup_pairing_code_placeholder"
+        android:textIsSelectable="true"
+        style="@style/jumboText">
+    </TextView>
+
+    <TextView
+        android:id="@+id/pairingComplete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:text="Pairing complete! Tap Next to continue."
+        android:visibility="gone"
+        android:textSize="24dip" >
+    </TextView>
+
+</LinearLayout>
