@@ -199,6 +199,11 @@ public class KegbotApiImpl implements Backend {
     return getSingleProto(builder, result.get("object"));
   }
 
+  public Version getVersion() throws KegbotApiException {
+    final String version = getJson("/version", null).get("object").get("server_version").getTextValue();
+    return Version.fromString(version);
+  }
+
   public void login(String username, String password) throws KegbotApiException {
     Map<String, String> params = Maps.newLinkedHashMap();
     params.put("username", username);
