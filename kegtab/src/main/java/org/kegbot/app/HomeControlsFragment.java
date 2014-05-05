@@ -129,8 +129,7 @@ public class HomeControlsFragment extends Fragment {
           final String username =
               data.getStringExtra(KegtabCommon.ACTIVITY_AUTH_DRINKER_RESULT_EXTRA_USERNAME);
           if (!Strings.isNullOrEmpty(username)) {
-            AuthenticatingActivity.startAndAuthenticate(getActivity(), username,
-                mCore.getTapManager().getFocusedTap());
+            AuthenticatingActivity.startAndAuthenticate(getActivity(), username);
           }
         }
         break;
@@ -141,8 +140,7 @@ public class HomeControlsFragment extends Fragment {
               data.getStringExtra(KegtabCommon.ACTIVITY_CREATE_DRINKER_RESULT_EXTRA_USERNAME);
           if (!Strings.isNullOrEmpty(username)) {
             Log.d(TAG, "Authenticating newly-created user.");
-            AuthenticatingActivity.startAndAuthenticate(getActivity(), username,
-                mCore.getTapManager().getFocusedTap());
+            AuthenticatingActivity.startAndAuthenticate(getActivity(), username);
           }
         }
         break;

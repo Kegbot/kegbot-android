@@ -54,13 +54,6 @@ public class TapManager extends Manager {
 
   private ConfigurationStore mLocalConfig;
 
-  /**
-   * Stores the currently "focused" tap.
-   *
-   * Convenient bit of state storage for UI layer. May be {@code null}.
-   */
-  private KegTap mFocusedTap = null;
-
   public TapManager(Bus bus, ConfigurationStore configStore) {
     super(bus);
     mLocalConfig = configStore;
@@ -87,9 +80,6 @@ public class TapManager extends Manager {
    *         otherwise.
    */
   public synchronized boolean addTap(final KegTap newTap) {
-    if (mFocusedTap == null) {
-      mFocusedTap = newTap;
-    }
     return mTaps.put(Integer.valueOf(newTap.getId()), newTap) != null;
   }
 
@@ -102,28 +92,7 @@ public class TapManager extends Manager {
    *         otherwise.
    */
   public synchronized boolean removeTap(final KegTap tap) {
-    if (mFocusedTap == tap) {
-      mFocusedTap = null;
-    }
     return mTaps.remove(Integer.valueOf(tap.getId())) != null;
-  }
-
-  /**
-   * @return the currently-focused tap, or {@code null} if none set
-   */
-  public synchronized KegTap getFocusedTap() {
-    return mFocusedTap;
-  }
-
-  /**
-   * Sets the currently focused tap.
-   */
-  public synchronized void setFocusedTap(final KegTap tap) {
-    if (!mTaps.containsValue(tap)) {
-      Log.w(TAG, "setFocusedTap: tap unknown: " + tap);
-      return;
-    }
-    mFocusedTap = tap;
   }
 
   public synchronized KegTap getTap(int tapId) {
@@ -212,7 +181,6 @@ public class TapManager extends Manager {
   @Override
   protected synchronized void dump(IndentingPrintWriter writer) {
     writer.printPair("numTaps", Integer.valueOf(mTaps.size())).println();
-    writer.printPair("mFocusedTap", mFocusedTap).println();
 
     if (mTaps.size() > 0) {
       writer.println();

@@ -262,7 +262,6 @@ public class HomeActivity extends CoreActivity {
 
   private void setFocusedTap(KegTap tap) {
     Log.d(LOG_TAG, "Set/replaced focused tap: " + tap.getId());
-    mCore.getTapManager().setFocusedTap(tap);
   }
 
   /**

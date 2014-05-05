@@ -324,6 +324,18 @@ public class AuthenticatingActivity extends Activity {
    *
    * @param context
    * @param username
+   *
+   */
+  public static void startAndAuthenticate(Context context, String username) {
+    startAndAuthenticate(context, username, (KegTap) null);
+  }
+
+  /**
+   * Starts the authentication activity for the supplied username. Upon
+   * successful authentication, a new flow will be started.
+   *
+   * @param context
+   * @param username
    * @param tap tap to authenticate against, or {@code null} if ambiguous
    *
    */
@@ -336,7 +348,6 @@ public class AuthenticatingActivity extends Activity {
     }
     context.startActivity(intent);
   }
-
 
   /**
    * Starts the authentication activity for the supplied token. Upon successful
