@@ -22,6 +22,7 @@ import android.app.Fragment;
 
 import org.apache.http.conn.HttpHostConnectException;
 import org.kegbot.api.KegbotApiServerError;
+import org.kegbot.api.NotAuthorizedException;
 
 import java.net.SocketException;
 
@@ -41,6 +42,8 @@ public abstract class SetupFragment extends Fragment {
     StringBuilder builder = new StringBuilder();
     if (e.getCause() instanceof HttpHostConnectException) {
       builder.append("Could not connect to remote host.");
+    } else if (e instanceof NotAuthorizedException) {
+      builder.append("Username or password was incorrect.");
     } else if (e instanceof KegbotApiServerError) {
       builder.append("Bad response from server (");
       builder.append(e.toString());

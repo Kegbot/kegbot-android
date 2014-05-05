@@ -88,10 +88,12 @@ class Http {
       // Execute request.
       buildBody(request, connection);
       responseCode = connection.getResponseCode();
-      if (responseCode == 404) {
+      if (responseCode == 401) {
+        throw new NotAuthorizedException();
+      } else if (responseCode == 404) {
         throw new KegbotApi404();
       } else if (responseCode == 405) {
-        throw new KegbotApi405();
+        throw new MethodNotAllowedException();
       }
       return connection.getInputStream();
     } finally {
