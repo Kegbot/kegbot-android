@@ -65,7 +65,6 @@ public class AuthenticatingActivity extends Activity {
   private static final String EXTRA_TAP_ID = "tap";
 
   private AppConfiguration mConfig;
-  private KegbotCore mCore;
 
   private ViewGroup mButtonGroup;
   private TextView mBeginTitle;
@@ -112,14 +111,13 @@ public class AuthenticatingActivity extends Activity {
     handleIntent();
   }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        mConfig = ((KegbotApplication) getApplicationContext()).getConfig();
-        mCore = KegbotCore.getInstance(this);
-    }
+  @Override
+  protected void onStart() {
+    super.onStart();
+    mConfig = ((KegbotApplication) getApplicationContext()).getConfig();
+  }
 
-    @Override
+  @Override
   protected void onNewIntent(Intent intent) {
     super.onNewIntent(intent);
     Log.d(TAG, "onNewIntent: " + intent);
@@ -164,7 +162,8 @@ public class AuthenticatingActivity extends Activity {
     new AsyncTask<Void, Void, User>() {
       @Override
       protected User doInBackground(Void... params) {
-        return mCore.getAuthenticationManager().authenticateUsername(username);
+        final KegbotCore core = KegbotCore.getInstance(AuthenticatingActivity.this);
+        return core.getAuthenticationManager().authenticateUsername(username);
       }
 
       @Override
@@ -187,7 +186,8 @@ public class AuthenticatingActivity extends Activity {
     new AsyncTask<Void, Void, User>() {
       @Override
       protected User doInBackground(Void... params) {
-        return mCore.getAuthenticationManager().authenticateToken(authToken);
+        final KegbotCore core = KegbotCore.getInstance(AuthenticatingActivity.this);
+        return core.getAuthenticationManager().authenticateToken(authToken);
       }
 
       @Override
@@ -207,11 +207,13 @@ public class AuthenticatingActivity extends Activity {
 
   private void activateUser(String username) {
     final int tapId = getIntent().getIntExtra(EXTRA_TAP_ID, 0);
+    final KegbotCore core = KegbotCore.getInstance(this);
+
     if (tapId > 0) {
-      final KegTap tap = mCore.getTapManager().getTap(tapId);
-      mCore.getFlowManager().activateUserAtTap(tap, username);
+      final KegTap tap = core.getTapManager().getTap(tapId);
+      core.getFlowManager().activateUserAtTap(tap, username);
     } else {
-      mCore.getFlowManager().activateUserAmbiguousTap(username);
+      core.getFlowManager().activateUserAmbiguousTap(username);
     }
   }
 
@@ -278,8 +280,9 @@ public class AuthenticatingActivity extends Activity {
       protected Boolean doInBackground(Void... params) {
         Log.d(TAG, "Assigning authDevice=" + authDevice + " tokenValue=" + tokenValue
             + "to username=" + username);
+        final KegbotCore core = KegbotCore.getInstance(AuthenticatingActivity.this);
         try {
-          mCore.getBackend().assignToken(authDevice, tokenValue, username);
+          core.getBackend().assignToken(authDevice, tokenValue, username);
         } catch (BackendException e) {
           Log.w(TAG, "Assignment failed!", e);
           return Boolean.FALSE;
