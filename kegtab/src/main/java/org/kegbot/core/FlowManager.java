@@ -52,6 +52,14 @@ public class FlowManager extends Manager {
 
   private static final int MAX_RECENT_FLOWS = 10;
 
+  /**
+   * Maximum idle time of an *unbound* flow, that is, one not associated
+   * with a tap.
+   *
+   * @see #startFlow(String, long)
+   */
+  private static final long UNBOUND_FLOW_MAX_IDLE_MILLIS = TimeUnit.SECONDS.toMillis(5);
+
   public static Predicate<Flow> PREDICATE_IDLE = new Predicate<Flow>() {
     @Override
     public boolean apply(Flow flow) {
@@ -387,7 +395,8 @@ public class FlowManager extends Manager {
       Log.d(TAG, "Tap: " + tap.getName());
     }
 
-    final Flow flow = new Flow(mClock, meterName, mNextFlowId++, tap, maxIdleTimeMs);
+    final Flow flow = new Flow(mClock, meterName, mNextFlowId++, tap,
+        tap != null ? maxIdleTimeMs : UNBOUND_FLOW_MAX_IDLE_MILLIS);
     mRecentFlows.addLast(flow);
     if (mRecentFlows.size() > MAX_RECENT_FLOWS) {
       mRecentFlows.removeFirst();
