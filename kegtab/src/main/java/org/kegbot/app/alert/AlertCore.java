@@ -1,7 +1,12 @@
 package org.kegbot.app.alert;
 
+import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Log;
 
@@ -19,6 +24,9 @@ import java.security.SecureRandom;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * In-app notification system.
+ */
 public class AlertCore extends Manager {
 
   private static final String TAG = AlertCore.class.getSimpleName();
@@ -34,6 +42,9 @@ public class AlertCore extends Manager {
     private String mDescription = "";
     private String mSeverity = Alert.SEVERITY_INFO;
     private Intent mAction;
+
+    private boolean mDismissOnView = true;
+    private long mAutoDismissTimeoutMillis = 0;
 
     public Builder(String title) {
       mTitle = title;
@@ -69,11 +80,22 @@ public class AlertCore extends Manager {
       return this;
     }
 
+    public Builder setAutoDismissTimeoutMillis(long autoDismissTimeoutMillis) {
+      mAutoDismissTimeoutMillis = autoDismissTimeoutMillis;
+      return this;
+    }
+
+    public Builder setDismissOnView(boolean dismissOnView) {
+      mDismissOnView = dismissOnView;
+      return this;
+    }
+
     public Alert build() {
       if (mId == null) {
         mId = String.valueOf(new SecureRandom().nextInt());
       }
-      return new Alert(mId, mTitle, mDescription, mSeverity, mAction, SystemClock.uptimeMillis());
+      return new Alert(mId, mTitle, mDescription, mSeverity, mAction, mDismissOnView,
+          SystemClock.uptimeMillis(), mAutoDismissTimeoutMillis);
     }
   }
 
@@ -88,16 +110,21 @@ public class AlertCore extends Manager {
     private final String mDescription;
     private final String mSeverity;
     private final Intent mAction;
+    private final boolean mDismissOnView;
     private final long mPostTimeMillis;
+    private final long mAutoDismissTimeoutMillis;
 
     Alert(final String id, final String title, final String description, final String severity,
-        final Intent action, final long postTimeMillis) {
+        final Intent action, final boolean dismissOnView,
+        final long postTimeMillis, final long autoDismissTimeoutMillis) {
       mId = Preconditions.checkNotNull(id);
       mTitle = Preconditions.checkNotNull(title);
       mDescription = Strings.nullToEmpty(description);
       mAction = action;
       mSeverity = Preconditions.checkNotNull(severity);
+      mDismissOnView = dismissOnView;
       mPostTimeMillis = postTimeMillis;
+      mAutoDismissTimeoutMillis = autoDismissTimeoutMillis;
     }
 
     public String getId() {
@@ -120,9 +147,18 @@ public class AlertCore extends Manager {
       return mAction;
     }
 
+    public boolean getDismissOnView() {
+      return mDismissOnView;
+    }
+
     public long getPostTimeMillis() {
       return mPostTimeMillis;
     }
+
+    public long getAutoDismissTimeoutMillis() {
+      return mAutoDismissTimeoutMillis;
+    }
+
   }
 
   public AlertCore(final Bus bus, final Context context) {
@@ -134,8 +170,6 @@ public class AlertCore extends Manager {
   @Override
   protected void start() {
     super.start();
-
-    Log.d(TAG, "XXX REGISTERING" + this);
     mBus.register(this);
   }
 
@@ -159,12 +193,17 @@ public class AlertCore extends Manager {
       cancelAlert(alertId);
     }
     mAlerts.put(alertId, alert);
+    if (alert.getSeverity() == Alert.SEVERITY_ERROR) {
+      AlertActivity.showDialogs(mContext);
+    }
     postOnMainThread(new AlertPostedEvent(alert));
   }
 
   public synchronized boolean cancelAlert(String alertId) {
+    Log.d(TAG, "Canceling alert " + alertId);
     final Alert alert = mAlerts.remove(alertId);
     if (alert != null) {
+      Log.d(TAG, "Posting cancel event.");
       postOnMainThread(new AlertCancelledEvent(alert));
     }
     return alert != null;
@@ -181,4 +220,5 @@ public class AlertCore extends Manager {
   public static Builder newBuilder(String title) {
     return new Builder(title);
   }
+
 }

@@ -43,6 +43,7 @@ import com.google.common.collect.Lists;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
+import org.kegbot.app.alert.AlertActivity;
 import org.kegbot.app.alert.AlertCancelledEvent;
 import org.kegbot.app.alert.AlertCore;
 import org.kegbot.app.alert.AlertCore.Alert;
@@ -160,6 +161,9 @@ public class CoreActivity extends Activity {
         marketIntent.setData(Uri.parse("market://details?id=org.kegbot.app"));
         PinActivity.startThroughPinActivity(this, marketIntent);
         return true;
+      case R.id.alertGeneral:
+        AlertActivity.showDialogs(this);
+        return true;
       default:
         return super.onOptionsItemSelected(item);
     }
@@ -167,23 +171,22 @@ public class CoreActivity extends Activity {
 
   private void rebuildAlerts() {
     if (mMenu == null) {
-      return;
-    }
-
-    // TODO(mikey): Enable for everyone.
-    if (!BuildConfig.DEBUG) {
+      Log.w(TAG, "No menu, can't rebuild.");
       return;
     }
 
     final List<Alert> alerts = mAlertCore.getAlerts();
     if (mCachedAlerts.equals(alerts)) {
+      Log.d(TAG, "No change to alerts.");
       return;
     }
+
     mCachedAlerts.clear();
     mCachedAlerts.addAll(alerts);
 
     final MenuItem item = mMenu.findItem(R.id.alertGeneral);
     if (mCachedAlerts.isEmpty()) {
+      Log.d(TAG, "No alerts, hiding menu.");
       item.setVisible(false);
       return;
     }

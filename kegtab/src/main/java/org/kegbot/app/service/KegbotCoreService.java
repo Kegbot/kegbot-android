@@ -37,6 +37,7 @@ import android.util.Log;
 import org.kegbot.app.HomeActivity;
 import org.kegbot.app.PourInProgressActivity;
 import org.kegbot.app.R;
+import org.kegbot.app.alert.AlertCore;
 import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.app.event.ConnectivityChangedEvent;
 import org.kegbot.app.event.FlowUpdateEvent;
@@ -89,6 +90,12 @@ public class KegbotCoreService extends Service {
       Log.d(TAG, "onFlowStart: " + flow);
       if (flow.getTap() == null) {
         Log.d(TAG, "Unbound flow; no updated will be posted.");
+        mCore.getAlertCore().postAlert(
+            AlertCore.newBuilder(getString(R.string.alert_flow_activity_title))
+                .setDescription(getString(R.string.alert_flow_activity_description, flow.getMeterName()))
+                .severityError()
+                .setId(flow.getMeterName())
+                .build());
         return;
       }
 
