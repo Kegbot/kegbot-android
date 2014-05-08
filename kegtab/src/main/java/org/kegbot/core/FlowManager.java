@@ -197,18 +197,6 @@ public class FlowManager extends Manager {
     }
   }
 
-  /** @return all taps with an active {@link Flow}. */
-  public List<KegTap> getAllActiveTaps() {
-    final List<KegTap> result = Lists.newArrayList();
-    for (final Flow flow : getAllActiveFlows()) {
-      final KegTap tap = flow.getTap();
-      if (tap != null) {
-        result.add(flow.getTap());
-      }
-    }
-    return result;
-  }
-
   /**
    * Returns all flows that are marked as idle.
    *
