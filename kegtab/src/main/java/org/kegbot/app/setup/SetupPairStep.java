@@ -37,10 +37,11 @@ public class SetupPairStep extends SetupStep {
     private TextView mPairingPrompt;
     private TextView mPairingUrl;
     private TextView mPairingPromptContinued;
-    private TextView mPairingCode;
+    private TextView mPairingCodeText;
     private TextView mPairingCompleteText;
 
     private AsyncTask<Void, Void, String> mPollTask;
+    private String mPairingCode;
 
     private final Handler mHandler = new Handler(Looper.getMainLooper());
 
@@ -59,7 +60,7 @@ public class SetupPairStep extends SetupStep {
       mPairingPrompt = ButterKnife.findById(view, R.id.pairingPleaseVisit);
       mPairingUrl = ButterKnife.findById(view, R.id.pairingUrl);
       mPairingPromptContinued = ButterKnife.findById(view, R.id.pairingAndEnter);
-      mPairingCode = ButterKnife.findById(view, R.id.pairingCode);
+      mPairingCodeText = ButterKnife.findById(view, R.id.pairingCode);
       mPairingCompleteText = ButterKnife.findById(view, R.id.pairingComplete);
 
       onPairingStarted();
@@ -91,34 +92,42 @@ public class SetupPairStep extends SetupStep {
         private Exception mError;
         @Override
         protected String doInBackground(Void... voids) {
-          final String pairingCode;
-          try {
-            pairingCode = api.startDeviceLink(Build.MODEL);
-            mHandler.post(new Runnable() {
-              @Override
-              public void run() {
-                mPairingCode.setText(pairingCode);
-              }
-            });
-          } catch (KegbotApiException e) {
-            mError = e;
-            return "";
-          }
-
           while (!mQuit.get()) {
-            try {
-              Log.d(TAG, "Checking pairing status ...");
-              final String apiKey = api.pollDeviceLink(pairingCode);
-              if (!Strings.isNullOrEmpty(apiKey)) {
-                return apiKey;
+            if (Strings.isNullOrEmpty(mPairingCode)) {
+              try {
+                mPairingCode = api.startDeviceLink(Build.MODEL);
+                mHandler.post(new Runnable() {
+                  @Override
+                  public void run() {
+                    mPairingCodeText.setText(mPairingCode);
+                  }
+                });
+              } catch (KegbotApiException e) {
+                mError = e;
+                return "";
               }
-            } catch (KegbotApiException e) {
-              Log.w(TAG, "Error checking pairing code: " + e, e);
-              mError = e;
-              return "";
             }
+
+            while (!mQuit.get()) {
+              try {
+                Log.d(TAG, "Checking pairing status ...");
+                final String apiKey = api.pollDeviceLink(mPairingCode);
+                if (!Strings.isNullOrEmpty(apiKey)) {
+                  return apiKey;
+                }
+              } catch (KegbotApiException e) {
+                Log.w(TAG, "Error checking pairing code: " + e, e);
+                mError = e;
+                mPairingCode = "";  // fetch a new code next time
+                break;
+              }
+              SystemClock.sleep(1000);
+            }
+
+            Log.w(TAG, "Pairing aborted unexpectedly, retrying in 1s.");
             SystemClock.sleep(1000);
           }
+
           return null;
         }
 
@@ -126,6 +135,10 @@ public class SetupPairStep extends SetupStep {
         protected void onPostExecute(String s) {
           if (mError != null) {
             onPairingFailed(mError);
+            return;
+          }
+          if (Strings.isNullOrEmpty(s)) {
+            // We quit.
             return;
           }
           config.setApiKey(s);
@@ -149,7 +162,7 @@ public class SetupPairStep extends SetupStep {
       mPairingPrompt.setVisibility(View.VISIBLE);
       mPairingUrl.setVisibility(View.VISIBLE);
       mPairingPromptContinued.setVisibility(View.VISIBLE);
-      mPairingCode.setVisibility(View.VISIBLE);
+      mPairingCodeText.setVisibility(View.VISIBLE);
 
       mPairingCompleteText.setVisibility(View.GONE);
     }
@@ -160,7 +173,7 @@ public class SetupPairStep extends SetupStep {
       mPairingPrompt.setVisibility(View.GONE);
       mPairingUrl.setVisibility(View.GONE);
       mPairingPromptContinued.setVisibility(View.GONE);
-      mPairingCode.setVisibility(View.GONE);
+      mPairingCodeText.setVisibility(View.GONE);
 
       mPairingCompleteText.setVisibility(View.VISIBLE);
     }
