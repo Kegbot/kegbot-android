@@ -14,8 +14,6 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import butterknife.ButterKnife;
-
 import com.google.common.collect.Lists;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
@@ -26,6 +24,8 @@ import org.kegbot.core.TapManager;
 import org.kegbot.proto.Models.KegTap;
 
 import java.util.List;
+
+import butterknife.ButterKnife;
 
 /**
  * A list fragment representing a list of Taps. This fragment also supports

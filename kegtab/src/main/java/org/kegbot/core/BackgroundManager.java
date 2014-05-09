@@ -18,10 +18,10 @@
  */
 package org.kegbot.core;
 
+import com.squareup.otto.Bus;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import com.squareup.otto.Bus;
 
 /**
  * A {@link Manager} which automatically executes {@link #runInBackground()}.

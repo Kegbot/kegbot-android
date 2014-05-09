@@ -18,14 +18,14 @@
  */
 package org.kegbot.app.util;
 
-import javax.measure.quantities.Volume;
-import javax.measure.units.NonSI;
-import javax.measure.units.SI;
+import android.util.Pair;
 
 import org.jscience.physics.measures.Measure;
 import org.kegbot.app.config.AppConfiguration;
 
-import android.util.Pair;
+import javax.measure.quantities.Volume;
+import javax.measure.units.NonSI;
+import javax.measure.units.SI;
 
 /**
  * Various unit conversion helpers.

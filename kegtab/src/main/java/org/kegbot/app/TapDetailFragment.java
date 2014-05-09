@@ -24,8 +24,6 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
-import butterknife.ButterKnife;
-
 import com.google.common.collect.Lists;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
@@ -42,6 +40,8 @@ import org.kegbot.proto.Models.Keg;
 import org.kegbot.proto.Models.KegTap;
 
 import java.util.List;
+
+import butterknife.ButterKnife;
 
 /**
  * A fragment representing a single Tap detail screen. This fragment is either

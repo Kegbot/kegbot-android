@@ -18,13 +18,13 @@
  */
 package org.kegbot.app.setup;
 
-import org.kegbot.app.R;
-
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+
+import org.kegbot.app.R;
 
 public class SetupProgressDialogFragment extends DialogFragment {
 

@@ -10,7 +10,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 
 import org.codehaus.jackson.JsonNode;
-import org.kegbot.api.KegbotApiException;
 import org.kegbot.app.util.KegSizes;
 import org.kegbot.app.util.TimeSeries;
 import org.kegbot.proto.Api.RecordTemperatureRequest;

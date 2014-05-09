@@ -31,12 +31,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import butterknife.ButterKnife;
-import butterknife.InjectView;
-
 import org.kegbot.backend.Backend;
 import org.kegbot.backend.BackendException;
 import org.kegbot.core.KegbotCore;
+
+import butterknife.ButterKnife;
 
 /**
  * @author mike wakerly (opensource@hoho.com)

@@ -1,7 +1,6 @@
 package org.kegbot.app.setup;
 
 import android.app.Fragment;
-import android.os.Build;
 
 import com.google.common.base.Strings;
 

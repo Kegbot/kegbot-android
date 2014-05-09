@@ -21,10 +21,8 @@ package org.kegbot.backend;
 import android.content.Context;
 
 import org.codehaus.jackson.JsonNode;
-import org.kegbot.api.KegbotApiException;
 import org.kegbot.app.util.TimeSeries;
 import org.kegbot.proto.Api.RecordTemperatureRequest;
-import org.kegbot.proto.Models;
 import org.kegbot.proto.Models.AuthenticationToken;
 import org.kegbot.proto.Models.Controller;
 import org.kegbot.proto.Models.Drink;

@@ -19,14 +19,8 @@ package org.kegbot.core;
 
 import android.test.InstrumentationTestCase;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import com.google.common.collect.Sets;
 import com.squareup.otto.Bus;
-
-import junit.framework.TestCase;
 
 import org.kegbot.app.config.ConfigurationStore;
 import org.kegbot.proto.Models.Controller;
@@ -35,6 +29,10 @@ import org.kegbot.proto.Models.KegTap;
 
 import java.util.Collections;
 import java.util.Set;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Tests for {@link TapManager}.

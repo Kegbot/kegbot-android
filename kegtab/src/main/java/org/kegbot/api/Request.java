@@ -17,17 +17,17 @@
  */
 package org.kegbot.api;
 
-import java.io.File;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Nullable;
-
 import android.util.Pair;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+
+import java.io.File;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Nullable;
 
 /**
  * A container and builder for generic HTTP requests. Bring your own transport.

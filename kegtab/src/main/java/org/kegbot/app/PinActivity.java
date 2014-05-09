@@ -18,9 +18,6 @@
  */
 package org.kegbot.app;
 
-import org.kegbot.app.config.AppConfiguration;
-import org.kegbot.core.KegbotCore;
-
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
@@ -39,6 +36,9 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
 import com.google.common.base.Strings;
+
+import org.kegbot.app.config.AppConfiguration;
+import org.kegbot.core.KegbotCore;
 
 /**
  * Pass-through activity which verifies the manager pin. PIN-verified activities

@@ -18,10 +18,10 @@
  */
 package org.kegbot.app.util;
 
-import java.util.TimeZone;
-
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+
+import java.util.TimeZone;
 
 /**
  * Date-related utility functions.

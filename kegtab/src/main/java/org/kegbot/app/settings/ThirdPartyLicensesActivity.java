@@ -18,12 +18,12 @@
  */
 package org.kegbot.app.settings;
 
-import org.kegbot.app.R;
-
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 import android.webkit.WebView;
+
+import org.kegbot.app.R;
 
 /**
  * Shows the third party open source licenses in a {@link WebView}.

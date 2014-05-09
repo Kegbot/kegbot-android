@@ -39,11 +39,8 @@ import com.hoho.android.usbserial.util.HexDump;
 
 import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.backend.BackendException;
-import org.kegbot.core.AuthenticationManager;
 import org.kegbot.core.AuthenticationToken;
-import org.kegbot.core.FlowManager;
 import org.kegbot.core.KegbotCore;
-import org.kegbot.core.TapManager;
 import org.kegbot.proto.Models.KegTap;
 import org.kegbot.proto.Models.User;
 

@@ -18,10 +18,10 @@
  */
 package org.kegbot.app.util;
 
+import junit.framework.TestCase;
+
 import java.text.ParseException;
 import java.util.TimeZone;
-
-import junit.framework.TestCase;
 
 /**
  * Tests for {@link DateUtils}.

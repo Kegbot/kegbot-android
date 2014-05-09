@@ -18,9 +18,9 @@
  */
 package org.kegbot.app.event;
 
-import java.util.List;
-
 import org.kegbot.proto.Models.SystemEvent;
+
+import java.util.List;
 
 /**
  * Event posted when the list of system events has been updated.

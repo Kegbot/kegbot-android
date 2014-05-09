@@ -3,8 +3,6 @@ package org.kegbot.backend;
 import android.test.AndroidTestCase;
 
 import org.kegbot.app.util.KegSizes;
-import org.kegbot.backend.LocalBackend;
-import org.kegbot.backend.LocalBackendDbHelper;
 import org.kegbot.proto.Models.Beverage;
 import org.kegbot.proto.Models.BeverageProducer;
 import org.kegbot.proto.Models.Controller;

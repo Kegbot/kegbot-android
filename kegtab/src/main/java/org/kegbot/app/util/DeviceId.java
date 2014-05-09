@@ -18,16 +18,16 @@
  */
 package org.kegbot.app.util;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
-import java.util.Random;
-
 import android.content.Context;
 import android.provider.Settings.Secure;
 
 import com.google.common.base.Strings;
 import com.hoho.android.usbserial.util.HexDump;
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
+import java.util.Random;
 
 /**
  * Utility methods for getting device-unique information.

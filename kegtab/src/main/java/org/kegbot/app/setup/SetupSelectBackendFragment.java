@@ -27,11 +27,11 @@ import android.view.ViewGroup;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
-import butterknife.ButterKnife;
-
 import org.kegbot.app.KegbotApplication;
 import org.kegbot.app.R;
 import org.kegbot.app.config.AppConfiguration;
+
+import butterknife.ButterKnife;
 
 /**
  * Shows a choice of

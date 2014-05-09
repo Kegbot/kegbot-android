@@ -18,14 +18,14 @@
  */
 package org.kegbot.api;
 
-import java.io.IOException;
-import java.util.Iterator;
-
-import org.codehaus.jackson.JsonNode;
-
 import com.google.protobuf.Descriptors.Descriptor;
 import com.google.protobuf.Descriptors.FieldDescriptor;
 import com.google.protobuf.Message.Builder;
+
+import org.codehaus.jackson.JsonNode;
+
+import java.io.IOException;
+import java.util.Iterator;
 
 public class ProtoEncoder {
 

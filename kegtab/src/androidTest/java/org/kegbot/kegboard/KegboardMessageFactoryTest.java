@@ -19,10 +19,6 @@ package org.kegbot.kegboard;
 
 import android.test.InstrumentationTestCase;
 
-import junit.framework.TestCase;
-
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;

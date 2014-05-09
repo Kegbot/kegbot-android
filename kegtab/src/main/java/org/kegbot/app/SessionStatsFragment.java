@@ -18,19 +18,6 @@
  */
 package org.kegbot.app;
 
-import java.io.IOException;
-import java.util.Map;
-
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
-import org.kegbot.app.event.CurrentSessionChangedEvent;
-import org.kegbot.app.util.Units;
-import org.kegbot.app.view.BadgeView;
-import org.kegbot.core.KegbotCore;
-import org.kegbot.proto.Models.Session;
-
 import android.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
@@ -44,6 +31,19 @@ import com.google.common.base.Functions;
 import com.google.common.collect.ImmutableSortedMap;
 import com.google.common.collect.Ordering;
 import com.squareup.otto.Subscribe;
+
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.type.TypeReference;
+import org.kegbot.app.event.CurrentSessionChangedEvent;
+import org.kegbot.app.util.Units;
+import org.kegbot.app.view.BadgeView;
+import org.kegbot.core.KegbotCore;
+import org.kegbot.proto.Models.Session;
+
+import java.io.IOException;
+import java.util.Map;
 
 public class SessionStatsFragment extends Fragment {
 

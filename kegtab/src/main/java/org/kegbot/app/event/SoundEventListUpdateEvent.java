@@ -18,12 +18,12 @@
  */
 package org.kegbot.app.event;
 
-import java.util.List;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 
 import org.kegbot.proto.Models.SoundEvent;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
+import java.util.List;
 
 /**
  * Event posted when the {@link SoundEvent} list has been updated.

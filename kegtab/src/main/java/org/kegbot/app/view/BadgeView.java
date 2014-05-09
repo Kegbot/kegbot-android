@@ -18,14 +18,14 @@
  */
 package org.kegbot.app.view;
 
-import org.kegbot.app.R;
-
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import org.kegbot.app.R;
 
 /**
  * A {@link View} which lists a numeric value and a caption.

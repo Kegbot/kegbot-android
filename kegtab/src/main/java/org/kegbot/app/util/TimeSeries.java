@@ -17,11 +17,11 @@
  */
 package org.kegbot.app.util;
 
-import java.util.List;
-
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+
+import java.util.List;
 
 /**
  * Represents a time series, a vector of (time, value) pairs.

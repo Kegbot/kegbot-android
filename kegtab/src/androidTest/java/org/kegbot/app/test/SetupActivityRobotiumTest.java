@@ -6,7 +6,6 @@ import android.widget.RadioButton;
 
 import com.robotium.solo.Solo;
 
-import org.kegbot.app.*;
 import org.kegbot.app.R;
 import org.kegbot.app.setup.SetupActivity;
 

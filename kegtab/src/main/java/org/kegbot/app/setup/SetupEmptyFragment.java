@@ -18,13 +18,13 @@
  */
 package org.kegbot.app.setup;
 
-import org.kegbot.app.R;
-
 import android.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import org.kegbot.app.R;
 
 public class SetupEmptyFragment extends Fragment {
 

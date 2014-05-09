@@ -18,27 +18,6 @@
  */
 package org.kegbot.core;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
-
-import org.kegbot.app.event.Event;
-import org.kegbot.app.event.FlowUpdateEvent;
-import org.kegbot.app.event.SoundEventListUpdateEvent;
-import org.kegbot.app.util.Downloader;
-import org.kegbot.app.util.IndentingPrintWriter;
-import org.kegbot.app.util.Units;
-import org.kegbot.proto.Models.SoundEvent;
-
 import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -51,6 +30,27 @@ import com.google.common.collect.Queues;
 import com.google.common.collect.Sets;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
+
+import org.kegbot.app.event.Event;
+import org.kegbot.app.event.FlowUpdateEvent;
+import org.kegbot.app.event.SoundEventListUpdateEvent;
+import org.kegbot.app.util.Downloader;
+import org.kegbot.app.util.IndentingPrintWriter;
+import org.kegbot.app.util.Units;
+import org.kegbot.proto.Models.SoundEvent;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Plays sounds at specific events.

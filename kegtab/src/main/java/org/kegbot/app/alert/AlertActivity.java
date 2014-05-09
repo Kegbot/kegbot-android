@@ -28,19 +28,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
-import org.kegbot.app.R;
 import org.kegbot.core.KegbotCore;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class AlertActivity extends Activity {
 

@@ -4,9 +4,7 @@ import android.app.Fragment;
 
 import com.google.common.base.Strings;
 
-import org.kegbot.app.KegbotApplication;
 import org.kegbot.app.R;
-import org.kegbot.app.config.AppConfiguration;
 
 public class SetupLoginStep extends SetupStep {
 

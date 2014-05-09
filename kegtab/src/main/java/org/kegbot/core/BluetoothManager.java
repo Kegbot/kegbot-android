@@ -18,14 +18,6 @@
  */
 package org.kegbot.core;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.UUID;
-
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.kegbot.app.AuthenticatingActivity;
-
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
@@ -36,6 +28,14 @@ import android.util.Log;
 import com.google.common.base.Strings;
 import com.hoho.android.usbserial.util.HexDump;
 import com.squareup.otto.Bus;
+
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.kegbot.app.AuthenticatingActivity;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.UUID;
 
 /**
  * Listens for bluetooth connections.

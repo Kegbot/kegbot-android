@@ -33,8 +33,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
-import butterknife.ButterKnife;
-
 import com.google.common.base.Strings;
 
 import org.kegbot.app.util.ImageDownloader;
@@ -44,6 +42,8 @@ import org.kegbot.core.KegbotCore;
 import org.kegbot.proto.Models.Image;
 import org.kegbot.proto.Models.Keg;
 import org.kegbot.proto.Models.KegTap;
+
+import butterknife.ButterKnife;
 
 public class TapStatusFragment extends ListFragment {
 

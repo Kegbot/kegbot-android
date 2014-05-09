@@ -32,9 +32,6 @@ import android.widget.NumberPicker;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import butterknife.ButterKnife;
-import butterknife.InjectView;
-
 import com.google.common.base.Strings;
 
 import org.kegbot.backend.Backend;
@@ -42,6 +39,8 @@ import org.kegbot.backend.BackendException;
 import org.kegbot.core.KegbotCore;
 import org.kegbot.core.SyncManager;
 import org.kegbot.proto.Models.Controller;
+
+import butterknife.ButterKnife;
 
 /**
  * Activity shown when a new controller is connected.

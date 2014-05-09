@@ -19,7 +19,6 @@
 package org.kegbot.app.event;
 
 import org.kegbot.proto.Models;
-import org.kegbot.proto.Models.FlowMeter;
 
 import java.util.List;
 

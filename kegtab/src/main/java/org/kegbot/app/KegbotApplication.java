@@ -10,14 +10,14 @@ import android.content.pm.PackageInfo;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-//import com.crashlytics.android.Crashlytics;
-
 import com.crashlytics.android.Crashlytics;
 
 import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.app.config.SharedPreferencesConfigurationStore;
 import org.kegbot.app.service.CheckinService;
 import org.kegbot.app.util.Utils;
+
+//import com.crashlytics.android.Crashlytics;
 
 /**
  * Kegbot customized application.

@@ -19,7 +19,6 @@
 package org.kegbot.api;
 
 import org.codehaus.jackson.JsonNode;
-import org.kegbot.backend.BackendException;
 
 public class KegbotApi404 extends KegbotApiException {
 

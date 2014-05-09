@@ -36,12 +36,10 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 
 import com.google.analytics.tracking.android.EasyTracker;
-import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
 import org.kegbot.app.KegbotApplication;
 import org.kegbot.app.R;
-import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.app.service.KegbotCoreService;
 
 import java.util.List;

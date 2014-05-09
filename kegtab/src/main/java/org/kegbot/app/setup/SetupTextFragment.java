@@ -18,14 +18,14 @@
  */
 package org.kegbot.app.setup;
 
-import org.kegbot.app.R;
-
 import android.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import org.kegbot.app.R;
 
 public abstract class SetupTextFragment extends Fragment {
 

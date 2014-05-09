@@ -17,10 +17,10 @@
  */
 package org.kegbot.app.event;
 
-import javax.annotation.Nullable;
-
 import org.codehaus.jackson.JsonNode;
 import org.kegbot.proto.Models.Session;
+
+import javax.annotation.Nullable;
 
 /**
  * Event posted when a new session is in progress. The session may be

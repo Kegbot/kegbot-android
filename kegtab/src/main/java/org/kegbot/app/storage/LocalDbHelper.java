@@ -18,9 +18,6 @@
  */
 package org.kegbot.app.storage;
 
-import org.kegbot.proto.Api.RecordTemperatureRequest;
-import org.kegbot.proto.Internal.PendingPour;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -31,6 +28,9 @@ import android.util.Log;
 
 import com.google.protobuf.AbstractMessage;
 import com.google.protobuf.InvalidProtocolBufferException;
+
+import org.kegbot.proto.Api.RecordTemperatureRequest;
+import org.kegbot.proto.Internal.PendingPour;
 
 /**
  *

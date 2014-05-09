@@ -44,7 +44,6 @@ import com.squareup.otto.Subscribe;
 
 import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.app.event.ConnectivityChangedEvent;
-import org.kegbot.app.event.TapsChangedEvent;
 import org.kegbot.app.event.VisibleTapsChangedEvent;
 import org.kegbot.app.service.CheckinService;
 import org.kegbot.app.util.Utils;

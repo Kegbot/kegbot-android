@@ -19,12 +19,7 @@ package org.kegbot.core;
 
 import android.test.InstrumentationTestCase;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import com.squareup.otto.Bus;
-
-import junit.framework.TestCase;
 
 import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.core.FlowManager.Clock;
@@ -33,6 +28,9 @@ import org.kegbot.proto.Models.FlowMeter;
 import org.kegbot.proto.Models.KegTap;
 
 import java.util.List;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Tests for {@link FlowManager}.
