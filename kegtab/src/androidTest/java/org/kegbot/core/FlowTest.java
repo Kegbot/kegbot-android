@@ -50,7 +50,7 @@ public class FlowTest extends TestCase {
           .setId(1)
           .setName(FAKE_METER_NAME)
           .setPortName("flow0")
-          .setTicksPerMl(1/3.0f)
+          .setTicksPerMl(1 / 3.0f)
           .setController(Controller.newBuilder()
               .setId(1)
               .setName("test")

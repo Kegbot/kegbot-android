@@ -36,7 +36,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
- *
  * @author mike wakerly (mike@wakerly.com)
  */
 public class UserDetailListLoader extends AsyncTaskLoader<List<User>> {

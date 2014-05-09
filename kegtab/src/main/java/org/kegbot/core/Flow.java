@@ -46,7 +46,8 @@ public class Flow {
   private final int mFlowId;
 
   /** Tap for this flow; may be null if tap was unknown at time of flow. */
-  @Nullable private final KegTap mTap;
+  @Nullable
+  private final KegTap mTap;
 
   /** Authenticated user for this flow. If unset, the flow is anonymous. */
   private String mUsername;
@@ -59,7 +60,7 @@ public class Flow {
 
   /**
    * Time the flow was ended, in {@link Clock#elapsedRealtime()}.
-   *
+   * <p/>
    * Only meaningful when {@link #mIsFinished} is {@code true}.
    */
   private long mEndTimeMillis;
@@ -68,14 +69,13 @@ public class Flow {
   private long mLastUpdateTimeMillis;
 
   /**
-   * Last "activity" time. This usually matches {@link #mLastUpdateTimeMillis}, but may be
-   * reset in {@link #pokeActivity()}.
+   * Last "activity" time. This usually matches {@link #mLastUpdateTimeMillis}, but may be reset in
+   * {@link #pokeActivity()}.
    */
   private long mLastActivityTimeMillis;
 
   /**
-   * Maximum idle time, in milliseconds. If zero, flow may remain idle
-   * indefinitely.
+   * Maximum idle time, in milliseconds. If zero, flow may remain idle indefinitely.
    */
   private long mMaxIdleTimeMillis;
 
@@ -107,7 +107,7 @@ public class Flow {
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder("Flow")
-    .append(" id=").append(mFlowId)
+        .append(" id=").append(mFlowId)
         .append(" meterName=").append(mMeterName)
         .append(" finished=").append(mIsFinished)
         .append(" user=").append(mUsername)

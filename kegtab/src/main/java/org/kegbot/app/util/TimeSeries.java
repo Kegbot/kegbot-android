@@ -158,14 +158,11 @@ public class TimeSeries {
     /**
      * Constructor.
      *
-     * @param minResolution
-     *          minimum time delta between data points. Adjacent points will be
-     *          coalesced until a point is added whose {@code time} exceeds the
-     *          last value by at least this much. The value {@code 0} disables
-     *          coalescing.
-     * @param rebaseTimes
-     *          if {@code true}, all timestamps will be relative to the first
-     *          data point's time, which will be stored as {@code 0}.
+     * @param minResolution minimum time delta between data points. Adjacent points will be
+     *                      coalesced until a point is added whose {@code time} exceeds the last
+     *                      value by at least this much. The value {@code 0} disables coalescing.
+     * @param rebaseTimes   if {@code true}, all timestamps will be relative to the first data
+     *                      point's time, which will be stored as {@code 0}.
      */
     public Builder(long minResolution, boolean rebaseTimes) {
       mMinResolution = minResolution;
@@ -175,7 +172,7 @@ public class TimeSeries {
     /**
      * Adds a new data point.  {@code time} values must be added in increasing order.
      *
-     * @param time the event time
+     * @param time  the event time
      * @param value the event value
      * @return {@code this}, for chaining
      */

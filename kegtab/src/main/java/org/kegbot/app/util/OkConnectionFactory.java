@@ -9,8 +9,8 @@ import java.net.Proxy;
 import java.net.URL;
 
 /**
- * A {@link com.github.kevinsawicki.http.HttpRequest.ConnectionFactory connection factory}
- * which uses OkHttp.
+ * A {@link com.github.kevinsawicki.http.HttpRequest.ConnectionFactory connection factory} which
+ * uses OkHttp.
  * <p/>
  * Call {@link HttpRequest#setConnectionFactory(HttpRequest.ConnectionFactory)} with an instance of
  * this class to enable.

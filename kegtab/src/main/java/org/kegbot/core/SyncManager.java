@@ -77,8 +77,8 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
 
 /**
- * Performs asynchronous work against a {@link Backend} and provides
- * non-blocking cached data from it.
+ * Performs asynchronous work against a {@link Backend} and provides non-blocking cached data from
+ * it.
  */
 public class SyncManager extends BackgroundManager {
 
@@ -89,14 +89,17 @@ public class SyncManager extends BackgroundManager {
   private final TapManager mTapManager;
   private final Context mContext;
 
-  @Nullable private SyncResponse mLastSync;
+  @Nullable
+  private SyncResponse mLastSync;
   private List<SystemEvent> mLastSystemEventList = Lists.newArrayList();
   private List<SoundEvent> mLastSoundEventList = Lists.newArrayList();
   private List<Controller> mLastControllers = Lists.newArrayList();
   private List<FlowMeter> mLastFlowMeters = Lists.newArrayList();
   private List<Models.FlowToggle> mLastFlowToggles = Lists.newArrayList();
-  @Nullable private Session mLastSession = null;
-  @Nullable private JsonNode mLastSessionStats = null;
+  @Nullable
+  private Session mLastSession = null;
+  @Nullable
+  private JsonNode mLastSessionStats = null;
 
   private SQLiteOpenHelper mLocalDbHelper;
 
@@ -312,8 +315,8 @@ public class SyncManager extends BackgroundManager {
   }
 
   /**
-   * Synchronously posts a single pour to the remote backend. This method is
-   * guaranteed to have succeeded on non-exceptional return.
+   * Synchronously posts a single pour to the remote backend. This method is guaranteed to have
+   * succeeded on non-exceptional return.
    */
   private void postPour(final PendingPour pour) throws KegbotApiException {
     final RecordDrinkRequest request = pour.getDrinkRequest();
@@ -363,8 +366,8 @@ public class SyncManager extends BackgroundManager {
   }
 
   /**
-   * Synchronously posts a single thermo log to the remote backend. This method
-   * is guaranteed to have succeeded on non-exceptional return.
+   * Synchronously posts a single thermo log to the remote backend. This method is guaranteed to
+   * have succeeded on non-exceptional return.
    */
   private void postThermoLog(final RecordTemperatureRequest request) throws BackendException {
     Log.d(TAG, ">>> Posting thermo log: tap=" + request.getSensorName() + " value=" + request.getTempC());
@@ -381,8 +384,8 @@ public class SyncManager extends BackgroundManager {
 
     // Fetch most recent entry.
     final Cursor cursor =
-      db.query(LocalDbHelper.TABLE_NAME,
-          null, null, null, null, null, LocalDbHelper.COLUMN_NAME_ADDED_DATE + " ASC", "1");
+        db.query(LocalDbHelper.TABLE_NAME,
+            null, null, null, null, null, LocalDbHelper.COLUMN_NAME_ADDED_DATE + " ASC", "1");
     try {
       final int numPending = cursor.getCount();
       if (numPending == 0) {

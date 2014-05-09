@@ -19,7 +19,6 @@
 package org.kegbot.kegboard;
 
 /**
- *
  * @author mike
  */
 public class KegboardTemperatureReadingMessage extends KegboardMessage {

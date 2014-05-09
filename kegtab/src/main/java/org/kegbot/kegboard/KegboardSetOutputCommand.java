@@ -20,7 +20,6 @@ package org.kegbot.kegboard;
 
 
 /**
- *
  * @author mike
  */
 public class KegboardSetOutputCommand extends KegboardMessage {
@@ -35,12 +34,12 @@ public class KegboardSetOutputCommand extends KegboardMessage {
   }
 
   public KegboardSetOutputCommand(int outputId, boolean enabled) {
-    mTags.put(Integer.valueOf(TAG_OUTPUT_ID), new byte[] {(byte) (outputId & 0xf)});
+    mTags.put(Integer.valueOf(TAG_OUTPUT_ID), new byte[]{(byte) (outputId & 0xf)});
     byte[] value;
     if (enabled) {
-      value = new byte[] {1, 0};
+      value = new byte[]{1, 0};
     } else {
-      value = new byte[] {0, 0};
+      value = new byte[]{0, 0};
     }
     mTags.put(Integer.valueOf(TAG_OUTPUT_MODE), value);
   }

@@ -9,8 +9,7 @@ import android.content.SharedPreferences;
 import java.util.Set;
 
 /**
- * A {@link ConfigurationStore} backed by an Android {@link SharedPreferences}
- * instance.
+ * A {@link ConfigurationStore} backed by an Android {@link SharedPreferences} instance.
  *
  * @author mike wakerly (opensource@hoho.com)
  */
@@ -80,9 +79,8 @@ public class SharedPreferencesConfigurationStore implements ConfigurationStore {
   /**
    * Returns the key used within shared preferences.
    *
-   * @param basename
-   *          base key name used in {@link #getString(String, String)} and
-   *          {@link #putString(String, String)}.
+   * @param basename base key name used in {@link #getString(String, String)} and {@link
+   *                 #putString(String, String)}.
    * @return the actual key used in shared preferences
    */
   static String getKey(String basename) {

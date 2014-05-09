@@ -218,16 +218,16 @@ public class CoreActivity extends Activity {
     try {
       intentFilter.addDataType("*/*");
     } catch (MalformedMimeTypeException e) {
-        throw new RuntimeException("Error creating NFC filter", e);
+      throw new RuntimeException("Error creating NFC filter", e);
     }
 
-    final String[][] techLists = new String[][] {
-        new String[] { IsoDep.class.getName() },
-        new String[] { MifareClassic.class.getName() },
-        new String[] { MifareUltralight.class.getName() },
-        new String[] { NfcA.class.getName() },
-        new String[] { NfcB.class.getName() },
-        new String[] { NfcF.class.getName() }
+    final String[][] techLists = new String[][]{
+        new String[]{IsoDep.class.getName()},
+        new String[]{MifareClassic.class.getName()},
+        new String[]{MifareUltralight.class.getName()},
+        new String[]{NfcA.class.getName()},
+        new String[]{NfcB.class.getName()},
+        new String[]{NfcF.class.getName()}
     };
 
     final Intent intent = AuthenticatingActivity.getStartForNfcIntent(getApplicationContext());

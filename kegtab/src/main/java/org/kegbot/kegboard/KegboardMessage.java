@@ -38,7 +38,7 @@ public abstract class KegboardMessage {
   private static final int KBSP_TRAILER_LENGTH = 4;
 
   private static final int KBSP_MIN_LENGTH = KBSP_HEADER_LENGTH
-  + KBSP_TRAILER_LENGTH;
+      + KBSP_TRAILER_LENGTH;
 
   private static final byte[] KBSP_HEADER_BYTES = "KBSP v1:".getBytes();
 
@@ -108,7 +108,7 @@ public abstract class KegboardMessage {
 
     // System.out.println(HexDump.dumpHexString(wholeMessage));
 
-    for (int i = 0; i <= (payload.length - 2);) {
+    for (int i = 0; i <= (payload.length - 2); ) {
       final int tagNum = payload[i] & 0x00ff;
       final int length = payload[i + 1] & 0x00ff;
 
@@ -132,16 +132,16 @@ public abstract class KegboardMessage {
     byte[] payload = new byte[0];
 
     for (Map.Entry<Integer, byte[]> entry : mTags.entrySet()) {
-      final byte[] tag = new byte[] {(byte) (entry.getKey().intValue() & 0x0ff)};
+      final byte[] tag = new byte[]{(byte) (entry.getKey().intValue() & 0x0ff)};
       final byte[] value = entry.getValue();
       final int len = value.length & 0x0ff;
-      final byte[] length = new byte[] {(byte) len};
+      final byte[] length = new byte[]{(byte) len};
 
       payload = Bytes.concat(payload, tag, length, value);
     }
 
-    byte[] messageType = new byte[] {(byte) (getMessageType() & 0x0ff), 00};
-    byte[] messageLength = new byte[] {(byte) (payload.length & 0x0ff), 00};
+    byte[] messageType = new byte[]{(byte) (getMessageType() & 0x0ff), 00};
+    byte[] messageLength = new byte[]{(byte) (payload.length & 0x0ff), 00};
 
     byte[] message = Bytes.concat(KBSP_HEADER_BYTES, messageType, messageLength, payload);
 
@@ -221,18 +221,18 @@ public abstract class KegboardMessage {
     final int messageType = extractType(bytes);
 
     switch (messageType) {
-    case KegboardHelloMessage.MESSAGE_TYPE:
-      return new KegboardHelloMessage(bytes);
-    case KegboardMeterStatusMessage.MESSAGE_TYPE:
-      return new KegboardMeterStatusMessage(bytes);
-    case KegboardTemperatureReadingMessage.MESSAGE_TYPE:
-      return new KegboardTemperatureReadingMessage(bytes);
-    case KegboardOutputStatusMessage.MESSAGE_TYPE:
-      return new KegboardOutputStatusMessage(bytes);
-    case KegboardAuthTokenMessage.MESSAGE_TYPE:
-      return new KegboardAuthTokenMessage(bytes);
-    default:
-      throw new KegboardMessageException("Unknown message type");
+      case KegboardHelloMessage.MESSAGE_TYPE:
+        return new KegboardHelloMessage(bytes);
+      case KegboardMeterStatusMessage.MESSAGE_TYPE:
+        return new KegboardMeterStatusMessage(bytes);
+      case KegboardTemperatureReadingMessage.MESSAGE_TYPE:
+        return new KegboardTemperatureReadingMessage(bytes);
+      case KegboardOutputStatusMessage.MESSAGE_TYPE:
+        return new KegboardOutputStatusMessage(bytes);
+      case KegboardAuthTokenMessage.MESSAGE_TYPE:
+        return new KegboardAuthTokenMessage(bytes);
+      default:
+        throw new KegboardMessageException("Unknown message type");
     }
   }
 

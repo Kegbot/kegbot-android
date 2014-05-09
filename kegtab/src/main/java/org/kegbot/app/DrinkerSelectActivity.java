@@ -49,8 +49,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Shows a list of available drinkers, returning the select username (using
- * {@link #setResult(int, Intent)}) when one is selected.
+ * Shows a list of available drinkers, returning the select username (using {@link #setResult(int,
+ * Intent)}) when one is selected.
  *
  * @author mike wakerly (opensource@hoho.com)
  */

@@ -33,7 +33,6 @@ import org.kegbot.proto.Api.RecordTemperatureRequest;
 import org.kegbot.proto.Internal.PendingPour;
 
 /**
- *
  * @author mike wakerly (mike@wakerly.com)
  */
 public class LocalDbHelper extends SQLiteOpenHelper {
@@ -70,7 +69,7 @@ public class LocalDbHelper extends SQLiteOpenHelper {
   public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
     Log.w(TAG, "Upgrading database from version " + oldVersion + " to " + newVersion
         + ", destroying all old data");
-    db.execSQL("DROP TABLE IF EXISTS "  + TABLE_NAME);
+    db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
     onCreate(db);
   }
 

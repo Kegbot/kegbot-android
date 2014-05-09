@@ -1,4 +1,3 @@
-
 package org.kegbot.core.hardware;
 
 import org.kegbot.app.event.Event;

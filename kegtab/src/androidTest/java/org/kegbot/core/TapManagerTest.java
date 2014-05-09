@@ -102,7 +102,7 @@ public class TapManagerTest extends InstrumentationTestCase {
 
     mTapManager.setTapVisibility(tap, true);
     verify(mMockConfigStore).putStringSet(
-            TapManager.KEY_HIDDEN_TAP_IDS, Collections.singleton("2"));
+        TapManager.KEY_HIDDEN_TAP_IDS, Collections.singleton("2"));
   }
 
 }

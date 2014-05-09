@@ -21,7 +21,6 @@ package org.kegbot.kegboard;
 import com.google.common.base.Strings;
 
 /**
- *
  * @author mike
  */
 public class KegboardHelloMessage extends KegboardMessage {

@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    style="@style/badge"
-    android:gravity="center"
-    android:orientation="vertical"
-    android:padding="5dip" >
+              style="@style/badge"
+              android:gravity="center"
+              android:orientation="vertical"
+              android:padding="5dip">
 
     <TextView
         android:id="@+id/badgeValue"
         style="@style/badgeValue"
         android:ellipsize="none"
-        android:singleLine="true" />
+        android:singleLine="true"/>
 
     <View
         style="@style/divider"
-        android:layout_width="match_parent" />
+        android:layout_width="match_parent"/>
 
     <TextView
         android:id="@+id/badgeCaption"
         style="@style/badgeCaption"
         android:ellipsize="none"
-        android:singleLine="true" />
+        android:singleLine="true"/>
 
 </LinearLayout>

@@ -1,42 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:gravity="center|left"
-    android:orientation="vertical" 
-    android:background="@drawable/shape_rounded_rect" >
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:gravity="center|left"
+              android:orientation="vertical"
+              android:background="@drawable/shape_rounded_rect">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/manager_pin_title"
         android:textSize="24sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/manager_pin_description"
         android:textColor="@android:color/darker_gray"
-        android:textSize="18sp" />
+        android:textSize="18sp"/>
 
     <EditText
         android:id="@+id/managerPin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="numberPassword" />
+        android:inputType="numberPassword"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/confirm_pin"
         android:textSize="24sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"/>
 
     <EditText
         android:id="@+id/managerPinConfirm"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="numberPassword" />
+        android:inputType="numberPassword"/>
 
 </LinearLayout>

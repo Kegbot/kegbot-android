@@ -18,10 +18,10 @@
   with Kegtab. If not, see <http://www.gnu.org/licenses/>.
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:gravity="top|left"
-    android:orientation="vertical" >
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:gravity="top|left"
+              android:orientation="vertical">
 
     <TextView
         android:id="@+id/setupTitleText"
@@ -30,7 +30,7 @@
         android:layout_marginBottom="24dip"
         android:text="Welcome!"
         android:textSize="32dip"
-        android:textStyle="bold" >
+        android:textStyle="bold">
 
     </TextView>
 
@@ -39,7 +39,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Blah blah blah."
-        android:textSize="24dip" >
+        android:textSize="24dip">
     </TextView>
 
 </LinearLayout>

@@ -19,7 +19,6 @@
 package org.kegbot.kegboard;
 
 /**
- *
  * @author mike
  */
 public class KegboardOutputStatusMessage extends KegboardMessage {

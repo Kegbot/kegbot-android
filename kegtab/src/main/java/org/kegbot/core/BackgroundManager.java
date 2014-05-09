@@ -60,9 +60,8 @@ public abstract class BackgroundManager extends Manager {
   }
 
   /**
-   * Runs in the background after calling {@link #start()}. Implementations
-   * performing long-lived background work should respond to {@link #stop()} and
-   * abort the work.
+   * Runs in the background after calling {@link #start()}. Implementations performing long-lived
+   * background work should respond to {@link #stop()} and abort the work.
    */
   protected abstract void runInBackground();
 

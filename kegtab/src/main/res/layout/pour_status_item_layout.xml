@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/shape_rounded_rect"
-    android:gravity="top"
-    android:orientation="vertical"
-    android:paddingBottom="12dip"
-    android:paddingLeft="24dip"
-    android:paddingRight="24dip"
-    android:paddingTop="12dip" >
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@drawable/shape_rounded_rect"
+              android:gravity="top"
+              android:orientation="vertical"
+              android:paddingBottom="12dip"
+              android:paddingLeft="24dip"
+              android:paddingRight="24dip"
+              android:paddingTop="12dip">
 
     <!-- First row: Keg Image and Pour Total. -->
 
@@ -16,20 +16,20 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="bottom|left"
-        android:orientation="horizontal" >
+        android:orientation="horizontal">
 
         <TextView
             android:id="@+id/tapTitle"
             style="@style/header"
             android:layout_marginRight="16dip"
             android:ellipsize="end"
-            android:singleLine="true" />
+            android:singleLine="true"/>
 
         <TextView
             android:id="@+id/tapSubtitle"
             style="@style/subheader"
             android:ellipsize="end"
-            android:singleLine="true" />
+            android:singleLine="true"/>
     </LinearLayout>
 
     <View
@@ -38,12 +38,12 @@
         android:layout_height="2dip"
         android:layout_marginBottom="5dip"
         android:layout_marginTop="5dip"
-        android:background="#1FFFFFFF" />
+        android:background="#1FFFFFFF"/>
 
     <RelativeLayout
         android:id="@+id/tapActiveView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="match_parent">
 
         <org.kegbot.app.view.BadgeView
             android:id="@+id/tapStatsBadge1"
@@ -52,7 +52,7 @@
             android:layout_centerHorizontal="true"
             android:layout_marginLeft="10dip"
             android:layout_toRightOf="@id/controlsBox"
-            android:background="@color/black20pct" >
+            android:background="@color/black20pct">
         </org.kegbot.app.view.BadgeView>
 
         <TextView
@@ -62,7 +62,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/tapStatsBadge1"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="5dip" />
+            android:layout_marginTop="5dip"/>
 
         <ImageView
             android:id="@+id/tapImage"
@@ -70,7 +70,7 @@
             android:layout_height="fill_parent"
             android:layout_below="@+id/tapNotes"
             android:layout_centerHorizontal="true"
-            android:layout_margin="16dip" />
+            android:layout_margin="16dip"/>
     </RelativeLayout>
 
     <!--
@@ -82,7 +82,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dip"
         android:layout_weight="1"
-        android:visibility="gone" >
+        android:visibility="gone">
 
         <!--
              Here is the list. Since we are using a ListActivity, we
@@ -94,7 +94,7 @@
             android:id="@android:id/list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:drawSelectorOnTop="false" />
+            android:drawSelectorOnTop="false"/>
 
         <!-- Here is the view to show if the list is emtpy -->
 
@@ -103,7 +103,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:text="No items."
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:textAppearance="?android:attr/textAppearanceMedium"/>
     </FrameLayout>
 
 </LinearLayout>

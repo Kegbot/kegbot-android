@@ -19,7 +19,6 @@
 package org.kegbot.kegboard;
 
 /**
- *
  * @author mike wakerly (mike@wakerly.com)
  */
 public class KegboardMessageException extends Exception {

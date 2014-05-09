@@ -121,7 +121,8 @@ public class PourInProgressActivity extends CoreActivity {
               }
               dialog.cancel();
             }
-          }).setNegativeButton("Done Pouring", new DialogInterface.OnClickListener() {
+          }
+      ).setNegativeButton("Done Pouring", new DialogInterface.OnClickListener() {
         @Override
         public void onClick(DialogInterface dialog, int which) {
           for (final Flow flow : mFlowManager.getAllActiveFlows()) {
@@ -598,7 +599,7 @@ public class PourInProgressActivity extends CoreActivity {
         } else {
           mTaps.add(tap);
           mTapIndexMap.put(tap.getMeter().getName(), Integer.valueOf(mTaps.size() - 1));
-          Log.d(TAG, "+++ Added newly active tap "  + tap);
+          Log.d(TAG, "+++ Added newly active tap " + tap);
           mPouringTapAdapter.notifyDataSetChanged();
         }
       }

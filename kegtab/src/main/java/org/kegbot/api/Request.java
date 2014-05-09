@@ -43,7 +43,7 @@ public class Request {
   public static final String HEAD = "HEAD";
 
   private final String mUrl;
-  private final String mMethod;;
+  private final String mMethod;
   private final List<Pair<String, String>> mParameters;
   private final Map<String, File> mFiles;
   private final Map<String, String> mHeaders;

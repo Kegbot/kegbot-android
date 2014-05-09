@@ -1,4 +1,3 @@
-
 package org.kegbot.app;
 
 import android.content.Context;
@@ -8,25 +7,21 @@ import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
 
 /**
- * An activity representing a list of Taps. This activity has different
- * presentations for handset and tablet-size devices. On handsets, the activity
- * presents a list of items, which when touched, lead to a
- * {@link TapDetailActivity} representing item details. On tablets, the activity
- * presents the list of items and item details side-by-side using two vertical
- * panes.
- * <p>
- * The activity makes heavy use of fragments. The list of items is a
- * {@link TapListFragment} and the item details (if present) is a
- * {@link TapDetailFragment}.
- * <p>
- * This activity also implements the required {@link TapListFragment.Callbacks}
- * interface to listen for item selections.
+ * An activity representing a list of Taps. This activity has different presentations for handset
+ * and tablet-size devices. On handsets, the activity presents a list of items, which when touched,
+ * lead to a {@link TapDetailActivity} representing item details. On tablets, the activity presents
+ * the list of items and item details side-by-side using two vertical panes.
+ * <p/>
+ * The activity makes heavy use of fragments. The list of items is a {@link TapListFragment} and the
+ * item details (if present) is a {@link TapDetailFragment}.
+ * <p/>
+ * This activity also implements the required {@link TapListFragment.Callbacks} interface to listen
+ * for item selections.
  */
 public class TapListActivity extends CoreActivity implements TapListFragment.Callbacks {
 
   /**
-   * Whether or not the activity is in two-pane mode, i.e. running on a tablet
-   * device.
+   * Whether or not the activity is in two-pane mode, i.e. running on a tablet device.
    */
   private boolean mTwoPane;
 
@@ -72,8 +67,8 @@ public class TapListActivity extends CoreActivity implements TapListFragment.Cal
   }
 
   /**
-   * Callback method from {@link TapListFragment.Callbacks} indicating that the
-   * item with the given ID was selected.
+   * Callback method from {@link TapListFragment.Callbacks} indicating that the item with the given
+   * ID was selected.
    */
   @Override
   public void onItemSelected(int tapId) {

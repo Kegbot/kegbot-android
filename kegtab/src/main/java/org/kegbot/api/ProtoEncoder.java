@@ -32,12 +32,9 @@ public class ProtoEncoder {
   /**
    * Assigns all fields in {@link JsonNode} instance to a {@link Builder}.
    *
-   * @param builder
-   *          the builder to be populated
-   * @param root
-   *          the JSON object
-   * @return the original builder, populated with any fields that were
-   *         discovered
+   * @param builder the builder to be populated
+   * @param root    the JSON object
+   * @return the original builder, populated with any fields that were discovered
    */
   public static Builder toProto(final Builder builder, final JsonNode root) {
     Descriptor type = builder.getDescriptorForType();

@@ -40,35 +40,22 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * The HardwareManager provides implementation-independent access to sensors to
- * the rest of the Kegbot core. It is also responsible for admitting and
- * removing controllers based on internal policy. <h2>Life of a Controller</h2>
- * <p>
- * Discovery, connection, and management of controllers is not done directly by
- * HardwareManager. Instead, subordinate manager classes handle this; at time of
- * writing, {@link KegboardManager} is the sole implementation, althought others
- * are possible.
- * </p>
- * <h3>Notification to HardwareManager</h3>
- * <p>
- * When a controller is attached, the subordinate manager will deliver a
- * callback to {@link HardwareManager} via
- * {@link #onControllerAttached(Controller)}. This callback will be
- * issued regardless of the controller's operational status (
- * {@link Controller#getStatus()}), in other words, the controller may be
- * attached in a non-functional state.
- * </p>
- * <h3>Notification to upper layers</h3>
- * <p>
- * After receiving notification from the subordinate manager, the
- * HardwareManager will issue a {@link ControllerAttachedEvent} on the core bus,
- * and the controller will be considered <em>operationally disabled</em> until
- * {@link #enableController(Controller)} is called. This allows a higher-level
- * component (such as the user interface) to gate operational status. In the
- * typical case, a controller will be immediately enabled unless it is
- * unrecognized ({@link Controller#getName()} does not match any known to the
- * backend).
- * </p>
+ * The HardwareManager provides implementation-independent access to sensors to the rest of the
+ * Kegbot core. It is also responsible for admitting and removing controllers based on internal
+ * policy. <h2>Life of a Controller</h2> <p> Discovery, connection, and management of controllers is
+ * not done directly by HardwareManager. Instead, subordinate manager classes handle this; at time
+ * of writing, {@link KegboardManager} is the sole implementation, althought others are possible.
+ * </p> <h3>Notification to HardwareManager</h3> <p> When a controller is attached, the subordinate
+ * manager will deliver a callback to {@link HardwareManager} via {@link
+ * #onControllerAttached(Controller)}. This callback will be issued regardless of the controller's
+ * operational status ( {@link Controller#getStatus()}), in other words, the controller may be
+ * attached in a non-functional state. </p> <h3>Notification to upper layers</h3> <p> After
+ * receiving notification from the subordinate manager, the HardwareManager will issue a {@link
+ * ControllerAttachedEvent} on the core bus, and the controller will be considered <em>operationally
+ * disabled</em> until {@link #enableController(Controller)} is called. This allows a higher-level
+ * component (such as the user interface) to gate operational status. In the typical case, a
+ * controller will be immediately enabled unless it is unrecognized ({@link Controller#getName()}
+ * does not match any known to the backend). </p>
  */
 public class HardwareManager extends Manager {
 

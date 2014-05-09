@@ -1,4 +1,3 @@
-
 package org.kegbot.app;
 
 import android.app.Activity;
@@ -28,27 +27,24 @@ import java.util.List;
 import butterknife.ButterKnife;
 
 /**
- * A list fragment representing a list of Taps. This fragment also supports
- * tablet devices by allowing list items to be given an 'activated' state upon
- * selection. This helps indicate which item is currently being viewed in a
- * {@link TapDetailFragment}.
- * <p>
- * Activities containing this fragment MUST implement the {@link Callbacks}
- * interface.
+ * A list fragment representing a list of Taps. This fragment also supports tablet devices by
+ * allowing list items to be given an 'activated' state upon selection. This helps indicate which
+ * item is currently being viewed in a {@link TapDetailFragment}.
+ * <p/>
+ * Activities containing this fragment MUST implement the {@link Callbacks} interface.
  */
 public class TapListFragment extends ListFragment {
 
   private static final String TAG = TapListFragment.class.getSimpleName();
 
   /**
-   * The serialization (saved instance state) Bundle key representing the
-   * activated item position. Only used on tablets.
+   * The serialization (saved instance state) Bundle key representing the activated item position.
+   * Only used on tablets.
    */
   private static final String STATE_ACTIVATED_POSITION = "activated_position";
 
   /**
-   * The fragment's current callback object, which is notified of list item
-   * clicks.
+   * The fragment's current callback object, which is notified of list item clicks.
    */
   private Callbacks mCallbacks = sDummyCallbacks;
 
@@ -62,9 +58,8 @@ public class TapListFragment extends ListFragment {
   private int mActivatedPosition = ListView.INVALID_POSITION;
 
   /**
-   * A callback interface that all activities containing this fragment must
-   * implement. This mechanism allows activities to be notified of item
-   * selections.
+   * A callback interface that all activities containing this fragment must implement. This
+   * mechanism allows activities to be notified of item selections.
    */
   public interface Callbacks {
     /**
@@ -74,8 +69,8 @@ public class TapListFragment extends ListFragment {
   }
 
   /**
-   * A dummy implementation of the {@link Callbacks} interface that does
-   * nothing. Used only when this fragment is not attached to an activity.
+   * A dummy implementation of the {@link Callbacks} interface that does nothing. Used only when
+   * this fragment is not attached to an activity.
    */
   private static Callbacks sDummyCallbacks = new Callbacks() {
     @Override
@@ -84,8 +79,8 @@ public class TapListFragment extends ListFragment {
   };
 
   /**
-   * Mandatory empty constructor for the fragment manager to instantiate the
-   * fragment (e.g. upon screen orientation changes).
+   * Mandatory empty constructor for the fragment manager to instantiate the fragment (e.g. upon
+   * screen orientation changes).
    */
   public TapListFragment() {
   }
@@ -191,8 +186,8 @@ public class TapListFragment extends ListFragment {
   }
 
   /**
-   * Turns on activate-on-click mode. When this mode is on, list items will be
-   * given the 'activated' state when touched.
+   * Turns on activate-on-click mode. When this mode is on, list items will be given the 'activated'
+   * state when touched.
    */
   public void setActivateOnItemClick(boolean activateOnItemClick) {
     // When setting CHOICE_MODE_SINGLE, ListView will automatically

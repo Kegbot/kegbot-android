@@ -20,12 +20,11 @@ import java.io.PrintWriter;
 import java.io.Writer;
 
 /**
- * Lightweight wrapper around {@link PrintWriter} that automatically indents
- * newlines based on internal state. It also automatically wraps long lines
- * based on given line length.
- * <p>
- * Delays writing indent until first actual write on a newline, enabling indent
- * modification after newline.
+ * Lightweight wrapper around {@link PrintWriter} that automatically indents newlines based on
+ * internal state. It also automatically wraps long lines based on given line length.
+ * <p/>
+ * Delays writing indent until first actual write on a newline, enabling indent modification after
+ * newline.
  * <p/>
  * Source: https://github.com/android/platform_frameworks_base/blob/master/core/java/com/android/internal/util/IndentingPrintWriter.java
  * <p/>
@@ -43,8 +42,8 @@ public class IndentingPrintWriter extends PrintWriter {
   private int mCurrentLength;
 
   /**
-   * Flag indicating if we're currently sitting on an empty line, and that
-   * next write should be prefixed with the current indent.
+   * Flag indicating if we're currently sitting on an empty line, and that next write should be
+   * prefixed with the current indent.
    */
   private boolean mEmptyLine = true;
 

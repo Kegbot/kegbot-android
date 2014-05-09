@@ -118,9 +118,9 @@ public class SoundManager extends BackgroundManager {
       writer.increaseIndent();
       for (Map.Entry<Flow, Double> entry : mFlowsByLastVolume.entrySet()) {
         writer.printPair("flowId", Integer.valueOf(entry.getKey().getFlowId()).toString())
-          .println();
+            .println();
         writer.printPair("lastVolumeMl", entry.getValue().toString())
-          .println();
+            .println();
         writer.println();
       }
     }
@@ -236,7 +236,7 @@ public class SoundManager extends BackgroundManager {
     final File output = new File(mContext.getCacheDir(), filename);
 
     if (output.exists()) {
-      Log.d(TAG, "File exists: " + url + " file=" + output) ;
+      Log.d(TAG, "File exists: " + url + " file=" + output);
       mFiles.put(url, output);
       return;
     }

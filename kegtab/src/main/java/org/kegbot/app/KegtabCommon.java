@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 
 /**
- *
  * @author mike wakerly (opensource@hoho.com)
  */
 public class KegtabCommon {

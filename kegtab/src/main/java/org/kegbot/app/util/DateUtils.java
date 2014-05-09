@@ -25,7 +25,7 @@ import java.util.TimeZone;
 
 /**
  * Date-related utility functions.
- *
+ * <p/>
  * <p/>
  * No Android dependencies.
  *
@@ -34,11 +34,10 @@ import java.util.TimeZone;
 public class DateUtils {
 
   /**
-   * Returns a timestamp <em>in the local timezone</em> given an
-   * ISO8601-formatted timestamp.
+   * Returns a timestamp <em>in the local timezone</em> given an ISO8601-formatted timestamp.
    *
    * @param isoString the time stamp
-   * @param timeZone the time zone
+   * @param timeZone  the time zone
    * @return a unix timestamp in milliseconds relative to the given time zone
    * @throws IllegalArgumentException if the timestamp cannot be parsed
    */

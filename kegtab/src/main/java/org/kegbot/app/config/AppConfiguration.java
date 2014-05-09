@@ -19,9 +19,8 @@
 package org.kegbot.app.config;
 
 /**
- * Helper methods for getting and setting preferences from a
- * {@link ConfigurationStore}. This is the primary interface for app-local
- * configuration settings.
+ * Helper methods for getting and setting preferences from a {@link ConfigurationStore}. This is the
+ * primary interface for app-local configuration settings.
  *
  * @author mike wakerly (opensource@hoho.com)
  */
@@ -183,11 +182,11 @@ public class AppConfiguration {
   }
 
   public boolean getEnableCameraSounds() {
-      return getBoolean(ConfigKey.ENABLE_CAMERA_SOUNDS);
+    return getBoolean(ConfigKey.ENABLE_CAMERA_SOUNDS);
   }
 
   public void setEnableCameraSounds(boolean value) {
-      setBoolean(ConfigKey.ENABLE_CAMERA_SOUNDS, value);
+    setBoolean(ConfigKey.ENABLE_CAMERA_SOUNDS, value);
   }
 
   public boolean getEnableAttractMode() {

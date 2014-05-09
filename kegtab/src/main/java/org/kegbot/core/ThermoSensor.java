@@ -44,8 +44,8 @@ public class ThermoSensor {
   }
 
   /**
-   * Returns the last recorded temperature, or {@link #TEMPERATURE_INVALID} if
-   * there is not a valid record.
+   * Returns the last recorded temperature, or {@link #TEMPERATURE_INVALID} if there is not a valid
+   * record.
    *
    * @return
    */

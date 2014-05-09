@@ -59,8 +59,8 @@ public class Units {
   }
 
   /**
-   * Returns a humanized value for the given units, according to local
-   * preferences. Examples: 3.2 oz, 1.5 L, 33mL, 4.5 pint.
+   * Returns a humanized value for the given units, according to local preferences. Examples: 3.2
+   * oz, 1.5 L, 33mL, 4.5 pint.
    *
    * @param config
    * @param volumeMl
@@ -71,8 +71,8 @@ public class Units {
   }
 
   /**
-   * Like {@link #localize(AppConfiguration, double)}, but leaves units in terms
-   * of their smallest measure (mL instead of L, oz instead of Pints).
+   * Like {@link #localize(AppConfiguration, double)}, but leaves units in terms of their smallest
+   * measure (mL instead of L, oz instead of Pints).
    *
    * @param config
    * @param volumeMl
@@ -84,12 +84,12 @@ public class Units {
   }
 
   /**
-   * Returns a humanized value for the given units, according to local
-   * preferences. Examples: 3.2 oz, 1.5 L, 33mL, 4.5 pint.
+   * Returns a humanized value for the given units, according to local preferences. Examples: 3.2
+   * oz, 1.5 L, 33mL, 4.5 pint.
    *
    * @param config
    * @param volumeMl
-   * @param scaleUp whether to scale units up (mL to L, oz to pint) from base unit.
+   * @param scaleUp  whether to scale units up (mL to L, oz to pint) from base unit.
    * @return
    */
   private static Pair<String, String> localize(AppConfiguration config, double volumeMl,
@@ -120,8 +120,7 @@ public class Units {
   }
 
   /**
-   * Returns a capitalized version of a units string, suitable for use in a
-   * header.
+   * Returns a capitalized version of a units string, suitable for use in a header.
    *
    * @param units
    * @return

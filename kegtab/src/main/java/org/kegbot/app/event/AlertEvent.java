@@ -22,8 +22,7 @@ import org.kegbot.app.alert.AlertCore;
 import org.kegbot.app.alert.AlertCore.Alert;
 
 /**
- * Event posted to add a new alert. This should only be consumed
- * by {@link AlertCore}.
+ * Event posted to add a new alert. This should only be consumed by {@link AlertCore}.
  */
 public class AlertEvent implements Event {
 

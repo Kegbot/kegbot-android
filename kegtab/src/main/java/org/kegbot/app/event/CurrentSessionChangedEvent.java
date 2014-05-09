@@ -23,8 +23,7 @@ import org.kegbot.proto.Models.Session;
 import javax.annotation.Nullable;
 
 /**
- * Event posted when a new session is in progress. The session may be
- * {@code null}.
+ * Event posted when a new session is in progress. The session may be {@code null}.
  *
  * @author mike wakerly (opensource@hoho.com)
  */

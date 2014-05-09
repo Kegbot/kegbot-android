@@ -33,24 +33,21 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * A simple wrapper around a Camera and a SurfaceView that renders a centered
- * preview of the Camera to the surface. We need to center the SurfaceView
- * because not all devices have cameras that support preview sizes at the same
- * aspect ratio as the device's display.
- *
+ * A simple wrapper around a Camera and a SurfaceView that renders a centered preview of the Camera
+ * to the surface. We need to center the SurfaceView because not all devices have cameras that
+ * support preview sizes at the same aspect ratio as the device's display.
  * <p/>
- * Local modifications: when layout height is specified as 0, it is set to
- * <code>layout_width / {@link #ASPECT_RATIO}</code> in
- * {@link #onMeasure(int, int)}.
- *
  * <p/>
- * Adapted from:
- * http://developer.android.com/resources/samples/HoneycombGallery/src/com/example/android/hcgallery/CameraFragment.html
+ * Local modifications: when layout height is specified as 0, it is set to <code>layout_width /
+ * {@link #ASPECT_RATIO}</code> in {@link #onMeasure(int, int)}.
+ * <p/>
+ * <p/>
+ * Adapted from: http://developer.android.com/resources/samples/HoneycombGallery/src/com/example/android/hcgallery/CameraFragment.html
  */
 class Preview extends ViewGroup implements SurfaceHolder.Callback {
   private final String TAG = Preview.class.getSimpleName();
 
-  private static final double ASPECT_RATIO = 4.0/3.0;
+  private static final double ASPECT_RATIO = 4.0 / 3.0;
 
   SurfaceView mSurfaceView;
   SurfaceHolder mHolder;

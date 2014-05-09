@@ -17,22 +17,22 @@
   You should have received a copy of the GNU General Public License along
   with Kegtab. If not, see <http://www.gnu.org/licenses/>.
 -->
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <Preference
         android:key="version"
         android:summary=""
-        android:title="Version" >
+        android:title="Version">
     </Preference>
     <Preference
         android:key="third_party"
         android:title="Third Party Software"
-        android:summary="License agreements for included open source software." >
+        android:summary="License agreements for included open source software.">
     </Preference>
-        <Preference
+    <Preference
         android:key="copyright"
         android:summary="Copyright Bevbot LLC 2014."
-        android:title="Legal" >
+        android:title="Legal">
     </Preference>
-    
+
 </PreferenceScreen>

@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:background="@drawable/shape_rounded_rect" >
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:background="@drawable/shape_rounded_rect">
 
     <RadioGroup
         android:id="@+id/backend_group"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical" >
+        android:orientation="vertical">
 
         <RadioButton
             android:id="@+id/radio_backend_server"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/setup_select_backend_server" />
+            android:text="@string/setup_select_backend_server"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -27,7 +27,7 @@
             android:id="@+id/radio_backend_local"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/setup_select_backend_local" />
+            android:text="@string/setup_select_backend_local"/>
 
         <TextView
             android:layout_width="wrap_content"

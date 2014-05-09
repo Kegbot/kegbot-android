@@ -4,8 +4,7 @@ import org.kegbot.app.DebugBroadcastReceiver;
 import org.kegbot.app.event.Event;
 
 /**
- * Private event used by {@link DebugBroadcastReceiver} to notify
- * {@link FakeControllerManager}.
+ * Private event used by {@link DebugBroadcastReceiver} to notify {@link FakeControllerManager}.
  */
 public class FakeControllerEvent implements Event {
 

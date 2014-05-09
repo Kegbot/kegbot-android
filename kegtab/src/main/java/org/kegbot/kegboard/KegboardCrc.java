@@ -21,7 +21,6 @@ package org.kegbot.kegboard;
 import com.google.common.annotations.VisibleForTesting;
 
 /**
- *
  * @author mike wakerly (mike@wakerly.com)
  */
 public class KegboardCrc {

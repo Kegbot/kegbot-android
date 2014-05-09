@@ -151,7 +151,8 @@ public class AuthenticatingActivity extends Activity {
   }
 
   /**
-   * Processes a launch request from {@link #startAndAuthenticate(android.content.Context, String, String)}.
+   * Processes a launch request from {@link #startAndAuthenticate(android.content.Context, String,
+   * String)}.
    *
    * @param username
    */
@@ -319,25 +320,23 @@ public class AuthenticatingActivity extends Activity {
   }
 
   /**
-   * Starts the authentication activity for the supplied username. Upon
-   * successful authentication, a new flow will be started.
+   * Starts the authentication activity for the supplied username. Upon successful authentication, a
+   * new flow will be started.
    *
    * @param context
    * @param username
-   *
    */
   public static void startAndAuthenticate(Context context, String username) {
     startAndAuthenticate(context, username, (KegTap) null);
   }
 
   /**
-   * Starts the authentication activity for the supplied username. Upon
-   * successful authentication, a new flow will be started.
+   * Starts the authentication activity for the supplied username. Upon successful authentication, a
+   * new flow will be started.
    *
    * @param context
    * @param username
-   * @param tap tap to authenticate against, or {@code null} if ambiguous
-   *
+   * @param tap      tap to authenticate against, or {@code null} if ambiguous
    */
   public static void startAndAuthenticate(Context context, String username, KegTap tap) {
     final Intent intent = new Intent(context, AuthenticatingActivity.class);
@@ -350,8 +349,8 @@ public class AuthenticatingActivity extends Activity {
   }
 
   /**
-   * Starts the authentication activity for the supplied token. Upon successful
-   * authentication, a new flow will be started.
+   * Starts the authentication activity for the supplied token. Upon successful authentication, a
+   * new flow will be started.
    *
    * @param context
    * @param authDevice

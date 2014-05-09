@@ -18,11 +18,11 @@
   with Kegtab. If not, see <http://www.gnu.org/licenses/>.
 -->
 <set
-  xmlns:android="http://schemas.android.com/apk/res/android">
-  <alpha
-    android:fromAlpha="0.0"
-    android:toAlpha="1.0"
-    android:interpolator="@android:anim/accelerate_interpolator"
-    android:duration="750" />
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <alpha
+        android:fromAlpha="0.0"
+        android:toAlpha="1.0"
+        android:interpolator="@android:anim/accelerate_interpolator"
+        android:duration="750"/>
 </set>
 

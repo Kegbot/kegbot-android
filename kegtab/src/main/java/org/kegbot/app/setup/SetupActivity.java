@@ -45,7 +45,6 @@ import org.kegbot.app.service.KegbotCoreService;
 import java.util.List;
 
 /**
- *
  * @author mike wakerly (mike@wakerly.com)
  */
 public class SetupActivity extends Activity {
@@ -73,6 +72,7 @@ public class SetupActivity extends Activity {
 
   public interface SetupState {
     public void setNextButtonEnabled(boolean enabled);
+
     public void setNextButtonText(int resource);
   }
 
@@ -110,8 +110,7 @@ public class SetupActivity extends Activity {
   };
 
   /**
-   * Listener for the on-screen "back" button. Currently just simulates a "back"
-   * press.
+   * Listener for the on-screen "back" button. Currently just simulates a "back" press.
    */
   private final OnClickListener mBackListener = new OnClickListener() {
     @Override

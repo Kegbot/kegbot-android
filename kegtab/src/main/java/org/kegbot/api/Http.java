@@ -172,7 +172,8 @@ class Http {
         bos.write(CRLF);
         bos.write(
             String.format("Content-Disposition: form-data; name=\"%s\"; filename=\"%s\"",
-                entityName, file.getName()).getBytes());
+                entityName, file.getName()).getBytes()
+        );
         bos.write(CRLF);
         bos.write(CRLF);
 

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@android:id/text1"
-    style="@style/jumboText"
-    android:layout_width="512dp"
-    android:ellipsize="marquee"
-    android:singleLine="true" >
+          android:id="@android:id/text1"
+          style="@style/jumboText"
+          android:layout_width="512dp"
+          android:ellipsize="marquee"
+          android:singleLine="true">
 
 </TextView>

@@ -95,7 +95,8 @@ public class KegbotCoreService extends Service {
                 .setDescription(getString(R.string.alert_flow_activity_description, flow.getMeterName()))
                 .severityError()
                 .setId(flow.getMeterName())
-                .build());
+                .build()
+        );
         return;
       }
 
@@ -291,7 +292,7 @@ public class KegbotCoreService extends Service {
       return;
     }
     Log.d(TAG, "Recording drink for flow: " + ended);
-    Log.d(TAG, "Tap: "  + ended.getTap());
+    Log.d(TAG, "Tap: " + ended.getTap());
     mApiManager.recordDrinkAsync(ended);
   }
 

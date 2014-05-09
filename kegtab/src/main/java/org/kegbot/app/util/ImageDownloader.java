@@ -52,12 +52,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * This helper class download images from the Internet and binds those with the
- * provided ImageView.
- *
+ * This helper class download images from the Internet and binds those with the provided ImageView.
  * <p/>
- * A local cache of downloaded images is maintained internally to improve
- * performance.
+ * <p/>
+ * A local cache of downloaded images is maintained internally to improve performance.
  */
 public class ImageDownloader {
   private static final String TAG = ImageDownloader.class.getSimpleName();
@@ -121,15 +119,12 @@ public class ImageDownloader {
   }
 
   /**
-   * Download the specified image from the Internet and binds it to the provided
-   * ImageView. The binding is immediate if the image is found in the cache and
-   * will be done asynchronously otherwise. A null bitmap will be associated to
-   * the ImageView if an error occurs.
+   * Download the specified image from the Internet and binds it to the provided ImageView. The
+   * binding is immediate if the image is found in the cache and will be done asynchronously
+   * otherwise. A null bitmap will be associated to the ImageView if an error occurs.
    *
-   * @param url
-   *          The URL of the image to download.
-   * @param imageView
-   *          The ImageView to bind the downloaded image to.
+   * @param url       The URL of the image to download.
+   * @param imageView The ImageView to bind the downloaded image to.
    */
   public void download(String url, final ImageView imageView) {
     if (mBaseUrl != null) {
@@ -303,8 +298,7 @@ public class ImageDownloader {
   /**
    * Adds this bitmap to the cache.
    *
-   * @param bitmap
-   *          The newly downloaded bitmap.
+   * @param bitmap The newly downloaded bitmap.
    */
   private void addBitmapToCache(String url, Bitmap bitmap) {
     if (bitmap != null) {
@@ -366,8 +360,7 @@ public class ImageDownloader {
   }
 
   /**
-   * @param url
-   *          The URL of the image that will be retrieved from the cache.
+   * @param url The URL of the image that will be retrieved from the cache.
    * @return The cached bitmap or null if it was not found.
    */
   private Bitmap getBitmapFromCache(String url) {
@@ -399,9 +392,8 @@ public class ImageDownloader {
   }
 
   /**
-   * Clears the image cache used internally to improve performance. Note that
-   * for memory efficiency reasons, the cache will automatically be cleared
-   * after a certain inactivity delay.
+   * Clears the image cache used internally to improve performance. Note that for memory efficiency
+   * reasons, the cache will automatically be cleared after a certain inactivity delay.
    */
   public void clearCache() {
     sHardBitmapCache.clear();

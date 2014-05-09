@@ -125,25 +125,25 @@ public interface Backend {
   public List<User> getUsers() throws BackendException;
 
   /**
-   * Saves a new drink record from given pour data.
-   * <p>
-   * Either or both of {@code volumeMl} and {@code ticks} should be specified.
-   * </p>
+   * Saves a new drink record from given pour data. <p> Either or both of {@code volumeMl} and
+   * {@code ticks} should be specified. </p>
    *
-   * @param tapName the tap used for this pour (required).
-   * @param volumeMl the pour volume.
-   * @param ticks the number of ticks observed.
-   * @param shout an optional user-generated message.
-   * @param username the user that recorded the drink.
-   * @param recordDate ISO8601 timestamp for the pour.
+   * @param tapName        the tap used for this pour (required).
+   * @param volumeMl       the pour volume.
+   * @param ticks          the number of ticks observed.
+   * @param shout          an optional user-generated message.
+   * @param username       the user that recorded the drink.
+   * @param recordDate     ISO8601 timestamp for the pour.
    * @param durationMillis pour duration (informational).
-   * @param timeSeries pour meter time series (informational).
-   * @param picture optional picture with the pour.
-   * @return a new {@link Drink} instance, or {@code null} if the backend
-   *         refused to record the drink for some reason
+   * @param timeSeries     pour meter time series (informational).
+   * @param picture        optional picture with the pour.
+   * @return a new {@link Drink} instance, or {@code null} if the backend refused to record the
+   * drink for some reason
    * @throws BackendException
    */
-  public @Nullable Drink recordDrink(String tapName, long volumeMl, long ticks, @Nullable String shout,
+  public
+  @Nullable
+  Drink recordDrink(String tapName, long volumeMl, long ticks, @Nullable String shout,
       @Nullable String username, @Nullable String recordDate, long durationMillis,
       @Nullable TimeSeries timeSeries, @Nullable File picture) throws BackendException;
 

@@ -321,7 +321,7 @@ public class KegbotCore {
 
       writer.printPair("releaseBuild",
           Boolean.valueOf(((KegbotApplication) mContext.getApplicationContext()).isReleaseBuild()))
-              .println();
+          .println();
       if (packageInfo != null) {
         writer.printPair("versionName", packageInfo.versionName).println();
         writer.printPair("versionCode", String.valueOf(packageInfo.versionCode)).println();

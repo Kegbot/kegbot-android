@@ -164,12 +164,12 @@ public class CheckinService extends IntentService {
           : R.string.checkin_update_available_title;
 
       final Notification.Builder builder = new Notification.Builder(this)
-        .setSmallIcon(updateRequired ? R.drawable.icon_warning : R.drawable.icon_download)
-        .setContentTitle(getString(titleRes))
-        .setContentText(getString(R.string.checkin_update_description))
-        .setContentIntent(contentIntent)
-        .setOnlyAlertOnce(true)
-        .setAutoCancel(true);
+          .setSmallIcon(updateRequired ? R.drawable.icon_warning : R.drawable.icon_download)
+          .setContentTitle(getString(titleRes))
+          .setContentText(getString(R.string.checkin_update_description))
+          .setContentIntent(contentIntent)
+          .setOnlyAlertOnce(true)
+          .setAutoCancel(true);
 
       final Notification notification = Utils.buildNotification(builder);
 

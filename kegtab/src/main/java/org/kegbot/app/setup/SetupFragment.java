@@ -27,7 +27,6 @@ import org.kegbot.api.NotAuthorizedException;
 import java.net.SocketException;
 
 /**
- *
  * @author mike wakerly (mike@wakerly.com)
  */
 public abstract class SetupFragment extends Fragment {

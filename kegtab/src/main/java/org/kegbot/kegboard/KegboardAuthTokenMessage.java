@@ -21,7 +21,6 @@ package org.kegbot.kegboard;
 import com.hoho.android.usbserial.util.HexDump;
 
 /**
- *
  * @author mike
  */
 public class KegboardAuthTokenMessage extends KegboardMessage {

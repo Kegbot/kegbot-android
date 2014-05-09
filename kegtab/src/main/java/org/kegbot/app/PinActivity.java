@@ -41,10 +41,9 @@ import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.core.KegbotCore;
 
 /**
- * Pass-through activity which verifies the manager pin. PIN-verified activities
- * need no special awareness of the PIN. Use
- * {@link #startThroughPinActivity(Context, Intent)} to launch PIN-verified
- * activities.
+ * Pass-through activity which verifies the manager pin. PIN-verified activities need no special
+ * awareness of the PIN. Use {@link #startThroughPinActivity(Context, Intent)} to launch
+ * PIN-verified activities.
  *
  * @author mike wakerly (opensource@hoho.com)
  */
@@ -148,7 +147,7 @@ public class PinActivity extends Activity {
   /**
    * Start a new activity with pin verification.
    *
-   * @param context the context to be used for starting.
+   * @param context     the context to be used for starting.
    * @param startIntent the intent which shall be used to start the activity upon success.
    */
   public static void startThroughPinActivity(Context context, Intent startIntent) {

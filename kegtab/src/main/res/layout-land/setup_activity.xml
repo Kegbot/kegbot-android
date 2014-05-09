@@ -18,18 +18,18 @@
   with Kegtab. If not, see <http://www.gnu.org/licenses/>.
 -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/setup_activity_main"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:gravity="top|left"
-    android:orientation="vertical"
-    android:padding="32dip" >
+                android:id="@+id/setup_activity_main"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="top|left"
+                android:orientation="vertical"
+                android:padding="32dip">
 
     <ImageView
         android:id="@+id/setupKegbotLogo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/kegbot_logo_full_white" />
+        android:src="@drawable/kegbot_logo_full_white"/>
 
     <View
         android:id="@+id/setupDivider"
@@ -37,7 +37,7 @@
         android:layout_height="2dip"
         android:layout_below="@+id/setupKegbotLogo"
         android:layout_margin="5dip"
-        android:background="#1FFFFFFF" />
+        android:background="#1FFFFFFF"/>
 
     <!-- 2 column group -->
 
@@ -47,14 +47,14 @@
         android:layout_below="@+id/setupDivider"
         android:gravity="top|left"
         android:orientation="horizontal"
-        android:weightSum="1.0" >
+        android:weightSum="1.0">
 
         <!-- Left column: Text and buttons. -->
 
         <RelativeLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="0.6" >
+            android:layout_weight="0.6">
 
             <LinearLayout
                 android:id="@+id/setup_button_group"
@@ -62,7 +62,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
                 android:layout_marginTop="16dip"
-                android:orientation="horizontal" >
+                android:orientation="horizontal">
 
                 <Button
                     android:id="@+id/setupBackButton"
@@ -70,7 +70,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="left"
                     android:text="Back"
-                    android:textSize="24sp" />
+                    android:textSize="24sp"/>
 
                 <Button
                     android:id="@+id/setupNextButton"
@@ -78,7 +78,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="right"
                     android:text="@string/setup_button_next"
-                    android:textSize="24sp" />
+                    android:textSize="24sp"/>
             </LinearLayout>
 
             <ScrollView
@@ -86,12 +86,12 @@
                 android:layout_height="match_parent"
                 android:layout_above="@+id/setup_button_group"
                 android:layout_alignParentTop="true"
-                android:fadeScrollbars="false" >
+                android:fadeScrollbars="false">
 
                 <FrameLayout
                     android:id="@+id/setupContentFragment"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"/>
             </ScrollView>
         </RelativeLayout>
 
@@ -103,7 +103,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="top|center_horizontal"
             android:layout_weight="0.4"
-            android:padding="16dip" />
+            android:padding="16dip"/>
     </LinearLayout>
 
 </RelativeLayout>

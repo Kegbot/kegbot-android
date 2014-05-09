@@ -39,9 +39,8 @@ import org.kegbot.core.hardware.MeterUpdateEvent;
 import org.kegbot.core.hardware.TokenAttachedEvent;
 
 /**
- * Debugging broadcast receiver. Converts broadcast intents into new
- * {@link Event Events}, which are then posted on the {@link KegbotCore}
- * {@link Bus}.
+ * Debugging broadcast receiver. Converts broadcast intents into new {@link Event Events}, which are
+ * then posted on the {@link KegbotCore} {@link Bus}.
  *
  * @author mike wakerly (opensource@hoho.com)
  */

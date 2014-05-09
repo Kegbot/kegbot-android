@@ -42,7 +42,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 /**
- *
  * @author mike wakerly (mike@wakerly.com)
  */
 public class AuthenticationManager extends Manager {
@@ -77,7 +76,8 @@ public class AuthenticationManager extends Manager {
             public User load(AuthenticationToken token) throws Exception {
               return fetchUserForToken(token);
             }
-          });
+          }
+      );
 
   private final LoadingCache<String, User> mUserDetailCache = CacheBuilder.newBuilder()
       .expireAfterWrite(CACHE_EXPIRE_HOURS, TimeUnit.HOURS).build(
@@ -87,7 +87,8 @@ public class AuthenticationManager extends Manager {
               Log.d(TAG, "Loading user: " + username);
               return mApi.getUser(username);
             }
-          });
+          }
+      );
 
   AuthenticationManager(Bus bus, Context context, Backend api, AppConfiguration prefs) {
     super(bus);

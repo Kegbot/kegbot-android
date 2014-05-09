@@ -18,54 +18,54 @@
   with Kegtab. If not, see <http://www.gnu.org/licenses/>.
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.kegbot.app"
-    android:versionCode="67"
-    android:versionName="1.0.0 beta 67" >
+          package="org.kegbot.app"
+          android:versionCode="67"
+          android:versionName="1.0.0 beta 67">
 
     <uses-sdk
         android:minSdkVersion="14"
-        android:targetSdkVersion="19" />
+        android:targetSdkVersion="19"/>
 
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
-    <uses-permission android:name="android.permission.NFC" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.BLUETOOTH" />
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
-    <uses-permission android:name="org.kegbot.app.permission.C2D_MESSAGE" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.NFC"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.BLUETOOTH"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE"/>
+    <uses-permission android:name="org.kegbot.app.permission.C2D_MESSAGE"/>
 
     <permission
         android:name="org.kegbot.app.permission.C2D_MESSAGE"
-        android:protectionLevel="signature" />
+        android:protectionLevel="signature"/>
 
     <uses-feature
         android:name="android.hardware.usb.host"
-        android:required="true" />
+        android:required="true"/>
     <uses-feature
         android:name="android.hardware.nfc"
-        android:required="false" />
+        android:required="false"/>
     <uses-feature
         android:name="android.hardware.camera"
-        android:required="false" />
+        android:required="false"/>
     <uses-feature
         android:name="android.hardware.camera.autofocus"
-        android:required="false" />
+        android:required="false"/>
     <uses-feature
         android:name="android.hardware.screen.landscape"
-        android:required="false" />
+        android:required="false"/>
     <uses-feature
         android:name="android.hardware.bluetooth"
-        android:required="false" />
+        android:required="false"/>
 
     <supports-screens
         android:largeScreens="true"
         android:normalScreens="false"
         android:smallScreens="false"
-        android:xlargeScreens="true" />
+        android:xlargeScreens="true"/>
 
     <!-- Hack for Nexus 7 support, per http://stackoverflow.com/a/11745425/642485 -->
     <!-- TODO(mikey): figure out what's really going on here. -->
@@ -83,35 +83,35 @@
         <!-- all large size screens -->
         <screen
             android:screenDensity="ldpi"
-            android:screenSize="large" />
+            android:screenSize="large"/>
         <screen
             android:screenDensity="mdpi"
-            android:screenSize="large" />
+            android:screenSize="large"/>
         <screen
             android:screenDensity="hdpi"
-            android:screenSize="large" />
+            android:screenSize="large"/>
         <screen
             android:screenDensity="xhdpi"
-            android:screenSize="large" />
+            android:screenSize="large"/>
 
         <!-- all xlarge size screens -->
         <screen
             android:screenDensity="ldpi"
-            android:screenSize="xlarge" />
+            android:screenSize="xlarge"/>
         <screen
             android:screenDensity="mdpi"
-            android:screenSize="xlarge" />
+            android:screenSize="xlarge"/>
         <screen
             android:screenDensity="hdpi"
-            android:screenSize="xlarge" />
+            android:screenSize="xlarge"/>
         <screen
             android:screenDensity="xhdpi"
-            android:screenSize="xlarge" />
+            android:screenSize="xlarge"/>
 
         <!-- Special case for Nexus 7 -->
         <screen
             android:screenDensity="213"
-            android:screenSize="large" />
+            android:screenSize="large"/>
     </compatible-screens>
 
     <application
@@ -121,10 +121,10 @@
         android:icon="@drawable/icon"
         android:label="@string/app_name"
         android:logo="@drawable/kegbot_logo"
-        android:theme="@android:style/Theme.Holo" >
+        android:theme="@android:style/Theme.Holo">
         <meta-data
             android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
+            android:value="@integer/google_play_services_version"/>
 
         <!-- ########## -->
         <!-- ACTIVITIES -->
@@ -136,37 +136,37 @@
             android:launchMode="singleTop"
             android:screenOrientation="sensorLandscape"
             android:theme="@android:style/Theme.Holo.NoActionBar"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustPan" >
+            android:windowSoftInputMode="stateAlwaysHidden|adjustPan">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
 
-                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
-                <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
+                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"/>
+                <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED"/>
             </intent-filter>
 
             <meta-data
                 android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
-                android:resource="@xml/device_filter" />
+                android:resource="@xml/device_filter"/>
         </activity>
         <activity
             android:name="org.kegbot.app.HomeActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
             android:screenOrientation="sensorLandscape"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustPan" >
+            android:windowSoftInputMode="stateAlwaysHidden|adjustPan">
         </activity>
         <activity
             android:name="org.kegbot.app.BugreportActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
-            android:screenOrientation="sensorLandscape" >
+            android:screenOrientation="sensorLandscape">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
         <activity
@@ -174,13 +174,13 @@
             android:label="@string/app_name"
             android:launchMode="singleTop"
             android:screenOrientation="sensorLandscape"
-            android:theme="@android:style/Theme.Holo.NoActionBar" >
+            android:theme="@android:style/Theme.Holo.NoActionBar">
         </activity>
         <activity
             android:name="org.kegbot.app.NewControllerActivity"
             android:label="@string/app_name"
             android:screenOrientation="sensorLandscape"
-            android:theme="@android:style/Theme.Holo.Dialog.NoActionBar" >
+            android:theme="@android:style/Theme.Holo.Dialog.NoActionBar">
         </activity>
         <activity
             android:name="org.kegbot.app.NewKegActivity"
@@ -188,7 +188,7 @@
             android:launchMode="singleTop"
             android:screenOrientation="sensorLandscape"
             android:theme="@android:style/Theme.Holo.NoActionBar"
-            android:windowSoftInputMode="adjustPan" >
+            android:windowSoftInputMode="adjustPan">
         </activity>
         <activity
             android:name="org.kegbot.app.NewTapActivity"
@@ -196,7 +196,7 @@
             android:launchMode="singleTop"
             android:screenOrientation="sensorLandscape"
             android:theme="@android:style/Theme.Holo.NoActionBar"
-            android:windowSoftInputMode="adjustPan" >
+            android:windowSoftInputMode="adjustPan">
         </activity>
         <activity
             android:name="org.kegbot.app.setup.SetupActivity"
@@ -204,7 +204,7 @@
             android:launchMode="singleTop"
             android:screenOrientation="sensorLandscape"
             android:theme="@android:style/Theme.Holo.NoActionBar"
-            android:windowSoftInputMode="adjustPan" >
+            android:windowSoftInputMode="adjustPan">
         </activity>
         <activity
             android:name="org.kegbot.app.PourInProgressActivity"
@@ -212,7 +212,7 @@
             android:launchMode="singleTop"
             android:screenOrientation="sensorLandscape"
             android:theme="@android:style/Theme.Holo.NoActionBar"
-            android:windowSoftInputMode="stateHidden|adjustPan" />
+            android:windowSoftInputMode="stateHidden|adjustPan"/>
         <activity
             android:name="org.kegbot.app.DrinkerSelectActivity"
             android:exported="false"
@@ -220,69 +220,69 @@
             android:launchMode="singleTop"
             android:noHistory="true"
             android:screenOrientation="sensorLandscape"
-            android:windowSoftInputMode="stateHidden|adjustPan" >
+            android:windowSoftInputMode="stateHidden|adjustPan">
             <intent-filter>
-                <action android:name="org.kegbot.app.activity.AUTH_DRINKER" />
+                <action android:name="org.kegbot.app.activity.AUTH_DRINKER"/>
 
-                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
         <activity
             android:name="org.kegbot.app.SettingsActivity"
-            android:label="@string/settings_name" />
+            android:label="@string/settings_name"/>
         <activity
             android:name="org.kegbot.app.settings.ThirdPartyLicensesActivity"
-            android:label="@string/settings_name" />
+            android:label="@string/settings_name"/>
         <activity
             android:name="org.kegbot.app.PinActivity"
-            android:label="@string/app_name" />
+            android:label="@string/app_name"/>
         <activity
             android:name="org.kegbot.app.DrinkerRegistrationActivity"
             android:exported="false"
             android:label="@string/app_name"
             android:launchMode="singleTop"
             android:screenOrientation="sensorLandscape"
-            android:windowSoftInputMode="stateVisible|adjustPan" >
+            android:windowSoftInputMode="stateVisible|adjustPan">
             <intent-filter>
-                <action android:name="org.kegbot.app.activity.NEW_DRINKER" />
+                <action android:name="org.kegbot.app.activity.NEW_DRINKER"/>
 
-                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
         <activity
             android:name="org.kegbot.app.AuthenticatingActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
-            android:theme="@android:style/Theme.Holo.Dialog.NoActionBar" />
+            android:theme="@android:style/Theme.Holo.Dialog.NoActionBar"/>
 
         <!-- ################### -->
         <!-- BROADCAST RECEIVERS -->
         <!-- ################### -->
 
-        <receiver android:name="org.kegbot.app.DebugBroadcastReceiver" >
-            <intent-filter android:priority="1" >
-                <action android:name="org.kegbot.action.USER_AUTHED" />
-                <action android:name="org.kegbot.action.METER_UPDATE" />
-                <action android:name="org.kegbot.action.TOKEN_ADDED" />
-                <action android:name="org.kegbot.action.CONTROLLER_ADDED" />
-                <action android:name="org.kegbot.action.CONTROLLER_REMOVED" />
-                <action android:name="org.kegbot.action.THERMO_UPDATE" />
+        <receiver android:name="org.kegbot.app.DebugBroadcastReceiver">
+            <intent-filter android:priority="1">
+                <action android:name="org.kegbot.action.USER_AUTHED"/>
+                <action android:name="org.kegbot.action.METER_UPDATE"/>
+                <action android:name="org.kegbot.action.TOKEN_ADDED"/>
+                <action android:name="org.kegbot.action.CONTROLLER_ADDED"/>
+                <action android:name="org.kegbot.action.CONTROLLER_REMOVED"/>
+                <action android:name="org.kegbot.action.THERMO_UPDATE"/>
             </intent-filter>
         </receiver>
         <receiver
             android:name="org.kegbot.app.service.GCMBroadcastReceiver"
-            android:permission="com.google.android.c2dm.permission.SEND" >
+            android:permission="com.google.android.c2dm.permission.SEND">
             <intent-filter>
-                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
 
-                <category android:name="org.kegbot.app" />
+                <category android:name="org.kegbot.app"/>
             </intent-filter>
         </receiver>
         <receiver
             android:name="org.kegbot.app.service.CheckinBroadcastReceiver"
-            android:exported="true" >
+            android:exported="true">
             <intent-filter>
-                <action android:name="org.kegbot.app.CHECKIN" />
+                <action android:name="org.kegbot.app.CHECKIN"/>
             </intent-filter>
         </receiver>
 
@@ -290,31 +290,31 @@
         <!-- SERVICES -->
         <!-- ######## -->
 
-        <service android:name="org.kegbot.app.service.KegbotCoreService" />
-        <service android:name="org.kegbot.app.service.CheckinService" />
-        <service android:name="org.kegbot.app.service.GCMService" />
+        <service android:name="org.kegbot.app.service.KegbotCoreService"/>
+        <service android:name="org.kegbot.app.service.CheckinService"/>
+        <service android:name="org.kegbot.app.service.GCMService"/>
 
         <activity
             android:name="org.kegbot.app.TapListActivity"
             android:label="@string/title_tap_list"
-            android:parentActivityName="org.kegbot.app.HomeActivity" >
+            android:parentActivityName="org.kegbot.app.HomeActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
 
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.kegbot.app.HomeActivity" />
+                android:value="org.kegbot.app.HomeActivity"/>
         </activity>
         <activity
             android:name="org.kegbot.app.TapDetailActivity"
             android:label="@string/title_tap_detail"
-            android:parentActivityName="org.kegbot.app.TapListActivity" >
+            android:parentActivityName="org.kegbot.app.TapListActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".TapListActivity" />
+                android:value=".TapListActivity"/>
         </activity>
         <activity
             android:name="org.kegbot.app.alert.AlertActivity"

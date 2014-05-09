@@ -288,11 +288,11 @@ public class CalibrationActivity extends CoreActivity {
           return;
         }
         new AlertDialog.Builder(CalibrationActivity.this)
-          .setCancelable(true)
-          .setNegativeButton("Ok", null)
-          .setTitle("Calibration failed")
-          .setMessage("Calibration failed: " + result)
-          .show();
+            .setCancelable(true)
+            .setNegativeButton("Ok", null)
+            .setTitle("Calibration failed")
+            .setMessage("Calibration failed: " + result)
+            .show();
       }
     }.execute();
 

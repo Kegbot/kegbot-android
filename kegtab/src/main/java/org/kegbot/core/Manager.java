@@ -49,26 +49,24 @@ public abstract class Manager {
   }
 
   /**
-   * Called when the Kegbot Core is starting. The manager should initialize any
-   * resources it needs during normal operation. The default implementation is a
-   * no-op.
+   * Called when the Kegbot Core is starting. The manager should initialize any resources it needs
+   * during normal operation. The default implementation is a no-op.
    */
   protected void start() {
 
   }
 
   /**
-   * Called when the Kegbot Core is stopping. The manager should release any
-   * resources it is holding. The default implementation is a no-op.
+   * Called when the Kegbot Core is stopping. The manager should release any resources it is
+   * holding. The default implementation is a no-op.
    */
   protected void stop() {
 
   }
 
   /**
-   * Called when the Kegbot Core requests the manager to reload any state. This
-   * should be logically equivalent to <code>stop(); start();</code> (which is
-   * the default implementation).
+   * Called when the Kegbot Core requests the manager to reload any state. This should be logically
+   * equivalent to <code>stop(); start();</code> (which is the default implementation).
    */
   protected void reload() {
     Log.d(mName, "Reloading (default implementation).");

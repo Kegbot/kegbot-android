@@ -22,8 +22,7 @@ import static org.kegbot.app.config.AppConfiguration.FALSE;
 import static org.kegbot.app.config.AppConfiguration.TRUE;
 
 /**
- * Configuration items used by the application. Enum names are used as the key
- * in a backing store.
+ * Configuration items used by the application. Enum names are used as the key in a backing store.
  *
  * @author mike wakerly (opensource@hoho.com)
  */
@@ -66,8 +65,7 @@ enum ConfigKey {
   STAY_AWAKE(TRUE),
   KEEP_SCREEN_ON(TRUE),
 
-  EMAIL_ADDRESS(""),
-  ;
+  EMAIL_ADDRESS(""),;
 
   private final String mDefaultValue;
 

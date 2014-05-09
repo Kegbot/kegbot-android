@@ -30,8 +30,8 @@ import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.app.setup.SetupActivity;
 
 /**
- * Main launcher activity; simply redirects to {@link SetupActivity} or
- * {@link HomeActivity} depending on state.
+ * Main launcher activity; simply redirects to {@link SetupActivity} or {@link HomeActivity}
+ * depending on state.
  *
  * @author mike wakerly (mike@wakerly.com)
  */

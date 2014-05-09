@@ -56,25 +56,25 @@
         <item name="android:textSize">22sp</item>
         <item name="android:textColor">@color/muted</item>
     </style>
-    
+
     <style name="jumboText">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textSize">32sp</item>
     </style>
-    
+
     <style name="normalText">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textSize">22sp</item>
     </style>
-    
+
     <style name="smallText">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textSize">16sp</item>
     </style>
-    
+
     <!-- Badges (BadgeView.java) -->
 
     <style name="badge">

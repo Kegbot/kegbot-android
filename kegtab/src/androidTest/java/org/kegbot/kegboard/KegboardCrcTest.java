@@ -20,7 +20,6 @@ package org.kegbot.kegboard;
 import junit.framework.TestCase;
 
 /**
- *
  * @author mike wakerly (mike@wakerly.com)
  */
 public class KegboardCrcTest extends TestCase {

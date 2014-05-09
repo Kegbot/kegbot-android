@@ -227,7 +227,7 @@ public class KegbotApiImpl implements Backend {
 
   /** Returns an apikey once linked, {@code null} otherwise. */
   public String pollDeviceLink(final String code) throws KegbotApiException {
-    final JsonNode response = getJson("/devices/link/status/" + code , null).get("object");
+    final JsonNode response = getJson("/devices/link/status/" + code, null).get("object");
     if (response.has("linked") && response.get("linked").getBooleanValue()) {
       return response.get("api_key").getTextValue();
     }
@@ -332,7 +332,7 @@ public class KegbotApiImpl implements Backend {
     final Request.Builder builder = newRequest("/flow-meters/" + meter.getId())
         .setMethod(Http.POST)
         .addParameter("ticks_per_ml", Double.valueOf(ticksPerMl).toString())
-        .addParameter("ml_per_tick", Double.valueOf(1.0/ticksPerMl).toString());
+        .addParameter("ml_per_tick", Double.valueOf(1.0 / ticksPerMl).toString());
     return getSingleProto(FlowMeter.newBuilder(), requestJson(builder.build()).get("object"));
   }
 
@@ -443,7 +443,7 @@ public class KegbotApiImpl implements Backend {
         .addParameter("email", email);
 
     if (!Strings.isNullOrEmpty(password)) {
-        builder.addParameter("password", password);
+      builder.addParameter("password", password);
     }
 
     if (!Strings.isNullOrEmpty(imagePath)) {
@@ -529,14 +529,14 @@ public class KegbotApiImpl implements Backend {
 
   @Override
   public KegTap connectMeter(KegTap tap, FlowMeter meter) throws BackendException {
-      final Map<String, String> params = Maps.newLinkedHashMap();
-      params.put("meter", String.valueOf(meter.getId()));
-      return (KegTap) postProto("/taps/" + tap.getId() + "/connect-meter", KegTap.newBuilder(), params);
+    final Map<String, String> params = Maps.newLinkedHashMap();
+    params.put("meter", String.valueOf(meter.getId()));
+    return (KegTap) postProto("/taps/" + tap.getId() + "/connect-meter", KegTap.newBuilder(), params);
   }
 
   @Override
   public KegTap disconnectMeter(KegTap tap) throws BackendException {
-      return (KegTap) postProto("/taps/" + tap.getId() + "/disconnect-meter", KegTap.newBuilder(), null);
+    return (KegTap) postProto("/taps/" + tap.getId() + "/disconnect-meter", KegTap.newBuilder(), null);
   }
 
   @Override

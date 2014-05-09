@@ -43,12 +43,9 @@ public interface Controller {
   public String getStatus();
 
   /**
-   * Returns a uniquely-identifying string name for this device.
-   * <p>
-   * This name should be stable for the lifetime of the device, ie, derived from
-   * its serial number. If the device does not have a unique name, the special
-   * value {@link #DEFAULT_DEVICE_NAME} may be returned.
-   * </p>
+   * Returns a uniquely-identifying string name for this device. <p> This name should be stable for
+   * the lifetime of the device, ie, derived from its serial number. If the device does not have a
+   * unique name, the special value {@link #DEFAULT_DEVICE_NAME} may be returned. </p>
    *
    * @return
    */

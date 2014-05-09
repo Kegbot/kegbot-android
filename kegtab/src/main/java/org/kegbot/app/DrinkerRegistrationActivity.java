@@ -249,7 +249,7 @@ public class DrinkerRegistrationActivity extends CoreActivity {
   }
 
   private void showSoftKeyboard(boolean enable) {
-    InputMethodManager imm = (InputMethodManager)getSystemService(
+    InputMethodManager imm = (InputMethodManager) getSystemService(
         Context.INPUT_METHOD_SERVICE);
     if (enable) {
       imm.showSoftInput(mFlipper, 0);
@@ -284,10 +284,10 @@ public class DrinkerRegistrationActivity extends CoreActivity {
   }
 
   private static boolean isValidEmail(String target) {
-      if (Strings.isNullOrEmpty(target)) {
-        return false;
-      }
-      return Patterns.EMAIL_ADDRESS.matcher(target).matches();
+    if (Strings.isNullOrEmpty(target)) {
+      return false;
+    }
+    return Patterns.EMAIL_ADDRESS.matcher(target).matches();
   }
 
 }

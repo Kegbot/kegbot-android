@@ -90,6 +90,7 @@ public class SetupPairStep extends SetupStep {
       mQuit.set(false);
       mPollTask = new AsyncTask<Void, Void, String>() {
         private Exception mError;
+
         @Override
         protected String doInBackground(Void... voids) {
           while (!mQuit.get()) {

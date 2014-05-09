@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content" >
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
     <view
         android:id="@+id/cameraPreview"
@@ -9,7 +9,7 @@
         android:layout_height="0dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        class="org.kegbot.app.camera.Preview" />
+        class="org.kegbot.app.camera.Preview"/>
 
     <Button
         android:id="@+id/cameraTakePictureButton"
@@ -18,7 +18,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/cameraPreview"
         android:layout_centerHorizontal="true"
-        android:text="@string/pour_take_picture" />
+        android:text="@string/pour_take_picture"/>
 
     <LinearLayout
         android:id="@+id/cameraPostPictureButtons"
@@ -28,7 +28,7 @@
         android:gravity="center"
         android:orientation="horizontal"
         android:visibility="gone"
-        android:weightSum="1.0" >
+        android:weightSum="1.0">
 
         <Button
             android:id="@+id/cameraDiscardPictureButton"
@@ -36,7 +36,7 @@
             android:layout_width="0dip"
             android:layout_height="wrap_content"
             android:layout_weight="0.5"
-            android:text="@string/camera_discard_picture" />
+            android:text="@string/camera_discard_picture"/>
 
         <Button
             android:id="@+id/cameraTakeAnotherButton"
@@ -44,7 +44,7 @@
             android:layout_width="0dip"
             android:layout_height="wrap_content"
             android:layout_weight="0.5"
-            android:text="@string/camera_take_another" />
+            android:text="@string/camera_take_another"/>
     </LinearLayout>
 
 </RelativeLayout>

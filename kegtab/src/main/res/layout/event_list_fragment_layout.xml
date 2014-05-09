@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@drawable/shape_rounded_rect" >
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/shape_rounded_rect">
 
     <TextView
         android:id="@+id/eventListTitle"
@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:text="@string/recent_activity_header" />
+        android:text="@string/recent_activity_header"/>
 
     <View
         android:id="@+id/divider"
@@ -19,14 +19,14 @@
         android:layout_height="2dip"
         android:layout_marginBottom="5dip"
         android:layout_marginTop="5dip"
-        android:background="#1FFFFFFF" />
+        android:background="#1FFFFFFF"/>
 
     <ListView
         android:id="@id/android:list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/divider"
-        android:drawSelectorOnTop="false" />
+        android:drawSelectorOnTop="false"/>
 
 
 </RelativeLayout>

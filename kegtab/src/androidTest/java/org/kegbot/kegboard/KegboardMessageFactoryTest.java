@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 
 /**
- *
  * @author mike
  */
 public class KegboardMessageFactoryTest extends InstrumentationTestCase {

@@ -1,4 +1,3 @@
-
 package org.kegbot.app;
 
 import android.content.Intent;
@@ -8,12 +7,12 @@ import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
 
 /**
- * An activity representing a single Tap detail screen. This activity is only
- * used on handset devices. On tablet-size devices, item details are presented
- * side-by-side with a list of items in a {@link TapListActivity}.
- * <p>
- * This activity is mostly just a 'shell' activity containing nothing more than
- * a {@link TapDetailFragment}.
+ * An activity representing a single Tap detail screen. This activity is only used on handset
+ * devices. On tablet-size devices, item details are presented side-by-side with a list of items in
+ * a {@link TapListActivity}.
+ * <p/>
+ * This activity is mostly just a 'shell' activity containing nothing more than a {@link
+ * TapDetailFragment}.
  */
 public class TapDetailActivity extends FragmentActivity {
 

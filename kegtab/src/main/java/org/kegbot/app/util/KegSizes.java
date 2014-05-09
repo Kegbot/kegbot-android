@@ -1,4 +1,3 @@
-
 package org.kegbot.app.util;
 
 import com.google.common.collect.ImmutableMap;
@@ -19,7 +18,7 @@ public class KegSizes {
   public static final String HALF_BARREL = "half-barrel";
   public static final String OTHER = "other";
 
-  public static final Map<String, String> DESCRIPTIONS = ImmutableMap.<String,String>builder()
+  public static final Map<String, String> DESCRIPTIONS = ImmutableMap.<String, String>builder()
       .put(CORNY, "Corny Keg (5 gal)")
       .put(SIXTH_BARREL, "Sixth Barrel (5.17 gal)")
       .put(QUARTER_BARREL, "Quarter Barrel (7.75)")

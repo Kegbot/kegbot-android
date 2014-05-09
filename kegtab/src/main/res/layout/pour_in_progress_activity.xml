@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:gravity="top"
-    android:orientation="horizontal"
-    android:weightSum="1.0" >
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:gravity="top"
+              android:orientation="horizontal"
+              android:weightSum="1.0">
 
     <!-- Left box: PourStatusFragment -->
 
@@ -14,7 +14,7 @@
         android:layout_width="0dip"
         android:layout_height="match_parent"
         android:layout_marginRight="10dip"
-        android:layout_weight="0.6" >
+        android:layout_weight="0.6">
     </android.support.v4.view.ViewPager>
 
     <!-- Right box: Camera Preview & Controls -->
@@ -26,23 +26,23 @@
         android:layout_weight="0.4"
         android:gravity="top"
         android:background="@drawable/shape_rounded_rect"
-        android:orientation="vertical" >
-        
-        <Button 
+        android:orientation="vertical">
+
+        <Button
             android:id="@+id/claimPourButton"
             style="@style/mediumButton"
             android:text="Claim This Pour"/>
-        
-        <TextView 
+
+        <TextView
             android:id="@+id/pourDrinkerName"
             style="@style/header"
-            />        
-            
+            />
+
         <RelativeLayout
             android:id="@+id/controlsBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="5dip" >
+            android:paddingBottom="5dip">
 
             <ImageView
                 android:id="@+id/pourDrinkerImage"
@@ -53,7 +53,7 @@
                 android:layout_margin="5dip"
                 android:adjustViewBounds="true"
                 android:scaleType="centerCrop"
-                android:src="@drawable/unknown_drinker" />
+                android:src="@drawable/unknown_drinker"/>
 
             <org.kegbot.app.util.SoftMultiLineEditText
                 android:id="@+id/shoutText"
@@ -66,7 +66,7 @@
                 android:inputType="textCapSentences|textShortMessage|textMultiLine"
                 android:lines="3"
                 android:maxLength="140"
-                android:scrollHorizontally="false" />
+                android:scrollHorizontally="false"/>
 
             <Button
                 android:id="@+id/pourEndButton"
@@ -82,7 +82,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             class="org.kegbot.app.camera.CameraFragment"
-            tools:layout="@layout/camera_fragment_layout" >
+            tools:layout="@layout/camera_fragment_layout">
         </fragment>
     </LinearLayout>
 

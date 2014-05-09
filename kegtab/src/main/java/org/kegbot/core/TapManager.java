@@ -77,10 +77,8 @@ public class TapManager extends Manager {
   /**
    * Adds a Tap to the system.
    *
-   * @param newTap
-   *          the new tap object
-   * @return {@code true} if an existing tap was replaced, {@code false}
-   *         otherwise.
+   * @param newTap the new tap object
+   * @return {@code true} if an existing tap was replaced, {@code false} otherwise.
    */
   synchronized boolean addTap(final KegTap newTap) {
     Log.i(TAG, "Adding/updating tap " + newTap.getId());
@@ -91,10 +89,8 @@ public class TapManager extends Manager {
   /**
    * Removes a tap from the system.
    *
-   * @param tap
-   *          the tap to remove
-   * @return {@code true} if an existing tap was removed, {@code false}
-   *         otherwise.
+   * @param tap the tap to remove
+   * @return {@code true} if an existing tap was removed, {@code false} otherwise.
    */
   synchronized boolean removeTap(final KegTap tap) {
     Log.i(TAG, "Removing tap " + tap.getId());

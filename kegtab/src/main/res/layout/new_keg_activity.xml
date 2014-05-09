@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
     <TextView
         android:id="@+id/newKegHeader"
         style="@style/header"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:text="Activate New Keg" />
+        android:text="Activate New Keg"/>
 
     <TextView
         android:id="@+id/newKegDescription"
@@ -18,7 +18,7 @@
         android:gravity="center"
         android:maxWidth="700dp"
         android:singleLine="false"
-        android:text="@string/new_keg_help_text" />
+        android:text="@string/new_keg_help_text"/>
 
     <RelativeLayout
         android:id="@+id/newKegInputs"
@@ -28,7 +28,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="32dp"
         android:layout_marginTop="32dp"
-        android:background="@drawable/shape_rounded_rect" >
+        android:background="@drawable/shape_rounded_rect">
 
         <AutoCompleteTextView
             android:id="@+id/newKegBeerName"
@@ -37,7 +37,7 @@
             android:layout_height="wrap_content"
             android:hint="Name"
             android:imeOptions="actionNext"
-            android:inputType="textCapWords" />
+            android:inputType="textCapWords"/>
 
         <AutoCompleteTextView
             android:id="@+id/newKegBrewer"
@@ -47,7 +47,7 @@
             android:layout_below="@+id/newKegBeerName"
             android:hint="Brewer"
             android:imeOptions="actionNext"
-            android:inputType="textCapWords" />
+            android:inputType="textCapWords"/>
 
         <AutoCompleteTextView
             android:id="@+id/newKegStyle"
@@ -57,7 +57,7 @@
             android:layout_below="@+id/newKegBrewer"
             android:hint="Style"
             android:imeOptions="actionNext"
-            android:inputType="textCapWords" 
+            android:inputType="textCapWords"
             android:nextFocusDown="@+id/newKegSize"/>
 
         <Spinner
@@ -67,7 +67,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/newKegStyle"
             android:focusable="true"
-            android:focusableInTouchMode="true" />
+            android:focusableInTouchMode="true"/>
     </RelativeLayout>
 
     <Button
@@ -76,6 +76,6 @@
         android:layout_width="512dp"
         android:layout_below="@+id/newKegInputs"
         android:layout_centerInParent="true"
-        android:text="Activate" />
+        android:text="Activate"/>
 
 </RelativeLayout>

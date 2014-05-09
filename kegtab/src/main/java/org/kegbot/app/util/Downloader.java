@@ -66,8 +66,7 @@ public class Downloader {
   /**
    * Downloads and returns a URL as a {@link Bitmap}.
    *
-   * @param url
-   *          the image to download
+   * @param url the image to download
    * @return a new {@link Bitmap}, or {@code null} if any error occurred
    */
   public static Bitmap downloadBitmap(String url) {
@@ -118,12 +117,9 @@ public class Downloader {
   /**
    * Downloads an HTTP resource to an output file.
    *
-   * @param url
-   *          the resource to download
-   * @param output
-   *          the output file
-   * @throws IOException
-   *           upon any error
+   * @param url    the resource to download
+   * @param output the output file
+   * @throws IOException upon any error
    */
   public static void downloadRaw(final String url, final File output) throws IOException {
     final URL destUrl = new URL(url);

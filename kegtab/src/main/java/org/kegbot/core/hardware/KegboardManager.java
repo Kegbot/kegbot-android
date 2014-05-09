@@ -88,6 +88,7 @@ public class KegboardManager extends BackgroundManager implements ControllerMana
   private static final int MIN_FIRMWARE_VERSION = 17;
 
   private static final ProbeTable PROBE_TABLE = UsbSerialProber.getDefaultProbeTable();
+
   static {
     PROBE_TABLE.addProduct(0x03eb, 0x0436, CdcAcmSerialDriver.class);
   }
@@ -111,19 +112,16 @@ public class KegboardManager extends BackgroundManager implements ControllerMana
   private final ControllerManager.Listener mListener;
 
   /**
-   * {@link SystemClock#uptimeMillis()} value at which the USB device tree
-   * will be rescanned.
+   * {@link SystemClock#uptimeMillis()} value at which the USB device tree will be rescanned.
    */
   private long mNextUsbRefreshUptimeMillis = Long.MIN_VALUE;
 
   /**
-   * Maps a connected device ID to the supporting driver, or {@code null} if
-   * unsupported.
-   *
+   * Maps a connected device ID to the supporting driver, or {@code null} if unsupported.
    * <p/>
-   * This structure effectively mirrors
-   * {@link android.hardware.usb.UsbManager#getDeviceList()}, containing an entry
-   * for all attached devices.
+   * <p/>
+   * This structure effectively mirrors {@link android.hardware.usb.UsbManager#getDeviceList()},
+   * containing an entry for all attached devices.
    *
    * @see #findNewControllers()
    */
@@ -144,12 +142,9 @@ public class KegboardManager extends BackgroundManager implements ControllerMana
   private final Map<UsbSerialPort, KegboardController> mControllers = Maps.newLinkedHashMap();
 
   /**
-   * Queue of controllers pending removal.
-   * <p>
-   * Controllers are added to this queue by their service thread (via
-   * {@link #handleControllerError(KegboardController, Exception)}) and
-   * removed in {@link #serviceControllers()}.
-   * </p>
+   * Queue of controllers pending removal. <p> Controllers are added to this queue by their service
+   * thread (via {@link #handleControllerError(KegboardController, Exception)}) and removed in
+   * {@link #serviceControllers()}. </p>
    */
   private final Queue<KegboardController> mControllerErrors = Queues.newLinkedBlockingQueue();
 
@@ -271,9 +266,8 @@ public class KegboardManager extends BackgroundManager implements ControllerMana
   }
 
   /**
-   * Refreshes the internal list of controllers, by identifying
-   * newly-added and removed controllers via
-   * {@link android.hardware.usb.UsbManager#getDeviceList()}.
+   * Refreshes the internal list of controllers, by identifying newly-added and removed controllers
+   * via {@link android.hardware.usb.UsbManager#getDeviceList()}.
    */
   private synchronized void findNewControllers() {
     final Collection<UsbDevice> devices = mUsbManager.getDeviceList().values();
@@ -319,13 +313,11 @@ public class KegboardManager extends BackgroundManager implements ControllerMana
   }
 
   /**
-   * Called when a new {@link UsbDevice} has been detected on the system.
-   * This method will establish whether the device is supported, by finding a
-   * compatible UsbSerialDriver.
+   * Called when a new {@link UsbDevice} has been detected on the system. This method will establish
+   * whether the device is supported, by finding a compatible UsbSerialDriver.
    * <p/>
-   * This method always creates an entry in {@link #mConnectedDeviceToDriver},
-   * with key matching the {@link android.hardware.usb.UsbDevice UsbDevice's}
-   * device ID.
+   * This method always creates an entry in {@link #mConnectedDeviceToDriver}, with key matching the
+   * {@link android.hardware.usb.UsbDevice UsbDevice's} device ID.
    *
    * @param device the newly-detected device.
    */
@@ -486,7 +478,7 @@ public class KegboardManager extends BackgroundManager implements ControllerMana
     final int maxAttempts = 4;
 
     KegboardHelloMessage helloMessage = null;
-    for (int i=0; i < maxAttempts; i++) {
+    for (int i = 0; i < maxAttempts; i++) {
       SystemClock.sleep(200);
       controller.ping();
       SystemClock.sleep(500);

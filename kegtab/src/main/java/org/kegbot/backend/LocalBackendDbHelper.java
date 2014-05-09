@@ -47,7 +47,6 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 /**
- *
  * @author mike wakerly (mike@wakerly.com)
  */
 public class LocalBackendDbHelper extends SQLiteOpenHelper {
@@ -453,6 +452,7 @@ public class LocalBackendDbHelper extends SQLiteOpenHelper {
     final SQLiteDatabase db = getWritableDatabase();
     return createOrUpdateTap(tap, db);
   }
+
   private KegTap createOrUpdateTap(KegTap tap, SQLiteDatabase db) {
     final long result = db.insertWithOnConflict(TABLE_TAPS, null, toContentValues(tap),
         SQLiteDatabase.CONFLICT_REPLACE);
@@ -577,7 +577,7 @@ public class LocalBackendDbHelper extends SQLiteOpenHelper {
   private boolean deleteRow(final String tableName, final int rowId) {
     final SQLiteDatabase db = getWritableDatabase();
     final int numRows = db.delete(tableName, COLUMN_ID + " = ?",
-        new String[] {String.valueOf(rowId)});
+        new String[]{String.valueOf(rowId)});
     if (numRows > 1) {
       throw new IllegalStateException("Too many rows deleted!");
     }
@@ -588,7 +588,7 @@ public class LocalBackendDbHelper extends SQLiteOpenHelper {
     Log.d(TAG, "querying: " + tableName + ", row: " + rowId);
     final Cursor cursor =
         db.query(tableName, null, COLUMN_ID + " = ?",
-            new String[] {String.valueOf(rowId)}, null, null, null);
+            new String[]{String.valueOf(rowId)}, null, null, null);
     final int count = cursor.getCount();
     if (count == 0) {
       throw new SQLiteException("No matching keg found.");

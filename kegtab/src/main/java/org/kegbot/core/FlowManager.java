@@ -52,8 +52,7 @@ public class FlowManager extends Manager {
   private static final int MAX_RECENT_FLOWS = 10;
 
   /**
-   * Maximum idle time of an *unbound* flow, that is, one not associated
-   * with a tap.
+   * Maximum idle time of an *unbound* flow, that is, one not associated with a tap.
    *
    * @see #startFlow(String, long)
    */
@@ -97,8 +96,7 @@ public class FlowManager extends Manager {
   public interface Clock {
 
     /**
-     * Returns a strictly increasing monotonic time, such as
-     * {@link android.os.SystemClock#elapsedRealtime()}
+     * Returns a strictly increasing monotonic time, such as {@link android.os.SystemClock#elapsedRealtime()}
      *
      * @return
      */
@@ -290,10 +288,9 @@ public class FlowManager extends Manager {
   }
 
   /**
-   * Handles a user arriving at a tap. If there is no flow in progress, a new
-   * flow will be started and this user will be added to it. If there is already
-   * a Flow, this user will take it over if anonymous. A non-anonymous active
-   * flow is left untouched.
+   * Handles a user arriving at a tap. If there is no flow in progress, a new flow will be started
+   * and this user will be added to it. If there is already a Flow, this user will take it over if
+   * anonymous. A non-anonymous active flow is left untouched.
    *
    * @param tap
    * @param username
@@ -336,10 +333,10 @@ public class FlowManager extends Manager {
   }
 
   /**
-   * Like {@link #activateUserAtTap(KegTap, String)}, but used when the desired
-   * tap for activation is unknown. This method arises since some authentication
-   * sources (eg RFID tag) are not bound to a particular tap. When a drinker
-   * authenticates with such a source, we must decide which taps to activate.
+   * Like {@link #activateUserAtTap(KegTap, String)}, but used when the desired tap for activation
+   * is unknown. This method arises since some authentication sources (eg RFID tag) are not bound to
+   * a particular tap. When a drinker authenticates with such a source, we must decide which taps to
+   * activate.
    *
    * @param username
    */
@@ -479,8 +476,8 @@ public class FlowManager extends Manager {
    * Removes a {@link Listener} from the flow manager.
    *
    * @param listener the listener
-   * @return <code>true</code> if the listener was found and removed, false if
-   *         the listener was not attached
+   * @return <code>true</code> if the listener was found and removed, false if the listener was not
+   * attached
    */
   public boolean removeFlowListener(final Listener listener) {
     synchronized (mListeners) {

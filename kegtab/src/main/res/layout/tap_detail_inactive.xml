@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
     <TextView
         android:id="@+id/tapInactiveTitle"
@@ -10,7 +10,7 @@
         android:layout_centerInParent="true"
         android:text="Tap Offline"
         android:textSize="48dip"
-        android:textStyle="bold" />
+        android:textStyle="bold"/>
 
     <Button
         android:id="@+id/tapKegButton"
@@ -19,6 +19,6 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/tapInactiveTitle"
         android:layout_centerInParent="true"
-        android:text="Start a Keg" />
+        android:text="Start a Keg"/>
 
 </RelativeLayout>

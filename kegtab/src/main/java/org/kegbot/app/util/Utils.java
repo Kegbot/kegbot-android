@@ -38,7 +38,7 @@ import java.security.NoSuchAlgorithmException;
 public class Utils {
 
   private final static char[] HEX_DIGITS = {
-    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
+      '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
   };
 
   private Utils() {
@@ -114,22 +114,22 @@ public class Utils {
     }
 
     return new StringBuilder()
-      .append("Kegtab/")
-      .append(versionName)
-      .append('-')
-      .append(versionCode)
-      .append(" (Android ")
-      .append(Build.VERSION.RELEASE)
-      .append("/")
-      .append(Build.VERSION.SDK_INT)
-      .append("; ")
-      .append(Build.MANUFACTURER)
-      .append(" ")
-      .append(Build.MODEL)
-      .append("; ")
-      .append(Build.FINGERPRINT)
-      .append(")")
-      .toString();
+        .append("Kegtab/")
+        .append(versionName)
+        .append('-')
+        .append(versionCode)
+        .append(" (Android ")
+        .append(Build.VERSION.RELEASE)
+        .append("/")
+        .append(Build.VERSION.SDK_INT)
+        .append("; ")
+        .append(Build.MANUFACTURER)
+        .append(" ")
+        .append(Build.MODEL)
+        .append("; ")
+        .append(Build.FINGERPRINT)
+        .append(")")
+        .toString();
   }
 
   public static PackageInfo getOwnPackageInfo(Context context) {

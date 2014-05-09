@@ -1,4 +1,3 @@
-
 package org.kegbot.app;
 
 import android.app.AlertDialog;
@@ -44,16 +43,14 @@ import java.util.List;
 import butterknife.ButterKnife;
 
 /**
- * A fragment representing a single Tap detail screen. This fragment is either
- * contained in a {@link TapListActivity} in two-pane mode (on tablets) or a
- * {@link TapDetailActivity} on handsets.
+ * A fragment representing a single Tap detail screen. This fragment is either contained in a {@link
+ * TapListActivity} in two-pane mode (on tablets) or a {@link TapDetailActivity} on handsets.
  */
 public class TapDetailFragment extends Fragment {
   private static final String TAG = TapDetailFragment.class.getSimpleName();
 
   /**
-   * The fragment argument representing the item ID that this fragment
-   * represents.
+   * The fragment argument representing the item ID that this fragment represents.
    */
   public static final String ARG_ITEM_ID = "item_id";
 
@@ -364,22 +361,23 @@ public class TapDetailFragment extends Fragment {
             "Are you sure you want end <b>Keg %s</b> (<i>%s</i>) on tap <b>%s</b>?",
             Integer.valueOf(keg.getId()),
             keg.getBeverage().getName(),
-            mTap.getName()));
+            mTap.getName())
+    );
 
     final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
     builder.setMessage(message)
-       .setCancelable(false)
-       .setPositiveButton("End Keg", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface arg0, int arg1) {
-              doEndKeg();
-            }
-       })
-       .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-            }
-       });
+        .setCancelable(false)
+        .setPositiveButton("End Keg", new DialogInterface.OnClickListener() {
+          @Override
+          public void onClick(DialogInterface arg0, int arg1) {
+            doEndKeg();
+          }
+        })
+        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+          @Override
+          public void onClick(DialogInterface dialog, int which) {
+          }
+        });
 
     final AlertDialog alert = builder.create();
     alert.show();
@@ -427,18 +425,18 @@ public class TapDetailFragment extends Fragment {
 
     final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
     builder.setMessage(message)
-       .setCancelable(false)
-       .setPositiveButton("Delete Tap", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface arg0, int arg1) {
-              doDeleteTap();
-            }
-       })
-       .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-            }
-       });
+        .setCancelable(false)
+        .setPositiveButton("Delete Tap", new DialogInterface.OnClickListener() {
+          @Override
+          public void onClick(DialogInterface arg0, int arg1) {
+            doDeleteTap();
+          }
+        })
+        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+          @Override
+          public void onClick(DialogInterface dialog, int which) {
+          }
+        });
 
     final AlertDialog alert = builder.create();
     alert.show();
@@ -513,6 +511,7 @@ public class TapDetailFragment extends Fragment {
     }
 
   }
+
   private class FlowToggleAdapter extends ArrayAdapter<Models.FlowToggle> {
     public FlowToggleAdapter(Context context) {
       super(context, android.R.layout.simple_spinner_item);
