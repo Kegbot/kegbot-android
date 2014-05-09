@@ -48,7 +48,6 @@ import org.kegbot.app.event.FlowMeterListUpdateEvent;
 import org.kegbot.app.event.FlowToggleListUpdateEvent;
 import org.kegbot.app.event.SoundEventListUpdateEvent;
 import org.kegbot.app.event.SystemEventListUpdateEvent;
-import org.kegbot.app.event.TapListUpdateEvent;
 import org.kegbot.app.storage.LocalDbHelper;
 import org.kegbot.app.util.TimeSeries;
 import org.kegbot.backend.Backend;
@@ -87,10 +86,10 @@ public class SyncManager extends BackgroundManager {
   private static final boolean DEBUG = BuildConfig.DEBUG;
 
   private final Backend mBackend;
+  private final TapManager mTapManager;
   private final Context mContext;
 
   @Nullable private SyncResponse mLastSync;
-  private List<KegTap> mLastKegTapList = Lists.newArrayList();
   private List<SystemEvent> mLastSystemEventList = Lists.newArrayList();
   private List<SoundEvent> mLastSoundEventList = Lists.newArrayList();
   private List<Controller> mLastControllers = Lists.newArrayList();
@@ -136,9 +135,10 @@ public class SyncManager extends BackgroundManager {
     }
   };
 
-  public SyncManager(Bus bus, Context context, Backend api) {
+  public SyncManager(Bus bus, Context context, Backend api, TapManager tapManager) {
     super(bus);
     mBackend = api;
+    mTapManager = tapManager;
     mContext = context;
   }
 
@@ -159,7 +159,6 @@ public class SyncManager extends BackgroundManager {
   public synchronized void stop() {
     mRunning = false;
     getBus().unregister(this);
-    mLastKegTapList.clear();
     mBackendExecutorService.shutdown();
     super.stop();
   }
@@ -227,11 +226,6 @@ public class SyncManager extends BackgroundManager {
   public synchronized void requestSync() {
     Log.d(TAG, "Immediate sync requested.");
     mSyncImmediate = true;
-  }
-
-  @Produce
-  public TapListUpdateEvent produceTapList() {
-    return new TapListUpdateEvent(Lists.newArrayList(mLastKegTapList));
   }
 
   @Produce
@@ -480,17 +474,7 @@ public class SyncManager extends BackgroundManager {
     // Taps.
     try {
       List<KegTap> newTaps = mBackend.getTaps();
-      if (!newTaps.equals(mLastKegTapList)) {
-        if (DEBUG) {
-          Log.d(TAG, "Updated taps:");
-          for (final KegTap tap : newTaps) {
-            Log.d(TAG, "TAP: " + tap);
-            Log.d(TAG, "################");
-          }
-        }
-        mLastKegTapList = newTaps;
-        postOnMainThread(new TapListUpdateEvent(newTaps));
-      }
+      mTapManager.updateTaps(newTaps);
     } catch (BackendException e) {
       Log.w(TAG, "Error syncing taps: " + e);
       error = true;

@@ -44,7 +44,8 @@ import com.squareup.otto.Subscribe;
 
 import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.app.event.ConnectivityChangedEvent;
-import org.kegbot.app.event.TapListUpdateEvent;
+import org.kegbot.app.event.TapsChangedEvent;
+import org.kegbot.app.event.VisibleTapsChangedEvent;
 import org.kegbot.app.service.CheckinService;
 import org.kegbot.app.util.Utils;
 import org.kegbot.core.KegbotCore;
@@ -56,9 +57,8 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 /**
- * The main "home screen" of the Kegtab application. It shows the status of each
- * tap, and allows the user start a pour by authenticating (if enabled in
- * settings).
+ * The main "home screen" of the Kegtab application. It shows the status of each tap, and allows the
+ * user start a pour by authenticating (if enabled in settings).
  */
 public class HomeActivity extends CoreActivity {
 
@@ -95,17 +95,16 @@ public class HomeActivity extends CoreActivity {
   private AppConfiguration mConfig;
 
   /**
-   * Keep track of Google Play Services error codes, and don't annoy when the
-   * same error persists. (For some reason, {@link GooglePlayServicesUtil} treats
-   * absence of the apk as "user recoverable").
+   * Keep track of Google Play Services error codes, and don't annoy when the same error persists.
+   * (For some reason, {@link GooglePlayServicesUtil} treats absence of the apk as "user
+   * recoverable").
    *
    * @see #checkPlayServices()
    */
   private int mLastShownGooglePlayServicesError = Integer.MIN_VALUE;
 
   /**
-   * Shadow copy of tap manager taps. Updated, as needed, in
-   * {@link #onTapListUpdate(TapListUpdateEvent)}.
+   * Shadow copy of tap manager taps.
    */
   private final List<KegTap> mTaps = Lists.newArrayList();
 
@@ -233,7 +232,7 @@ public class HomeActivity extends CoreActivity {
   }
 
   @Subscribe
-  public void onTapListUpdate(TapListUpdateEvent event) {
+  public void onVisibleTapListUpdate(VisibleTapsChangedEvent event) {
     Log.d(LOG_TAG, "Got tap list change event: " + event);
 
     final List<KegTap> newTapList = event.getTaps();

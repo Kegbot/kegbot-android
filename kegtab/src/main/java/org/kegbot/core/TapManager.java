@@ -25,10 +25,12 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.squareup.otto.Bus;
+import com.squareup.otto.Produce;
 import com.squareup.otto.Subscribe;
 
 import org.kegbot.app.config.ConfigurationStore;
-import org.kegbot.app.event.TapListUpdateEvent;
+import org.kegbot.app.event.TapsChangedEvent;
+import org.kegbot.app.event.VisibleTapsChangedEvent;
 import org.kegbot.app.util.IndentingPrintWriter;
 import org.kegbot.proto.Models.KegTap;
 
@@ -51,6 +53,7 @@ public class TapManager extends Manager {
   protected static final String KEY_HIDDEN_TAP_IDS = "hidden_tap_ids";
 
   private final Map<Integer, KegTap> mTaps = Maps.newLinkedHashMap();
+  private final Set<KegTap> mVisibleTaps = Sets.newLinkedHashSet();
 
   private ConfigurationStore mLocalConfig;
 
@@ -79,7 +82,9 @@ public class TapManager extends Manager {
    * @return {@code true} if an existing tap was replaced, {@code false}
    *         otherwise.
    */
-  public synchronized boolean addTap(final KegTap newTap) {
+  synchronized boolean addTap(final KegTap newTap) {
+    Log.i(TAG, "Adding/updating tap " + newTap.getId());
+    final Integer tapId = Integer.valueOf(newTap.getId());
     return mTaps.put(Integer.valueOf(newTap.getId()), newTap) != null;
   }
 
@@ -91,8 +96,54 @@ public class TapManager extends Manager {
    * @return {@code true} if an existing tap was removed, {@code false}
    *         otherwise.
    */
-  public synchronized boolean removeTap(final KegTap tap) {
+  synchronized boolean removeTap(final KegTap tap) {
+    Log.i(TAG, "Removing tap " + tap.getId());
+    setTapVisibility(tap, true);  // clear invisibility
     return mTaps.remove(Integer.valueOf(tap.getId())) != null;
+  }
+
+  /**
+   * Updates the set of installed taps to match {@code taps}.
+   *
+   * @param taps
+   */
+  public synchronized void updateTaps(final Collection<KegTap> taps) {
+    boolean updated = false;
+    final Set<Integer> tapsToRemove = Sets.newLinkedHashSet(mTaps.keySet());
+
+    for (final KegTap tap : taps) {
+      final Integer key = Integer.valueOf(tap.getId());
+      tapsToRemove.remove(key);
+      if (mTaps.containsKey(key) && getTap(key.intValue()).equals(tap)) {
+        continue;
+      }
+      updated = true;
+      addTap(tap);
+    }
+
+    for (final Integer tapId : tapsToRemove) {
+      updated = true;
+      removeTap(mTaps.get(tapId));
+    }
+
+    if (updated) {
+      postUpdate();
+    }
+  }
+
+  private void postUpdate() {
+    postOnMainThread(produceTapsEvent());
+    postOnMainThread(productVisibleTapsEvent());
+  }
+
+  @Produce
+  public TapsChangedEvent produceTapsEvent() {
+    return new TapsChangedEvent(Lists.newArrayList(getTaps()));
+  }
+
+  @Produce
+  public VisibleTapsChangedEvent productVisibleTapsEvent() {
+    return new VisibleTapsChangedEvent(Lists.newArrayList(getVisibleTaps()));
   }
 
   public synchronized KegTap getTap(int tapId) {
@@ -141,7 +192,7 @@ public class TapManager extends Manager {
   }
 
   @Subscribe
-  public synchronized void onTapSyncResults(TapListUpdateEvent event) {
+  public synchronized void onTapSyncResults(TapsChangedEvent event) {
     final List<KegTap> taps = event.getTaps();
     final Set<Integer> removedTaps = Sets.newLinkedHashSet(mTaps.keySet());
 
@@ -150,7 +201,6 @@ public class TapManager extends Manager {
       removedTaps.remove(Integer.valueOf(tap.getId()));
 
       if (existingTap == null || !existingTap.equals(tap)) {
-        Log.i(TAG, "Adding/updating tap " + tap.getId());
         addTap(tap);
       }
     }
@@ -174,8 +224,15 @@ public class TapManager extends Manager {
     }
 
     if (changed) {
+      Log.d(TAG, "Setting tap " + tap.getId() + " visible=" + isVisible);
       mLocalConfig.putStringSet(KEY_HIDDEN_TAP_IDS, hiddenTaps);
+      postUpdate();
     }
+  }
+
+  public synchronized boolean getTapVisibility(KegTap tap) {
+    return !mLocalConfig.getStringSet(KEY_HIDDEN_TAP_IDS,
+        Sets.<String>newLinkedHashSet()).contains(String.valueOf(tap.getId()));
   }
 
   @Override

@@ -132,7 +132,7 @@ public class KegbotCore {
     mFlowManager = new FlowManager(mBus, mTapManager, mConfig, mClock);
     mManagers.add(mFlowManager);
 
-    mSyncManager = new SyncManager(mBus, context, mBackend);
+    mSyncManager = new SyncManager(mBus, context, mBackend, mTapManager);
     mManagers.add(mSyncManager);
 
     mHardwareManager = new HardwareManager(mBus, context, mConfig, mBackend);

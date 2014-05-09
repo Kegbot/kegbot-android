@@ -27,11 +27,11 @@ import org.kegbot.proto.Models.KegTap;
  *
  * @author mike wakerly (opensource@hoho.com)
  */
-public class TapListUpdateEvent implements Event {
+public class TapsChangedEvent implements Event {
 
   private final List<KegTap> mTaps;
 
-  public TapListUpdateEvent(List<KegTap> taps) {
+  public TapsChangedEvent(List<KegTap> taps) {
     mTaps = taps;
   }
 
