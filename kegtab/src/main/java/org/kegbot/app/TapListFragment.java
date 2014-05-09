@@ -20,7 +20,7 @@ import com.google.common.collect.Lists;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
-import org.kegbot.app.event.TapListUpdateEvent;
+import org.kegbot.app.event.TapsChangedEvent;
 import org.kegbot.core.KegbotCore;
 import org.kegbot.core.TapManager;
 import org.kegbot.proto.Models.KegTap;
@@ -127,7 +127,7 @@ public class TapListFragment extends ListFragment {
   }
 
   @Subscribe
-  public void onTapsListUpdated(final TapListUpdateEvent event) {
+  public void onTapsListUpdated(final TapsChangedEvent event) {
     Log.d(TAG, "onTapsListUpdated");
     if (getListAdapter() == null) {
       setListAdapter(mAdapter);

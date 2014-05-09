@@ -18,21 +18,24 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.ViewFlipper;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
 
 import com.google.common.collect.Lists;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
-import org.kegbot.app.event.TapListUpdateEvent;
+import org.kegbot.app.event.TapsChangedEvent;
 import org.kegbot.backend.Backend;
 import org.kegbot.backend.BackendException;
 import org.kegbot.core.KegbotCore;
 import org.kegbot.core.SyncManager;
+import org.kegbot.core.TapManager;
 import org.kegbot.proto.Models;
 import org.kegbot.proto.Models.FlowMeter;
 import org.kegbot.proto.Models.Keg;
@@ -57,12 +60,17 @@ public class TapDetailFragment extends Fragment {
   private View mView;
   private Bus mBus;
 
+  private TapManager mTapManager;
+
+  private ViewFlipper mFlipper;
+
   private Spinner mMeterSelect;
   private Spinner mToggleSelect;
   private final List<FlowMeter> mMeters = Lists.newArrayList();
   private final List<Models.FlowToggle> mToggles = Lists.newArrayList();
   private FlowMeterAdapter mAdapter;
   private FlowToggleAdapter mToggleAdapter;
+  private Switch mTapEnabledSwitch;
 
   private KegTap mTap;
   private int mTapId;
@@ -77,6 +85,7 @@ public class TapDetailFragment extends Fragment {
     super.onCreate(savedInstanceState);
 
     final KegbotCore core = KegbotCore.getInstance(getActivity());
+    mTapManager = core.getTapManager();
     mBus = core.getBus();
 
     mBus.register(this);
@@ -97,6 +106,21 @@ public class TapDetailFragment extends Fragment {
     Log.d(TAG, "onCreateView");
     mView = inflater.inflate(R.layout.fragment_tap_detail, container, false);
     ButterKnife.inject(this, mView);
+
+    mFlipper = ButterKnife.findById(mView, R.id.tapControlsFlipper);
+
+    mTapEnabledSwitch = ButterKnife.findById(mView, R.id.tapEnabledSwitch);
+    mTapEnabledSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+      @Override
+      public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+        if (mTap == null) {
+          Log.wtf(TAG, "Tap is null!");
+          return;
+        }
+        mTapManager.setTapVisibility(mTap, b);
+        updateTapDetails(mTap);
+      }
+    });
 
     mAdapter = new FlowMeterAdapter(getActivity());
     mMeterSelect = ButterKnife.findById(mView, R.id.meterSelect);
@@ -216,7 +240,7 @@ public class TapDetailFragment extends Fragment {
   }
 
   @Subscribe
-  public void onTapUpdatedEvent(TapListUpdateEvent event) {
+  public void onTapUpdatedEvent(TapsChangedEvent event) {
     Log.d(TAG, "onTapUpdatedEvent");
     if (mTap == null) {
       return;
@@ -227,6 +251,9 @@ public class TapDetailFragment extends Fragment {
         return;
       }
     }
+
+    // We must have been deleted.
+    getFragmentManager().popBackStackImmediate();
   }
 
   private void updateTapDetails(final KegTap tap) {
@@ -238,6 +265,14 @@ public class TapDetailFragment extends Fragment {
     }
 
     Log.d(TAG, "Updating tap! + " + mTap);
+
+    final boolean isVisible = mTapManager.getTapVisibility(mTap);
+    mTapEnabledSwitch.setChecked(isVisible);
+    if (isVisible) {
+      mFlipper.setDisplayedChild(0);
+    } else {
+      mFlipper.setDisplayedChild(1);
+    }
 
     final TextView title = (TextView) mView.findViewById(R.id.tapDetailTitle);
     title.setText(mTap.getName());
