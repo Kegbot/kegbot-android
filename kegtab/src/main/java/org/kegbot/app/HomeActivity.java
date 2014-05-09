@@ -243,12 +243,14 @@ public class HomeActivity extends CoreActivity {
 
     mTaps.clear();
     mTaps.addAll(newTapList);
+    mTapStatusAdapter.notifyDataSetChanged();
+
     if (mTapStatusPager.getCurrentItem() >= mTaps.size()) {
       if (!mTaps.isEmpty()) {
         mTapStatusPager.setCurrentItem(mTaps.size() - 1);
       }
     }
-    mTapStatusAdapter.notifyDataSetChanged();
+
     if (!mTaps.isEmpty()) {
       setFocusedTap(mTaps.get(mTapStatusPager.getCurrentItem()));
     }
