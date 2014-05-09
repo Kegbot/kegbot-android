@@ -1,0 +1,9 @@
+<component name="CopyrightManager">
+  <copyright>
+    <option name="notice" value="Copyright &amp;#36;today.year Bevbot LLC &lt;info@bevbot.com&gt;&#10;&#10;This file is part of the Kegtab package from the Kegbot project. For&#10;more information on Kegtab or Kegbot, see &lt;http://kegbot.org/&gt;.&#10;&#10;Kegtab is free software: you can redistribute it and/or modify it under&#10;the terms of the GNU General Public License as published by the Free&#10;Software Foundation, version 2.&#10;&#10;Kegtab is distributed in the hope that it will be useful, but WITHOUT&#10;ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or&#10;FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for&#10;more details.&#10;&#10;You should have received a copy of the GNU General Public License along&#10;with Kegtab. If not, see &lt;http://www.gnu.org/licenses/&gt;." />
+    <option name="keyword" value="Copyright" />
+    <option name="allowReplaceKeyword" value="" />
+    <option name="myName" value="Kegtab - Bevbot" />
+    <option name="myLocal" value="true" />
+  </copyright>
+</component>
