@@ -297,7 +297,7 @@ public class KegbotCore {
     writer.increaseIndent();
     for (Map.Entry<String, ?> entry : mSharedPreferences.getAll().entrySet()) {
       final String key = entry.getKey();
-      String value = entry.getValue().toString();
+      String value = String.valueOf(entry.getValue());
 
       if (key.equals("config:PIN") || key.equals("config:API_KEY")) {
         if (value.isEmpty()) {
