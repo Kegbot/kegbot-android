@@ -1,7 +1,6 @@
 package org.kegbot.app.alert;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.SystemClock;
 import android.util.Log;
 
@@ -36,7 +35,8 @@ public class AlertCore extends Manager {
     private final String mTitle;
     private String mDescription = "";
     private String mSeverity = Alert.SEVERITY_INFO;
-    private Intent mAction;
+    private Runnable mAction;
+    private String mActionName;
 
     private boolean mDismissOnView = true;
     private long mAutoDismissTimeoutMillis = 0;
@@ -70,8 +70,13 @@ public class AlertCore extends Manager {
       return this;
     }
 
-    public Builder setAction(Intent action) {
+    public Builder setAction(Runnable action) {
       mAction = action;
+      return this;
+    }
+
+    public Builder setActionName(String actionName) {
+      mActionName = actionName;
       return this;
     }
 
@@ -89,8 +94,8 @@ public class AlertCore extends Manager {
       if (mId == null) {
         mId = String.valueOf(new SecureRandom().nextInt());
       }
-      return new Alert(mId, mTitle, mDescription, mSeverity, mAction, mDismissOnView,
-          SystemClock.uptimeMillis(), mAutoDismissTimeoutMillis);
+      return new Alert(mId, mTitle, mDescription, mSeverity, mAction,
+          mActionName, mDismissOnView, SystemClock.uptimeMillis(), mAutoDismissTimeoutMillis);
     }
   }
 
@@ -104,18 +109,20 @@ public class AlertCore extends Manager {
     private final String mTitle;
     private final String mDescription;
     private final String mSeverity;
-    private final Intent mAction;
+    private final Runnable mAction;
+    private final String mActionName;
     private final boolean mDismissOnView;
     private final long mPostTimeMillis;
     private final long mAutoDismissTimeoutMillis;
 
     Alert(final String id, final String title, final String description, final String severity,
-        final Intent action, final boolean dismissOnView,
+        final Runnable action, final String actionName, final boolean dismissOnView,
         final long postTimeMillis, final long autoDismissTimeoutMillis) {
       mId = Preconditions.checkNotNull(id);
       mTitle = Preconditions.checkNotNull(title);
       mDescription = Strings.nullToEmpty(description);
       mAction = action;
+      mActionName = actionName;
       mSeverity = Preconditions.checkNotNull(severity);
       mDismissOnView = dismissOnView;
       mPostTimeMillis = postTimeMillis;
@@ -138,8 +145,12 @@ public class AlertCore extends Manager {
       return mSeverity;
     }
 
-    public Intent getAction() {
+    public Runnable getAction() {
       return mAction;
+    }
+
+    public String getActionName() {
+      return mActionName;
     }
 
     public boolean getDismissOnView() {
@@ -210,6 +221,10 @@ public class AlertCore extends Manager {
 
   public List<Alert> getAlerts() {
     return ImmutableList.<Alert>copyOf(mAlerts.values());
+  }
+
+  public Alert getAlert(String alertId) {
+    return mAlerts.get(alertId);
   }
 
   public static Builder newBuilder(String title) {

@@ -138,5 +138,13 @@
     <string name="alert_flow_activity_description">Activity was detected on meter <b>%1$s</b>, but no tap is connected to it. Data will not be recorded until the meter is connected.\n\nTo connect this meter, visit "Manage Taps" from the home screen.</string>
     <string name="alert_flow_activity_title">Activity detected</string>
     <string name="edit_tap_disabled">Tap is disabled.</string>
+    <string name="alert_unbound_single_tap_description">Tap <b>%1$s</b> does not have a meter configured.</string>
+    <string name="alert_unbound_multiple_taps_description">Taps <b>%1$s</b> and <b>%2$s</b> do not
+        have a meter configured.</string>
+    <string name="alert_unbound_title">Configuration problem</string>
+    <string name="alert_unbound_action_name">Configure</string>
+    <string name="alert_button_dismiss">Dismiss</string>
+    <string name="alert_button_details">Details</string>
+
 
 </resources>

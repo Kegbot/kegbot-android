@@ -29,8 +29,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 
+import org.kegbot.app.R;
 import org.kegbot.core.KegbotCore;
 
 import java.util.List;
@@ -61,13 +63,30 @@ public class AlertActivity extends Activity {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
       final String title = getArguments().getString(KEY_TITLE);
       final String description = getArguments().getString(KEY_DESCRIPTION);
+      final String alertId = getArguments().getString(KEY_ALERT_ID);
 
-      return new AlertDialog.Builder(getActivity())
+      KegbotCore core = KegbotCore.getInstance(getActivity());
+      AlertCore alertCore = core.getAlertCore();
+      final AlertCore.Alert alert = alertCore.getAlert(alertId);
+
+      final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
           .setIcon(android.R.drawable.ic_dialog_alert)
           .setTitle(title)
-          .setMessage(description)
-          .setPositiveButton("Ok", null)
-          .create();
+          .setMessage(description);
+
+      if (alert.getAction() != null) {
+        final String actionName = alert.getActionName();
+        builder.setNegativeButton(getString(R.string.alert_button_dismiss), null);
+        builder.setPositiveButton(Strings.isNullOrEmpty(actionName) ? getString(R.string.alert_button_details) : actionName,
+            new DialogInterface.OnClickListener() {
+              @Override
+              public void onClick(DialogInterface dialogInterface, int i) {
+                alert.getAction().run();
+              }
+            });
+      }
+
+      return builder.create();
     }
 
     @Override

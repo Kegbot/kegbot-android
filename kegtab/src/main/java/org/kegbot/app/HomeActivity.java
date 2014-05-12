@@ -37,11 +37,14 @@ import android.view.MenuItem;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.google.common.base.Function;
+import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.hoho.android.usbserial.util.HexDump;
 import com.squareup.otto.Subscribe;
 
+import org.kegbot.app.alert.AlertCore;
 import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.app.event.ConnectivityChangedEvent;
 import org.kegbot.app.event.VisibleTapsChangedEvent;
@@ -54,6 +57,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
+
+import javax.annotation.Nullable;
 
 /**
  * The main "home screen" of the Kegtab application. It shows the status of each tap, and allows the
@@ -69,6 +74,8 @@ public class HomeActivity extends CoreActivity {
   private static final String ACTION_SHOW_TAP_EDITOR = "show_editor";
   private static final String EXTRA_METER_NAME = "meter_name";
 
+  private static final String ALERT_ID_UNBOUND_TAPS = "unbound-taps";
+
   /**
    * Idle timeout which triggers "attract mode".
    *
@@ -82,6 +89,14 @@ public class HomeActivity extends CoreActivity {
    * @see #mAttractModeRunnable
    */
   private static final long ROTATE_INTERVAL_MILLIS = TimeUnit.SECONDS.toMillis(12);
+
+  private static final Function<KegTap, String> TAP_TO_NAME = new Function<KegTap, String>() {
+    @Nullable
+    @Override
+    public String apply(@Nullable KegTap input) {
+      return input != null ? input.getName() : "none";
+    }
+  };
 
   private HomeControlsFragment mControls;
   private SessionStatsFragment mSession;
@@ -172,11 +187,17 @@ public class HomeActivity extends CoreActivity {
   }
 
   @Override
+  protected void onStart() {
+    super.onStart();
+    mCore = KegbotCore.getInstance(this);
+    mConfig = mCore.getConfiguration();
+    maybeShowTapWarnings();
+  }
+
+  @Override
   protected void onResume() {
     Log.d(LOG_TAG, "onResume");
     super.onResume();
-    mCore = KegbotCore.getInstance(this);
-    mConfig = mCore.getConfiguration();
     mCore.getBus().register(this);
     mCore.getHardwareManager().refreshSoon();
     startAttractMode();
@@ -253,6 +274,46 @@ public class HomeActivity extends CoreActivity {
     if (!mTaps.isEmpty()) {
       setFocusedTap(mTaps.get(mTapStatusPager.getCurrentItem()));
     }
+
+    maybeShowTapWarnings();
+  }
+
+  private void maybeShowTapWarnings() {
+    final List<KegTap> unboundTaps = Lists.newArrayList();
+    for (final KegTap tap : mTaps) {
+      if (!tap.hasMeter()) {
+        unboundTaps.add(tap);
+      }
+    }
+
+    if (unboundTaps.isEmpty()) {
+      mCore.getAlertCore().cancelAlert(ALERT_ID_UNBOUND_TAPS);
+      return;
+    }
+
+    final String message;
+    final List<String> tapNames = Lists.transform(unboundTaps, TAP_TO_NAME);
+    if (tapNames.size() == 1) {
+      message = getString(R.string.alert_unbound_single_tap_description,
+          tapNames.get(0));
+    } else {
+      final String listStr = Joiner.on(", ").join(tapNames.subList(0, tapNames.size() - 2));
+      message = getString(R.string.alert_unbound_multiple_taps_description, listStr,
+          tapNames.get(tapNames.size() - 1));
+    }
+
+    mCore.getAlertCore().postAlert(AlertCore.newBuilder(getString(R.string.alert_unbound_title))
+        .setId(ALERT_ID_UNBOUND_TAPS)
+        .setAction(new Runnable() {
+          @Override
+          public void run() {
+            TapListActivity.startActivity(getApplicationContext());
+          }
+        })
+        .setActionName(getString(R.string.alert_unbound_action_name))
+        .setDescription(message)
+        .severityWarning()
+        .build());
   }
 
   @Subscribe
