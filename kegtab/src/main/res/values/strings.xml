@@ -145,6 +145,7 @@
     <string name="alert_unbound_action_name">Configure</string>
     <string name="alert_button_dismiss">Dismiss</string>
     <string name="alert_button_details">Details</string>
+    <string name="alert_button_ok">Ok</string>
 
 
 </resources>

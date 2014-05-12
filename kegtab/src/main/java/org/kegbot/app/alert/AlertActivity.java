@@ -84,6 +84,8 @@ public class AlertActivity extends Activity {
                 alert.getAction().run();
               }
             });
+      } else {
+        builder.setPositiveButton(getString(R.string.alert_button_ok), null);
       }
 
       return builder.create();
