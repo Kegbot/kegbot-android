@@ -467,11 +467,10 @@ public class KegboardManager extends BackgroundManager implements ControllerMana
 
     if (!Strings.isNullOrEmpty(pingResponse.getSerialNumber())) {
       Log.d(TAG, "verifyFirmware: Success: " + pingResponse);
-      return pingResponse;
     }
+    Log.w(TAG, "verifyFirmware: Board has no serial number.");
 
-    Log.d(TAG, "verifyFirmware: Board has no serial number, setting...");
-    return setControllerSerialNumber(controller);
+    return pingResponse;
   }
 
   private KegboardHelloMessage pingController(KegboardController controller) throws IOException {
