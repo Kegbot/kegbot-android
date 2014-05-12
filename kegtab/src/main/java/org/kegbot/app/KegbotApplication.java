@@ -51,6 +51,7 @@ public class KegbotApplication extends Application {
       Log.d(TAG, "Activating crashlytics ...");
       try {
         Crashlytics.start(this);
+        Crashlytics.setUserIdentifier(mConfig.getRegistrationId());
         Log.d(TAG, "Crashlytics activated.");
       } catch (Exception e) {
         Log.w(TAG, "Crashlytics not activated: " + e, e);
