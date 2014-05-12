@@ -29,6 +29,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.text.Editable;
@@ -96,7 +97,7 @@ public class PourInProgressActivity extends CoreActivity {
 
   private CameraFragment mCameraFragment;
 
-  private final Handler mHandler = new Handler();
+  private final Handler mHandler = new Handler(Looper.getMainLooper());
 
   private PouringTapAdapter mPouringTapAdapter;
   private DialogFragment mProgressDialog;

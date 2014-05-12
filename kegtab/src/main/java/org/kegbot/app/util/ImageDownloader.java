@@ -21,6 +21,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 import android.view.animation.Animation;
@@ -89,7 +90,7 @@ public class ImageDownloader {
   private File mCacheDir;
 
   @SuppressLint("HandlerLeak")
-  private final Handler mHandler = new Handler() {
+  private final Handler mHandler = new Handler(Looper.getMainLooper()) {
 
     @Override
     public void handleMessage(Message msg) {

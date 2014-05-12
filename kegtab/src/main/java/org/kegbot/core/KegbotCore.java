@@ -24,6 +24,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import com.google.common.base.Strings;
@@ -76,7 +77,7 @@ public class KegbotCore {
 
   private final Bus mBus;
   private final BusListener mBusListener = new BusListener();
-  private final Handler mBusHandler = new Handler();
+  private final Handler mBusHandler = new Handler(Looper.getMainLooper());
 
   private final AppConfiguration mConfig;
   private final SharedPreferences mSharedPreferences;

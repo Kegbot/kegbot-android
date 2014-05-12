@@ -28,7 +28,6 @@ import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Binder;
-import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.os.SystemClock;
@@ -81,8 +80,6 @@ public class KegbotCoreService extends Service {
   private final IntentFilter mIntentFilter =
       new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
   private BroadcastReceiver mBroadcastReceiver;
-
-  private final Handler mHandler = new Handler();
 
   private final FlowManager.Listener mFlowListener = new FlowManager.Listener() {
     @Override

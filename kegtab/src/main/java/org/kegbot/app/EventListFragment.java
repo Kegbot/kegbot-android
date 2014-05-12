@@ -23,6 +23,7 @@ import android.app.ListFragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.text.Html;
 import android.text.format.DateUtils;
 import android.util.Log;
@@ -74,7 +75,7 @@ public class EventListFragment extends ListFragment {
   private ArrayAdapter<SystemEvent> mAdapter;
   private KegbotCore mCore;
   private ImageDownloader mImageDownloader;
-  private final Handler mHandler = new Handler();
+  private final Handler mHandler = new Handler(Looper.getMainLooper());
   private final List<SystemEvent> mCachedEvents = Lists.newArrayList();
 
   /** Refreshes event timestamps by invalidating all ListView children periodically. */

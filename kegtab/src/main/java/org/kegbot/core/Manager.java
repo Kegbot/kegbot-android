@@ -36,7 +36,7 @@ public abstract class Manager {
 
   private final String mName;
   private final Bus mBus;
-  private final Handler mMainThreadHandler = new Handler();
+  private final Handler mMainThreadHandler = new Handler(Looper.getMainLooper());
 
   public Manager(Bus bus) {
     mBus = bus;

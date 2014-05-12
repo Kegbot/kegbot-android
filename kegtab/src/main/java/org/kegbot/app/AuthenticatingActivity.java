@@ -25,6 +25,7 @@ import android.nfc.Tag;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -72,7 +73,7 @@ public class AuthenticatingActivity extends Activity {
   private Button mCancelButton;
   private Button mAssignButton;
 
-  private final Handler mHandler = new Handler();
+  private final Handler mHandler = new Handler(Looper.getMainLooper());
 
   private final Runnable mFinishRunnable = new Runnable() {
     @Override

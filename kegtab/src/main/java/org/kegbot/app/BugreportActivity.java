@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -60,7 +61,7 @@ public class BugreportActivity extends Activity {
 
   private Button mButton;
 
-  private final Handler mHandler = new Handler();
+  private final Handler mHandler = new Handler(Looper.getMainLooper());
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {

@@ -23,6 +23,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -67,7 +68,7 @@ public class NewControllerActivity extends Activity {
   ViewGroup mNumMetersGroup;
   NumberPicker mNumMeters;
 
-  private final Handler mHandler = new Handler();
+  private final Handler mHandler = new Handler(Looper.getMainLooper());
 
   private final Runnable mFinishRunnable = new Runnable() {
     @Override

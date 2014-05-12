@@ -28,6 +28,7 @@ import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -88,7 +89,7 @@ public class SetupActivity extends Activity {
     }
   };
 
-  private final Handler mHandler = new Handler() {
+  private final Handler mHandler = new Handler(Looper.getMainLooper()) {
     @Override
     public void handleMessage(Message msg) {
       switch (msg.what) {

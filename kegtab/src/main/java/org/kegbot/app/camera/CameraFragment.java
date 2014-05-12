@@ -34,6 +34,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Surface;
@@ -72,7 +73,7 @@ public class CameraFragment extends Fragment {
   private Button mRetakeButton;
   private ViewGroup mPostButtons;
   private int mPictureSeconds = 0;
-  private final Handler mHandler = new Handler();
+  private final Handler mHandler = new Handler(Looper.getMainLooper());
 
   private SoundPool mSoundPool;
   private int mCountdownBeepSoundId;

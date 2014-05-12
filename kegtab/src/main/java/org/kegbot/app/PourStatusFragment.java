@@ -22,6 +22,7 @@ import android.app.ListFragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -155,7 +156,7 @@ public class PourStatusFragment extends ListFragment {
   @Override
   public void onAttach(Activity activity) {
     super.onAttach(activity);
-    mHandler = new Handler();
+    mHandler = new Handler(Looper.getMainLooper());
   }
 
   @Override
