@@ -50,6 +50,7 @@ import org.kegbot.core.KegbotCore;
 public class PinActivity extends Activity {
 
   private static final String TAG = PinActivity.class.getSimpleName();
+  private static final String EXTRA_KEY_START_INTENT = "start_intent";
 
   private AppConfiguration mConfig;
   private EditText mPinText;
@@ -120,7 +121,7 @@ public class PinActivity extends Activity {
 
   private void onPinSuccess() {
     setResult(RESULT_OK);
-    final Intent startIntent = getIntent().getParcelableExtra("start_intent");
+    final Intent startIntent = getIntent().getParcelableExtra(EXTRA_KEY_START_INTENT);
     Log.i(TAG, "Pin validated, starting activity.");
     if (startIntent == null) {
       Log.wtf(TAG, "Start intent was null");
@@ -158,7 +159,10 @@ public class PinActivity extends Activity {
     }
     final Intent intent = new Intent(context, PinActivity.class);
     intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-    intent.putExtra("start_intent", startIntent);
+    if ((startIntent.getFlags() & Intent.FLAG_ACTIVITY_NEW_TASK) != 0) {
+      intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    }
+    intent.putExtra(EXTRA_KEY_START_INTENT, startIntent);
     context.startActivity(intent);
   }
 
