@@ -30,6 +30,8 @@ public class KegboardHelloMessage extends KegboardMessage {
   private static final int TAG_FIRMWARE_VERSION = 0x01;
   private static final int TAG_PROTOCOL_VERSION = 0x02;
   private static final int TAG_SERIAL_NUMBER = 0x03;
+  private static final int TAG_UPTIME_MILLIS = 0x04;
+  private static final int TAG_UPTIME_DAYS = 0x05;
 
   public KegboardHelloMessage(byte[] wholeMessage) throws KegboardMessageException {
     super(wholeMessage);
@@ -42,9 +44,18 @@ public class KegboardHelloMessage extends KegboardMessage {
 
   @Override
   public String getStringExtra() {
-    return "firmware_version=" + getFirmwareVersion() +
-        " protocol_version=" + getProtocolVersion() +
-        " serial_number=" + getSerialNumber();
+    return new StringBuilder()
+        .append("firmware_version=")
+        .append(getFirmwareVersion())
+        .append(" protocol_version=")
+        .append(getProtocolVersion())
+        .append(" serial_number=")
+        .append(getSerialNumber())
+        .append(" uptime_days=")
+        .append(getUptimeDays())
+        .append(" uptime_millis=")
+        .append(getUptimeMillis())
+        .toString();
   }
 
 
@@ -54,6 +65,14 @@ public class KegboardHelloMessage extends KegboardMessage {
 
   public int getProtocolVersion() {
     return readTagAsShort(TAG_PROTOCOL_VERSION);
+  }
+
+  public long getUptimeDays() {
+    return readTagAsLong(TAG_UPTIME_DAYS);
+  }
+
+  public long getUptimeMillis() {
+    return readTagAsLong(TAG_UPTIME_MILLIS);
   }
 
   public String getSerialNumber() {
