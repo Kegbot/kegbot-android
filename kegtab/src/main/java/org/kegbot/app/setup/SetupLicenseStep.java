@@ -43,6 +43,6 @@ public class SetupLicenseStep extends SetupStep {
       mControlsFragment.onValidationFailed();
       throw new SetupValidationException(error);
     }
-    return new SetupKegbotUrlStep(mState);
+    return new SetupSelectBackendStep(mState);
   }
 }
