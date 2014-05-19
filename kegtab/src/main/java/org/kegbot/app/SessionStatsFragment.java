@@ -106,17 +106,19 @@ public class SessionStatsFragment extends Fragment {
       return;
     }
 
+    mView.setVisibility(View.GONE);
+
     if (mSession == null) {
-      mView.setVisibility(View.GONE);
       return;
     }
-    mView.setVisibility(View.VISIBLE);
 
     JsonNode stats = mStats.get("volume_by_drinker");
     if (stats == null || !stats.isObject()) {
       Log.w(TAG, "Stats error: " + stats);
       return;
     }
+
+    mView.setVisibility(View.VISIBLE);
 
     Map<String, Double> volumeMap;
     try {
