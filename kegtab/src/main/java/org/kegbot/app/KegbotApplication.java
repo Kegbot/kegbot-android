@@ -17,8 +17,6 @@ import org.kegbot.app.config.SharedPreferencesConfigurationStore;
 import org.kegbot.app.service.CheckinService;
 import org.kegbot.app.util.Utils;
 
-//import com.crashlytics.android.Crashlytics;
-
 /**
  * Kegbot customized application.
  *

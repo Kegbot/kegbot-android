@@ -20,11 +20,34 @@
         android:textColor="@android:color/darker_gray"
         android:textSize="18sp"/>
 
-    <EditText
-        android:id="@+id/kegbotUrl"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="textUri"
-        android:hint="@string/example_url"/>
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/kegbotUrlScheme"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/kegbot_url_scheme_http"
+            android:textColor="@android:color/darker_gray"
+            android:textSize="18sp"
+            android:textStyle="bold"/>
+
+        <EditText
+            android:id="@+id/kegbotUrl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textUri"
+            android:hint="@string/example_url"/>
+
+        </LinearLayout>
+
+    <CheckBox
+        android:id="@+id/useSsl"
+        android:layout_marginTop="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/setup_kegbot_url_use_ssl"/>
 
 </LinearLayout>

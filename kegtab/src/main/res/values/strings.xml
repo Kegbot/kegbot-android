@@ -46,7 +46,7 @@
     <string name="setup_kegbot_url_title">Kegbot URL</string>
     <string name="setup_kegbot_url_description">We need to talk to your Kegbot system in order to load drinkers, tap status, and other information. Please enter the URL of your Kegbot system.</string>
     <string name="setup_kegbot_url_url_name">Kegbot URL</string>
-    <string name="setup_kegbot_url_url_description">Enter the main URL.</string>
+    <string name="setup_kegbot_url_url_description">Enter main URL.</string>
     <string name="setup_dialog_validate_title">Verifying…</string>
     <string name="setup_dialog_validate_description">Verifying information, please wait…</string>
     <string name="setup_log_in_title">Log In</string>
@@ -101,7 +101,7 @@
     <string name="new_keg_help_text">Enter keg details below.</string>
     <string name="confirm_pin">Confirm PIN</string>
     <string name="manager_pin_description">Secret PIN for manager access.</string>
-    <string name="example_url">http://kegbot.example.com</string>
+    <string name="example_url">kegbot.example.com</string>
     <string name="license_agreement_title">License</string>
     <string name="password_title">Password</string>
     <string name="password_description">Your Kegbot account password.</string>
@@ -151,6 +151,9 @@
     <string name="pour_shout_hint">Shout something! (optional)</string>
     <string name="pour_button_done">Done Pouring!</string>
     <string name="pour_status_complete">Pour complete!</string>
+    <string name="setup_kegbot_url_use_ssl">Use SSL</string>
+    <string name="kegbot_url_scheme_http">http://</string>
+    <string name="kegbot_url_scheme_https">https://</string>
 
 
 </resources>
