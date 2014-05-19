@@ -147,8 +147,7 @@ public class PourInProgressActivity extends CoreActivity {
   public void onPictureTakenEvent(PictureTakenEvent event) {
     final String filename = event.getFilename();
     Log.d(TAG, "Got photo: " + filename);
-    final Flow flow = getCurrentlyFocusedFlow();
-    if (flow != null) {
+    for (final Flow flow : mFlowManager.getAllActiveFlows()) {
       Log.d(TAG, "  - attached to flow: " + flow);
       flow.addImage(filename);
     }
@@ -158,8 +157,7 @@ public class PourInProgressActivity extends CoreActivity {
   public void onPictureDiscardedEvent(PictureDiscardedEvent event) {
     final String filename = event.getFilename();
     Log.d(TAG, "Discarded photo: " + filename);
-    final Flow flow = getCurrentlyFocusedFlow();
-    if (flow != null) {
+    for (final Flow flow : mFlowManager.getAllActiveFlows()) {
       Log.d(TAG, "  - remove from flow: " + flow);
       flow.removeImage(filename);
     }
