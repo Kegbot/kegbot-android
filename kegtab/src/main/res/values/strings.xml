@@ -150,6 +150,7 @@
     <string name="pour_button_claim">Claim This Pour</string>
     <string name="pour_shout_hint">Shout something! (optional)</string>
     <string name="pour_button_done">Done Pouring!</string>
+    <string name="pour_status_complete">Pour complete!</string>
 
 
 </resources>

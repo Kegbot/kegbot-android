@@ -55,26 +55,22 @@ public class PourStatusFragment extends ListFragment {
   private static final long VOLUME_COUNTER_INCREMENT_DELAY_MILLIS = 20;
 
   private static final int AUTH_DRINKER_REQUEST = 1;
-
+  /**
+   * After this much inactivity, the "pour automatically ends" dialog is shown.
+   */
+  private static final long IDLE_TOOLTIP_MILLIS = TimeUnit.SECONDS.toMillis(5);
+  private final Handler mHandler = new Handler(Looper.getMainLooper());
   private double mTargetVolumeMl = 0.0;
   private double mCurrentVolumeMl = 0.0;
-
   private KegbotCore mCore;
-
   private ImageDownloader mImageDownloader;
-
   private KegTap mTap;  // final after setTap
-
   private View mView;
   private BadgeView mPourVolumeBadge;
   private TextView mTapTitle;
   private TextView mTapSubtitle;
   private TextView mStatusLine;
-
   private ImageView mBeerImage;
-
-  private Handler mHandler;
-
   private final Runnable mCounterIncrementRunnable = new Runnable() {
     @Override
     public void run() {
@@ -91,21 +87,37 @@ public class PourStatusFragment extends ListFragment {
       }
     }
   };
-
-  /**
-   * After this much inactivity, the "pour automatically ends" dialog is shown.
-   */
-  private static final long IDLE_TOOLTIP_MILLIS = TimeUnit.SECONDS.toMillis(5);
-
   private Flow mFlow = null;
+  private final Runnable mCountdownRunnable = new Runnable() {
+    @Override
+    public void run() {
+      final Flow flow = mFlow;
+      if (flow != null) {
+        if (flow.isFinished()) {
+          mStatusLine.setVisibility(View.VISIBLE);
+          mStatusLine.setText(getString(R.string.pour_status_complete));
+        } else {
+          if (mFlow.getIdleTimeMs() >= IDLE_TOOLTIP_MILLIS) {
+            final long seconds = mFlow.getMsUntilIdle() / 1000;
+            mStatusLine.setText("Pour automatically ends in " + seconds + " second"
+                + ((seconds != 1) ? "s" : "") + ".");
+            mStatusLine.setVisibility(View.VISIBLE);
+          } else {
+            mStatusLine.setVisibility(View.INVISIBLE);
+          }
+        }
+      }
+      mHandler.postDelayed(mCountdownRunnable, 1000);
+    }
+  };
+
+  public KegTap getTap() {
+    return mTap;
+  }
 
   public void setTap(KegTap tap) {
     Preconditions.checkState(mTap == null, "tap already set");
     mTap = tap;
-  }
-
-  public KegTap getTap() {
-    return mTap;
   }
 
   @Override
@@ -156,7 +168,6 @@ public class PourStatusFragment extends ListFragment {
   @Override
   public void onAttach(Activity activity) {
     super.onAttach(activity);
-    mHandler = new Handler(Looper.getMainLooper());
   }
 
   @Override
@@ -164,6 +175,8 @@ public class PourStatusFragment extends ListFragment {
     super.onResume();
     applyTapDetail();
     KegbotCore.getInstance(getActivity()).getBus().register(this);
+
+    startCountdown();
     if (mFlow != null) {
       updateWithFlow(mFlow);
     }
@@ -172,6 +185,7 @@ public class PourStatusFragment extends ListFragment {
   @Override
   public void onPause() {
     KegbotCore.getInstance(getActivity()).getBus().unregister(this);
+    cancelCountdown();
     super.onPause();
   }
 
@@ -179,9 +193,7 @@ public class PourStatusFragment extends ListFragment {
   public void onFlowUpdate(FlowUpdateEvent event) {
     final Flow flow = event.getFlow();
     if (mTap != null && mTap.getId() == flow.getTap().getId()) {
-      if (flow.isFinished()) {
-        setEnded();
-      } else {
+      if (!flow.isFinished()) {
         updateWithFlow(flow);
       }
     }
@@ -223,7 +235,6 @@ public class PourStatusFragment extends ListFragment {
     mFlow = flow;
 
     if (mFlow.isFinished()) {
-      setEnded();
       return;
     }
 
@@ -237,24 +248,15 @@ public class PourStatusFragment extends ListFragment {
       mHandler.removeCallbacks(mCounterIncrementRunnable);
       mHandler.post(mCounterIncrementRunnable);
     }
-
-    // Update beer info.
-    if (flow.getIdleTimeMs() >= IDLE_TOOLTIP_MILLIS) {
-      final long seconds = flow.getMsUntilIdle() / 1000;
-      mStatusLine.setText("Pour automatically ends in " + seconds + " second"
-          + ((seconds != 1) ? "s" : "") + ".");
-      mStatusLine.setVisibility(View.VISIBLE);
-    } else {
-      mStatusLine.setVisibility(View.INVISIBLE);
-    }
   }
 
-  /** Marks the tap as ended (no current flow). */
-  private void setEnded() {
-    if (mView != null) {
-      mStatusLine.setText("Pour completed!");
-      mStatusLine.setVisibility(View.VISIBLE);
-    }
+  private void cancelCountdown() {
+    mHandler.removeCallbacks(mCountdownRunnable);
+  }
+
+  private void startCountdown() {
+    cancelCountdown();
+    mHandler.post(mCountdownRunnable);
   }
 
 }
