@@ -146,6 +146,10 @@
     <string name="alert_button_dismiss">Dismiss</string>
     <string name="alert_button_details">Details</string>
     <string name="alert_button_ok">Ok</string>
+    <string name="pour_tap_idle">Tap is idle.</string>
+    <string name="pour_button_claim">Claim This Pour</string>
+    <string name="pour_shout_hint">Shout something! (optional)</string>
+    <string name="pour_button_done">Done Pouring!</string>
 
 
 </resources>

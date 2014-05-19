@@ -41,10 +41,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.ViewFlipper;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.squareup.otto.Subscribe;
 
@@ -63,7 +63,6 @@ import org.kegbot.proto.Models.KegTap;
 import org.kegbot.proto.Models.User;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -102,6 +101,7 @@ public class PourInProgressActivity extends CoreActivity {
   private PouringTapAdapter mPouringTapAdapter;
   private DialogFragment mProgressDialog;
 
+  private ViewFlipper mControlsFlipper;
   private Button mClaimPourButton;
   private TextView mDrinkerName;
   private ImageView mDrinkerImage;
@@ -138,13 +138,8 @@ public class PourInProgressActivity extends CoreActivity {
 
   private final Object mTapsLock = new Object();
 
-  /** Ordered list of taps. */
   @GuardedBy("mTapsLock")
-  private final List<KegTap> mTaps = Lists.newArrayList();
-
-  /** Map of meter name to position in {@link #mTaps}. */
-  @GuardedBy("mTapsLock")
-  private final Map<String, Integer> mTapIndexMap = Maps.newLinkedHashMap();
+  private final List<KegTap> mTapList = Lists.newArrayList();
 
   private Set<Flow> mActiveFlows = Sets.newLinkedHashSet();
 
@@ -216,7 +211,7 @@ public class PourInProgressActivity extends CoreActivity {
       final KegTap tap;
 
       synchronized (mTapsLock) {
-        tap = mTaps.get(position);
+        tap = mTapList.get(position);
       }
 
       final PourStatusFragment frag = new PourStatusFragment();
@@ -232,7 +227,7 @@ public class PourInProgressActivity extends CoreActivity {
     public int getItemPosition(Object object) {
       int index;
       synchronized (mTapsLock) {
-        index = mTaps.indexOf(object);
+        index = mTapList.indexOf(object);
       }
       if (index >= 0) {
         return index;
@@ -247,9 +242,10 @@ public class PourInProgressActivity extends CoreActivity {
     @Override
     public int getCount() {
       synchronized (mTapsLock) {
-        return mTaps.size();
+        return mTapList.size();
       }
     }
+
   }
 
   public static class PourFinishProgressDialog extends DialogFragment {
@@ -286,6 +282,7 @@ public class PourInProgressActivity extends CoreActivity {
     mTapPager.setAdapter(mPouringTapAdapter);
     mTapPager.setOnPageChangeListener(mPageChangeListener);
 
+    mControlsFlipper = (ViewFlipper) findViewById(R.id.pour_controls_flipper);
     mClaimPourButton = (Button) findViewById(R.id.claimPourButton);
     mDrinkerName = (TextView) findViewById(R.id.pourDrinkerName);
     mDoneButton = (Button) findViewById(R.id.pourEndButton);
@@ -367,6 +364,7 @@ public class PourInProgressActivity extends CoreActivity {
     synchronized (mTapsLock) {
       final KegTap tap = getCurrentlyFocusedTap();
       if (tap == null) {
+        Log.w(TAG, "No current tap, ughuh?!");
         return null;
       }
       return mFlowManager.getFlowForTap(tap);
@@ -377,18 +375,21 @@ public class PourInProgressActivity extends CoreActivity {
   private KegTap getCurrentlyFocusedTap() {
     synchronized (mTapsLock) {
       final int currentIndex = mTapPager.getCurrentItem();
-      if (currentIndex >= mTaps.size()) {
+      if (currentIndex >= mTapList.size()) {
         return null;
       }
-      return mTaps.get(currentIndex);
+      return mTapList.get(currentIndex);
     }
   }
 
   private void updateControlsForFlow(Flow flow) {
     if (flow == null) {
-      mClaimPourButton.setEnabled(false);
+      // Tap is inactive.
+      mControlsFlipper.setDisplayedChild(0);
       return;
     }
+
+    mControlsFlipper.setDisplayedChild(1);
 
     if (!mConfig.useAccounts()) {
       mClaimPourButton.setVisibility(View.GONE);
@@ -398,6 +399,7 @@ public class PourInProgressActivity extends CoreActivity {
     } else {
       boolean imageWasReplaced = false;
       mClaimPourButton.setEnabled(true);
+
       if (flow.isAnonymous()) {
         mClaimPourButton.setVisibility(View.VISIBLE);
         mDrinkerName.setVisibility(View.GONE);
@@ -428,6 +430,15 @@ public class PourInProgressActivity extends CoreActivity {
         Utils.setBackground(mDrinkerImage, getResources().getDrawable(R.drawable.unknown_drinker));
       }
     }
+  }
+
+  @Override
+  protected void onStart() {
+    super.onStart();
+    for (final KegTap tap : mCore.getTapManager().getVisibleTaps()) {
+      mTapList.add(tap);
+    }
+    mPouringTapAdapter.notifyDataSetChanged();;
   }
 
   @Override
@@ -466,6 +477,7 @@ public class PourInProgressActivity extends CoreActivity {
     if (isFinishing()) {
       endAllFlows();
     }
+    mTapList.clear();
     super.onStop();
   }
 
@@ -550,9 +562,12 @@ public class PourInProgressActivity extends CoreActivity {
     // We have a candidate.
     final Flow candidateFlow = mFlowManager.getFlowForTap(mostActive);
     if (candidateFlow != null) {
+      final KegTap tap = candidateFlow.getTap();
       synchronized (mTapsLock) {
-        final int position = mTapIndexMap.get(mostActive.getMeter().getName()).intValue();
-        scrollToPosition(position);
+        final int position = mTapList.indexOf(tap);
+        if (position >= 0) {
+          scrollToPosition(position);
+        }
       }
     }
   }
@@ -583,26 +598,6 @@ public class PourInProgressActivity extends CoreActivity {
 
       if (DEBUG) {
         Log.d(TAG, "Refreshing with flow: " + flow);
-      }
-
-      synchronized (mTapsLock) {
-        final KegTap tap = flow.getTap();
-        Integer index = mTapIndexMap.get(tap.getMeter().getName());
-
-        // Grab the tap for the flow and determine if we need to show a new one.
-        if (index != null) {
-          final KegTap oldTap = mTaps.get(index.intValue());
-          if (oldTap != tap) {
-            mTaps.remove(index);
-            mTaps.add(index.intValue(), tap);
-            mPouringTapAdapter.notifyDataSetChanged();
-          }
-        } else {
-          mTaps.add(tap);
-          mTapIndexMap.put(tap.getMeter().getName(), Integer.valueOf(mTaps.size() - 1));
-          Log.d(TAG, "+++ Added newly active tap " + tap);
-          mPouringTapAdapter.notifyDataSetChanged();
-        }
       }
 
       final long idleTimeMs = flow.getIdleTimeMs();

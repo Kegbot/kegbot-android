@@ -19,8 +19,8 @@
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="org.kegbot.app"
-          android:versionCode="69"
-          android:versionName="1.0.0 beta 69">
+          android:versionCode="71"
+          android:versionName="1.0.0 beta 71">
 
     <uses-sdk
         android:minSdkVersion="14"

@@ -28,54 +28,76 @@
         android:background="@drawable/shape_rounded_rect"
         android:orientation="vertical">
 
-        <Button
-            android:id="@+id/claimPourButton"
-            style="@style/mediumButton"
-            android:text="Claim This Pour"/>
-
-        <TextView
-            android:id="@+id/pourDrinkerName"
-            style="@style/header"
-            />
-
-        <RelativeLayout
-            android:id="@+id/controlsBox"
+        <ViewFlipper
+            android:id="@+id/pour_controls_flipper"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingBottom="5dip">
+            android:layout_height="wrap_content">
 
-            <ImageView
-                android:id="@+id/pourDrinkerImage"
-                android:layout_width="128dip"
-                android:layout_height="128dip"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentTop="true"
-                android:layout_margin="5dip"
-                android:adjustViewBounds="true"
-                android:scaleType="centerCrop"
-                android:src="@drawable/unknown_drinker"/>
-
-            <org.kegbot.app.util.SoftMultiLineEditText
-                android:id="@+id/shoutText"
-                android:layout_width="match_parent"
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_toRightOf="@+id/pourDrinkerImage"
-                android:hint="Shout something! (optional)"
-                android:imeOptions="actionDone"
-                android:inputType="textCapSentences|textShortMessage|textMultiLine"
-                android:lines="3"
-                android:maxLength="140"
-                android:scrollHorizontally="false"/>
+                android:layout_gravity="center"
+                style="@style/header2"
+                android:text="@string/pour_tap_idle"/>
 
-            <Button
-                android:id="@+id/pourEndButton"
-                style="@style/mediumButton"
-                android:layout_below="@+id/shoutText"
-                android:layout_toRightOf="@+id/pourDrinkerImage"
-                android:layout_alignBottom="@+id/pourDrinkerImage"
-                android:text="Done Pouring!"/>
-        </RelativeLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <Button
+                    android:id="@+id/claimPourButton"
+                    style="@style/mediumButton"
+                    android:text="@string/pour_button_claim"/>
+
+                <TextView
+                    android:id="@+id/pourDrinkerName"
+                    style="@style/header"
+                    />
+
+                <RelativeLayout
+                    android:id="@+id/controlsBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="5dip">
+
+                    <ImageView
+                        android:id="@+id/pourDrinkerImage"
+                        android:layout_width="128dip"
+                        android:layout_height="128dip"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentTop="true"
+                        android:layout_margin="5dip"
+                        android:adjustViewBounds="true"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/unknown_drinker"/>
+
+                    <org.kegbot.app.util.SoftMultiLineEditText
+                        android:id="@+id/shoutText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_toRightOf="@+id/pourDrinkerImage"
+                        android:hint="@string/pour_shout_hint"
+                        android:imeOptions="actionDone"
+                        android:inputType="textCapSentences|textShortMessage|textMultiLine"
+                        android:lines="3"
+                        android:maxLength="140"
+                        android:scrollHorizontally="false"/>
+
+                    <Button
+                        android:id="@+id/pourEndButton"
+                        style="@style/mediumButton"
+                        android:layout_below="@+id/shoutText"
+                        android:layout_toRightOf="@+id/pourDrinkerImage"
+                        android:layout_alignBottom="@+id/pourDrinkerImage"
+                        android:text="@string/pour_button_done"/>
+                </RelativeLayout>
+
+            </LinearLayout>
+
+            </ViewFlipper>
+
 
         <fragment
             android:id="@+id/camera"
