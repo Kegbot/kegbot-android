@@ -68,11 +68,19 @@ public class KegboardHelloMessage extends KegboardMessage {
   }
 
   public long getUptimeDays() {
-    return readTagAsLong(TAG_UPTIME_DAYS);
+    final Long value = readTagAsLong(TAG_UPTIME_DAYS);
+    if (value != null) {
+      return value.longValue();
+    }
+    return -1;
   }
 
   public long getUptimeMillis() {
-    return readTagAsLong(TAG_UPTIME_MILLIS);
+    final Long value = readTagAsLong(TAG_UPTIME_MILLIS);
+    if (value != null) {
+      return value.longValue();
+    }
+    return -1;
   }
 
   public String getSerialNumber() {
