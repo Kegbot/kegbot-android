@@ -162,21 +162,6 @@ public class HomeActivity extends CoreActivity {
     mTapStatusPager = (ViewPager) findViewById(R.id.tap_status_pager);
     mTapStatusPager.setAdapter(mTapStatusAdapter);
     mTapStatusPager.setOffscreenPageLimit(8); // >8 Tap systems are rare
-    mTapStatusPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-      @Override
-      public void onPageSelected(int position) {
-        final TapStatusFragment frag = (TapStatusFragment) mTapStatusAdapter.getItem(position);
-        setFocusedTap(frag.getTapDetail());
-      }
-
-      @Override
-      public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-      }
-
-      @Override
-      public void onPageScrollStateChanged(int state) {
-      }
-    });
 
     CheckinService.requestImmediateCheckin(this);
   }
@@ -271,10 +256,6 @@ public class HomeActivity extends CoreActivity {
       }
     }
 
-    if (!mTaps.isEmpty()) {
-      setFocusedTap(mTaps.get(mTapStatusPager.getCurrentItem()));
-    }
-
     maybeShowTapWarnings();
   }
 
@@ -319,10 +300,6 @@ public class HomeActivity extends CoreActivity {
   @Subscribe
   public void onConnectivityChangedEvent(ConnectivityChangedEvent event) {
     updateConnectivityAlert(event.isConnected());
-  }
-
-  private void setFocusedTap(KegTap tap) {
-    Log.d(LOG_TAG, "Set/replaced focused tap: " + tap.getId());
   }
 
   /**
@@ -431,8 +408,8 @@ public class HomeActivity extends CoreActivity {
       if (index >= mTaps.size()) {
         Log.wtf(LOG_TAG, "Trying to get fragment " + index + ", current size " + mTaps.size());
       }
-      TapStatusFragment frag = new TapStatusFragment();
-      frag.setTapDetail(mTaps.get(index));
+      final KegTap tap = mTaps.get(index);
+      TapStatusFragment frag = TapStatusFragment.forTap(mTaps.get(index));
       return frag;
     }
 

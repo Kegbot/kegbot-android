@@ -47,44 +47,55 @@ import butterknife.ButterKnife;
 
 public class TapStatusFragment extends ListFragment {
 
-  private final String TAG = TapStatusFragment.class.getSimpleName();
-
-  private KegbotCore mCore;
-
-  private KegTap mTapDetail;
-
-  private ImageDownloader mImageDownloader;
-
-  private View mView;
-
+  private static final String TAG = TapStatusFragment.class.getSimpleName();
+  private static final String ARG_TAP_ID = "tap_id";
   private static final int CHILD_INACTIVE = 1;
   private static final int CHILD_ACTIVE = 2;
+  
+  private KegbotCore mCore;
+  private ImageDownloader mImageDownloader;
+  private View mView;
+
+  public static TapStatusFragment forTap(final KegTap tap) {
+    final TapStatusFragment frag = new TapStatusFragment();
+    final Bundle args = new Bundle();
+    args.putInt(ARG_TAP_ID, tap.getId());
+    frag.setArguments(args);
+    return frag;
+  }
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     mCore = KegbotCore.getInstance(getActivity());
     mImageDownloader = mCore.getImageDownloader();
+    updateTapDetails();
   }
 
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     mView = inflater.inflate(R.layout.tap_detail, container, false);
-
-    if (mTapDetail != null) {
-      setTapDetail(mTapDetail);
-    }
+    updateTapDetails();
     return mView;
   }
 
-  public void setTapDetail(final KegTap tap) {
-    mTapDetail = tap;
+  private void updateTapDetails() {
     if (mView == null) {
       return;
     }
+
     final Activity activity = getActivity();
     if (activity == null) {
       return;
+    }
+
+    final KegTap tap;
+    final int tapId = getTapId();
+    if (tapId >= 0) {
+      tap = mCore.getTapManager().getTap(tapId);
+    } else {
+      // Tap has gone away?
+      tap = null;
     }
 
     final TextView title = ButterKnife.findById(mView, R.id.tapTitle);
@@ -179,12 +190,10 @@ public class TapStatusFragment extends ListFragment {
     } else {
       badge3.setVisibility(View.GONE);
     }
-
-    return;
   }
 
-  public KegTap getTapDetail() {
-    return mTapDetail;
+  private int getTapId() {
+    return getArguments().getInt(ARG_TAP_ID, -1);
   }
 
 }
