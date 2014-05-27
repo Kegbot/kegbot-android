@@ -19,13 +19,15 @@
 package org.kegbot.app;
 
 import android.app.Activity;
-import android.app.ListFragment;
+import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.util.Pair;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -36,6 +38,7 @@ import android.widget.ViewFlipper;
 import com.google.common.base.Strings;
 import com.squareup.otto.Subscribe;
 
+import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.app.event.VisibleTapsChangedEvent;
 import org.kegbot.app.util.ImageDownloader;
 import org.kegbot.app.util.Units;
@@ -47,16 +50,22 @@ import org.kegbot.proto.Models.KegTap;
 
 import butterknife.ButterKnife;
 
-public class TapStatusFragment extends ListFragment {
+public class TapStatusFragment extends Fragment {
 
   private static final String TAG = TapStatusFragment.class.getSimpleName();
   private static final String ARG_TAP_ID = "tap_id";
   private static final int CHILD_INACTIVE = 1;
   private static final int CHILD_ACTIVE = 2;
-  
+
+  private static final int REQUEST_AUTHENTICATE = 1000;
+
   private KegbotCore mCore;
   private ImageDownloader mImageDownloader;
   private View mView;
+
+  private GestureDetector mGestureDetector;
+  private GestureDetector.OnGestureListener mOnGestureListener;
+  private View.OnTouchListener mOnTouchListener;
 
   public static TapStatusFragment forTap(final KegTap tap) {
     final TapStatusFragment frag = new TapStatusFragment();
@@ -65,6 +74,7 @@ public class TapStatusFragment extends ListFragment {
     frag.setArguments(args);
     return frag;
   }
+
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
@@ -94,8 +104,70 @@ public class TapStatusFragment extends ListFragment {
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     mView = inflater.inflate(R.layout.tap_detail, container, false);
+
+    mOnGestureListener = new GestureDetector.SimpleOnGestureListener() {
+      @Override
+      public boolean onSingleTapUp(MotionEvent e) {
+        handleTapClicked();
+        return true;
+      }
+
+      @Override
+      public boolean onDown(MotionEvent e) {
+        return true;
+      }
+
+      @Override
+      public void onLongPress(MotionEvent e) {
+        TapListActivity.startActivity(getActivity());
+      }
+    };
+
+    mGestureDetector = new GestureDetector(getActivity(), mOnGestureListener);
+    mOnTouchListener = new View.OnTouchListener() {
+      @Override
+      public boolean onTouch(View view, MotionEvent motionEvent) {
+        return mGestureDetector.onTouchEvent(motionEvent);
+      }
+    };
+
+    mView.setOnTouchListener(mOnTouchListener);
+
     updateTapDetails();
     return mView;
+  }
+
+  @Override
+  public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    switch (requestCode) {
+      case REQUEST_AUTHENTICATE:
+        Log.d(TAG, "Got authentication result.");
+        if (resultCode == Activity.RESULT_OK && data != null) {
+          final String username =
+              data.getStringExtra(KegtabCommon.ACTIVITY_AUTH_DRINKER_RESULT_EXTRA_USERNAME);
+          if (username != null) {
+            AuthenticatingActivity.startAndAuthenticate(getActivity(), username, getTap());
+          }
+        }
+        break;
+      default:
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+  }
+
+  private void handleTapClicked() {
+    final AppConfiguration config = KegbotApplication.get(getActivity()).getConfig();
+    if (!config.getAllowManualLogin()) {
+      Log.d(TAG, "Manual login is disabled.");
+      return;
+    }
+
+    if (config.useAccounts()) {
+      final Intent intent = KegtabCommon.getAuthDrinkerActivityIntent(getActivity());
+      startActivityForResult(intent, REQUEST_AUTHENTICATE);
+    } else {
+      mCore.getFlowManager().activateUserAtTap(getTap(), "");
+    }
   }
 
   private void updateTapDetails() {
@@ -108,19 +180,17 @@ public class TapStatusFragment extends ListFragment {
       return;
     }
 
-    final KegTap tap;
-    final int tapId = getTapId();
-    if (tapId >= 0) {
-      tap = mCore.getTapManager().getTap(tapId);
-    } else {
-      // Tap has gone away?
-      tap = null;
-    }
+    final KegTap tap = getTap();
 
     final TextView title = ButterKnife.findById(mView, R.id.tapTitle);
     final TextView subtitle = ButterKnife.findById(mView, R.id.tapSubtitle);
     final TextView tapNotes = ButterKnife.findById(mView, R.id.tapNotes);
     final ViewFlipper flipper = ButterKnife.findById(mView, R.id.tapStatusFlipper);
+
+    title.setOnTouchListener(mOnTouchListener);
+    subtitle.setOnTouchListener(mOnTouchListener);
+    tapNotes.setOnTouchListener(mOnTouchListener);
+    flipper.setOnTouchListener(mOnTouchListener);
 
     final Button button = ButterKnife.findById(mView, R.id.tapKegButton);
     button.setOnClickListener(new View.OnClickListener() {
@@ -133,14 +203,6 @@ public class TapStatusFragment extends ListFragment {
 
     tapNotes.setText("Last synced: " + DateUtils.formatDateTime(activity, System.currentTimeMillis(),
         DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME));
-
-    flipper.setOnLongClickListener(new View.OnLongClickListener() {
-      @Override
-      public boolean onLongClick(View v) {
-        TapListActivity.startActivity(getActivity());
-        return true;
-      }
-    });
 
     if (tap == null) {
       Log.w(TAG, "Called with empty tap detail.");
@@ -213,6 +275,11 @@ public class TapStatusFragment extends ListFragment {
 
   private int getTapId() {
     return getArguments().getInt(ARG_TAP_ID, -1);
+  }
+
+  private KegTap getTap() {
+    final int tapId = getTapId();
+    return mCore.getTapManager().getTap(tapId);
   }
 
 }

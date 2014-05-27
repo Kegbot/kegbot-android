@@ -342,6 +342,7 @@ public class FlowManager extends Manager {
    * @param username
    */
   public synchronized void activateUserAmbiguousTap(final String username) {
+    Log.d(TAG, "activateUserAmbiguousTap: " + username);
     final Collection<KegTap> availableTaps = mTapManager.getTapsWithActiveKeg();
 
     if (availableTaps.isEmpty()) {

@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright 2014 Bevbot LLC <info@bevbot.com>
+  ~
+  ~ This file is part of the Kegtab package from the Kegbot project. For
+  ~ more information on Kegtab or Kegbot, see <http://kegbot.org/>.
+  ~
+  ~ Kegtab is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU General Public License as published by the Free
+  ~ Software Foundation, version 2.
+  ~
+  ~ Kegtab is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+  ~ more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License along
+  ~ with Kegtab. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent"
+              android:orientation="horizontal"
+              android:weightSum="1.0">
+
+    <!-- Left column: Drinker list.. -->
+
+    <RelativeLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.7">
+
+        <TextView
+            android:id="@+id/selectDrinkerTitle"
+            style="@style/header"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:text="@string/drinker_select_title"/>
+
+        <TextView
+            android:id="@+id/selectDrinkerSubtitle"
+            style="@style/subheader"
+            android:layout_alignBaseline="@+id/selectDrinkerTitle"
+            android:layout_toRightOf="@+id/selectDrinkerTitle"/>
+
+        <View
+            android:id="@+id/selectDrinkerDivider"
+            android:layout_width="match_parent"
+            android:layout_height="2dip"
+            android:layout_below="@+id/selectDrinkerTitle"
+            android:background="#1FFFFFFF"/>
+
+        <GridView
+            android:id="@+id/drinkerGridView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/selectDrinkerDivider"
+            android:columnWidth="90dp"
+            android:gravity="center"
+            android:horizontalSpacing="10dp"
+            android:numColumns="3"
+            android:stretchMode="columnWidth"
+            android:verticalSpacing="10dp"/>
+    </RelativeLayout>
+
+    <!-- Right column: controls + events. -->
+
+    <RelativeLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.3">
+
+        <TextView
+            android:id="@+id/otherOptionsTitle"
+            style="@style/header"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:text="@string/drinker_select_other_options"/>
+
+        <TextView
+            android:id="@+id/otherOptionsSubtitle"
+            style="@style/subheader"
+            android:layout_alignBaseline="@+id/otherOptionsTitle"
+            android:layout_toRightOf="@+id/otherOptionsTitle"/>
+
+        <View
+            android:id="@+id/otherOptionsDivider"
+            android:layout_width="match_parent"
+            android:layout_height="2dip"
+            android:layout_below="@+id/otherOptionsTitle"
+            android:background="#1FFFFFFF"/>
+
+        <LinearLayout
+            android:id="@+id/newAccountGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/otherOptionsDivider"
+            android:orientation="vertical"
+            android:layout_marginBottom="16dp"
+            android:padding="4dp">
+
+            <Button
+                android:id="@+id/newAccountButton"
+                style="@style/mediumButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/drinker_select_button_new_account"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/drinker_select_new_account_description"
+                android:padding="8dp"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/pourAnonymouslyGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/newAccountGroup"
+            android:orientation="vertical"
+            android:layout_marginBottom="16dp"
+            android:padding="4dp">
+
+            <Button
+                android:id="@+id/pourAnonymouslyButton"
+                style="@style/mediumButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/drinker_select_button_guest"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/drinker_select_guest_description"
+                android:padding="8dp"/>
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</LinearLayout>

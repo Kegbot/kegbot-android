@@ -75,8 +75,8 @@
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="config:ALLOW_MANUAL_LOGIN"
-            android:summaryOff="Check to enable the main screen&apos;s &apos;Beer Me&apos; button"
-            android:summaryOn="Uncheck to disable the main screen&apos;s &apos;Beer Me&apos; button"
+            android:summaryOff="Drinkers must use an RFID or other token to log in"
+            android:summaryOn="Drinkers can log in by tapping on the main screen"
             android:title="Allow On-Screen Login">
         </CheckBoxPreference>
         <CheckBoxPreference

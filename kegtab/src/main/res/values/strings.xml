@@ -159,6 +159,12 @@
     <string name="calibrate_value_zero">0</string>
     <string name="calibration_badge_actual_metric">Actual mL</string>
     <string name="calibration_badge_actual_imperial">Actual Ounces</string>
+    <string name="drinker_select_title">Select Your Account</string>
+    <string name="drinker_select_other_options">Other Options</string>
+    <string name="drinker_select_button_new_account">New Account</string>
+    <string name="drinker_select_new_account_description">Register for and begin pouring with a new account.</string>
+    <string name="drinker_select_button_guest">Pour As Guest</string>
+    <string name="drinker_select_guest_description">Pour without linking to an account.</string>
 
 
 </resources>
