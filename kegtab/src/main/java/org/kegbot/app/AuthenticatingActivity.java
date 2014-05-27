@@ -142,7 +142,13 @@ public class AuthenticatingActivity extends Activity {
         setFail("Unknown NFC tag.");
       }
     } else if (intent.hasExtra(EXTRA_USERNAME)) {
-      authenticateUsernameAsync(intent.getStringExtra(EXTRA_USERNAME));
+      final String username = intent.getStringExtra(EXTRA_USERNAME);
+      if (username.isEmpty()) {
+        activateUser(username);
+        finish();
+      } else {
+        authenticateUsernameAsync(intent.getStringExtra(EXTRA_USERNAME));
+      }
     } else if (intent.hasExtra(EXTRA_AUTH_DEVICE)) {
       authenticateTokenAsync(intent.getStringExtra(EXTRA_AUTH_DEVICE),
           intent.getStringExtra(EXTRA_TOKEN_VALUE));
