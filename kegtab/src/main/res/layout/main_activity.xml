@@ -19,6 +19,7 @@
   -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="fill_parent"
               android:layout_height="fill_parent"
               android:orientation="horizontal"
@@ -40,6 +41,30 @@
         android:layout_height="match_parent"
         android:layout_weight="0.4"
         android:orientation="vertical">
+
+        <fragment
+            android:id="@+id/controlsFragment"
+            class="org.kegbot.app.HomeControlsFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:layout="@layout/main_controls_fragment_layout">
+        </fragment>
+
+        <fragment
+            android:id="@+id/sessionStatsFragment"
+            class="org.kegbot.app.SessionStatsFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:layout="@layout/session_detail_fragment_layout">
+        </fragment>
+
+        <fragment
+            android:id="@+id/eventListFragment"
+            class="org.kegbot.app.EventListFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        </fragment>
+
     </LinearLayout>
 
 </LinearLayout>

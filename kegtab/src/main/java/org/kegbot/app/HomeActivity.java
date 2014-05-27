@@ -20,7 +20,6 @@ package org.kegbot.app;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.nfc.NfcAdapter;
@@ -104,7 +103,7 @@ public class HomeActivity extends CoreActivity {
 
   private KegbotCore mCore;
 
-  private MyAdapter mTapStatusAdapter;
+  private HomeFragmentsAdapter mTapStatusAdapter;
   private ViewPager mTapStatusPager;
   private AppConfiguration mConfig;
 
@@ -145,19 +144,11 @@ public class HomeActivity extends CoreActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.main_activity);
 
-    mControls = new HomeControlsFragment();
-    mEvents = new EventListFragment();
-    mSession = new SessionStatsFragment();
+    mControls = (HomeControlsFragment) getFragmentManager().findFragmentById(R.id.controlsFragment);
+    mEvents = (EventListFragment) getFragmentManager().findFragmentById(R.id.eventListFragment);
+    mSession = (SessionStatsFragment) getFragmentManager().findFragmentById(R.id.sessionStatsFragment);
 
-    getFragmentManager().beginTransaction()
-        .add(R.id.rightNav, mControls)
-        .add(R.id.rightNav, mSession)
-        .add(R.id.rightNav, mEvents)
-        .disallowAddToBackStack()
-        .setTransition(FragmentTransaction.TRANSIT_NONE)
-        .commit();
-
-    mTapStatusAdapter = new MyAdapter(getFragmentManager());
+    mTapStatusAdapter = new HomeFragmentsAdapter(getFragmentManager());
 
     mTapStatusPager = (ViewPager) findViewById(R.id.tap_status_pager);
     mTapStatusPager.setAdapter(mTapStatusAdapter);
@@ -396,8 +387,8 @@ public class HomeActivity extends CoreActivity {
     return true;
   }
 
-  public class MyAdapter extends FragmentStatePagerAdapter {
-    public MyAdapter(FragmentManager fm) {
+  public class HomeFragmentsAdapter extends FragmentStatePagerAdapter {
+    public HomeFragmentsAdapter(FragmentManager fm) {
       super(fm);
     }
 
