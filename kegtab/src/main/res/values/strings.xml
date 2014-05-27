@@ -154,6 +154,11 @@
     <string name="setup_kegbot_url_use_ssl">Use SSL</string>
     <string name="kegbot_url_scheme_http">http://</string>
     <string name="kegbot_url_scheme_https">https://</string>
+    <string name="calibrate_original_ticks_ml">Original ticks/mL:</string>
+    <string name="calibrate_calibrated_ticks_ml">Calibrated ticks/mL:</string>
+    <string name="calibrate_value_zero">0</string>
+    <string name="calibration_badge_actual_metric">Actual mL</string>
+    <string name="calibration_badge_actual_imperial">Actual Ounces</string>
 
 
 </resources>

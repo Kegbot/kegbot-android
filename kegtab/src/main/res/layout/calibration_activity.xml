@@ -100,21 +100,21 @@
             android:id="@+id/calibratedTicksPerMlLabel"
             style="@style/normalText"
             android:layout_marginRight="8sp"
-            android:text="Calibrated mL/Tick:"
+            android:text="@string/calibrate_calibrated_ticks_ml"
             android:textStyle="bold"/>
 
         <TextView
             android:id="@+id/calibratedTicksPerMl"
             style="@style/normalText"
             android:layout_toRightOf="@+id/calibratedTicksPerMlLabel"
-            android:text="0"/>
+            android:text="@string/calibrate_value_zero"/>
 
         <TextView
             android:id="@+id/originalTicksPerMlLabel"
             style="@style/normalText"
             android:layout_below="@+id/calibratedTicksPerMlLabel"
             android:layout_marginRight="8sp"
-            android:text="Original mL/Tick:"
+            android:text="@string/calibrate_original_ticks_ml"
             android:textStyle="bold"/>
 
         <TextView
@@ -122,7 +122,7 @@
             style="@style/normalText"
             android:layout_below="@+id/calibratedTicksPerMlLabel"
             android:layout_toRightOf="@+id/originalTicksPerMlLabel"
-            android:text="0"/>
+            android:text="@string/calibrate_value_zero"/>
     </RelativeLayout>
 
     <LinearLayout

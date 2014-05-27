@@ -34,6 +34,7 @@ import android.widget.TextView;
 
 import com.squareup.otto.Subscribe;
 
+import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.app.util.Units;
 import org.kegbot.app.view.BadgeView;
 import org.kegbot.backend.Backend;
@@ -81,6 +82,8 @@ public class CalibrationActivity extends CoreActivity {
   private long mLastReading = Long.MIN_VALUE;
   private long mTicks = 0;
 
+  private boolean mMetric = false;
+
   @Subscribe
   public void onMeterUpdate(MeterUpdateEvent event) {
     final FlowMeter meter = event.getMeter();
@@ -100,6 +103,10 @@ public class CalibrationActivity extends CoreActivity {
   @Override
   protected void onStart() {
     super.onStart();
+
+    final AppConfiguration config = KegbotApplication.get(this).getConfig();
+    mMetric = config.getUseMetric();
+
     mMeterName = getIntent().getStringExtra(EXTRA_METER_NAME);
     mTap = KegbotCore.getInstance(this).getTapManager().getTapForMeterName(mMeterName);
     if (mTap == null || mTap.getMeter() == null) {
@@ -116,8 +123,13 @@ public class CalibrationActivity extends CoreActivity {
     mTicksBadge.setBadgeValue("0");
 
     mVolumeBadge = (BadgeView) findViewById(R.id.volumeBadge);
-    mVolumeBadge.setBadgeCaption("Actual Ounces "); // TODO(mikey): units
-    mVolumeBadge.setBadgeValue("0.0");
+    if (mMetric) {
+      mVolumeBadge.setBadgeCaption(getString(R.string.calibration_badge_actual_metric));
+      mVolumeBadge.setBadgeValue("0");
+    } else {
+      mVolumeBadge.setBadgeCaption(getString(R.string.calibration_badge_actual_imperial));
+      mVolumeBadge.setBadgeValue("0.0");
+    }
 
     mVolumeBadge.setOnClickListener(new View.OnClickListener() {
       @Override
@@ -148,7 +160,7 @@ public class CalibrationActivity extends CoreActivity {
         double mult = getMultiplier();
         mTicksPerMl = mExistingTicksPerMl * mult;
         updateMetrics();
-        if (DEBUG) Log.d(TAG, "onProgressCchanged: progress=" + progress + " mult=" + mult);
+        if (DEBUG) Log.d(TAG, "onProgressChanged: progress=" + progress + " mult=" + mult);
       }
     });
 
@@ -353,7 +365,11 @@ public class CalibrationActivity extends CoreActivity {
       return;
     }
 
-    mTicksPerMl = mTicks / Units.volumeOuncesToMl(value.doubleValue());
+    if (mMetric) {
+      mTicksPerMl = mTicks / value.doubleValue();
+    } else {
+      mTicksPerMl = mTicks / Units.volumeOuncesToMl(value.doubleValue());
+    }
 
     mVolumeBadge.setBadgeValue(String.format("%.2f", value));
     mSeekBar.setEnabled(false);
@@ -370,7 +386,11 @@ public class CalibrationActivity extends CoreActivity {
   }
 
   private String getDisplayVolume() {
-    return String.format("%.2f", Double.valueOf(Units.volumeMlToOunces(getVolumeMl())));
+    if (mMetric) {
+      return String.format("%s", (int) getVolumeMl());
+    } else {
+      return String.format("%.2f", Double.valueOf(Units.volumeMlToOunces(getVolumeMl())));
+    }
   }
 
   static Intent getStartIntent(final Context context, final KegTap tap) {
