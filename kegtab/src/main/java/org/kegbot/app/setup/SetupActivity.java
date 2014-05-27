@@ -306,6 +306,7 @@ public class SetupActivity extends Activity {
 
   @Override
   protected void onStop() {
+    hideDialog();
     super.onStop();
     EasyTracker.getInstance().activityStop(this);
   }
