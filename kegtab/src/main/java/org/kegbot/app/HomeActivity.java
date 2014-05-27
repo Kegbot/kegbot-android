@@ -97,10 +97,6 @@ public class HomeActivity extends CoreActivity {
     }
   };
 
-  private HomeControlsFragment mControls;
-  private SessionStatsFragment mSession;
-  private EventListFragment mEvents;
-
   private KegbotCore mCore;
 
   private HomeFragmentsAdapter mTapStatusAdapter;
@@ -143,10 +139,6 @@ public class HomeActivity extends CoreActivity {
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.main_activity);
-
-    mControls = (HomeControlsFragment) getFragmentManager().findFragmentById(R.id.controlsFragment);
-    mEvents = (EventListFragment) getFragmentManager().findFragmentById(R.id.eventListFragment);
-    mSession = (SessionStatsFragment) getFragmentManager().findFragmentById(R.id.sessionStatsFragment);
 
     mTapStatusAdapter = new HomeFragmentsAdapter(getFragmentManager());
 
@@ -387,6 +379,9 @@ public class HomeActivity extends CoreActivity {
     return true;
   }
 
+  /**
+   * Shows a TapStatusFragment for each tap, plus a SystemStatusFragment.
+   */
   public class HomeFragmentsAdapter extends FragmentStatePagerAdapter {
     public HomeFragmentsAdapter(FragmentManager fm) {
       super(fm);
@@ -394,12 +389,17 @@ public class HomeActivity extends CoreActivity {
 
     @Override
     public Fragment getItem(int index) {
-      if (index >= mTaps.size()) {
+      if (index < mTaps.size()) {
+        final KegTap tap = mTaps.get(index);
+        TapStatusFragment frag = TapStatusFragment.forTap(mTaps.get(index));
+        return frag;
+      } else if (index == mTaps.size()) {
+        SystemStatusFragment frag = new SystemStatusFragment();
+        return frag;
+      } else {
         Log.wtf(LOG_TAG, "Trying to get fragment " + index + ", current size " + mTaps.size());
+        return null;
       }
-      final KegTap tap = mTaps.get(index);
-      TapStatusFragment frag = TapStatusFragment.forTap(mTaps.get(index));
-      return frag;
     }
 
     @Override
@@ -410,7 +410,12 @@ public class HomeActivity extends CoreActivity {
 
     @Override
     public int getCount() {
-      return mTaps.size();
+      return mTaps.size() + 1;
+    }
+
+    @Override
+    public float getPageWidth(int position) {
+      return 0.5f;
     }
   }
 

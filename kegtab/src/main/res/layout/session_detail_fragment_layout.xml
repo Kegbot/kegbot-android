@@ -38,9 +38,9 @@
             android:id="@+id/sessionSubtitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Current Session: "
+            android:text="Current Session"
             android:textColor="#888"
-            android:textSize="24dip"/>
+            style="@style/header2"/>
 
         <TextView
             android:id="@+id/sessionTitle"

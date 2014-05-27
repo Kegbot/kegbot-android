@@ -24,12 +24,6 @@
                 android:background="@drawable/shape_rounded_rect"
                 android:orientation="vertical">
 
-    <ListView
-        android:id="@android:id/list"
-        android:layout_width="0dip"
-        android:layout_height="0dip"
-        android:drawSelectorOnTop="false"/>
-
     <!-- Tap Name Header -->
 
     <TextView

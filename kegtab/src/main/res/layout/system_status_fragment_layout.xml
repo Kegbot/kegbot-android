@@ -18,17 +18,24 @@
   ~ with Kegtab. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="fill_parent"
-              android:layout_height="fill_parent"
-              android:orientation="horizontal"
-              android:weightSum="1.0">
+<LinearLayout
+    android:id="@+id/currentSessionGroup"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_below="@+id/tap_detail_divider"
+    android:orientation="vertical">
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/tap_status_pager"
-        android:layout_width="0dip"
-        android:layout_height="match_parent"
-        android:layout_weight="1.0"/>
+    <fragment
+        class="org.kegbot.app.SessionStatsFragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        />
+
+    <fragment
+        class="org.kegbot.app.EventListFragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        />
 
 </LinearLayout>
