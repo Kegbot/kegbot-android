@@ -434,10 +434,12 @@ public class PourInProgressActivity extends CoreActivity {
   @Override
   protected void onStart() {
     super.onStart();
-    for (final KegTap tap : mCore.getTapManager().getVisibleTaps()) {
-      mTapList.add(tap);
+    synchronized (mTapsLock) {
+      for (final KegTap tap : mCore.getTapManager().getVisibleTaps()) {
+        mTapList.add(tap);
+      }
+      mPouringTapAdapter.notifyDataSetChanged();
     }
-    mPouringTapAdapter.notifyDataSetChanged();;
   }
 
   @Override
