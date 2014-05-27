@@ -34,7 +34,9 @@ import android.widget.TextView;
 import android.widget.ViewFlipper;
 
 import com.google.common.base.Strings;
+import com.squareup.otto.Subscribe;
 
+import org.kegbot.app.event.VisibleTapsChangedEvent;
 import org.kegbot.app.util.ImageDownloader;
 import org.kegbot.app.util.Units;
 import org.kegbot.app.view.BadgeView;
@@ -69,6 +71,23 @@ public class TapStatusFragment extends ListFragment {
     super.onCreate(savedInstanceState);
     mCore = KegbotCore.getInstance(getActivity());
     mImageDownloader = mCore.getImageDownloader();
+    updateTapDetails();
+  }
+
+  @Override
+  public void onStart() {
+    super.onStart();
+    mCore.getBus().register(this);
+  }
+
+  @Override
+  public void onStop() {
+    mCore.getBus().unregister(this);
+    super.onStop();
+  }
+
+  @Subscribe
+  public void onTapListChange(VisibleTapsChangedEvent event) {
     updateTapDetails();
   }
 
