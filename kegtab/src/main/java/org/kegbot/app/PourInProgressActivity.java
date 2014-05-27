@@ -604,6 +604,12 @@ public class PourInProgressActivity extends CoreActivity {
       }
     }
 
+    // Force the fragment manager to execute any pending transactions.
+    // This avoids a potential "Fragment already added" crash where the
+    // idle dialog's show() method is called twice (in subsequent calls to
+    // sendIdleWarning()).
+    getFragmentManager().executePendingTransactions();
+
     if (largestIdleTime >= mConfig.getIdleWarningMs()) {
       sendIdleWarning();
     } else {
@@ -635,6 +641,10 @@ public class PourInProgressActivity extends CoreActivity {
   }
 
   private void sendIdleWarning() {
+    if (mIdleDialogFragment.isVisible()) {
+      // Already showing.
+      return;
+    }
     mIdleDialogFragment.show(getFragmentManager(), "idle");
   }
 
