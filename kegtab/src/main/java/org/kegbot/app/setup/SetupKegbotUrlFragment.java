@@ -77,8 +77,8 @@ public class SetupKegbotUrlFragment extends SetupFragment {
       // Don't clobber the hint if empty.
       final Matcher matcher = URL_PATTERN.matcher(existingUrl);
       if (matcher.matches()) {
-        mText.setText(matcher.group(2));
-        mUseSsl.setChecked(matcher.group(1).startsWith("https"));
+        mText.setText(Strings.nullToEmpty(matcher.group(2)));
+        mUseSsl.setChecked(Strings.nullToEmpty(matcher.group(1)).startsWith("https"));
       }
     }
 
