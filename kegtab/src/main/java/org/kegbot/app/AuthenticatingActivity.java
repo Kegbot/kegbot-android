@@ -35,7 +35,6 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.hoho.android.usbserial.util.HexDump;
 
@@ -62,6 +61,7 @@ public class AuthenticatingActivity extends Activity {
   private static final String EXTRA_AUTH_DEVICE = "auth_device";
   private static final String EXTRA_TOKEN_VALUE = "token";
   private static final String EXTRA_TAP_ID = "tap";
+  private static final String AUTH_TYPE_NFC = "nfc";
 
   private AppConfiguration mConfig;
 
@@ -137,7 +137,7 @@ public class AuthenticatingActivity extends Activity {
         Log.d(TAG, "Read NFC tag with id: " + tagId);
         // TODO: use tag technology as part of id?
         intent.putExtra(EXTRA_TOKEN_VALUE, tagId);  // needed by onActivityResult
-        authenticateTokenAsync("nfc", tagId);
+        authenticateTokenAsync(AUTH_TYPE_NFC, tagId);
       } else {
         setFail("Unknown NFC tag.");
       }
@@ -268,10 +268,14 @@ public class AuthenticatingActivity extends Activity {
   }
 
   private void assignUserToTokenAsync(final String username) {
-    final String authDevice = getIntent().getStringExtra(EXTRA_AUTH_DEVICE);
-    final String tokenValue = getIntent().getStringExtra(EXTRA_TOKEN_VALUE);
-    Preconditions.checkNotNull(authDevice);
-    Preconditions.checkNotNull(tokenValue);
+    final String authDevice = Strings.nullToEmpty(getIntent().getStringExtra(EXTRA_AUTH_DEVICE));
+    final String tokenValue = Strings.nullToEmpty(getIntent().getStringExtra(EXTRA_TOKEN_VALUE));
+
+    // TODO(mikey): Determine how this can happen (have seen one report).
+    if (authDevice.isEmpty() || tokenValue.isEmpty()) {
+      setFail("Token missing, please try again.");
+      return;
+    }
 
     setAuthenticating();
 
@@ -369,7 +373,7 @@ public class AuthenticatingActivity extends Activity {
   public static Intent getStartForNfcIntent(Context context) {
     final Intent intent = new Intent(context, AuthenticatingActivity.class);
     intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-    intent.putExtra(EXTRA_AUTH_DEVICE, "nfc");
+    intent.putExtra(EXTRA_AUTH_DEVICE, AUTH_TYPE_NFC);
     return intent;
   }
 
