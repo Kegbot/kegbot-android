@@ -51,7 +51,7 @@ public class AlertActivity extends Activity {
     private static final String KEY_DESCRIPTION = "description";
     private static final String KEY_ALERT_ID = "alert_id";
 
-    AlertDialogFragment(AlertCore.Alert alert) {
+    void setAlertArgs(AlertCore.Alert alert) {
       final Bundle args = new Bundle();
       args.putString(KEY_TITLE, alert.getTitle());
       args.putString(KEY_DESCRIPTION, alert.getDescription());
@@ -131,7 +131,8 @@ public class AlertActivity extends Activity {
     }
 
     for (final AlertCore.Alert alert : alerts) {
-      final DialogFragment dialog = new AlertDialogFragment(alert);
+      final AlertDialogFragment dialog = new AlertDialogFragment();
+      dialog.setAlertArgs(alert);
       Log.d(TAG, "Showing dialog: " + alert.getId());
       dialog.show(getFragmentManager(), alert.getId());
       mActiveDialogs.put(alert.getId(), alert);
