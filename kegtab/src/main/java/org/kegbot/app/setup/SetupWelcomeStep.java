@@ -5,19 +5,11 @@ import android.app.Fragment;
 import org.kegbot.app.R;
 
 public class SetupWelcomeStep extends SetupStep {
+  
   @Override
   public Fragment getContentFragment() {
-    return new SetupTextFragment() {
-      @Override
-      public String getTitle() {
-        return getString(R.string.setup_welcome_title);
-      }
-
-      @Override
-      public String getDescription() {
-        return getString(R.string.setup_welcome_description);
-      }
-    };
+    return SetupTextFragment.withText(R.string.setup_welcome_title,
+        R.string.setup_welcome_description);
   }
 
   public SetupWelcomeStep(SetupActivity.SetupState state) {

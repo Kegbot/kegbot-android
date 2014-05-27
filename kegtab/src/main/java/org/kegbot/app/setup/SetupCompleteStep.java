@@ -6,18 +6,6 @@ import org.kegbot.app.R;
 
 public class SetupCompleteStep extends SetupStep {
 
-  private final Fragment mContentFragment = new SetupTextFragment() {
-    @Override
-    public String getTitle() {
-      return getString(R.string.setup_finished_title);
-    }
-
-    @Override
-    public String getDescription() {
-      return getString(R.string.setup_finished_description);
-    }
-  };
-
   public SetupCompleteStep(SetupActivity.SetupState state) {
     super(state);
   }
@@ -25,7 +13,8 @@ public class SetupCompleteStep extends SetupStep {
   @Override
   public Fragment getContentFragment() {
     mState.setNextButtonText(R.string.setup_button_finish);
-    return mContentFragment;
+    return SetupTextFragment.withText(R.string.setup_finished_title,
+        R.string.setup_finished_description);
   }
 
   @Override

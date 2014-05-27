@@ -12,18 +12,6 @@ import org.kegbot.app.config.AppConfiguration;
 
 public class SetupKegbotUrlStep extends SetupStep {
 
-  private final Fragment mContentFragment = new SetupTextFragment() {
-    @Override
-    public String getTitle() {
-      return getString(R.string.setup_kegbot_url_title);
-    }
-
-    @Override
-    public String getDescription() {
-      return getString(R.string.setup_kegbot_url_description);
-    }
-  };
-
   private final SetupKegbotUrlFragment mControlsFragment = new SetupKegbotUrlFragment();
 
   public SetupKegbotUrlStep(SetupActivity.SetupState state) {
@@ -32,7 +20,8 @@ public class SetupKegbotUrlStep extends SetupStep {
 
   @Override
   public Fragment getContentFragment() {
-    return mContentFragment;
+    return SetupTextFragment.withText(R.string.setup_kegbot_url_title,
+        R.string.setup_kegbot_url_description);
   }
 
   @Override

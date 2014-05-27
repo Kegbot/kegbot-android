@@ -27,20 +27,37 @@ import android.widget.TextView;
 
 import org.kegbot.app.R;
 
-public abstract class SetupTextFragment extends Fragment {
+public class SetupTextFragment extends Fragment {
 
-  public abstract String getTitle();
+  private static final String KEY_TITLE = "title";
+  private static final String KEY_DESCRIPTION = "description";
 
-  public abstract String getDescription();
+  public static SetupTextFragment withText(int titleResource, int descriptionResource) {
+    final SetupTextFragment frag = new SetupTextFragment();
+    frag.setText(titleResource, descriptionResource);
+    return frag;
+  }
+
+  void setText(int titleResource, int descriptionResource) {
+    Bundle args = getArguments();
+    if (args == null) {
+      args = new Bundle();
+    }
+
+    args.putInt(KEY_TITLE, titleResource);
+    args.putInt(KEY_DESCRIPTION, descriptionResource);
+
+    setArguments(args);
+  }
 
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    View view = inflater.inflate(R.layout.setup_text_fragment, null);
+    final View view = inflater.inflate(R.layout.setup_text_fragment, null);
 
-    TextView titleView = (TextView) view.findViewById(R.id.setupTitleText);
-    titleView.setText(getTitle());
-    TextView descriptionView = (TextView) view.findViewById(R.id.setupDescriptionText);
-    descriptionView.setText(getDescription());
+    final TextView titleView = (TextView) view.findViewById(R.id.setupTitleText);
+    titleView.setText(getArguments().getInt(KEY_TITLE, 0));
+    final TextView descriptionView = (TextView) view.findViewById(R.id.setupDescriptionText);
+    descriptionView.setText(getArguments().getInt(KEY_DESCRIPTION, 0));
 
     return view;
   }

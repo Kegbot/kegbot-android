@@ -9,18 +9,6 @@ import org.kegbot.app.R;
 
 public class SetupSelectBackendStep extends SetupStep {
 
-  private final Fragment mContentFragment = new SetupTextFragment() {
-    @Override
-    public String getTitle() {
-      return getString(R.string.setup_select_backend_title);
-    }
-
-    @Override
-    public String getDescription() {
-      return getString(R.string.setup_select_backend_description);
-    }
-  };
-
   private final SetupSelectBackendFragment mControlsFragment = new SetupSelectBackendFragment();
 
   public SetupSelectBackendStep(SetupActivity.SetupState state) {
@@ -29,7 +17,8 @@ public class SetupSelectBackendStep extends SetupStep {
 
   @Override
   public Fragment getContentFragment() {
-    return mContentFragment;
+    return SetupTextFragment.withText(R.string.setup_select_backend_title,
+        R.string.setup_select_backend_description);
   }
 
   @Override

@@ -8,18 +8,6 @@ import org.kegbot.app.R;
 
 public class SetupManagerPinStep extends SetupStep {
 
-  private final Fragment mContentFragment = new SetupTextFragment() {
-    @Override
-    public String getTitle() {
-      return getString(R.string.setup_manager_pin_title);
-    }
-
-    @Override
-    public String getDescription() {
-      return getString(R.string.setup_manager_pin_description);
-    }
-  };
-
   private final SetupManagerPinFragment mControlsFragment = new SetupManagerPinFragment();
 
   public SetupManagerPinStep(SetupActivity.SetupState state) {
@@ -28,7 +16,8 @@ public class SetupManagerPinStep extends SetupStep {
 
   @Override
   public Fragment getContentFragment() {
-    return mContentFragment;
+    return SetupTextFragment.withText(R.string.setup_manager_pin_title,
+        R.string.setup_manager_pin_description);
   }
 
   @Override

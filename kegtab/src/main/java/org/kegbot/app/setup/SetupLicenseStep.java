@@ -8,18 +8,6 @@ import org.kegbot.app.R;
 
 public class SetupLicenseStep extends SetupStep {
 
-  private final Fragment mContentFragment = new SetupTextFragment() {
-    @Override
-    public String getTitle() {
-      return getString(R.string.setup_license_title);
-    }
-
-    @Override
-    public String getDescription() {
-      return getString(R.string.setup_license_description);
-    }
-  };
-
   private final SetupLicenseFragment mControlsFragment = new SetupLicenseFragment();
 
   public SetupLicenseStep(SetupActivity.SetupState state) {
@@ -28,7 +16,8 @@ public class SetupLicenseStep extends SetupStep {
 
   @Override
   public Fragment getContentFragment() {
-    return mContentFragment;
+    return SetupTextFragment.withText(R.string.setup_license_title,
+        R.string.setup_license_description);
   }
 
   @Override

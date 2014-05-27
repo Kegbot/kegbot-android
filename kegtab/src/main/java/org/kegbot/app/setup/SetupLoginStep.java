@@ -8,18 +8,6 @@ import org.kegbot.app.R;
 
 public class SetupLoginStep extends SetupStep {
 
-  private final Fragment mContentFragment = new SetupTextFragment() {
-    @Override
-    public String getTitle() {
-      return getString(R.string.setup_log_in_title);
-    }
-
-    @Override
-    public String getDescription() {
-      return getString(R.string.setup_log_in_description);
-    }
-  };
-
   private final SetupLogInFragment mControlsFragment = new SetupLogInFragment();
 
   public SetupLoginStep(SetupActivity.SetupState state) {
@@ -28,7 +16,8 @@ public class SetupLoginStep extends SetupStep {
 
   @Override
   public Fragment getContentFragment() {
-    return mContentFragment;
+    return SetupTextFragment.withText(R.string.setup_log_in_title,
+        R.string.setup_log_in_description);
   }
 
   @Override
