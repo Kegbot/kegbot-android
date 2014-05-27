@@ -196,7 +196,7 @@ public class BugreportActivity extends Activity {
         Log.e(TAG, errorMessage);
         showIdle();
 
-        mMessageText.setText("Error: " + errorMessage);
+        mMessageText.setText(errorMessage);
       }
     });
   }
@@ -280,9 +280,9 @@ public class BugreportActivity extends Activity {
 
   }
 
-  private class SubmitBugreportAsyncTask extends AsyncTask<File, Void, IOException> {
+  private class SubmitBugreportAsyncTask extends AsyncTask<File, Void, Exception> {
     @Override
-    protected IOException doInBackground(File... params) {
+    protected Exception doInBackground(File... params) {
       final String messageText = Strings.nullToEmpty(mDetailText.getText().toString());
       final CheckinClient client = CheckinClient.fromContext(getApplicationContext());
       final String email = mEmailText.getText().toString();
@@ -291,14 +291,14 @@ public class BugreportActivity extends Activity {
       }
       try {
         client.submitBugreport(messageText, mBugreportFile, email);
-      } catch (IOException e) {
+      } catch (Exception e) {
         return e;
       }
       return null;
     }
 
     @Override
-    protected void onPostExecute(IOException result) {
+    protected void onPostExecute(Exception result) {
       if (result == null) {
         showFinished();
       } else {
