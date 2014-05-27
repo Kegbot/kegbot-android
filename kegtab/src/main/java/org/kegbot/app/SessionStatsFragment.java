@@ -95,10 +95,13 @@ public class SessionStatsFragment extends Fragment {
 
   @Subscribe
   public void handleSessionChange(CurrentSessionChangedEvent event) {
-    mSession = event.getSession();
-    mStats = event.getSessionStats();
-    Log.d(TAG, "Session change: session=" + mSession);
-    updateSessionView();
+    final Session session = event.getSession();
+    if (session != mSession) {
+      mSession = session;
+      mStats = event.getSessionStats();
+      Log.d(TAG, "Session change: session=" + mSession);
+      updateSessionView();
+    }
   }
 
   private void updateSessionView() {
