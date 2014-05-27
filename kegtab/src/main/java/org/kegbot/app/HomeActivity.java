@@ -162,8 +162,6 @@ public class HomeActivity extends CoreActivity {
     mTapStatusPager = (ViewPager) findViewById(R.id.tap_status_pager);
     mTapStatusPager.setAdapter(mTapStatusAdapter);
     mTapStatusPager.setOffscreenPageLimit(8); // >8 Tap systems are rare
-
-    CheckinService.requestImmediateCheckin(this);
   }
 
   @Override
