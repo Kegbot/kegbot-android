@@ -178,13 +178,21 @@ public class NewKegActivity extends Activity {
 
       @Override
       protected void onPostExecute(String result) {
-        dialog.dismiss();
+        if (dialog.isShowing()) {
+          dialog.dismiss();
+        }
+
         if (result.isEmpty()) {
-          Log.d(TAG, "Calibrated successfully!");
+          Log.d(TAG, "Keg started!");
           KegbotCore.getInstance(NewKegActivity.this).getSyncManager().requestSync();
           finish();
           return;
         }
+
+        if (isCancelled() || isFinishing()) {
+          return;
+        }
+
         new AlertDialog.Builder(NewKegActivity.this)
             .setCancelable(true)
             .setNegativeButton("Ok", null)
