@@ -36,6 +36,7 @@ import org.kegbot.proto.Models.KegTap;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -52,8 +53,26 @@ public class TapManager extends Manager {
   @VisibleForTesting
   protected static final String KEY_HIDDEN_TAP_IDS = "hidden_tap_ids";
 
+  /** Sorts taps by (sort_order, id). */
+  private static final Comparator<KegTap> TAP_COMPARATOR = new Comparator<KegTap>() {
+    @Override
+    public int compare(KegTap kegTap, KegTap kegTap2) {
+      if (kegTap == kegTap2) {
+        return 0;
+      } else if (kegTap == null) {
+        return -1;
+      } else if (kegTap2 == null) {
+        return 1;
+      }
+      int ret = kegTap.getSortOrder() - kegTap2.getSortOrder();
+      if (ret == 0) {
+        ret = kegTap.getId() - kegTap2.getId();
+      }
+      return ret;
+    }
+  };
+
   private final Map<Integer, KegTap> mTaps = Maps.newLinkedHashMap();
-  private final Set<KegTap> mVisibleTaps = Sets.newLinkedHashSet();
 
   private ConfigurationStore mLocalConfig;
 
@@ -159,10 +178,14 @@ public class TapManager extends Manager {
     return null;
   }
 
+  /** Returns all taps known to the backend, in sorted order. */
   public synchronized List<KegTap> getTaps() {
-    return Lists.newArrayList(mTaps.values());
+    final List<KegTap> result = Lists.newArrayList(mTaps.values());
+    Collections.sort(result, TAP_COMPARATOR);
+    return result;
   }
 
+  /** Returns all locally-visible taps, in sorted order. */
   public synchronized List<KegTap> getVisibleTaps() {
     final Set<String> hiddenIds = mLocalConfig.getStringSet(KEY_HIDDEN_TAP_IDS,
         Collections.<String>emptySet());
@@ -174,6 +197,8 @@ public class TapManager extends Manager {
         results.add(tap);
       }
     }
+
+    Collections.sort(results, TAP_COMPARATOR);
     return results;
   }
 
