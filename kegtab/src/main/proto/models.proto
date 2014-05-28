@@ -425,6 +425,8 @@ message KegTap {
   // configured.
   optional uint32 current_keg_id = 10;
   optional Keg current_keg = 11;
+
+  optional uint32 sort_order = 15 [default = 0];
 }
 
 // A session is a group of drinks occuring within the same time window.  Every
