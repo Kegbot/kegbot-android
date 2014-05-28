@@ -49,20 +49,6 @@
             android:summaryOn="A new pour will start any time meter activity is detected"
             android:title="Automatically Start Pours">
         </CheckBoxPreference>
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="config:AUTO_TAKE_PHOTOS"
-            android:summaryOff="Camera will not trigger unless requested"
-            android:summaryOn="Camera will automatically trigger during a pour"
-            android:title="Automatically Take Photos">
-        </CheckBoxPreference>
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="config:ENABLE_CAMERA_SOUNDS"
-            android:summaryOff="Sounds will not be played when taking photos"
-            android:summaryOn="Sounds will be played when taking photos"
-            android:title="Enable Camera Sounds">
-        </CheckBoxPreference>
     </PreferenceCategory>
     <PreferenceCategory android:title="User Interface">
         <CheckBoxPreference

@@ -96,11 +96,11 @@ public class PourInProgressActivity extends CoreActivity {
   private ImageDownloader mImageDownloader;
 
   private CameraFragment mCameraFragment;
+  private boolean mShowCamera;
 
   private final Handler mHandler = new Handler(Looper.getMainLooper());
 
   private PouringTapAdapter mPouringTapAdapter;
-  private DialogFragment mProgressDialog;
 
   private ViewFlipper mControlsFlipper;
   private Button mClaimPourButton;
@@ -170,18 +170,6 @@ public class PourInProgressActivity extends CoreActivity {
   public void onFlowUpdateEvent(FlowUpdateEvent event) {
     refreshFlows();
   }
-
-  private final Runnable FINISH_ACTIVITY_RUNNABLE = new Runnable() {
-    @Override
-    public void run() {
-      if (mProgressDialog != null) {
-        mProgressDialog.dismiss();
-        mProgressDialog = null;
-      }
-      cancelIdleWarning();
-      finish();
-    }
-  };
 
   private final Runnable REFRESH_FLOWS_RUNNABLE = new Runnable() {
     @Override
@@ -363,7 +351,12 @@ public class PourInProgressActivity extends CoreActivity {
       }
     });
 
+    mShowCamera = true;
     mCameraFragment = (CameraFragment) getFragmentManager().findFragmentById(R.id.camera);
+    if (!mConfig.getUseCamera()) {
+      mShowCamera = false;
+      getFragmentManager().beginTransaction().hide(mCameraFragment).commit();
+    }
 
     refreshFlows();
   }
@@ -468,7 +461,7 @@ public class PourInProgressActivity extends CoreActivity {
     if (flow != null) {
       updateControlsForFlow(flow);
       if (Strings.isNullOrEmpty(flow.getImagePath())) {
-        if (mConfig.getEnableAutoTakePhoto()) {
+        if (mShowCamera && mConfig.getEnableAutoTakePhoto()) {
           mCameraFragment.schedulePicture();
         }
       }
@@ -479,7 +472,6 @@ public class PourInProgressActivity extends CoreActivity {
   protected void onPause() {
     Log.d(TAG, "onPause");
     mHandler.removeCallbacks(REFRESH_FLOWS_RUNNABLE);
-    mHandler.removeCallbacks(FINISH_ACTIVITY_RUNNABLE);
     mCore.getBus().unregister(this);
     super.onPause();
   }
@@ -600,7 +592,15 @@ public class PourInProgressActivity extends CoreActivity {
       mActiveFlows.remove(oldFlow);
     }
 
-    mCameraFragment.setEnabled(!mActiveFlows.isEmpty());
+    if (mShowCamera) {
+      mCameraFragment.setEnabled(!mActiveFlows.isEmpty());
+    }
+
+    if (mActiveFlows.isEmpty()) {
+      cancelIdleWarning();
+      finish();
+      return;
+    }
 
     long largestIdleTime = Long.MIN_VALUE;
     for (final Flow flow : mActiveFlows) {
@@ -625,19 +625,6 @@ public class PourInProgressActivity extends CoreActivity {
     }
 
     scrollToMostActiveTap();
-
-    mHandler.removeCallbacks(FINISH_ACTIVITY_RUNNABLE);
-    if (mActiveFlows.isEmpty()) {
-      cancelIdleWarning();
-      mProgressDialog = new PourFinishProgressDialog();
-      mProgressDialog.show(getFragmentManager(), "finish");
-      mHandler.postDelayed(FINISH_ACTIVITY_RUNNABLE, FLOW_FINISH_DELAY_MILLIS);
-    } else {
-      if (mProgressDialog != null) {
-        mProgressDialog.dismiss();
-        mProgressDialog = null;
-      }
-    }
   }
 
   private void endAllFlows() {
@@ -645,7 +632,9 @@ public class PourInProgressActivity extends CoreActivity {
       mFlowManager.endFlow(flow);
     }
     cancelIdleWarning();
-    mCameraFragment.cancelPendingPicture();
+    if (mShowCamera) {
+      mCameraFragment.cancelPendingPicture();
+    }
   }
 
   private void sendIdleWarning() {

@@ -86,6 +86,14 @@ public class SettingsActivity extends PreferenceActivity {
     }
   }
 
+  public static class CameraPreferenceFragment extends PreferenceFragment {
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+      super.onCreate(savedInstanceState);
+      addPreferencesFromResource(R.xml.settings_camera);
+    }
+  }
+
   public static class KegeratorFragment extends PreferenceFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {

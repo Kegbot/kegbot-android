@@ -189,6 +189,14 @@ public class AppConfiguration {
     setBoolean(ConfigKey.TAKE_PHOTOS_DURING_REGISTRATION, value);
   }
 
+  public boolean getUseCamera() {
+    return getBoolean(ConfigKey.USE_CAMERA);
+  }
+
+  public void setUseCamera(boolean value) {
+    setBoolean(ConfigKey.USE_CAMERA, value);
+  }
+
   public boolean getEnableCameraSounds() {
     return getBoolean(ConfigKey.ENABLE_CAMERA_SOUNDS);
   }

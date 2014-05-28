@@ -28,6 +28,10 @@
         android:title="@string/settings_access_header"
         />
     <header
+        android:fragment="org.kegbot.app.SettingsActivity$CameraPreferenceFragment"
+        android:title="@string/settings_camera_header"
+        />
+    <header
         android:fragment="org.kegbot.app.SettingsActivity$KegeratorFragment"
         android:title="@string/settings_kegerator_header"
         />

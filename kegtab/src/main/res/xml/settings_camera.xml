@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  ~ Copyright 2014 Bevbot LLC <info@bevbot.com>
+  ~
+  ~ This file is part of the Kegtab package from the Kegbot project. For
+  ~ more information on Kegtab or Kegbot, see <http://kegbot.org/>.
+  ~
+  ~ Kegtab is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU General Public License as published by the Free
+  ~ Software Foundation, version 2.
+  ~
+  ~ Kegtab is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+  ~ more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License along
+  ~ with Kegtab. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="Camera Settings">
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="config:USE_CAMERA"
+            android:summaryOff="The device's camera will never be shown"
+            android:summaryOn="The device's camera may be used"
+            android:title="Enable Camera Features">
+        </CheckBoxPreference>
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="config:TAKE_PHOTOS_DURING_REGISTRATION"
+            android:summaryOff="Photos will be skipped during registration"
+            android:summaryOn="User may add a photo during registration"
+            android:title="Take Photo During Registration"
+            android:dependency="config:USE_CAMERA">
+        </CheckBoxPreference>
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="config:AUTO_TAKE_PHOTOS"
+            android:summaryOff="Camera will not trigger unless requested"
+            android:summaryOn="Camera will automatically trigger during a pour"
+            android:title="Automatically Take Photos"
+            android:dependency="config:USE_CAMERA">
+        </CheckBoxPreference>
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="config:ENABLE_CAMERA_SOUNDS"
+            android:summaryOff="Sounds will not be played when taking photos"
+            android:summaryOn="Sounds will be played when taking photos"
+            android:title="Enable Camera Sounds"
+            android:dependency="config:USE_CAMERA">
+        </CheckBoxPreference>
+    </PreferenceCategory>
+
+</PreferenceScreen>

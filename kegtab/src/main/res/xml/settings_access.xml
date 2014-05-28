@@ -30,14 +30,6 @@
         </CheckBoxPreference>
         <CheckBoxPreference
             android:defaultValue="true"
-            android:key="config:TAKE_PHOTOS_DURING_REGISTRATION"
-            android:summaryOff="Photos will be skipped during registration"
-            android:summaryOn="User may take an account photo during registration"
-            android:title="Take Photo During Registration"
-            android:dependency="config:ALLOW_REGISTRATION">
-        </CheckBoxPreference>
-        <CheckBoxPreference
-            android:defaultValue="true"
             android:key="config:ALLOW_MANUAL_LOGIN"
             android:summaryOff="Drinkers must use an RFID or other token to log in"
             android:summaryOn="Drinkers can log in by tapping on the main screen"

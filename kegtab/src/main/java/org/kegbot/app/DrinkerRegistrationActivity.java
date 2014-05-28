@@ -42,6 +42,7 @@ import android.widget.ViewFlipper;
 import com.google.common.base.Strings;
 
 import org.kegbot.app.camera.CameraFragment;
+import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.app.setup.SetupProgressDialogFragment;
 import org.kegbot.backend.Backend;
 import org.kegbot.backend.BackendException;
@@ -58,6 +59,7 @@ public class DrinkerRegistrationActivity extends CoreActivity {
 
   private KegbotCore mCore;
 
+  private AppConfiguration mConfig;
   private ViewFlipper mFlipper;
   private Button mSubmitButton;
   private TextView mSubtitle;
@@ -94,7 +96,7 @@ public class DrinkerRegistrationActivity extends CoreActivity {
         // User already exists.
         mUsername.setError("This username is not available.");
       } else {
-        if (mCore.getConfiguration().getTakePhotosDuringRegistration()) {
+        if (mConfig.getUseCamera() && mConfig.getTakePhotosDuringRegistration()) {
           showGetPhoto();
         } else {
           doRegister();
@@ -208,6 +210,8 @@ public class DrinkerRegistrationActivity extends CoreActivity {
         return true;
       }
     });
+
+    final AppConfiguration config = mCore.getConfiguration();
 
     mCameraFragment = (CameraFragment) getFragmentManager().findFragmentById(R.id.camera);
     mCameraFragment.getView().setVisibility(View.GONE);
