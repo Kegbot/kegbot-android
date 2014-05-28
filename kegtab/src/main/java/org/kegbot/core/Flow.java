@@ -20,14 +20,10 @@ package org.kegbot.core;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 
 import org.kegbot.app.util.TimeSeries;
 import org.kegbot.core.FlowManager.Clock;
 import org.kegbot.proto.Models.KegTap;
-
-import java.util.List;
 
 import javax.annotation.Nullable;
 
@@ -85,8 +81,8 @@ public class Flow {
   /** Set to {@code true} when the flow is finished. */
   private boolean mIsFinished = false;
 
-  /** Image files attached to this flow. */
-  private final List<String> mImages = Lists.newArrayList();
+  /** Image file attached to this flow. */
+  private String mImagePath;
 
   private final TimeSeries.Builder mTimeSeries = TimeSeries.newBuilder(100, true);
 
@@ -116,8 +112,8 @@ public class Flow {
     if (mTap != null) {
       builder.append(" tap=").append(mTap.getId());
     }
-    if (!mImages.isEmpty()) {
-      builder.append(" numImages=").append(mImages.size());
+    if (!Strings.isNullOrEmpty(mImagePath)) {
+      builder.append(" imagePath=").append(mImagePath);
     }
     if (!Strings.isNullOrEmpty(mShout)) {
       builder.append(" shout='").append(mShout).append("'");
@@ -211,16 +207,16 @@ public class Flow {
     return Math.max(mMaxIdleTimeMillis - getIdleTimeMs(), 0);
   }
 
-  public void addImage(String image) {
-    mImages.add(image);
+  public void setImage(String imagePath) {
+    mImagePath = imagePath;
   }
 
-  public boolean removeImage(String image) {
-    return mImages.remove(image);
+  public void removeImage() {
+    mImagePath = null;
   }
 
-  public List<String> getImages() {
-    return ImmutableList.copyOf(mImages);
+  public String getImagePath() {
+    return mImagePath;
   }
 
   public void setShout(String shout) {

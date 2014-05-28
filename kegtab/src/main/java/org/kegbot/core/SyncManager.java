@@ -28,6 +28,7 @@ import android.net.NetworkInfo;
 import android.os.SystemClock;
 import android.util.Log;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.protobuf.AbstractMessage;
@@ -173,10 +174,12 @@ public class SyncManager extends BackgroundManager {
       return;
     }
     final RecordDrinkRequest request = getRequestForFlow(flow);
-    final PendingPour pour = PendingPour.newBuilder()
-        .setDrinkRequest(request)
-        .addAllImages(flow.getImages())
-        .build();
+    final PendingPour.Builder builder = PendingPour.newBuilder()
+        .setDrinkRequest(request);
+    if (!Strings.isNullOrEmpty(flow.getImagePath())) {
+      builder.addImages(flow.getImagePath());
+    }
+    final PendingPour pour = builder.build();
 
     postDeferredPoursAsync();
     mBackendExecutorService.submit(new Runnable() {

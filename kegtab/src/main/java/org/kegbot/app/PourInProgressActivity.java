@@ -150,7 +150,7 @@ public class PourInProgressActivity extends CoreActivity {
     Log.d(TAG, "Got photo: " + filename);
     for (final Flow flow : mFlowManager.getAllActiveFlows()) {
       Log.d(TAG, "  - attached to flow: " + flow);
-      flow.addImage(filename);
+      flow.setImage(filename);
     }
   }
 
@@ -159,8 +159,9 @@ public class PourInProgressActivity extends CoreActivity {
     final String filename = event.getFilename();
     Log.d(TAG, "Discarded photo: " + filename);
     for (final Flow flow : mFlowManager.getAllActiveFlows()) {
-      Log.d(TAG, "  - remove from flow: " + flow);
-      flow.removeImage(filename);
+      if (filename.equals(flow.getImagePath())) {
+        flow.removeImage();
+      }
     }
   }
 
@@ -457,7 +458,7 @@ public class PourInProgressActivity extends CoreActivity {
     Log.d(TAG, "onPostResume: focusedFlow: " + flow);
     if (flow != null) {
       updateControlsForFlow(flow);
-      if (flow.getImages().isEmpty()) {
+      if (Strings.isNullOrEmpty(flow.getImagePath())) {
         if (mConfig.getEnableAutoTakePhoto()) {
           mCameraFragment.schedulePicture();
         }
