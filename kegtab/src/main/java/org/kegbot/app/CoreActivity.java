@@ -32,10 +32,12 @@ import android.nfc.tech.MifareUltralight;
 import android.nfc.tech.NfcA;
 import android.nfc.tech.NfcB;
 import android.nfc.tech.NfcF;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.WindowManager;
 
 import com.google.analytics.tracking.android.EasyTracker;
@@ -104,6 +106,8 @@ public class CoreActivity extends Activity {
     mBus = KegbotCore.getInstance(this).getBus();
     mAlertCore = KegbotCore.getInstance(this).getAlertCore();
     mBus.register(mCoreListener);
+
+    //enterImmersiveMode();
   }
 
   @Override
@@ -137,6 +141,21 @@ public class CoreActivity extends Activity {
     if (actionBar != null) {
       actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_USE_LOGO);
       actionBar.setTitle("");
+    }
+  }
+
+  private void enterImmersiveMode() {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+      final View decorView = getWindow().getDecorView();
+
+      decorView.setSystemUiVisibility(
+          View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+              | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+              | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+              | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
+              | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
+              | View.SYSTEM_UI_FLAG_IMMERSIVE
+      );
     }
   }
 
