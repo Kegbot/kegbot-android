@@ -182,9 +182,6 @@ public class PourInProgressActivity extends CoreActivity {
   private final ViewPager.OnPageChangeListener mPageChangeListener = new ViewPager.OnPageChangeListener() {
     @Override
     public void onPageSelected(int position) {
-      PourStatusFragment frag = (PourStatusFragment) mPouringTapAdapter.getItem(position);
-      final KegTap tap = frag.getTap();
-      Log.d(TAG, "Swiped to tap: " + tap.getId());
       updateControlsForFlow(getCurrentlyFocusedFlow());
     }
 
@@ -211,8 +208,8 @@ public class PourInProgressActivity extends CoreActivity {
         tap = mTapList.get(position);
       }
 
-      final PourStatusFragment frag = new PourStatusFragment();
-      frag.setTap(tap);
+      final PourStatusFragment frag = PourStatusFragment.forTap(tap);
+
       final Flow flow = mFlowManager.getFlowForTap(tap);
       if (flow != null) {
         frag.updateWithFlow(flow);
@@ -230,10 +227,6 @@ public class PourInProgressActivity extends CoreActivity {
         return index;
       }
       return POSITION_NONE;
-    }
-
-    public KegTap getTap(int position) {
-      return ((PourStatusFragment) getItem(position)).getTap();
     }
 
     @Override

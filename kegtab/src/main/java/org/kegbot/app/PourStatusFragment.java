@@ -55,6 +55,8 @@ public class PourStatusFragment extends ListFragment {
   private static final double VOLUME_COUNTER_INCREMENT_ML = 10;
   private static final long VOLUME_COUNTER_INCREMENT_DELAY_MILLIS = 20;
 
+  private static final String ARG_TAP_ID = "tap_id";
+
   private static final int AUTH_DRINKER_REQUEST = 1;
   /**
    * After this much inactivity, the "pour automatically ends" dialog is shown.
@@ -65,13 +67,14 @@ public class PourStatusFragment extends ListFragment {
   private double mCurrentVolumeMl = 0.0;
   private KegbotCore mCore;
   private ImageDownloader mImageDownloader;
-  private KegTap mTap;  // final after setTap
+
   private View mView;
   private BadgeView mPourVolumeBadge;
   private TextView mTapTitle;
   private TextView mTapSubtitle;
   private TextView mStatusLine;
   private ImageView mBeerImage;
+
   private final Runnable mCounterIncrementRunnable = new Runnable() {
     @Override
     public void run() {
@@ -112,13 +115,16 @@ public class PourStatusFragment extends ListFragment {
     }
   };
 
-  public KegTap getTap() {
-    return mTap;
+  public static PourStatusFragment forTap(KegTap tap) {
+    final PourStatusFragment frag = new PourStatusFragment();
+    final Bundle args = new Bundle();
+    args.putInt(ARG_TAP_ID, tap.getId());
+    frag.setArguments(args);
+    return frag;
   }
 
-  public void setTap(KegTap tap) {
-    Preconditions.checkState(mTap == null, "tap already set");
-    mTap = tap;
+  private KegTap getTap() {
+    return mCore.getTapManager().getTap(getArguments().getInt(ARG_TAP_ID));
   }
 
   @Override
@@ -193,7 +199,8 @@ public class PourStatusFragment extends ListFragment {
   @Subscribe
   public void onFlowUpdate(FlowUpdateEvent event) {
     final Flow flow = event.getFlow();
-    if (mTap != null && mTap.getId() == flow.getTap().getId()) {
+    final KegTap tap = getTap();
+    if (tap != null && tap.getId() == flow.getTap().getId()) {
       if (!flow.isFinished()) {
         updateWithFlow(flow);
       }
@@ -225,9 +232,9 @@ public class PourStatusFragment extends ListFragment {
       if (keg.getBeverage().hasPicture()) {
         mImageDownloader.download(keg.getBeverage().getPicture().getUrl(), mBeerImage);
       }
-      mTapSubtitle.setText(mTap.getName());
+      mTapSubtitle.setText(tap.getName());
     } else {
-      mTapTitle.setText(mTap.getName());
+      mTapTitle.setText(tap.getName());
     }
   }
 
