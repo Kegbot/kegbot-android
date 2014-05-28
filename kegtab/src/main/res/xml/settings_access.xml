@@ -24,8 +24,8 @@
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="config:ALLOW_REGISTRATION"
-            android:summaryOff="New users cannot register from the main screen"
-            android:summaryOn="New users can register from the main screen"
+            android:summaryOff="New users cannot register in the app"
+            android:summaryOn="New users can register in the app"
             android:title="Allow New User Registration">
         </CheckBoxPreference>
         <CheckBoxPreference
