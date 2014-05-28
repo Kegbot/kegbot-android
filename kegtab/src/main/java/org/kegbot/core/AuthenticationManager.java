@@ -74,7 +74,11 @@ public class AuthenticationManager extends Manager {
           new CacheLoader<AuthenticationToken, User>() {
             @Override
             public User load(AuthenticationToken token) throws Exception {
-              return fetchUserForToken(token);
+              final User user = fetchUserForToken(token);
+              if (user != null) {
+                mUserDetailCache.put(user.getUsername(), user);
+              }
+              return user;
             }
           }
       );
