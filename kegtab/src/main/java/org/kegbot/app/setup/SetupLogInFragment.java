@@ -72,7 +72,7 @@ public class SetupLogInFragment extends SetupFragment {
       return "Please enter a password";
     }
 
-    final KegbotApiImpl api = new KegbotApiImpl(prefs);
+    final KegbotApiImpl api = KegbotApiImpl.fromContext(getActivity());
 
     Log.d(TAG, "Logging in ...");
 

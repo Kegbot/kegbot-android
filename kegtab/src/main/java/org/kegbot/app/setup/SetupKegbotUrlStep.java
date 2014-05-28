@@ -25,9 +25,7 @@ import com.google.common.base.Strings;
 
 import org.kegbot.api.KegbotApiException;
 import org.kegbot.api.KegbotApiImpl;
-import org.kegbot.app.KegbotApplication;
 import org.kegbot.app.R;
-import org.kegbot.app.config.AppConfiguration;
 
 public class SetupKegbotUrlStep extends SetupStep {
 
@@ -56,8 +54,7 @@ public class SetupKegbotUrlStep extends SetupStep {
       throw new SetupValidationException(error);
     }
 
-    final AppConfiguration config = KegbotApplication.get(mControlsFragment.getActivity()).getConfig();
-    final KegbotApiImpl api = new KegbotApiImpl(config);
+    final KegbotApiImpl api = KegbotApiImpl.fromContext(mControlsFragment.getActivity());
 
     try {
       if (api.supportsDeviceLink()) {

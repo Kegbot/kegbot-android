@@ -121,7 +121,7 @@ public class KegbotCore {
       mBackend = new LocalBackend();
     } else {
       Log.d(TAG, "Using server backend.");
-      mBackend = new KegbotApiImpl(mConfig);
+      mBackend = KegbotApiImpl.fromContext(mContext);
     }
 
     mImageDownloader = new ImageDownloader(context, mConfig.getKegbotUrl());

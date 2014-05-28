@@ -21,18 +21,28 @@ package org.kegbot.api;
 import android.content.Context;
 import android.util.Log;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.io.ByteStreams;
 import com.google.protobuf.GeneratedMessage;
 import com.google.protobuf.Message.Builder;
+import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
+import com.squareup.okhttp.Response;
+import com.squareup.okhttp.ResponseBody;
 
 import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
 import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.kegbot.app.KegbotApplication;
 import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.app.util.TimeSeries;
+import org.kegbot.app.util.Utils;
 import org.kegbot.app.util.Version;
 import org.kegbot.backend.Backend;
 import org.kegbot.backend.BackendException;
@@ -52,46 +62,136 @@ import org.kegbot.proto.Models.SystemEvent;
 import org.kegbot.proto.Models.ThermoLog;
 import org.kegbot.proto.Models.User;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.CookieHandler;
 import java.net.CookieManager;
-import java.security.GeneralSecurityException;
+import java.net.URLEncoder;
+import java.security.SecureRandom;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nullable;
-import javax.net.ssl.SSLContext;
 
 public class KegbotApiImpl implements Backend {
 
   private static final String TAG = KegbotApiImpl.class.getSimpleName();
 
+  private static final byte[] HYPHENS = {'-', '-'};
+  private static final byte[] CRLF = {'\r', '\n'};
+
   private final AppConfiguration mConfig;
   private final CookieManager mCookieManager;
   private final OkHttpClient mClient;
-  private final Http mHttp;
+  private final String mUserAgent;
 
-  public KegbotApiImpl(AppConfiguration config) {
+  public KegbotApiImpl(AppConfiguration config, String userAgent) {
     mConfig = config;
     mCookieManager = new CookieManager();
     mClient = new OkHttpClient();
-
-    //https://github.com/square/okhttp/issues/184
-    SSLContext sslContext;
-    try {
-      sslContext = SSLContext.getInstance("TLS");
-      sslContext.init(null, null, null);
-    } catch (GeneralSecurityException e) {
-      throw new AssertionError(); // The system has no TLS. Just give up.
-    }
-    mClient.setSslSocketFactory(sslContext.getSocketFactory());
-
     mClient.setCookieHandler(mCookieManager);
     CookieHandler.setDefault(mCookieManager);
-    mHttp = new Http(mClient);
+    mUserAgent = userAgent;
+  }
+
+  public static KegbotApiImpl fromContext(Context context) {
+    final AppConfiguration config = KegbotApplication.get(context).getConfig();
+    final String userAgent = Utils.getUserAgent(context);
+    return new KegbotApiImpl(config, userAgent);
+  }
+
+  private static String getUrlParamsString(Map<String, String> params) {
+    if (params == null || params.isEmpty()) {
+      return "";
+    }
+
+    final List<String> parts = Lists.newArrayList();
+    for (Map.Entry<String, String> param : params.entrySet()) {
+      try {
+        parts.add(String.format("%s=%s",
+            URLEncoder.encode(param.getKey(), "utf-8"),
+            URLEncoder.encode(param.getValue(), "utf-8")));
+      } catch (UnsupportedEncodingException e) {
+        throw new RuntimeException(e);
+      }
+    }
+    return Joiner.on('&').join(parts);
+  }
+
+  private static RequestBody formBody(Map<String, String> params) {
+    return RequestBody.create(
+        MediaType.parse("application/x-www-form-urlencoded"),
+        getUrlParamsString(params).getBytes());
+  }
+
+  private static String getBoundary() {
+    return String.format("-------MultiPart%s", new SecureRandom().nextLong());
+  }
+
+  /** Builds a multi-part form body. */
+  private static RequestBody formBody(Map<String, String> params, Map<String, File> files)
+      throws KegbotApiException {
+    final String boundary = getBoundary();
+    final byte[] boundaryBytes = boundary.getBytes();
+
+    final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+
+    final byte[] outputBytes;
+    try {
+      // Form data.
+      for (final Map.Entry<String, String> param : params.entrySet()) {
+        bos.write(HYPHENS);
+        bos.write(boundaryBytes);
+        bos.write(CRLF);
+        bos.write(
+            String.format("Content-Disposition: form-data; name=\"%s\"", param.getKey()).getBytes());
+        bos.write(CRLF);
+        bos.write(CRLF);
+        bos.write(param.getValue().getBytes());
+        bos.write(CRLF);
+      }
+
+      // Files
+      for (final Map.Entry<String, File> entry : files.entrySet()) {
+        final String entityName = entry.getKey();
+        final File file = entry.getValue();
+
+        bos.write(HYPHENS);
+        bos.write(boundaryBytes);
+        bos.write(CRLF);
+        bos.write(
+            String.format("Content-Disposition: form-data; name=\"%s\"; filename=\"%s\"",
+                entityName, file.getName()).getBytes()
+        );
+        bos.write(CRLF);
+        bos.write(CRLF);
+
+        final FileInputStream fis = new FileInputStream(file);
+        try {
+          ByteStreams.copy(fis, bos);
+        } finally {
+          fis.close();
+        }
+        bos.write(CRLF);
+      }
+      bos.write(HYPHENS);
+      bos.write(boundaryBytes);
+      bos.write(HYPHENS);
+      bos.write(CRLF);
+
+      bos.flush();
+      outputBytes = bos.toByteArray();
+    } catch (IOException e) {
+      throw new KegbotApiException(e);
+    }
+
+    return RequestBody.create(
+        MediaType.parse("multipart/form-data;boundary=" + boundary), outputBytes);
   }
 
   private String apiUrl() {
@@ -104,67 +204,58 @@ public class KegbotApiImpl implements Backend {
 
   @Override
   public void start(Context context) {
-    // TODO: implement me
   }
 
-  private String getRequestUrl(String path) {
-    return apiUrl() + path;
-  }
-
-  private Request.Builder newRequest(String apiPath) {
-    final Request.Builder builder = Request.newBuilder(getRequestUrl(apiPath));
-    builder.addHeader("X-Kegbot-Api-Key", apiKey());
+  private Request.Builder newRequest(final String path) {
+    Request.Builder builder = new Request.Builder()
+        .url(apiUrl() + path)
+        .addHeader("User-Agent", mUserAgent)
+        .addHeader("X-Kegbot-Api-Key", apiKey());
     return builder;
   }
 
   private JsonNode requestJson(Request request) throws KegbotApiException {
-    JsonNode root;
+    final Response response;
     try {
-      root = mHttp.requestJson(request);
+      response = mClient.newCall(request).execute();
     } catch (IOException e) {
       throw new KegbotApiException(e);
-    } catch (NullPointerException e) {
-      // TODO(mikey): Figure out why OkHttp NPE's.
+    }
+
+    final ResponseBody body = response.body();
+
+    try {
+      try {
+        final ObjectMapper mapper = new ObjectMapper();
+        final JsonNode rootNode = mapper.readValue(body.byteStream(), JsonNode.class);
+        return rootNode;
+      } finally {
+        body.close();
+      }
+    } catch (IOException e) {
       throw new KegbotApiException(e);
     }
-    if (!root.has("meta")) {
-      throw new KegbotApiServerError("No result from server!");
-    }
-    return root;
   }
 
-  /** Convenience wrapper around {@link #requestJson(Request)}, using GET. */
-  private JsonNode getJson(String path, List<NameValuePair> params) throws KegbotApiException {
+  private JsonNode getJson(String path) throws KegbotApiException {
     final Request.Builder request = newRequest(path);
-    if (params != null) {
-      for (final NameValuePair param : params) {
-        request.addParameter(param.getName(), param.getValue());
-      }
-    }
     return requestJson(request.build());
   }
 
-  /** Convenience wrapper around {@link #requestJson(Request)}, using POST. */
   private JsonNode postJson(String path, Map<String, String> params) throws KegbotApiException {
     final Request.Builder request = newRequest(path).
-        setMethod(Http.POST);
-
-    if (params != null) {
-      for (final Map.Entry<String, String> param : params.entrySet()) {
-        request.addParameter(param.getKey(), param.getValue());
-      }
-    }
+        post(formBody(params));
     return requestJson(request.build());
   }
 
-  private <T extends GeneratedMessage> List<T> getProto(String path, Builder builder)
-      throws KegbotApiException {
-    return getProto(path, builder, null);
+  private JsonNode postJson(String path, Map<String, String> params,
+      Map<String, File> files) throws KegbotApiException {
+    final Request.Builder request = newRequest(path).post(formBody(params, files));
+    return requestJson(request.build());
   }
 
-  private <T extends GeneratedMessage> List<T> getProto(String path, Builder builder,
-      List<NameValuePair> params) throws KegbotApiException {
-    JsonNode result = getJson(path, params);
+  private <T extends GeneratedMessage> List<T> getProto(String path, Builder builder) throws KegbotApiException {
+    JsonNode result = getJson(path);
     if (result.has("object")) {
       final T resultMessage = getSingleProto(builder, result.get("object"));
       return Collections.singletonList(resultMessage);
@@ -183,7 +274,7 @@ public class KegbotApiImpl implements Backend {
 
   private <T extends GeneratedMessage> T getSingleProto(String path, Builder builder)
       throws KegbotApiException {
-    JsonNode result = getJson(path, null);
+    JsonNode result = getJson(path);
     return getSingleProto(builder, result.get("object"));
   }
 
@@ -200,8 +291,14 @@ public class KegbotApiImpl implements Backend {
     return getSingleProto(builder, result.get("object"));
   }
 
+  private <T extends GeneratedMessage> T postProto(String path, Builder builder,
+      Map<String, String> params, Map<String, File> files) throws KegbotApiException {
+    JsonNode result = postJson(path, params, files);
+    return getSingleProto(builder, result.get("object"));
+  }
+
   public Version getVersion() throws KegbotApiException {
-    final String version = getJson("/version", null).get("object").get("server_version").getTextValue();
+    final String version = getJson("/version").get("object").get("server_version").getTextValue();
     return Version.fromString(version);
   }
 
@@ -227,13 +324,14 @@ public class KegbotApiImpl implements Backend {
 
   /** Returns an apikey once linked, {@code null} otherwise. */
   public String pollDeviceLink(final String code) throws KegbotApiException {
-    final JsonNode response = getJson("/devices/link/status/" + code, null).get("object");
+    final JsonNode response = getJson("/devices/link/status/" + code).get("object");
     if (response.has("linked") && response.get("linked").getBooleanValue()) {
       return response.get("api_key").getTextValue();
     }
     return null;
   }
 
+  @Deprecated
   public void login(String username, String password) throws KegbotApiException {
     Map<String, String> params = Maps.newLinkedHashMap();
     params.put("username", username);
@@ -242,8 +340,9 @@ public class KegbotApiImpl implements Backend {
     postJson("/login/", params);
   }
 
+  @Deprecated
   public String getApiKey() throws KegbotApiException {
-    final JsonNode result = getJson("/get-api-key/", null);
+    final JsonNode result = getJson("/get-api-key/");
     final JsonNode rootNode = result.get("object");
     if (rootNode == null) {
       throw new KegbotApiServerError("Invalid response.");
@@ -258,10 +357,6 @@ public class KegbotApiImpl implements Backend {
     debug("Got api key:" + apiKey);
     mConfig.setApiKey(apiKey);
     return apiKey();
-  }
-
-  public List<Keg> getAllKegs() throws KegbotApiException {
-    return getProto("/kegs/", Keg.newBuilder());
   }
 
   @Override
@@ -301,13 +396,14 @@ public class KegbotApiImpl implements Backend {
   @Override
   public KegTap startKeg(KegTap tap, String beerName, String brewerName, String styleName,
       String kegType) throws KegbotApiException {
-    final Request.Builder builder = newRequest("/taps/" + tap.getId() + "/activate/")
-        .setMethod(Http.POST)
-        .addParameter("beer_name", beerName)
-        .addParameter("brewer_name", brewerName)
-        .addParameter("style_name", styleName)
-        .addParameter("keg_size", kegType);
-    return getSingleProto(KegTap.newBuilder(), requestJson(builder.build()).get("object"));
+    final Map<String, String> params = ImmutableMap.<String, String>builder()
+        .put("beer_name", beerName)
+        .put("brewer_name", brewerName)
+        .put("style_name", styleName)
+        .put("keg_size", kegType)
+        .build();
+
+    return postProto("/taps/" + tap.getId() + "/activate/", KegTap.newBuilder(), params);
   }
 
   @Override
@@ -318,22 +414,21 @@ public class KegbotApiImpl implements Backend {
   @Override
   public List<SystemEvent> getEventsSince(final long sinceEventId) throws KegbotApiException {
     final List<NameValuePair> params = Lists.newArrayList();
-    params.add(new BasicNameValuePair("since", String.valueOf(sinceEventId)));
-    return getProto("/events/", SystemEvent.newBuilder(), params);
+    return getProto("/events/?since=" + sinceEventId, SystemEvent.newBuilder());
   }
 
   @Override
   public JsonNode getSessionStats(int sessionId) throws KegbotApiException {
-    return getJson("/sessions/" + sessionId + "/stats/", null).get("object");
+    return getJson("/sessions/" + sessionId + "/stats/").get("object");
   }
 
   @Override
   public FlowMeter calibrateMeter(FlowMeter meter, double ticksPerMl) throws BackendException {
-    final Request.Builder builder = newRequest("/flow-meters/" + meter.getId())
-        .setMethod(Http.POST)
-        .addParameter("ticks_per_ml", Double.valueOf(ticksPerMl).toString())
-        .addParameter("ml_per_tick", Double.valueOf(1.0 / ticksPerMl).toString());
-    return getSingleProto(FlowMeter.newBuilder(), requestJson(builder.build()).get("object"));
+    final Map<String, String> params = ImmutableMap.<String, String>builder()
+        .put("ticks_per_ml", Double.valueOf(ticksPerMl).toString())
+        .put("ml_per_tick", Double.valueOf(1.0 / ticksPerMl).toString())
+        .build();
+    return postProto("/flow-meters/" + meter.getId(), FlowMeter.newBuilder(), params);
   }
 
   @Override
@@ -348,15 +443,13 @@ public class KegbotApiImpl implements Backend {
 
   @Override
   public Session getCurrentSession() throws KegbotApiException {
-    final List<NameValuePair> params = Lists.newArrayList();
-    params.add(new BasicNameValuePair("limit", "1"));
-    final List<Session> sessions = getProto("/sessions/", Session.newBuilder(), params);
+    final List<Session> sessions = getProto("/sessions/?limit=1", Session.newBuilder());
     if (sessions.isEmpty()) {
       return null;
     }
-    final Session sess = sessions.get(0);
-    if (sess.getIsActive()) {
-      return sess;
+    final Session session = sessions.get(0);
+    if (session.getIsActive()) {
+      return session;
     }
     return null;
   }
@@ -366,21 +459,20 @@ public class KegbotApiImpl implements Backend {
       @Nullable String shout, @Nullable String username, @Nullable String recordDate, long durationMillis,
       @Nullable TimeSeries timeSeries, @Nullable File picture) throws BackendException {
 
-    final Request.Builder builder = newRequest("/taps/" + tapName)
-        .setMethod(Http.POST)
-        .addParameter("ticks", String.valueOf(ticks));
+    final ImmutableMap.Builder<String, String> paramBuilder = ImmutableMap.builder();
+    paramBuilder.put("ticks", String.valueOf(ticks));
 
     if (volumeMl > 0) {
-      builder.addParameter("volume_ml", String.valueOf(volumeMl));
+      paramBuilder.put("volume_ml", String.valueOf(volumeMl));
     }
 
     if (!Strings.isNullOrEmpty(username)) {
-      builder.addParameter("username", username);
+      paramBuilder.put("username", username);
     }
 
     if (!Strings.isNullOrEmpty(recordDate)) {
       try {
-        builder.addParameter("record_date", recordDate); // new API
+        paramBuilder.put("record_date", recordDate); // new API
       } catch (IllegalArgumentException e) {
         // Ignore.
       }
@@ -388,24 +480,25 @@ public class KegbotApiImpl implements Backend {
 
     if (durationMillis > 0) {
       // TODO: Fix API to report this in millis.
-      builder.addParameter("duration", String.valueOf(durationMillis / 1000));
+      paramBuilder.put("duration", String.valueOf(durationMillis / 1000));
     }
 
     // TODO: Handle spilled.
 
     if (!Strings.isNullOrEmpty(shout)) {
-      builder.addParameter("shout", shout);
+      paramBuilder.put("shout", shout);
     }
 
     if (timeSeries != null) {
-      builder.addParameter("tick_time_series", timeSeries.asString());
+      paramBuilder.put("tick_time_series", timeSeries.asString());
     }
 
     if (picture != null) {
-      builder.addFile("photo", picture);
+      final Map<String, File> files = ImmutableMap.of("photo", picture);
+      return postProto("/taps/" + tapName, Drink.newBuilder(), paramBuilder.build(), files);
+    } else {
+      return postProto("/taps/" + tapName, Drink.newBuilder(), paramBuilder.build());
     }
-
-    return getSingleProto(Drink.newBuilder(), requestJson(builder.build()).get("object"));
   }
 
   @Override
@@ -426,43 +519,36 @@ public class KegbotApiImpl implements Backend {
   @Override
   public Image attachPictureToDrink(int drinkId, File picture) throws KegbotApiException {
     final String url = String.format("/drinks/%s/add-photo/", Integer.valueOf(drinkId));
-
-    final Request.Builder builder = newRequest(url)
-        .setMethod(Http.POST)
-        .addFile("photo", picture);
-
-    return getSingleProto(Image.newBuilder(), requestJson(builder.build()).get("object"));
+    final Map<String, File> files = ImmutableMap.of("photo", picture);
+    return postProto(url, Image.newBuilder(), null, files);
   }
 
   @Override
   public User createUser(String username, String email, String password, String imagePath)
       throws KegbotApiException {
-    final Request.Builder builder = newRequest("/new-user/")
-        .setMethod(Http.POST)
-        .addParameter("username", username)
-        .addParameter("email", email);
+    final ImmutableMap.Builder<String, String> builder = ImmutableMap.<String, String>builder()
+        .put("username", username)
+        .put("email", email);
 
     if (!Strings.isNullOrEmpty(password)) {
-      builder.addParameter("password", password);
+      builder.put("password", password);
     }
 
-    if (!Strings.isNullOrEmpty(imagePath)) {
-      builder.addFile("photo", new File(imagePath));
-    }
+//    if (!Strings.isNullOrEmpty(imagePath)) {
+//      builder.put("photo", new File(imagePath));
+//    }
 
-    return getSingleProto(User.newBuilder(), requestJson(builder.build()).get("object"));
+    return postProto("/new-user/", User.newBuilder(), builder.build());
   }
 
   @Override
   public AuthenticationToken assignToken(String authDevice, String tokenValue, String username)
       throws KegbotApiException {
     final String url = "/auth-tokens/" + authDevice + "/" + tokenValue + "/assign/";
-    final Request.Builder builder = newRequest(url)
-        .setMethod(Http.POST)
-        .addParameter("username", username);
-
-    return getSingleProto(AuthenticationToken.newBuilder(),
-        requestJson(builder.build()).get("object"));
+    final Map<String, String> params = ImmutableMap.<String, String>builder()
+        .put("username", username)
+        .build();
+    return postProto(url, AuthenticationToken.newBuilder(), params);
   }
 
   @Override

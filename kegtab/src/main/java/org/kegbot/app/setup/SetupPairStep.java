@@ -104,7 +104,7 @@ public class SetupPairStep extends SetupStep {
       Preconditions.checkState(mPollTask == null, "Already running");
 
       final AppConfiguration config = KegbotApplication.get(getActivity()).getConfig();
-      final KegbotApiImpl api = new KegbotApiImpl(config);
+      final KegbotApiImpl api = KegbotApiImpl.fromContext(getActivity());
 
       mQuit.set(false);
       mPollTask = new AsyncTask<Void, Void, String>() {
