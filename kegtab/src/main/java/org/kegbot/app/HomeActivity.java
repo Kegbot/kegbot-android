@@ -28,7 +28,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.MenuItem;
@@ -48,6 +47,7 @@ import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.app.event.ConnectivityChangedEvent;
 import org.kegbot.app.event.VisibleTapsChangedEvent;
 import org.kegbot.app.service.CheckinService;
+import org.kegbot.app.util.SortableFragmentStatePagerAdapter;
 import org.kegbot.app.util.Utils;
 import org.kegbot.core.KegbotCore;
 import org.kegbot.proto.Models.KegTap;
@@ -58,6 +58,7 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.GuardedBy;
 
 /**
  * The main "home screen" of the Kegtab application. It shows the status of each tap, and allows the
@@ -112,9 +113,12 @@ public class HomeActivity extends CoreActivity {
    */
   private int mLastShownGooglePlayServicesError = Integer.MIN_VALUE;
 
+  private final Object mTapsLock = new Object();
+
   /**
    * Shadow copy of tap manager taps.
    */
+  @GuardedBy("mTapsLock")
   private final List<KegTap> mTaps = Lists.newArrayList();
 
   /** Main thread handler for managing {@link #mAttractModeRunnable}. */
@@ -140,6 +144,9 @@ public class HomeActivity extends CoreActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.main_activity);
 
+    synchronized (mTapsLock) {
+      mTaps.clear();
+    }
     mTapStatusAdapter = new HomeFragmentsAdapter(getFragmentManager());
 
     mTapStatusPager = (ViewPager) findViewById(R.id.tap_status_pager);
@@ -175,7 +182,7 @@ public class HomeActivity extends CoreActivity {
 
   @Override
   protected void onPause() {
-    Log.d(LOG_TAG, "--- unregistering");
+    Log.d(LOG_TAG, "onPause");
     mCore.getBus().unregister(this);
     cancelAttractMode();
     super.onPause();
@@ -219,22 +226,19 @@ public class HomeActivity extends CoreActivity {
 
   @Subscribe
   public void onVisibleTapListUpdate(VisibleTapsChangedEvent event) {
-    Log.d(LOG_TAG, "Got tap list change event: " + event);
+    assert(Looper.myLooper() == Looper.getMainLooper());
+    Log.d(LOG_TAG, "Got tap list change event: " + event + " taps=" + event.getTaps().size());
 
     final List<KegTap> newTapList = event.getTaps();
-    if (newTapList.equals(mTaps)) {
-      Log.d(LOG_TAG, "Tap list unchanged.");
-      return;
-    }
-
-    mTaps.clear();
-    mTaps.addAll(newTapList);
-    mTapStatusAdapter.notifyDataSetChanged();
-
-    if (mTapStatusPager.getCurrentItem() >= mTaps.size()) {
-      if (!mTaps.isEmpty()) {
-        mTapStatusPager.setCurrentItem(mTaps.size() - 1);
+    synchronized (mTapsLock) {
+      if (newTapList.equals(mTaps)) {
+        Log.d(LOG_TAG, "Tap list unchanged.");
+        return;
       }
+
+      mTaps.clear();
+      mTaps.addAll(newTapList);
+      mTapStatusAdapter.notifyDataSetChanged();
     }
 
     maybeShowTapWarnings();
@@ -242,9 +246,11 @@ public class HomeActivity extends CoreActivity {
 
   private void maybeShowTapWarnings() {
     final List<KegTap> unboundTaps = Lists.newArrayList();
-    for (final KegTap tap : mTaps) {
-      if (!tap.hasMeter()) {
-        unboundTaps.add(tap);
+    synchronized (mTapsLock) {
+      for (final KegTap tap : mTaps) {
+        if (!tap.hasMeter()) {
+          unboundTaps.add(tap);
+        }
       }
     }
 
@@ -382,35 +388,71 @@ public class HomeActivity extends CoreActivity {
   /**
    * Shows a TapStatusFragment for each tap, plus a SystemStatusFragment.
    */
-  public class HomeFragmentsAdapter extends FragmentStatePagerAdapter {
+  public class HomeFragmentsAdapter extends SortableFragmentStatePagerAdapter {
     public HomeFragmentsAdapter(FragmentManager fm) {
       super(fm);
     }
 
     @Override
+    public long getItemId(int position) {
+      if (position < mTaps.size()) {
+        return mTaps.get(position).getId();
+      } else if (position == mTaps.size()) {
+        return -1;
+      }
+      throw new IndexOutOfBoundsException("Position out of bounds: " + position);
+    }
+
+    @Override
     public Fragment getItem(int index) {
-      if (index < mTaps.size()) {
-        final KegTap tap = mTaps.get(index);
-        TapStatusFragment frag = TapStatusFragment.forTap(mTaps.get(index));
-        return frag;
-      } else if (index == mTaps.size()) {
-        SystemStatusFragment frag = new SystemStatusFragment();
-        return frag;
-      } else {
-        Log.wtf(LOG_TAG, "Trying to get fragment " + index + ", current size " + mTaps.size());
-        return null;
+      Log.d(LOG_TAG, "getItem: " + index);
+      synchronized (mTapsLock) {
+        if (index < mTaps.size()) {
+          final KegTap tap = mTaps.get(index);
+          TapStatusFragment frag = TapStatusFragment.forTap(mTaps.get(index));
+          return frag;
+        } else if (index == mTaps.size()) {
+          SystemStatusFragment frag = new SystemStatusFragment();
+          return frag;
+        } else {
+          Log.wtf(LOG_TAG, "Trying to get fragment " + index + ", current size " + mTaps.size());
+          return null;
+        }
       }
     }
 
     @Override
     public int getItemPosition(Object object) {
       Log.d(LOG_TAG, "getItemPosition: " + object);
+
+      synchronized (mTapsLock) {
+        if (object instanceof SystemStatusFragment) {
+          Log.d(LOG_TAG, "  position=" + mTaps.size());
+          return mTaps.size();
+        }
+
+        if (object instanceof TapStatusFragment) {
+          final int tapId = ((TapStatusFragment) object).getTapId();
+          int position = 0;
+          for (final KegTap tap : mTaps) {
+            if (tap.getId() == tapId) {
+              Log.d(LOG_TAG, "  position=" + position);
+              return position;
+            }
+            position++;
+          }
+        }
+      }
+
+      Log.d(LOG_TAG, "  position=NONE");
       return POSITION_NONE;
     }
 
     @Override
     public int getCount() {
-      return mTaps.size() + 1;
+      synchronized (mTapsLock) {
+        return mTaps.size() + 1;
+      }
     }
 
     @Override

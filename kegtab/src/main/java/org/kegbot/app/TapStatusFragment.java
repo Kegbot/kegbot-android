@@ -291,7 +291,7 @@ public class TapStatusFragment extends Fragment {
     }
   }
 
-  private int getTapId() {
+  int getTapId() {
     return getArguments().getInt(ARG_TAP_ID, -1);
   }
 
