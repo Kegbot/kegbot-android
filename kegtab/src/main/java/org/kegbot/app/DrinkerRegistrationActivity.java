@@ -25,6 +25,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -93,7 +94,11 @@ public class DrinkerRegistrationActivity extends CoreActivity {
         // User already exists.
         mUsername.setError("This username is not available.");
       } else {
-        showGetPhoto();
+        if (mCore.getConfiguration().getTakePhotosDuringRegistration()) {
+          showGetPhoto();
+        } else {
+          doRegister();
+        }
       }
     }
 
@@ -106,8 +111,19 @@ public class DrinkerRegistrationActivity extends CoreActivity {
       Log.d(TAG, "Registering...");
       final String imagePath = mCameraFragment.getLastFilename();
       try {
-        return api.createUser(mUsername.getText().toString(), mEmail.getText().toString(),
+        final long startTime = SystemClock.elapsedRealtime();
+        final User user = api.createUser(mUsername.getText().toString(),
+            mEmail.getText().toString(),
             null, imagePath);
+
+        // Make sure we're showing the progress bar for at least
+        // 2s; the flashing is jarring / hard to read otherwise.
+        final long duration = SystemClock.elapsedRealtime() - startTime;
+        if (duration < 2000) {
+          SystemClock.sleep(2000 - duration);
+        }
+
+        return user;
       } catch (BackendException e) {
         // TODO: Highlight field errors.
         Log.w(TAG, "Registration failed: " + e.toString());

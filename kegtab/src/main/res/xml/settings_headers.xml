@@ -24,6 +24,10 @@
         android:title="@string/settings_general_header"
         />
     <header
+        android:fragment="org.kegbot.app.SettingsActivity$AccessFragment"
+        android:title="@string/settings_access_header"
+        />
+    <header
         android:fragment="org.kegbot.app.SettingsActivity$KegeratorFragment"
         android:title="@string/settings_kegerator_header"
         />

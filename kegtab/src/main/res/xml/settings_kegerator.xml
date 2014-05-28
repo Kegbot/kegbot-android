@@ -67,27 +67,6 @@
     <PreferenceCategory android:title="User Interface">
         <CheckBoxPreference
             android:defaultValue="true"
-            android:key="config:ALLOW_REGISTRATION"
-            android:summaryOff="New users cannot register from the main screen"
-            android:summaryOn="New users can register from the main screen"
-            android:title="Allow New User Registration">
-        </CheckBoxPreference>
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="config:ALLOW_MANUAL_LOGIN"
-            android:summaryOff="Drinkers must use an RFID or other token to log in"
-            android:summaryOn="Drinkers can log in by tapping on the main screen"
-            android:title="Allow On-Screen Login">
-        </CheckBoxPreference>
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="config:CACHE_CREDENTIALS"
-            android:summaryOff="Authentication tokens will always be checked against the server"
-            android:summaryOn="Authentication tokens will be locally cached"
-            android:title="Cache Credentials">
-        </CheckBoxPreference>
-        <CheckBoxPreference
-            android:defaultValue="true"
             android:key="config:ATTRACT_MODE"
             android:summaryOff="Taps on the main screen will not be auto rotated"
             android:summaryOn="Kegbot will cycle taps on the main screen when idle"

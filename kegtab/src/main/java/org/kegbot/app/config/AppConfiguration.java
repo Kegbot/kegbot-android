@@ -181,6 +181,14 @@ public class AppConfiguration {
     setBoolean(ConfigKey.AUTO_TAKE_PHOTOS, value);
   }
 
+  public boolean getTakePhotosDuringRegistration() {
+    return getBoolean(ConfigKey.TAKE_PHOTOS_DURING_REGISTRATION);
+  }
+
+  public void setTakePhotosDuringRegistration(boolean value) {
+    setBoolean(ConfigKey.TAKE_PHOTOS_DURING_REGISTRATION, value);
+  }
+
   public boolean getEnableCameraSounds() {
     return getBoolean(ConfigKey.ENABLE_CAMERA_SOUNDS);
   }

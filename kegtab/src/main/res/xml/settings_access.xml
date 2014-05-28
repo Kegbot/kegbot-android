@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  ~ Copyright 2014 Bevbot LLC <info@bevbot.com>
+  ~
+  ~ This file is part of the Kegtab package from the Kegbot project. For
+  ~ more information on Kegtab or Kegbot, see <http://kegbot.org/>.
+  ~
+  ~ Kegtab is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU General Public License as published by the Free
+  ~ Software Foundation, version 2.
+  ~
+  ~ Kegtab is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+  ~ more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License along
+  ~ with Kegtab. If not, see <http://www.gnu.org/licenses/>.
+  -->
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="Registration">
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="config:ALLOW_REGISTRATION"
+            android:summaryOff="New users cannot register from the main screen"
+            android:summaryOn="New users can register from the main screen"
+            android:title="Allow New User Registration">
+        </CheckBoxPreference>
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="config:TAKE_PHOTOS_DURING_REGISTRATION"
+            android:summaryOff="Photos will be skipped during registration"
+            android:summaryOn="User may take an account photo during registration"
+            android:title="Take Photo During Registration"
+            android:dependency="config:ALLOW_REGISTRATION">
+        </CheckBoxPreference>
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="config:ALLOW_MANUAL_LOGIN"
+            android:summaryOff="Drinkers must use an RFID or other token to log in"
+            android:summaryOn="Drinkers can log in by tapping on the main screen"
+            android:title="Allow On-Screen Login">
+        </CheckBoxPreference>
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="config:CACHE_CREDENTIALS"
+            android:summaryOff="Authentication tokens will always be checked against the server"
+            android:summaryOn="Authentication tokens will be locally cached"
+            android:title="Cache Credentials">
+        </CheckBoxPreference>
+    </PreferenceCategory>
+
+</PreferenceScreen>

@@ -165,6 +165,7 @@
     <string name="drinker_select_new_account_description">Register for and begin pouring with a new account.</string>
     <string name="drinker_select_button_guest">Pour As Guest</string>
     <string name="drinker_select_guest_description">Pour without linking to an account.</string>
+    <string name="settings_access_header">Access</string>
 
 
 </resources>
