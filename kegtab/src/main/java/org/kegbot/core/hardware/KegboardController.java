@@ -32,7 +32,6 @@ import com.hoho.android.usbserial.util.HexDump;
 
 import org.kegbot.core.FlowMeter;
 import org.kegbot.core.ThermoSensor;
-import org.kegbot.kegboard.KegboardAuthTokenMessage;
 import org.kegbot.kegboard.KegboardHelloMessage;
 import org.kegbot.kegboard.KegboardMessage;
 import org.kegbot.kegboard.KegboardMessageFactory;
@@ -43,7 +42,6 @@ import org.kegbot.kegboard.KegboardTemperatureReadingMessage;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -195,7 +193,7 @@ public class KegboardController implements Controller {
         }
       }
 
-      final Set<Integer> missing = new LinkedHashSet(mLastEnabledOutputs);
+      final Set<Integer> missing = Sets.newLinkedHashSet(mLastEnabledOutputs);
       missing.removeAll(mEnabledOutputsToRefreshUptimeMillis.keySet());
       if (!missing.isEmpty()) {
         for (final Integer outputId : missing) {
@@ -314,9 +312,7 @@ public class KegboardController implements Controller {
 
       final ThermoSensor sensor = mThermoSensors.get(name);
       sensor.setTemperatureC(tempMessage.getValue());
-    } else if (message instanceof KegboardAuthTokenMessage) {
     }
-
   }
 
 }
