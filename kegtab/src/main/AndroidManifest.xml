@@ -291,7 +291,6 @@
 
         <service android:name="org.kegbot.app.service.KegbotCoreService"/>
         <service android:name="org.kegbot.app.service.CheckinService"/>
-        <service android:name="org.kegbot.app.service.GCMService"/>
 
         <activity
             android:name="org.kegbot.app.TapListActivity"
