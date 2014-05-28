@@ -85,6 +85,10 @@ public class KegboardManager extends BackgroundManager implements ControllerMana
   /** Default interval for scanning the USB device tree. */
   private static final long USB_REFRESH_INTERVAL_MILLIS = TimeUnit.SECONDS.toMillis(5);
 
+  private static final long PING_WAIT_FOR_RESPONSE_MILLIS = 200;
+  private static final long PING_RETRY_DELAY_MILLIS = TimeUnit.SECONDS.toMillis(1);
+  private static final long PING_ATTEMPTS = 10;
+
   private static final int MIN_FIRMWARE_VERSION = 17;
 
   private static final ProbeTable PROBE_TABLE = UsbSerialProber.getDefaultProbeTable();
@@ -474,19 +478,18 @@ public class KegboardManager extends BackgroundManager implements ControllerMana
   }
 
   private KegboardHelloMessage pingController(KegboardController controller) throws IOException {
-    final int maxAttempts = 4;
-
-    KegboardHelloMessage helloMessage = null;
-    for (int i = 0; i < maxAttempts; i++) {
-      SystemClock.sleep(200);
+    for (int i = 0; i < PING_ATTEMPTS; i++) {
+      Log.d(TAG, "Pinging controller: try " + i + " of " + PING_ATTEMPTS + " ...");
       controller.ping();
-      SystemClock.sleep(500);
+      SystemClock.sleep(PING_WAIT_FOR_RESPONSE_MILLIS);
 
       for (final KegboardMessage message : controller.readMessages()) {
         if (message instanceof KegboardHelloMessage) {
+          Log.d(TAG, "Success!");
           return (KegboardHelloMessage) message;
         }
       }
+      SystemClock.sleep(PING_RETRY_DELAY_MILLIS);
     }
 
     return null;
