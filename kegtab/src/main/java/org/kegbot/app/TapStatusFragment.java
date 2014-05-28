@@ -229,12 +229,30 @@ public class TapStatusFragment extends Fragment {
     final Keg keg = tap.getCurrentKeg();
     title.setText(keg.getBeverage().getName());
 
+    // Find a description to show.
+    String description = keg.getDescription();
+    if (Strings.isNullOrEmpty(description)) {
+      description = keg.getBeverage().getDescription();
+    }
+    if (Strings.isNullOrEmpty(description)) {
+      description = tap.getDescription();
+    }
+
     final ImageView tapImage = (ImageView) mView.findViewById(R.id.tapImage);
+
+    // Show tap image, or notes if none available.
+    tapImage.setVisibility(View.VISIBLE);
+    tapNotes.setVisibility(View.GONE);
     tapImage.setImageResource(R.drawable.kegbot_unknown_square_2);
+
     if (keg.getBeverage().hasPicture()) {
       final Image image = keg.getBeverage().getPicture();
       final String imageUrl = image.getUrl();
       mImageDownloader.download(imageUrl, tapImage);
+    } else if (!Strings.isNullOrEmpty(description)) {
+      tapImage.setVisibility(View.GONE);
+      tapNotes.setVisibility(View.VISIBLE);
+      tapNotes.setText(description);
     }
 
     // TODO(mikey): proper units support
