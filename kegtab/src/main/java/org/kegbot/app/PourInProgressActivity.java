@@ -130,12 +130,13 @@ public class PourInProgressActivity extends CoreActivity {
           for (final Flow flow : mFlowManager.getAllActiveFlows()) {
             mFlowManager.endFlow(flow);
           }
-          dialog.cancel();
+          cancelIdleWarning();
         }
       });
       return builder.create();
     }
   };
+  private boolean mIdleDialogShowing = false;
 
   private final Object mTapsLock = new Object();
 
@@ -179,6 +180,14 @@ public class PourInProgressActivity extends CoreActivity {
       }
       cancelIdleWarning();
       finish();
+    }
+  };
+
+  private final Runnable REFRESH_FLOWS_RUNNABLE = new Runnable() {
+    @Override
+    public void run() {
+      refreshFlows();
+      mHandler.postDelayed(this, 1000);
     }
   };
 
@@ -448,7 +457,7 @@ public class PourInProgressActivity extends CoreActivity {
     super.onResume();
     Log.d(TAG, "onResume");
     mCore.getBus().register(this);
-    refreshFlows();
+    mHandler.post(REFRESH_FLOWS_RUNNABLE);
   }
 
   @Override
@@ -469,6 +478,7 @@ public class PourInProgressActivity extends CoreActivity {
   @Override
   protected void onPause() {
     Log.d(TAG, "onPause");
+    mHandler.removeCallbacks(REFRESH_FLOWS_RUNNABLE);
     mHandler.removeCallbacks(FINISH_ACTIVITY_RUNNABLE);
     mCore.getBus().unregister(this);
     super.onPause();
@@ -608,12 +618,6 @@ public class PourInProgressActivity extends CoreActivity {
       }
     }
 
-    // Force the fragment manager to execute any pending transactions.
-    // This avoids a potential "Fragment already added" crash where the
-    // idle dialog's show() method is called twice (in subsequent calls to
-    // sendIdleWarning()).
-    getFragmentManager().executePendingTransactions();
-
     if (largestIdleTime >= mConfig.getIdleWarningMs()) {
       sendIdleWarning();
     } else {
@@ -645,16 +649,18 @@ public class PourInProgressActivity extends CoreActivity {
   }
 
   private void sendIdleWarning() {
-    if (mIdleDialogFragment.isVisible()) {
-      // Already showing.
+    if (mIdleDialogShowing) {
       return;
     }
     mIdleDialogFragment.show(getFragmentManager(), "idle");
+    mIdleDialogShowing = true;
   }
 
   private void cancelIdleWarning() {
-    if (mIdleDialogFragment.isVisible()) {
+    if (mIdleDialogShowing) {
       mIdleDialogFragment.dismiss();
+      getFragmentManager().executePendingTransactions();
+      mIdleDialogShowing = false;
     }
   }
 
