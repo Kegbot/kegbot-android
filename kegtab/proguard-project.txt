@@ -35,6 +35,7 @@
 
 -dontwarn butterknife.internal.**
 -dontwarn com.squareup.okhttp.**
+-dontwarn okio.**
 
 -keep class **$$ViewInjector { *; }
 -keepnames class * { @butterknife.InjectView *;}
