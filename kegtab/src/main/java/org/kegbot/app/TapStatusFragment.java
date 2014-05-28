@@ -161,6 +161,10 @@ public class TapStatusFragment extends Fragment {
       Log.d(TAG, "Manual login is disabled.");
       return;
     }
+    if (!getTap().hasCurrentKeg()) {
+      Log.d(TAG, "Tap is offline");
+      return;
+    }
 
     if (config.useAccounts()) {
       final Intent intent = KegtabCommon.getAuthDrinkerActivityIntent(getActivity());
