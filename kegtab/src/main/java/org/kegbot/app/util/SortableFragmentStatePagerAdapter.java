@@ -227,6 +227,9 @@ public abstract class SortableFragmentStatePagerAdapter extends PagerAdapter {
         while (mSavedState.size() <= position) {
             mSavedState.add(null);
         }
+        while (mFragments.size() <= position) {
+            mFragments.add(null);
+        }
         mSavedState.set(position, mFragmentManager.saveFragmentInstanceState(fragment));
         mFragments.set(position, null);
 
