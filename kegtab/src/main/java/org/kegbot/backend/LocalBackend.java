@@ -158,7 +158,7 @@ public class LocalBackend implements Backend {
   @Override
   public AuthenticationToken getAuthToken(String authDevice, String tokenValue)
       throws BackendException {
-    throw new NotFoundException("No token.");
+    return null;  // Not Implemented
   }
 
   @Override

@@ -72,8 +72,7 @@ public interface Backend {
   /**
    * Returns the authentication token record for the given token.
    *
-   * @return the token record
-   * @throws NotFoundException if there is no record for this token.
+   * @return the token record, or {@code null} if not assigned
    */
   public AuthenticationToken getAuthToken(String authDevice, String tokenValue)
       throws BackendException;

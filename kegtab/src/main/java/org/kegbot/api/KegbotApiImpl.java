@@ -19,6 +19,7 @@
 package org.kegbot.api;
 
 import android.content.Context;
+import android.os.SystemClock;
 import android.util.Log;
 
 import com.google.common.base.Joiner;
@@ -38,6 +39,8 @@ import com.squareup.okhttp.ResponseBody;
 
 import org.apache.http.NameValuePair;
 import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.kegbot.app.KegbotApplication;
 import org.kegbot.app.config.AppConfiguration;
@@ -216,24 +219,83 @@ public class KegbotApiImpl implements Backend {
 
   private JsonNode requestJson(Request request) throws KegbotApiException {
     final Response response;
+    final long startTime = SystemClock.elapsedRealtime();
     try {
       response = mClient.newCall(request).execute();
+    } catch (IOException e) {
+      Log.w(TAG, String.format("--> %s %s [ERR]", request.method(), request.urlString()));
+      throw new KegbotApiException(e);
+    }
+    final long endTime = SystemClock.elapsedRealtime();
+
+    final int responseCode = response.code();
+    final String logMessage = String.format("--> %s %s [%s] %sms", request.method(), request.urlString(),
+        responseCode, endTime - startTime);
+    if (responseCode >= 200 && responseCode < 300) {
+      Log.d(TAG, logMessage);
+    } else {
+      Log.w(TAG, logMessage);
+    }
+    final ResponseBody body = response.body();
+
+    final JsonNode rootNode;
+    try {
+      try {
+        final ObjectMapper mapper = new ObjectMapper();
+        rootNode = mapper.readValue(body.byteStream(), JsonNode.class);
+      } finally {
+        body.close();
+      }
+    } catch (JsonParseException e) {
+      throw new KegbotApiMalformedResponseException(e);
+    } catch (JsonMappingException e) {
+      throw new KegbotApiMalformedResponseException(e);
     } catch (IOException e) {
       throw new KegbotApiException(e);
     }
 
-    final ResponseBody body = response.body();
-
+    boolean success = false;
     try {
-      try {
-        final ObjectMapper mapper = new ObjectMapper();
-        final JsonNode rootNode = mapper.readValue(body.byteStream(), JsonNode.class);
-        return rootNode;
-      } finally {
-        body.close();
+      // Handle structural errors.
+      if (!rootNode.has("meta")) {
+        throw new KegbotApiMalformedResponseException("Response is missing 'meta' field.");
       }
-    } catch (IOException e) {
-      throw new KegbotApiException(e);
+      final JsonNode meta = rootNode.get("meta");
+      if (!meta.isContainerNode()) {
+        throw new KegbotApiMalformedResponseException("'meta' field is wrong type.");
+      }
+
+      final String message;
+      if (rootNode.has("error") && rootNode.get("error").has("message")) {
+        message = rootNode.get("error").get("message").getTextValue();
+      } else {
+        message = null;
+      }
+
+      // Handle HTTP errors.
+      if (responseCode < 200 || responseCode >= 400) {
+        switch (responseCode) {
+          case 401:
+            throw new NotAuthorizedException(message);
+          case 404:
+            throw new KegbotApi404(message);
+          case 405:
+            throw new MethodNotAllowedException(message);
+          default:
+            if (message != null) {
+              throw new KegbotApiServerError(message);
+            } else {
+              throw new KegbotApiServerError("Server error, response code=" + responseCode);
+            }
+        }
+      }
+
+      success = true;
+      return rootNode;
+    } finally {
+      if (!success) {
+        Log.d(TAG, "Response JSON was: " + rootNode.toString());
+      }
     }
   }
 
@@ -384,8 +446,12 @@ public class KegbotApiImpl implements Backend {
   @Override
   public AuthenticationToken getAuthToken(String authDevice, String tokenValue)
       throws KegbotApiException {
-    return getSingleProto("/auth-tokens/" + authDevice + "/" + tokenValue + "/",
-        AuthenticationToken.newBuilder());
+    try {
+      return getSingleProto("/auth-tokens/" + authDevice + "/" + tokenValue + "/",
+          AuthenticationToken.newBuilder());
+    } catch (KegbotApi404 e) {
+      return null;
+    }
   }
 
   @Override

@@ -61,6 +61,9 @@ public class AuthenticationManager extends Manager {
     org.kegbot.proto.Models.AuthenticationToken tok = mApi.getAuthToken(token
         .getAuthDevice(), token.getTokenValue());
     Log.d(TAG, "Got auth token: " + tok);
+    if (tok == null) {
+      throw new NotFoundException("Unknown token.");
+    }
     if (!tok.getEnabled()) {
       throw new NotFoundException("Token not enabled.");
     } else if (!tok.hasUser()) {
