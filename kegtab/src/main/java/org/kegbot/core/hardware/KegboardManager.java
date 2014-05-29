@@ -376,6 +376,8 @@ public class KegboardManager extends BackgroundManager implements ControllerMana
 
       verified = verifyFirmware(controller);
     } catch (IOException e) {
+      Log.w(TAG, "Error adding serial port: " + e, e);
+      Log.d(TAG, "Closing device.");
       try {
         port.close();
       } catch (IOException e2) {
@@ -479,15 +481,16 @@ public class KegboardManager extends BackgroundManager implements ControllerMana
 
   private KegboardHelloMessage pingController(KegboardController controller) throws IOException {
     for (int i = 0; i < PING_ATTEMPTS; i++) {
-      Log.d(TAG, "Pinging controller: try " + i + " of " + PING_ATTEMPTS + " ...");
+      Log.d(TAG, "pingController: Try " + i + " of " + PING_ATTEMPTS + " ...");
       controller.ping();
       SystemClock.sleep(PING_WAIT_FOR_RESPONSE_MILLIS);
 
       for (final KegboardMessage message : controller.readMessages()) {
         if (message instanceof KegboardHelloMessage) {
-          Log.d(TAG, "Success!");
+          Log.d(TAG, "pingController: Success! " + message);
           return (KegboardHelloMessage) message;
         }
+        Log.d(TAG, "pingController: Discarding message: " + message);
       }
       SystemClock.sleep(PING_RETRY_DELAY_MILLIS);
     }
