@@ -211,8 +211,6 @@ public class DrinkerRegistrationActivity extends CoreActivity {
       }
     });
 
-    final AppConfiguration config = mCore.getConfiguration();
-
     mCameraFragment = (CameraFragment) getFragmentManager().findFragmentById(R.id.camera);
     mCameraFragment.getView().setVisibility(View.GONE);
 
