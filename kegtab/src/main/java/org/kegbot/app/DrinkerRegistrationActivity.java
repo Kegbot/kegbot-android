@@ -159,6 +159,8 @@ public class DrinkerRegistrationActivity extends CoreActivity {
 
     setContentView(R.layout.create_drinker_activity);
 
+    mConfig = KegbotApplication.get(this).getConfig();
+
     mSubtitle = (TextView) findViewById(R.id.new_drinker_subtitle);
     mFlipper = (ViewFlipper) findViewById(R.id.new_drinker_flipper);
     mFlipper.setInAnimation(this, android.R.anim.fade_in);
