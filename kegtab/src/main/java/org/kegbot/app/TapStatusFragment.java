@@ -38,6 +38,7 @@ import android.widget.ViewFlipper;
 import com.google.common.base.Strings;
 import com.squareup.otto.Subscribe;
 
+import org.kegbot.app.alert.AlertCore;
 import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.app.event.VisibleTapsChangedEvent;
 import org.kegbot.app.util.ImageDownloader;
@@ -163,6 +164,15 @@ public class TapStatusFragment extends Fragment {
     }
     if (!getTap().hasCurrentKeg()) {
       Log.d(TAG, "Tap is offline");
+      return;
+    }
+
+    if (!getTap().hasMeter()) {
+      mCore.getAlertCore().postAlert(
+          AlertCore.newBuilder("Tap Disconnected")
+              .setDescription("This tap is not connected to a meter right now.")
+              .severityError()
+              .build());
       return;
     }
 
