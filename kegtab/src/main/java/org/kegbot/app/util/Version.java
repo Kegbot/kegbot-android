@@ -19,10 +19,10 @@
 
 package org.kegbot.app.util;
 
-import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
+import com.google.common.base.Strings;
 
-import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by mikey on 5/2/14.
@@ -36,6 +36,8 @@ public class Version implements Comparable<Version> {
 
   public static final Version UNKNOWN = new Version(0, 0, 0, "unknown");
 
+  private static final Pattern VERSION_RE = Pattern.compile("(\\d+)\\.(\\d+)\\.(\\d+)([a-z]+\\d+)?");
+
   public Version(int major, int minor, int micro, String extra) {
     MAJOR = major;
     MINOR = minor;
@@ -44,19 +46,14 @@ public class Version implements Comparable<Version> {
   }
 
   public static Version fromString(String versionStr) {
-    final List<String> parts = Lists.newArrayList(Splitter.on('.').split(versionStr));
-    if (parts.size() != 3) {
+    final Matcher matcher = VERSION_RE.matcher(versionStr);
+    if (!matcher.matches()) {
       return UNKNOWN;
     }
-    int major, minor, micro;
-    try {
-      major = Integer.valueOf(parts.get(0)).intValue();
-      minor = Integer.valueOf(parts.get(1)).intValue();
-      micro = Integer.valueOf(parts.get(2)).intValue();
-    } catch (NumberFormatException e) {
-      return UNKNOWN;
-    }
-    final String extra = ""; // unsupported
+    final int major = Integer.valueOf(matcher.group(1));
+    final int minor = Integer.valueOf(matcher.group(2));
+    final int micro = Integer.valueOf(matcher.group(3));
+    final String extra = Strings.nullToEmpty(matcher.group(4));
     return new Version(major, minor, micro, extra);
   }
 
