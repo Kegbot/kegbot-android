@@ -594,7 +594,8 @@ public class KegbotApiImpl implements Backend {
       throws KegbotApiException {
     final ImmutableMap.Builder<String, String> builder = ImmutableMap.<String, String>builder()
         .put("username", username)
-        .put("email", email);
+        .put("email", email)
+        .put("accepted_terms", "true");
 
     if (!Strings.isNullOrEmpty(password)) {
       builder.put("password", password);

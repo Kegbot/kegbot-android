@@ -167,6 +167,13 @@
     <string name="drinker_select_guest_description">Pour without linking to an account.</string>
     <string name="settings_access_header">Access</string>
     <string name="settings_camera_header">Camera</string>
-
+    <string name="register_agree_terms_text"><![CDATA[
+        I agree to the Kegbot <a
+            href="https://kegbot.org/terms">Terms of Service</a> and <a
+            href="https://kegbot.org/privacy">Privacy Policy</a>
+        ]]></string>
+    <string name="drinker_select_button_cancel">Cancel</string>
+    <string name="register_error_email_invalid">Please enter a valid address.</string>
+    <string name="register_error_must_agree">You must agree to continue.</string>
 
 </resources>

@@ -27,7 +27,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.text.Editable;
+import android.text.Html;
 import android.text.TextWatcher;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.KeyEvent;
@@ -35,6 +37,8 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
@@ -65,6 +69,7 @@ public class DrinkerRegistrationActivity extends CoreActivity {
   private TextView mSubtitle;
   private EditText mUsername;
   private EditText mEmail;
+  private CheckBox mConsentCheckbox;
   private CameraFragment mCameraFragment;
 
   private DialogFragment mDialog;
@@ -168,6 +173,23 @@ public class DrinkerRegistrationActivity extends CoreActivity {
     mEmail = (EditText) findViewById(R.id.email);
     mUsername = (EditText) findViewById(R.id.username);
     mSubmitButton = (Button) findViewById(R.id.submitButton);
+    mConsentCheckbox = (CheckBox) findViewById(R.id.keghubAgreeTerms);
+
+    final String terms = getString(R.string.register_agree_terms_text);
+    mConsentCheckbox.setText(Html.fromHtml(terms));
+    mConsentCheckbox.setMovementMethod(LinkMovementMethod.getInstance());
+    mConsentCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+      @Override
+      public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+        if (b) {
+          compoundButton.setError(null);
+        }
+      }
+    });
+
+    if (!mConfig.isKeghub()) {
+      mConsentCheckbox.setVisibility(View.GONE);
+    }
 
     mEmail.setOnEditorActionListener(new TextView.OnEditorActionListener() {
       @Override
@@ -248,10 +270,11 @@ public class DrinkerRegistrationActivity extends CoreActivity {
     final String emailAddress = mEmail.getText().toString();
     if (!isValidEmail(emailAddress)) {
       Log.d(TAG, "Invalid email address: " + emailAddress);
-      mEmail.setError("Please enter a valid address.");
-    } else {
-      showGetUsername();
+      mEmail.setError(getString(R.string.register_error_email_invalid));
+      return;
     }
+
+    showGetUsername();
   }
 
   private void onUsernameEntered() {
@@ -259,9 +282,17 @@ public class DrinkerRegistrationActivity extends CoreActivity {
     if (!USERNAME_PATTERN.matcher(username).matches()) {
       mUsername.setError("Please enter a valid username.");
       showSoftKeyboard(true);
-    } else {
-      new CheckUsernameTask().execute(username);
+      return;
     }
+
+    if (mConsentCheckbox.getVisibility() == View.VISIBLE) {
+      if (!mConsentCheckbox.isChecked()) {
+        mConsentCheckbox.setError(getString(R.string.register_error_must_agree));
+        return;
+      }
+    }
+
+    new CheckUsernameTask().execute(username);
   }
 
   private void showGetUsername() {

@@ -18,6 +18,9 @@
  */
 package org.kegbot.app.config;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 /**
  * Helper methods for getting and setting preferences from a {@link ConfigurationStore}. This is the
  * primary interface for app-local configuration settings.
@@ -80,6 +83,14 @@ public class AppConfiguration {
   public void setKegbotUrl(String url) {
     url = url.replaceAll("/+$", "");
     set(ConfigKey.KEGBOT_URL, url);
+  }
+
+  public boolean isKeghub() {
+    try {
+      return new URL(getKegbotUrl()).getHost().endsWith(".keghub.com");
+    } catch (MalformedURLException e) {
+      return false;
+    }
   }
 
   public void setApiKey(String key) {

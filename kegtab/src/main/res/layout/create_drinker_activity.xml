@@ -45,14 +45,14 @@
 
     <ViewFlipper
         android:id="@+id/new_drinker_flipper"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/new_drinker_subtitle"
-        android:layout_centerHorizontal="true">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/new_drinker_subtitle">
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="top|center"
             android:layout_marginBottom="32dip"
             android:background="@drawable/shape_rounded_rect"
             android:orientation="vertical">
@@ -76,6 +76,7 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="top|center"
             android:layout_marginBottom="32dip"
             android:background="@drawable/shape_rounded_rect"
             android:orientation="vertical">
@@ -94,21 +95,29 @@
                 android:hint="Public, permanent. Choose wisely!"
                 android:imeOptions="actionNext"
                 android:inputType="textEmailAddress"/>
+
+            <CheckBox
+                android:id="@+id/keghubAgreeTerms"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/register_agree_terms_text"/>
+
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="top|center"
             android:layout_marginBottom="32dip"
             android:background="@drawable/shape_rounded_rect"
-            android:orientation="horizontal"
-            android:gravity="center">
+            android:gravity="center"
+            android:orientation="horizontal">
 
             <fragment
                 android:id="@+id/camera"
+                class="org.kegbot.app.camera.CameraFragment"
                 android:layout_width="320dip"
-                android:layout_height="wrap_content"
-                class="org.kegbot.app.camera.CameraFragment">
+                android:layout_height="wrap_content">
 
                 <!-- Preview: layout=@layout/camera_fragment_layout -->
             </fragment>
