@@ -234,6 +234,16 @@ public class DrinkerRegistrationActivity extends CoreActivity {
     mCore = KegbotCore.getInstance(this);
   }
 
+  @Override
+  public void onBackPressed() {
+    final int child = mFlipper.getDisplayedChild();
+    if (child > 0) {
+      mFlipper.setDisplayedChild(child - 1);
+    } else {
+      super.onBackPressed();
+    }
+  }
+
   private void onEmailAddressEntered() {
     final String emailAddress = mEmail.getText().toString();
     if (!isValidEmail(emailAddress)) {
