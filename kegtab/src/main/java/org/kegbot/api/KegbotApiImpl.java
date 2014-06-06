@@ -600,11 +600,12 @@ public class KegbotApiImpl implements Backend {
       builder.put("password", password);
     }
 
-//    if (!Strings.isNullOrEmpty(imagePath)) {
-//      builder.put("photo", new File(imagePath));
-//    }
-
-    return postProto("/new-user/", User.newBuilder(), builder.build());
+    if (!Strings.isNullOrEmpty(imagePath)) {
+      final Map<String, File> files = ImmutableMap.of("photo", new File(imagePath));
+      return postProto("/new-user/", User.newBuilder(), builder.build(), files);
+    } else {
+      return postProto("/new-user/", User.newBuilder(), builder.build());
+    }
   }
 
   @Override
