@@ -22,6 +22,7 @@ import android.content.Context;
 import android.os.SystemClock;
 import android.util.Log;
 
+import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
@@ -446,6 +447,13 @@ public class KegbotApiImpl implements Backend {
   @Override
   public AuthenticationToken getAuthToken(String authDevice, String tokenValue)
       throws KegbotApiException {
+    try {
+      authDevice = URLEncoder.encode(authDevice, Charsets.UTF_8.name());
+      tokenValue = URLEncoder.encode(tokenValue, Charsets.UTF_8.name());
+    } catch (UnsupportedEncodingException e) {
+      throw new RuntimeException(e);
+    }
+
     try {
       return getSingleProto("/auth-tokens/" + authDevice + "/" + tokenValue + "/",
           AuthenticationToken.newBuilder());
