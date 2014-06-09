@@ -51,6 +51,7 @@ import org.kegbot.app.util.ImageDownloader;
 import org.kegbot.app.util.Units;
 import org.kegbot.core.KegbotCore;
 import org.kegbot.core.SyncManager;
+import org.kegbot.proto.Models;
 import org.kegbot.proto.Models.Drink;
 import org.kegbot.proto.Models.SystemEvent;
 
@@ -182,7 +183,12 @@ public class EventListFragment extends ListFragment {
       if (!eventDetail.hasUser()) {
         userName = "a guest";
       } else {
-        userName = eventDetail.getUser().getUsername();
+        final Models.User user = eventDetail.getUser();
+        if (user.hasDisplayName()) {
+          userName = user.getDisplayName();
+        } else {
+          userName = user.getUsername();
+        }
       }
 
       final String kind = eventDetail.getKind();

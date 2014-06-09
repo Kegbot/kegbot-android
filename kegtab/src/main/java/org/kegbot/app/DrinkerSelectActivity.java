@@ -132,8 +132,6 @@ public class DrinkerSelectActivity extends CoreActivity implements LoaderCallbac
         } catch (Throwable e) {
           Log.wtf(TAG, "UNCAUGHT EXCEPTION", e);
         }
-        Utils.setBackground(view,
-            getResources().getDrawable(R.drawable.shape_rounded_rect));
         return view;
       }
 
@@ -159,9 +157,13 @@ public class DrinkerSelectActivity extends CoreActivity implements LoaderCallbac
           icon.setAlpha(1.0f);
         }
 
-        final TextView userName = (TextView) view.findViewById(R.id.drinkerName);
-        final String userNameString = userDetail.getUsername();
-        userName.setText(userNameString);
+        final TextView usernameText = (TextView) view.findViewById(R.id.drinkerName);
+
+        final String displayName = userDetail.getDisplayName();
+        final String username = userDetail.getUsername();
+
+        final String name = Strings.isNullOrEmpty(displayName) ? username : displayName;
+        usernameText.setText(name);
       }
 
     };
