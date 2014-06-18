@@ -311,6 +311,11 @@ public class KegbotApiImpl implements Backend {
     return requestJson(request.build());
   }
 
+  private JsonNode deleteJson(String path) throws KegbotApiException {
+    final Request.Builder request = newRequest(path).delete();
+    return requestJson(request.build());
+  }
+
   private JsonNode postJson(String path, Map<String, String> params,
       Map<String, File> files) throws KegbotApiException {
     final Request.Builder request = newRequest(path).post(formBody(params, files));
@@ -434,14 +439,17 @@ public class KegbotApiImpl implements Backend {
 
   @Override
   public KegTap createTap(String tapName) throws BackendException {
-    // TODO Auto-generated method stub
-    return null;
+    final Map<String, String> params = ImmutableMap.<String, String>builder()
+        .put("name", tapName)
+        .build();
+
+    return postProto("/taps/", KegTap.newBuilder(), params);
   }
 
   @Override
-  public void deleteTap(KegTap tap) {
-    // TODO Auto-generated method stub
-
+  public void deleteTap(KegTap tap) throws KegbotApiException {
+    final String path = "/taps/" + tap.getId();
+    deleteJson(path);
   }
 
   @Override
