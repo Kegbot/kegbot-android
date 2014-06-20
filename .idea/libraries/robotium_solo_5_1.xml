@@ -4,8 +4,6 @@
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jayway.android.robotium/robotium-solo/5.1/5ff4001bfb640635cf35737c112c34bfea30b0c1/robotium-solo-5.1.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES>
-      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jayway.android.robotium/robotium-solo/5.1/daf4f85cc258f13401113b8597d185835342d194/robotium-solo-5.1-sources.jar!/" />
-    </SOURCES>
+    <SOURCES />
   </library>
 </component>
