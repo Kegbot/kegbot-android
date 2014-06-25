@@ -40,7 +40,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 
-import com.google.analytics.tracking.android.EasyTracker;
 import com.google.common.collect.Lists;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
@@ -89,7 +88,6 @@ public class CoreActivity extends Activity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    EasyTracker.getInstance().setContext(this);
     KegbotCoreService.startService(this);
 
     mConfig = KegbotCore.getInstance(this).getConfiguration();
@@ -100,7 +98,6 @@ public class CoreActivity extends Activity {
   @Override
   protected void onStart() {
     super.onStart();
-    EasyTracker.getInstance().activityStart(this);
 
     mConfig = KegbotCore.getInstance(this).getConfiguration();
     mBus = KegbotCore.getInstance(this).getBus();
@@ -113,7 +110,6 @@ public class CoreActivity extends Activity {
   @Override
   protected void onStop() {
     mBus.unregister(mCoreListener);
-    EasyTracker.getInstance().activityStop(this);
     mMenu = null;
     super.onStop();
   }

@@ -20,11 +20,8 @@ package org.kegbot.app;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
-
-import com.google.analytics.tracking.android.EasyTracker;
 
 import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.app.setup.SetupActivity;
@@ -52,7 +49,6 @@ public class KegtabLauncherActivity extends Activity {
   @Override
   protected void onStart() {
     super.onStart();
-    EasyTracker.getInstance().setContext(this);
   }
 
   @Override
@@ -67,21 +63,21 @@ public class KegtabLauncherActivity extends Activity {
       Log.d(TAG, "Setup is not complete, version=" + setupVersion + "current="
           + SetupActivity.SETUP_VERSION);
 
-      try {
-        if (setupVersion == 0) {
-          EasyTracker.getTracker().sendEvent("FirstInstall", "true", "", Long.valueOf(0));
-          EasyTracker.getTracker().sendEvent("FirstInstall", "product", Build.PRODUCT,
-              Long.valueOf(0));
-          EasyTracker.getTracker().sendEvent("FirstInstall", "device", Build.DEVICE,
-              Long.valueOf(0));
-        } else {
-          EasyTracker.getTracker().sendEvent("Upgrade",
-              String.format("ToVersion %s", Integer.valueOf(SetupActivity.SETUP_VERSION)),
-              "", Long.valueOf(0));
-        }
-      } catch (Exception e) {
-        // Ignore any stupid analytics crashes.
-      }
+//      try {
+//        if (setupVersion == 0) {
+//          EasyTracker.getTracker().sendEvent("FirstInstall", "true", "", Long.valueOf(0));
+//          EasyTracker.getTracker().sendEvent("FirstInstall", "product", Build.PRODUCT,
+//              Long.valueOf(0));
+//          EasyTracker.getTracker().sendEvent("FirstInstall", "device", Build.DEVICE,
+//              Long.valueOf(0));
+//        } else {
+//          EasyTracker.getTracker().sendEvent("Upgrade",
+//              String.format("ToVersion %s", Integer.valueOf(SetupActivity.SETUP_VERSION)),
+//              "", Long.valueOf(0));
+//        }
+//      } catch (Exception e) {
+//        // Ignore any stupid analytics crashes.
+//      }
 
       final Intent setupIntent = new Intent(this, SetupActivity.class);
       if (setupVersion > 0) {

@@ -60,10 +60,8 @@ android {
 
 dependencies {
     compile project(':usbSerialLibrary')
-    compile 'com.google.android.gms:play-services:+'
-    compile files('libs/GoogleAnalytics/libGoogleAnalyticsV2.jar')
-    compile files('libs/jscience/jscience-vm14.jar')
     compile files('libs/kegbot-api/kegbot-api.jar')
+    compile 'com.google.android.gms:play-services:4.4.52'
     compile 'com.android.support:support-v13:18.0.+'
     compile 'com.squareup.okhttp:okhttp:2.0.+'
     compile 'com.squareup:otto:1.3.4'

@@ -20,12 +20,7 @@ package org.kegbot.app.util;
 
 import android.util.Pair;
 
-import org.jscience.physics.measures.Measure;
 import org.kegbot.app.config.AppConfiguration;
-
-import javax.measure.quantities.Volume;
-import javax.measure.units.NonSI;
-import javax.measure.units.SI;
 
 /**
  * Various unit conversion helpers.
@@ -34,20 +29,19 @@ import javax.measure.units.SI;
  */
 public class Units {
 
+  private static final double ML_TO_OUNCE = 0.033814;
+  private static final double OUNCE_TO_ML = 1 / ML_TO_OUNCE;
+
   private Units() {
     throw new IllegalStateException("Non-instantiable class.");
   }
 
   public static double volumeMlToOunces(double volumeMl) {
-    Measure<Volume> vol = Measure.valueOf(volumeMl, SI.MILLI(NonSI.LITER));
-    double ounces = vol.doubleValue(NonSI.OUNCE_LIQUID_US);
-    return ounces;
+    return ML_TO_OUNCE * volumeMl;
   }
 
   public static double volumeOuncesToMl(double volumeOunces) {
-    Measure<Volume> vol = Measure.valueOf(volumeOunces, NonSI.OUNCE_LIQUID_US);
-    double ml = vol.doubleValue(SI.MILLI(NonSI.LITER));
-    return ml;
+    return OUNCE_TO_ML * volumeOunces;
   }
 
   public static double volumeMlToPints(double volumeMl) {

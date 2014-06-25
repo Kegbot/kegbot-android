@@ -36,7 +36,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
-import com.google.analytics.tracking.android.EasyTracker;
 import com.google.common.collect.Lists;
 
 import org.kegbot.app.KegbotApplication;
@@ -132,7 +131,6 @@ public class SetupActivity extends Activity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    EasyTracker.getInstance().setContext(this);
     setContentView(R.layout.setup_activity);
 
     KegbotCoreService.stopService(this);
@@ -300,7 +298,6 @@ public class SetupActivity extends Activity {
   @Override
   protected void onStart() {
     super.onStart();
-    EasyTracker.getInstance().activityStart(this);
     KegbotCoreService.stopService(this);
   }
 
@@ -308,7 +305,6 @@ public class SetupActivity extends Activity {
   protected void onStop() {
     hideDialog();
     super.onStop();
-    EasyTracker.getInstance().activityStop(this);
   }
 
 }
