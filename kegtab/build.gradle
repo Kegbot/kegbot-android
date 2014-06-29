@@ -22,7 +22,7 @@ apply plugin: 'crashlytics'
 
 android {
     compileSdkVersion 19
-    buildToolsVersion "19.0.3"
+    buildToolsVersion "20"
 
     defaultConfig {
         minSdkVersion 14
@@ -39,14 +39,16 @@ android {
 
     buildTypes {
         debug {
+            runProguard true
             ext.enableCrashlytics = false
+            proguardFiles file('../kegtab/proguard-project.txt')
         }
         release {
             runProguard true
             debuggable false
             jniDebugBuild false
             ext.enableCrashlytics = true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-project.txt'
+            proguardFiles file('../kegtab/proguard-project.txt')
         }
     }
 

@@ -14,13 +14,33 @@ Home page: http://kegbot.org/
 Developers: Quick Setup Instructions
 ------------------------------------
 
-Bear with us as better develop documentation is coming!
+(Bear with us as better develop documentation is coming!)
 
-In the meantime, here are quick and dirty steps:
+Basic prerequisites:
+-Install Android Studio (the project requires the Android Studio build system; it doesn't work with the Eclipse Android IDE). 
+From Android Studio, go to Tools/Android/SDK Manager and download:
+-SDK 19
+-ALL versions of Android Build Tools from 19.0.3 through the latest version
+-everything under Extras.
 
-- Clone the kegbot-android repo
-- Eclipse: Import -> Existing Projects into Workspace.
-- Import the projects (Kegtab, KegtabTest)
+To build Kegbot:
+
+1. Git clone kegbot-android
+2. Git clone usb-serial-for-android from https://github.com/mik3y/usb-serial-for-android
+3. In Android Studio, go to File/Import Project. Select the kegbot-android folder (which you just cloned) and say OK.
+4. With the project open, look under the kegbot-android project and open settings.gradle. Change this line:
+
+project(':usbSerialLibrary').projectDir = new File('/Users/mikey/git/usb-serial-for-android/usbSerialForAndroid')
+
+to point to your clone of the usb-serial-for-android project's usbSerialForAndroid folder. Windows users will need to escape backslashes like this:
+
+project(':usbSerialLibrary').projectDir = new File('C:\\Dropbox\\git\\usb-serial-for-android\\usbSerialForAndroid')
+
+5. Click "Try Again" for the Gradle project sync, and install updates as prompted. You'll eventually get an error that the Build Tools version is too low.
+
+6. Under the kegtab-android/kegtab project (not the outer kegtab-android project), open build.gradle. Change buildToolsVersion to the latest version of Android Build Tools that you have downloaded, such as "20"
+
+7. Click "Try Again" for the Gradle project sync, and it should complete successfully.
 
 Patches Welcome!
 ----------------
