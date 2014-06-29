@@ -39,13 +39,13 @@ public class Units {
   }
 
   public static double volumeMlToOunces(double volumeMl) {
-    Measure<Volume> vol = Measure.valueOf(volumeMl, SI.MILLI(NonSI.LITER));
+    Measure vol = Measure.valueOf(volumeMl, SI.MILLI(NonSI.LITER));
     double ounces = vol.doubleValue(NonSI.OUNCE_LIQUID_US);
     return ounces;
   }
 
   public static double volumeOuncesToMl(double volumeOunces) {
-    Measure<Volume> vol = Measure.valueOf(volumeOunces, NonSI.OUNCE_LIQUID_US);
+    Measure vol = Measure.valueOf(volumeOunces, NonSI.OUNCE_LIQUID_US);
     double ml = vol.doubleValue(SI.MILLI(NonSI.LITER));
     return ml;
   }

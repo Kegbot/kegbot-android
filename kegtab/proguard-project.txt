@@ -20,7 +20,7 @@
 #}
 
 -dontobfuscate
--dontshrink
+#-dontshrink
 
 -libraryjars libs/GoogleAnalytics/libGoogleAnalyticsV2.jar
 -libraryjars libs/jscience/jscience-vm14.jar
