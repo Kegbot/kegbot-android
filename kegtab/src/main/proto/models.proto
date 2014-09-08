@@ -119,6 +119,13 @@ message Beverage {
   // Id within beverage backend.
   optional string beverage_backend_id = 16;
 
+  // v1.1 fields
+
+  optional string color_hex = 17;
+  optional double srm = 18;
+  optional double ibu = 19;
+  optional double star_rating = 20;
+
 }
 
 // A named beer style of beer, such as "India Pale Ale".
@@ -332,6 +339,9 @@ message Keg {
 
   // Beverage type.
   optional Beverage beverage = 12;
+
+  optional string illustration_url = 21;
+  optional string illustration_thumbnail_url = 22;
 
   optional BeerType type = 13 [deprecated = true];
   optional string type_id = 14 [deprecated = true];
