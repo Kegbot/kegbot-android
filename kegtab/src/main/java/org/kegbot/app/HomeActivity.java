@@ -265,7 +265,7 @@ public class HomeActivity extends CoreActivity {
       message = getString(R.string.alert_unbound_single_tap_description,
           tapNames.get(0));
     } else {
-      final String listStr = Joiner.on(", ").join(tapNames.subList(0, tapNames.size() - 2));
+      final String listStr = Joiner.on(", ").join(tapNames.subList(0, tapNames.size() - 1));
       message = getString(R.string.alert_unbound_multiple_taps_description, listStr,
           tapNames.get(tapNames.size() - 1));
     }
