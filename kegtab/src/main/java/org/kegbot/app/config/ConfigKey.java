@@ -68,7 +68,10 @@ enum ConfigKey {
   STAY_AWAKE(TRUE),
   KEEP_SCREEN_ON(TRUE),
 
-  EMAIL_ADDRESS(""),;
+  EMAIL_ADDRESS(""),
+
+  LAST_USED_KEG_SIZE(""),;
+
 
   private final String mDefaultValue;
 
