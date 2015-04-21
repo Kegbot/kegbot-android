@@ -4,8 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/kegbot-android.iml" filepath="$PROJECT_DIR$/kegbot-android.iml" />
       <module fileurl="file://$PROJECT_DIR$/kegtab/kegtab.iml" filepath="$PROJECT_DIR$/kegtab/kegtab.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../usb-serial-for-android/usbSerialForAndroid/usbSerialLibrary.iml" filepath="$PROJECT_DIR$/../usb-serial-for-android/usbSerialForAndroid/usbSerialLibrary.iml" />
+      <module fileurl="file://$PROJECT_DIR$/usbSerialLibrary/usbSerialLibrary.iml" filepath="$PROJECT_DIR$/usbSerialLibrary/usbSerialLibrary.iml" />
     </modules>
   </component>
 </project>
-
