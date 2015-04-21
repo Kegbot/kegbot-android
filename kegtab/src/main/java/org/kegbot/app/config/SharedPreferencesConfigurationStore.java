@@ -24,6 +24,7 @@ package org.kegbot.app.config;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
 import java.util.Set;
 
@@ -38,6 +39,10 @@ public class SharedPreferencesConfigurationStore implements ConfigurationStore {
 
   public SharedPreferencesConfigurationStore(SharedPreferences prefs) {
     mSharedPreferences = prefs;
+  }
+
+  public static SharedPreferencesConfigurationStore getDefaultSharedPreferncesConfigurationStore(Context context){
+    return new SharedPreferencesConfigurationStore(PreferenceManager.getDefaultSharedPreferences(context));
   }
 
   public static SharedPreferencesConfigurationStore fromName(Context context, String sharedPrefsName) {
