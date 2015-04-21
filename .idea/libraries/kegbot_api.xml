@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="kegbot-api">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/kegtab/libs/kegbot-api/kegbot-api.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>
