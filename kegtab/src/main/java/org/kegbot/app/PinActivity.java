@@ -95,7 +95,8 @@ public class PinActivity extends Activity {
     mPinText.setOnEditorActionListener(new OnEditorActionListener() {
       @Override
       public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-        if (actionId == EditorInfo.IME_NULL && event.getAction() == KeyEvent.ACTION_DOWN) {
+        if (isNexusDone(actionId)
+                || (actionId == EditorInfo.IME_NULL && event.getAction() == KeyEvent.ACTION_DOWN)) {
           verifyPin();
           return true;
         }
@@ -117,6 +118,11 @@ public class PinActivity extends Activity {
     if (bar != null) {
       bar.setTitle("");
     }
+  }
+
+  //Events may vary by keyboard; This one works on N7
+  private static boolean isNexusDone(int actionId){
+    return actionId == EditorInfo.IME_ACTION_DONE;
   }
 
   private void onPinSuccess() {
