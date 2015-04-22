@@ -37,6 +37,8 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import org.kegbot.app.config.AppConfiguration;
+import org.kegbot.app.config.SharedPreferencesConfigurationStore;
 import org.kegbot.app.util.KegSizes;
 import org.kegbot.backend.Backend;
 import org.kegbot.backend.BackendException;
@@ -113,7 +115,7 @@ public class NewKegActivity extends Activity {
     for (final Map.Entry<String, String> entry : KegSizes.DESCRIPTIONS.entrySet()) {
       mSizeAdapter.add(new KegSizeItem(entry.getKey(), entry.getValue()));
     }
-    mSize.setSelection(0);
+    mSize.setSelection(getLastUsedKegSizeIndex());
 
     mActivateButton = (Button) findViewById(R.id.newKegButton);
     mActivateButton.setOnClickListener(new View.OnClickListener() {
@@ -124,11 +126,31 @@ public class NewKegActivity extends Activity {
     });
   }
 
+  private void setLastUsedKegSize(String size){
+    AppConfiguration appConfiguration = new AppConfiguration(
+            SharedPreferencesConfigurationStore.getDefaultSharedPreferncesConfigurationStore(this));
+    appConfiguration.setLastUsedKegSize(size);
+  }
+
+  private int getLastUsedKegSizeIndex(){
+    AppConfiguration appConfiguration = new AppConfiguration(
+            SharedPreferencesConfigurationStore.getDefaultSharedPreferncesConfigurationStore(this));
+    String lastUsedKeg = appConfiguration.getLastUsedKegSize();
+    if (mSizeAdapter != null && mSizeAdapter.getCount() > 1){
+      for (int i = 0; i < mSizeAdapter.getCount(); i++){
+        if (mSizeAdapter.getItem(i).getName().equals(lastUsedKeg)){
+          return i;
+        }
+      }
+    }
+    return 0;
+  }
+
   private void hideKeyboard() {
     InputMethodManager inputManager =
-        (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
     inputManager.hideSoftInputFromWindow(this.getCurrentFocus().getWindowToken(),
-        InputMethodManager.HIDE_NOT_ALWAYS);
+            InputMethodManager.HIDE_NOT_ALWAYS);
   }
 
   @Override
@@ -167,8 +189,9 @@ public class NewKegActivity extends Activity {
         try {
           final Backend backend = KegbotCore.getInstance(NewKegActivity.this).getBackend();
           backend.startKeg(mTap, mName.getText().toString(),
-              mBrewerName.getText().toString(), mStyle.getText().toString(),
-              selected.getName());
+                  mBrewerName.getText().toString(), mStyle.getText().toString(),
+                  selected.getName());
+          setLastUsedKegSize(selected.getName());
           return "";
         } catch (BackendException e) {
           Log.w(TAG, "Activation failed.", e);
@@ -194,11 +217,11 @@ public class NewKegActivity extends Activity {
         }
 
         new AlertDialog.Builder(NewKegActivity.this)
-            .setCancelable(true)
-            .setNegativeButton("Ok", null)
-            .setTitle("Activation failed")
-            .setMessage("Activation failed: " + result)
-            .show();
+                .setCancelable(true)
+                .setNegativeButton("Ok", null)
+                .setTitle("Activation failed")
+                .setMessage("Activation failed: " + result)
+                .show();
       }
 
     }.execute();

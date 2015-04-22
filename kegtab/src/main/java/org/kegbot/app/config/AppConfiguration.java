@@ -316,4 +316,12 @@ public class AppConfiguration {
     set(ConfigKey.EMAIL_ADDRESS, emailAddress);
   }
 
+  public void setLastUsedKegSize(String size){
+    set(ConfigKey.LAST_USED_KEG_SIZE, size);
+  }
+
+  public String getLastUsedKegSize(){
+    return get(ConfigKey.LAST_USED_KEG_SIZE);
+  }
+
 }
