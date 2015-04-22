@@ -21,8 +21,15 @@
 <!-- Default styles. Matches Nexus 7 and other devices. -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Globals (common to all styles) -->
+    <style name="AppTheme" parent="android:Theme.Holo">
+        <!-- See v21/styles.xml for API 21+ -->
+    </style>
 
+    <style name="AppTheme.NoActionBar" parent="android:Theme.Holo.NoActionBar">
+        <!-- See v21/styles.xml for API 21+ -->
+    </style>
+
+    <!-- Globals (common to all styles) -->
     <style name="divider">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">1dp</item>
