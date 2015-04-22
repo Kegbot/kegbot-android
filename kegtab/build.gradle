@@ -16,19 +16,33 @@
  * You should have received a copy of the GNU General Public License along
  * with Kegtab. If not, see <http://www.gnu.org/licenses/>.
  */
+allprojects {
+    repositories {
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+    }
+}
 
-apply plugin: 'android'
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:1.1.0'
+    }
+}
+
+apply plugin: 'com.android.application'
 apply plugin: 'crashlytics'
 
 android {
-    compileSdkVersion 19
-    buildToolsVersion "19.1"
+    compileSdkVersion 22
+    buildToolsVersion '22.0.1'
 
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion 19
+        targetSdkVersion 22
 
-        testPackageName "org.kegbot.app.test"
+        testApplicationId "org.kegbot.app.test"
         testInstrumentationRunner "android.test.InstrumentationTestRunner"
     }
 
@@ -42,9 +56,9 @@ android {
             ext.enableCrashlytics = false
         }
         release {
-            runProguard true
+            minifyEnabled true
             debuggable false
-            jniDebugBuild false
+            jniDebuggable false
             ext.enableCrashlytics = true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-project.txt'
         }
@@ -56,13 +70,22 @@ android {
         exclude 'META-INF/DEPENDENCIES'
         exclude 'META-INF/NOTICE'
     }
+
+    sourceSets {
+        main {
+            manifest.srcFile 'src/main/AndroidManifest.xml'
+            java.srcDirs = ['src/main/java']
+            resources.srcDirs = ['src/main/res']
+            assets.srcDirs = ['src/main/assets']
+        }
+    }
 }
 
 dependencies {
-    compile project(':usbSerialLibrary')
+    compile 'com.hoho.android:usb-serial-for-android:0.2.0-SNAPSHOT@aar'
+    compile 'com.google.android.gms:play-services-gcm:7.0.0'
     compile files('libs/kegbot-api/kegbot-api.jar')
-    compile 'com.google.android.gms:play-services:4.4.52'
-    compile 'com.android.support:support-v13:18.0.+'
+    compile 'com.android.support:support-v13:22.0.0'
     compile 'com.squareup.okhttp:okhttp:2.0.+'
     compile 'com.squareup:otto:1.3.4'
     compile 'com.google.guava:guava:16.0.1'
@@ -73,7 +96,6 @@ dependencies {
     compile 'com.google.protobuf:protobuf-java:2.5.0'
     compile 'joda-time:joda-time:2.3'
     compile 'com.crashlytics.android:crashlytics:1.+'
-
     androidTestCompile 'com.jayway.android.robotium:robotium-solo:5.1'
     androidTestCompile 'org.mockito:mockito-core:1.9.5'
     androidTestCompile 'com.google.dexmaker:dexmaker:1.0'
