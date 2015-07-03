@@ -38,6 +38,7 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -467,6 +468,13 @@ public class PourInProgressActivity extends CoreActivity {
     mHandler.removeCallbacks(REFRESH_FLOWS_RUNNABLE);
     mCore.getBus().unregister(this);
     super.onPause();
+
+    if (mConfig.wakeDuringPour()) {
+      getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN |
+                           WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD |
+                           WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
+                           WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+    }
   }
 
   @Override

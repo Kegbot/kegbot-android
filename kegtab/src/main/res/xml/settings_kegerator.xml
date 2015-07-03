@@ -75,6 +75,13 @@
             android:summaryOn="The screen will stay on"
             android:title="Keep Screen On">
         </CheckBoxPreference>
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="config:WAKE_DURING_POUR"
+            android:summaryOff="The screen will stay off when a pour starts"
+            android:summaryOn="The screen will turn on when a pour starts"
+            android:title="Wake During Pour">
+        </CheckBoxPreference>
     </PreferenceCategory>
 
 </PreferenceScreen>
