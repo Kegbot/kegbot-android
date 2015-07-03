@@ -39,11 +39,19 @@
         </CheckBoxPreference>
         <CheckBoxPreference
             android:defaultValue="true"
+            android:key="config:TAKE_PHOTOS_DURING_POUR"
+            android:summaryOff="Photos won't be available during pour"
+            android:summaryOn="User may add a photo during pour"
+            android:title="Take Photo During Pour"
+            android:dependency="config:USE_CAMERA">
+        </CheckBoxPreference>
+        <CheckBoxPreference
+            android:defaultValue="true"
             android:key="config:AUTO_TAKE_PHOTOS"
             android:summaryOff="Camera will not trigger unless requested"
             android:summaryOn="Camera will automatically trigger during a pour"
             android:title="Automatically Take Photos"
-            android:dependency="config:USE_CAMERA">
+            android:dependency="config:TAKE_PHOTOS_DURING_POUR">
         </CheckBoxPreference>
         <CheckBoxPreference
             android:defaultValue="true"

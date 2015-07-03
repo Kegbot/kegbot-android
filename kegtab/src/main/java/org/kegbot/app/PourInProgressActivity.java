@@ -346,7 +346,7 @@ public class PourInProgressActivity extends CoreActivity {
 
     mShowCamera = true;
     mCameraFragment = (CameraFragment) getFragmentManager().findFragmentById(R.id.camera);
-    if (!mConfig.getUseCamera()) {
+    if (!mConfig.getUseCamera() || !mConfig.getTakePhotosDuringPour()) {
       mShowCamera = false;
       getFragmentManager().beginTransaction().hide(mCameraFragment).commit();
     }
