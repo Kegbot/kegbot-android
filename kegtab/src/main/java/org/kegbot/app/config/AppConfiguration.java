@@ -200,6 +200,14 @@ public class AppConfiguration {
     setBoolean(ConfigKey.TAKE_PHOTOS_DURING_REGISTRATION, value);
   }
 
+  public boolean getTakePhotosDuringPour() {
+    return getBoolean(ConfigKey.TAKE_PHOTOS_DURING_POUR);
+  }
+
+  public void setTakePhotosDuringPour(boolean value) {
+    setBoolean(ConfigKey.TAKE_PHOTOS_DURING_POUR, value);
+  }
+
   public boolean getUseCamera() {
     return getBoolean(ConfigKey.USE_CAMERA);
   }

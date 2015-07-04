@@ -41,7 +41,7 @@
     <LinearLayout
         android:id="@+id/pourInProgressRightCol"
         android:layout_width="0dip"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_weight="0.4"
         android:gravity="top"
         android:background="@drawable/shape_rounded_rect"
