@@ -304,6 +304,10 @@ public class AppConfiguration {
     return getBoolean(ConfigKey.KEEP_SCREEN_ON);
   }
 
+  public boolean wakeDuringPour() {
+    return getBoolean(ConfigKey.WAKE_DURING_POUR);
+  }
+
   public boolean isLocalBackend() {
     return getBoolean(ConfigKey.LOCAL_BACKEND);
   }

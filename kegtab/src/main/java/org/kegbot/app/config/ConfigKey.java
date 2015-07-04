@@ -68,6 +68,7 @@ enum ConfigKey {
 
   STAY_AWAKE(TRUE),
   KEEP_SCREEN_ON(TRUE),
+  WAKE_DURING_POUR(FALSE),
 
   EMAIL_ADDRESS(""),
 
