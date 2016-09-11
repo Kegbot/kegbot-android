@@ -38,7 +38,6 @@ import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 import com.squareup.okhttp.ResponseBody;
 
-import org.apache.http.NameValuePair;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
@@ -495,7 +494,6 @@ public class KegbotApiImpl implements Backend {
 
   @Override
   public List<SystemEvent> getEventsSince(final long sinceEventId) throws KegbotApiException {
-    final List<NameValuePair> params = Lists.newArrayList();
     return getProto("/events/?since=" + sinceEventId, SystemEvent.newBuilder());
   }
 
