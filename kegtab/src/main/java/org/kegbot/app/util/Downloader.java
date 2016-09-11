@@ -17,21 +17,14 @@
  * with Kegtab. If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 package org.kegbot.app.util;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.http.AndroidHttpClient;
-import android.util.Log;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -56,48 +49,30 @@ public class Downloader {
    * @return a new {@link Bitmap}, or {@code null} if any error occurred
    */
   public static Bitmap downloadBitmap(String url) {
-    final HttpClient client = new DefaultHttpClient();
-    final HttpGet getRequest = new HttpGet(url);
+    final OkHttpClient client = new OkHttpClient();
+    final Request request = new Request.Builder()
+            .url(url)
+            .build();
 
+    Response response = null;
+    Bitmap bitmap = null;
     try {
-      HttpResponse response = client.execute(getRequest);
-      final int statusCode = response.getStatusLine().getStatusCode();
-      if (statusCode != HttpStatus.SC_OK) {
-        Log.w(LOG_TAG, "Error " + statusCode + " while retrieving bitmap from " + url);
-        return null;
-      }
-
-      final HttpEntity entity = response.getEntity();
-      if (entity != null) {
-        InputStream inputStream = null;
-        try {
-          BitmapFactory.Options options = new BitmapFactory.Options();
-          options.inSampleSize = 2;
-
-          inputStream = entity.getContent();
-          return BitmapFactory.decodeStream(inputStream, null, options);
-        } finally {
-          if (inputStream != null) {
-            inputStream.close();
-          }
-          entity.consumeContent();
-        }
-      }
+      response = client.newCall(request).execute();
     } catch (IOException e) {
-      getRequest.abort();
-      Log.w(LOG_TAG, "I/O error while retrieving bitmap from " + url, e);
-    } catch (IllegalStateException e) {
-      getRequest.abort();
-      Log.w(LOG_TAG, "Incorrect URL: " + url);
-    } catch (Exception e) {
-      getRequest.abort();
-      Log.w(LOG_TAG, "Error while retrieving bitmap from " + url, e);
-    } finally {
-      if ((client instanceof AndroidHttpClient)) {
-        ((AndroidHttpClient) client).close();
-      }
+      return null;
     }
-    return null;
+
+    if (response.isSuccessful()) {
+      BitmapFactory.Options options = new BitmapFactory.Options();
+      options.inSampleSize = 2;
+        try {
+            bitmap = BitmapFactory.decodeStream(response.body().byteStream(), null, options);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    return bitmap;
   }
 
   /**
