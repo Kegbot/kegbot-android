@@ -44,7 +44,7 @@ import java.util.List;
  * <p/>
  * Adapted from: http://developer.android.com/resources/samples/HoneycombGallery/src/com/example/android/hcgallery/CameraFragment.html
  */
-class Preview extends ViewGroup implements SurfaceHolder.Callback {
+public class Preview extends ViewGroup implements SurfaceHolder.Callback {
   private final String TAG = Preview.class.getSimpleName();
 
   private static final double ASPECT_RATIO = 4.0 / 3.0;

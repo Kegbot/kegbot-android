@@ -19,8 +19,8 @@
   -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="org.kegbot.app"
-          android:versionCode="84"
-          android:versionName="1.0.0 beta 84">
+          android:versionCode="85"
+          android:versionName="1.0.0 beta 85">
 
     <uses-sdk
         android:minSdkVersion="14"
@@ -316,6 +316,10 @@
             android:label="@string/title_activity_alert"
             android:theme="@style/invisibleActivity">
         </activity>
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="69d15911aaab059507d5998382e305725a32ae6f"
+            />
     </application>
 
 </manifest>
