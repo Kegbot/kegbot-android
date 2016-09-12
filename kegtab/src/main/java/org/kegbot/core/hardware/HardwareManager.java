@@ -84,14 +84,13 @@ public class HardwareManager extends Manager {
     }
   };
 
-  public HardwareManager(Bus bus, Context context, AppConfiguration config, Backend backend) {
+  public HardwareManager(Bus bus, Context context, AppConfiguration config) {
     super(bus);
-
-    // TODO(mikey): Still need backend?
 
     mKegboardManager = new KegboardManager(getBus(), context, mListener);
     mManagers.add(mKegboardManager);
     mManagers.add(new FakeControllerManager(getBus(), mListener));
+    mManagers.add(new NetworkControllerManager(getBus(), mListener, config));
   }
 
   @Override

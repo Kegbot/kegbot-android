@@ -136,7 +136,7 @@ public class KegbotCore {
     mSyncManager = new SyncManager(mBus, context, mBackend, mTapManager);
     mManagers.add(mSyncManager);
 
-    mHardwareManager = new HardwareManager(mBus, context, mConfig, mBackend);
+    mHardwareManager = new HardwareManager(mBus, context, mConfig);
     mManagers.add(mHardwareManager);
 
     mAuthenticationManager = new AuthenticationManager(mBus, context, mBackend, mConfig);

@@ -44,11 +44,27 @@
 
         <CheckBoxPreference
             android:defaultValue="true"
-            android:key="config:ENABLE_AUTOMATIC_FLOW_START"
+            android:key="config:NETWORK_CONTROLLER_HOST"
             android:summaryOff="New pours will only start when a user authenticates"
             android:summaryOn="A new pour will start any time meter activity is detected"
             android:title="Automatically Start Pours">
         </CheckBoxPreference>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Kegboard Settings">
+        <EditTextPreference
+            android:defaultValue=""
+            android:inputType="text"
+            android:key="config:NETWORK_CONTROLLER_HOST"
+            android:summary="IP or hostname of network-connected Kegboard"
+            android:title="Kegboard Hostname">
+        </EditTextPreference>
+        <EditTextPreference
+            android:defaultValue="8321"
+            android:inputType="number"
+            android:key="config:NETWORK_CONTROLLER_PORT"
+            android:summary="TCP port number of network-connected Kegboard"
+            android:title="Kegboard Port">
+        </EditTextPreference>
     </PreferenceCategory>
     <PreferenceCategory android:title="User Interface">
         <CheckBoxPreference

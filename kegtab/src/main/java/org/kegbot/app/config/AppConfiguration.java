@@ -336,4 +336,12 @@ public class AppConfiguration {
     return get(ConfigKey.LAST_USED_KEG_SIZE);
   }
 
+  public String getNetworkControllerHost() {
+    return get(ConfigKey.NETWORK_CONTROLLER_HOST);
+  }
+
+  public int getNetworkControllerPort() {
+    return Integer.valueOf(get(ConfigKey.NETWORK_CONTROLLER_PORT)).intValue();
+  }
+
 }

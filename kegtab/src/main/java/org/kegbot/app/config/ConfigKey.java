@@ -72,7 +72,10 @@ enum ConfigKey {
 
   EMAIL_ADDRESS(""),
 
-  LAST_USED_KEG_SIZE(""),;
+  LAST_USED_KEG_SIZE(""),
+
+  NETWORK_CONTROLLER_HOST(""),
+  NETWORK_CONTROLLER_PORT("8321");
 
 
   private final String mDefaultValue;

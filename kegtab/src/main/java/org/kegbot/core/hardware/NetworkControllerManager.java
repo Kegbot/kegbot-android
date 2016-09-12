@@ -19,11 +19,14 @@
 
 package org.kegbot.core.hardware;
 
+import android.util.Log;
+
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
+import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.app.util.IndentingPrintWriter;
 import org.kegbot.core.FlowMeter;
 import org.kegbot.core.ThermoSensor;
@@ -32,84 +35,44 @@ import java.util.Collection;
 import java.util.Map;
 
 public class NetworkControllerManager implements ControllerManager {
+  private static final String TAG = NetworkControllerManager.class.getSimpleName();
 
   private static NetworkControllerManager sSingleton = null;
 
   private final Bus mBus;
   private final Listener mListener;
+  private final AppConfiguration mConfig;
+  private NetworkController mController;
 
-  public static class FakeController implements Controller {
-
-    private final Map<String, FlowMeter> mFlowMeters = Maps.newLinkedHashMap();
-    private final Map<String, ThermoSensor> mThermoSensors = Maps.newLinkedHashMap();
-    private final String mName;
-    private String mStatus;
-    private String mSerialNumber;
-
-    public FakeController(final String name, final String status, final String serialNumber) {
-      mName = name;
-      mStatus = status;
-      mSerialNumber = serialNumber;
-    }
-
-    @Override
-    public String getSerialNumber() {
-      return Strings.nullToEmpty(mSerialNumber);
-    }
-
-    @Override
-    public String getDeviceType() {
-      if (getSerialNumber().startsWith("KB-01")) {
-        return TYPE_KBPM;
-      }
-      return TYPE_UNKNOWN;
-    }
-
-
-    @Override
-    public String getStatus() {
-      return mStatus;
-    }
-
-    @Override
-    public String getName() {
-      return mName;
-    }
-
-    @Override
-    public Collection<FlowMeter> getFlowMeters() {
-      return mFlowMeters.values();
-    }
-
-    @Override
-    public FlowMeter getFlowMeter(String meterName) {
-      return mFlowMeters.get(meterName);
-    }
-
-    @Override
-    public Collection<ThermoSensor> getThermoSensors() {
-      return mThermoSensors.values();
-    }
-
-    @Override
-    public ThermoSensor getThermoSensor(String sensorName) {
-      return mThermoSensors.get(sensorName);
-    }
-
-  }
-
-  public NetworkControllerManager(Bus bus, Listener listener) {
+  public NetworkControllerManager(Bus bus, Listener listener, AppConfiguration config) {
     mBus = bus;
     mListener = listener;
+    mConfig = config;
+
+    mController = null;
   }
 
   @Override
   public void start() {
     mBus.register(this);
+
+    final String networkHost = mConfig.getNetworkControllerHost();
+    if (!Strings.isNullOrEmpty(networkHost)) {
+      Log.i(TAG, "Network controller is configured.");
+      mController = new NetworkController(networkHost, mConfig.getNetworkControllerPort(), mListener);
+      mController.start();
+    } else {
+      Log.i(TAG, "Network controller is NOT configured.");
+      mController = null;
+    }
   }
 
   @Override
   public void stop() {
+    if (mController != null) {
+      mController.stop();
+      mController = null;
+    }
     mBus.unregister(this);
   }
 

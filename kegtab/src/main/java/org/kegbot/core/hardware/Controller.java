@@ -56,6 +56,9 @@ public interface Controller {
   /** @see #getDeviceType() */
   public static final String TYPE_KBPM = "Kegboard Pro Mini";
 
+  /** @see #getDeviceType() */
+  public static final String TYPE_NETWORK = "Networked Kegboard";
+
   /**
    * Returns the current device state.
    */
