@@ -33,7 +33,7 @@ public class VersionTest extends TestCase {
     assertEquals(new Version(1, 2, 3, "a1"), Version.fromString("1.2.3a1"));
     assertEquals(new Version(99, 88, 7, ""), Version.fromString("99.88.7"));
 
-    assertEquals(1, Version.fromString("1.2.3").compareTo(Version.fromString("1.2.4")));
+    assertEquals(-1, Version.fromString("1.2.3").compareTo(Version.fromString("1.2.4")));
   }
 
 }
