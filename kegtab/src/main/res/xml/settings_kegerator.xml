@@ -44,7 +44,7 @@
 
         <CheckBoxPreference
             android:defaultValue="true"
-            android:key="config:NETWORK_CONTROLLER_HOST"
+            android:key="config:ENABLE_AUTOMATIC_FLOW_START"
             android:summaryOff="New pours will only start when a user authenticates"
             android:summaryOn="A new pour will start any time meter activity is detected"
             android:title="Automatically Start Pours">
