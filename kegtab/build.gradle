@@ -23,7 +23,7 @@ buildscript {
         maven { url 'https://maven.fabric.io/public' }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.2.0'
+        classpath 'com.android.tools.build:gradle:3.0.0'
         classpath 'io.fabric.tools:gradle:1.+'
     }
 }
@@ -37,7 +37,7 @@ repositories {
 
 android {
     compileSdkVersion 24
-    buildToolsVersion '22.0.1'
+    buildToolsVersion '26.0.2'
 
     defaultConfig {
         minSdkVersion 14
@@ -45,6 +45,12 @@ android {
 
         testApplicationId "org.kegbot.app.test"
         testInstrumentationRunner "android.test.InstrumentationTestRunner"
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                includeCompileClasspath false
+            }
+        }
     }
 
     lintOptions {
