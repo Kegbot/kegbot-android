@@ -48,6 +48,7 @@ public class NetworkController implements Controller {
 
     private AtomicBoolean mStopped = new AtomicBoolean(true);
     private final Map<String, FlowMeter> mFlowMeters = Maps.newLinkedHashMap();
+    private final Map<String, ThermoSensor> mThermoSensors = Maps.newLinkedHashMap();
 
     public NetworkController(String host, int port, ControllerManager.Listener listener) {
         mHost = host;
@@ -128,6 +129,27 @@ public class NetworkController implements Controller {
                     mListener.onControllerEvent(this, new MeterUpdateEvent(meter));
                 }
             }
+        }
+        else if (message instanceof ThermoMessage) {
+            final Map<String, Integer> thermos = ((ThermoMessage) message).thermos;
+
+            for (Map.Entry<String, Integer> entry : thermos.entrySet()) {
+                final String thermoName = getName() + "." + entry.getKey();
+
+                Log.d(TAG, thermoName);
+
+                if (!mThermoSensors.containsKey(thermoName)) {
+                    mThermoSensors.put(thermoName, new ThermoSensor(thermoName));
+                }
+                final ThermoSensor thermo = mThermoSensors.get(thermoName);
+
+                thermo.setTemperatureC(entry.getValue());
+
+                mListener.onControllerEvent(this, new ThermoSensorUpdateEvent(thermo));
+
+
+            }
+
         }
     }
 
@@ -219,13 +241,12 @@ public class NetworkController implements Controller {
 
     @Override
     public Collection<ThermoSensor> getThermoSensors() {
-        return Collections.emptyList();
+        return mThermoSensors.values();
     }
 
     @Override
     public ThermoSensor getThermoSensor(String sensorName) {
-        // Not supported.
-        return null;
+        return mThermoSensors.get(sensorName);
     }
 
     static abstract class NetworkMessage {
@@ -235,6 +256,8 @@ public class NetworkController implements Controller {
                 return StatusMessage.fromString(message);
             } else if (message.startsWith(InfoMessage.PREFIX)) {
                 return InfoMessage.fromString(message);
+            } else if (message.startsWith(ThermoMessage.PREFIX)) {
+                return ThermoMessage.fromString(message);
             }
             return null;
         }
@@ -272,6 +295,41 @@ public class NetworkController implements Controller {
                 meters.put(name, reading);
             }
             return new StatusMessage(meters);
+        }
+    }
+
+    static class ThermoMessage extends NetworkMessage {
+        static final String PREFIX = "thermo-status: ";
+        final Map<String, Integer> thermos;
+
+        ThermoMessage(Map<String, Integer> meters) {
+            this.thermos = Collections.unmodifiableMap(meters);
+        }
+
+        @Override
+        public String toString() {
+            final StringBuilder builder = new StringBuilder("<ThermoMessage ");
+            builder.append(Joiner.on(' ').withKeyValueSeparator("=").join(thermos));
+            builder.append('>');
+            return builder.toString();
+        }
+
+        static ThermoMessage fromString(String message) {
+            if (!message.startsWith(ThermoMessage.PREFIX)) {
+                throw new IllegalArgumentException("Invalid message.");
+            }
+            message = message.substring(PREFIX.length());
+            final Map<String, Integer> thermos = Maps.newLinkedHashMap();
+            for (final String meterReading : Splitter.on(' ').split(message)) {
+                final String parts[] = meterReading.split("=");
+                if (parts.length != 2) {
+                    continue;
+                }
+                final String name = parts[0].replace(".temp", "");
+                final Integer reading = (int)Double.parseDouble(parts[1]);
+                thermos.put(name, reading);
+            }
+            return new ThermoMessage(thermos);
         }
     }
 
