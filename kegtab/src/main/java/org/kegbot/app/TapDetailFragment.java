@@ -121,7 +121,7 @@ public class TapDetailFragment extends Fragment {
       Bundle savedInstanceState) {
     Log.d(TAG, "onCreateView");
     mView = inflater.inflate(R.layout.fragment_tap_detail, container, false);
-    ButterKnife.inject(this, mView);
+    ButterKnife.bind(this, mView);
 
     mFlipper = ButterKnife.findById(mView, R.id.tapControlsFlipper);
 
