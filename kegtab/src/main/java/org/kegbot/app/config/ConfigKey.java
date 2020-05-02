@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Bevbot LLC <info@bevbot.com>
+ * Copyright 2003-2020 The Kegbot Project contributors <info@kegbot.org>
  *
  * This file is part of the Kegtab package from the Kegbot project. For
  * more information on Kegtab or Kegbot, see <http://kegbot.org/>.
@@ -23,8 +23,6 @@ import static org.kegbot.app.config.AppConfiguration.TRUE;
 
 /**
  * Configuration items used by the application. Enum names are used as the key in a backing store.
- *
- * @author mike wakerly (opensource@hoho.com)
  */
 enum ConfigKey {
   SETUP_VERSION("0"),

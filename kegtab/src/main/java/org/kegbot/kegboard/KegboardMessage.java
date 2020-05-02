@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Bevbot LLC <info@bevbot.com>
+ * Copyright 2003-2020 The Kegbot Project contributors <info@kegbot.org>
  *
  * This file is part of the Kegtab package from the Kegbot project. For
  * more information on Kegtab or Kegbot, see <http://kegbot.org/>.
@@ -27,8 +27,6 @@ import java.util.Map;
 
 /**
  * Base message type for messages to/from a Kegboard device.
- *
- * @author mike wakerly (opensource@hoho.com)
  * @see <a href="http://kegbot.org/docs/kegboard-guide/">Kegboard Guide</a>
  */
 public abstract class KegboardMessage {

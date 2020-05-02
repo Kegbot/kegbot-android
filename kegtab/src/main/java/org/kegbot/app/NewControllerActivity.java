@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Bevbot LLC <info@bevbot.com>
+ * Copyright 2003-2020 The Kegbot Project contributors <info@kegbot.org>
  *
  * This file is part of the Kegtab package from the Kegbot project. For
  * more information on Kegtab or Kegbot, see <http://kegbot.org/>.
@@ -46,8 +46,6 @@ import butterknife.ButterKnife;
 
 /**
  * Activity shown when a new controller is connected.
- *
- * @author mike wakerly (opensource@hoho.com)
  */
 public class NewControllerActivity extends Activity {
 

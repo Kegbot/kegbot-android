@@ -37,9 +37,6 @@ License and Copyright
 All code is offered under the GPLv2 license, unless otherwise noted. Please see
 LICENSE.txt for the full license.
 
-All code and documentation are Copyright 2003-2012 Mike Wakerly, unless
-otherwise noted.
-
 The Kegbot name and logo are trademarks of the Kegbot project; please don't
 reuse them without our permission.
 

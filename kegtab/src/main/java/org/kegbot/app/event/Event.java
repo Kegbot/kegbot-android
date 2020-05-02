@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Bevbot LLC <info@bevbot.com>
+ * Copyright 2003-2020 The Kegbot Project contributors <info@kegbot.org>
  *
  * This file is part of the Kegtab package from the Kegbot project. For
  * more information on Kegtab or Kegbot, see <http://kegbot.org/>.
@@ -20,8 +20,6 @@ package org.kegbot.app.event;
 
 /**
  * Base/marker interface for all internal events.
- *
- * @author mike wakerly (opensource@hoho.com)
  */
 public interface Event {
 

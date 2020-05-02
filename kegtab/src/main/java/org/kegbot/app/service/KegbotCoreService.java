@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Bevbot LLC <info@bevbot.com>
+ * Copyright 2003-2020 The Kegbot Project contributors <info@kegbot.org>
  *
  * This file is part of the Kegtab package from the Kegbot project. For
  * more information on Kegtab or Kegbot, see <http://kegbot.org/>.
@@ -55,8 +55,6 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Primary service for running this kegbot.
- *
- * @author mike wakerly (mike@wakerly.com)
  */
 public class KegbotCoreService extends Service {
 
