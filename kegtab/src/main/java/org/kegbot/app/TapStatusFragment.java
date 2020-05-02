@@ -22,6 +22,8 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.util.Pair;
@@ -67,6 +69,8 @@ public class TapStatusFragment extends Fragment {
   private GestureDetector mGestureDetector;
   private GestureDetector.OnGestureListener mOnGestureListener;
   private View.OnTouchListener mOnTouchListener;
+
+  private final Handler mHandler = new Handler(Looper.getMainLooper());
 
   public static TapStatusFragment forTap(final KegTap tap) {
     final TapStatusFragment frag = new TapStatusFragment();
@@ -253,11 +257,35 @@ public class TapStatusFragment extends Fragment {
     }
 
     final ImageView tapImage = (ImageView) mView.findViewById(R.id.tapImage);
+    final ImageView tapIllustration = (ImageView) mView.findViewById(R.id.tapIllustration);
 
     // Show tap image, or notes if none available.
     tapImage.setVisibility(View.VISIBLE);
     tapNotes.setVisibility(View.GONE);
-    tapImage.setImageResource(R.drawable.kegbot_unknown_square_2);
+
+    double pct = keg.getPercentFull();
+
+    final int res;
+    if (pct >= 95.0) {
+      res = R.drawable.keg_srm14_5;
+    } else if (pct >= 80) {
+      res = R.drawable.keg_srm14_4;
+    } else if (pct >= 40) {
+      res = R.drawable.keg_srm14_3;
+    } else if (pct >= 20) {
+      res = R.drawable.keg_srm14_2;
+    } else if (pct >= 5) {
+      res = R.drawable.keg_srm14_1;
+    } else {
+      res = R.drawable.keg_srm14_0;
+    }
+    tapImage.setImageResource(res);
+
+    if (keg.hasIllustrationUrl()) {
+      final String illustrationUrl = keg.getIllustrationUrl();
+      Log.d(TAG, "Fetching illustration: " + illustrationUrl);
+      mImageDownloader.download(keg.getIllustrationUrl(), tapIllustration);
+    }
 
     if (keg.getBeverage().hasPicture()) {
       final Image image = keg.getBeverage().getPicture();
@@ -268,6 +296,8 @@ public class TapStatusFragment extends Fragment {
       tapNotes.setVisibility(View.VISIBLE);
       tapNotes.setText(description);
     }
+
+    showIllustration(true);
 
     // TODO(mikey): proper units support
     // Badge 1: Pints Poured
@@ -303,6 +333,11 @@ public class TapStatusFragment extends Fragment {
     } else {
       badge3.setVisibility(View.GONE);
     }
+  }
+
+  void showIllustration(boolean show) {
+    final ViewFlipper flipper = (ViewFlipper) mView.findViewById(R.id.illustrationFlipper);
+    flipper.setDisplayedChild(show ? 1 : 0);
   }
 
   int getTapId() {
