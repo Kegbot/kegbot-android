@@ -48,6 +48,7 @@ public class NetworkController implements Controller {
 
     private AtomicBoolean mStopped = new AtomicBoolean(true);
     private final Map<String, FlowMeter> mFlowMeters = Maps.newLinkedHashMap();
+    private final Map<String, ThermoSensor> mThermoSensors = Maps.newLinkedHashMap();
 
     public NetworkController(String host, int port, ControllerManager.Listener listener) {
         mHost = host;
@@ -126,6 +127,26 @@ public class NetworkController implements Controller {
                 if (newTicks != existingTicks) {
                     meter.setTicks(entry.getValue());
                     mListener.onControllerEvent(this, new MeterUpdateEvent(meter));
+                }
+            }
+        } else if (message instanceof ThermoMessage) {
+            final Map<String, Double> temps = ((ThermoMessage) message).temps;
+            for (Map.Entry<String, Double> entry : temps.entrySet()) {
+                // TODO(mikey): Hacky approach to meter name :(
+                final String tempName = getName() + "." + entry.getKey().replace("temp_", "thermo-");
+
+                if (!mThermoSensors.containsKey(tempName)) {
+                    mThermoSensors.put(tempName, new ThermoSensor(tempName));
+                }
+                final ThermoSensor temp = mThermoSensors.get(tempName);
+
+                final double existingTemp = temp.getTemperatureC();
+                final double newTemp = entry.getValue();
+
+                // Publish a ThermoUpdate event if anything changed.
+                if (newTemp != existingTemp) {
+                    temp.setTemperatureC(entry.getValue());
+                    mListener.onControllerEvent(this, new ThermoSensorUpdateEvent(temp));
                 }
             }
         }
@@ -219,13 +240,12 @@ public class NetworkController implements Controller {
 
     @Override
     public Collection<ThermoSensor> getThermoSensors() {
-        return Collections.emptyList();
+        return mThermoSensors.values();
     }
 
     @Override
     public ThermoSensor getThermoSensor(String sensorName) {
-        // Not supported.
-        return null;
+        return mThermoSensors.get(sensorName);
     }
 
     static abstract class NetworkMessage {
@@ -233,6 +253,8 @@ public class NetworkController implements Controller {
         static NetworkMessage fromString(String message) {
             if (message.startsWith(StatusMessage.PREFIX)) {
                 return StatusMessage.fromString(message);
+            } else if (message.startsWith(ThermoMessage.PREFIX)) {
+                return ThermoMessage.fromString(message);
             } else if (message.startsWith(InfoMessage.PREFIX)) {
                 return InfoMessage.fromString(message);
             }
@@ -274,6 +296,42 @@ public class NetworkController implements Controller {
             return new StatusMessage(meters);
         }
     }
+
+    static class ThermoMessage extends NetworkMessage {
+        static final String PREFIX = "kb-thermo: ";
+        final Map<String, Double> temps;
+
+        ThermoMessage(Map<String, Double> temps) {
+            this.temps = Collections.unmodifiableMap(temps);
+        }
+
+        @Override
+        public String toString() {
+            final StringBuilder builder = new StringBuilder("<StatusMessage ");
+            builder.append(Joiner.on(' ').withKeyValueSeparator("=").join(temps));
+            builder.append('>');
+            return builder.toString();
+        }
+
+        static ThermoMessage fromString(String message) {
+            if (!message.startsWith(ThermoMessage.PREFIX)) {
+                throw new IllegalArgumentException("Invalid message.");
+            }
+            message = message.substring(PREFIX.length());
+            final Map<String, Double> temps = Maps.newLinkedHashMap();
+            for (final String tempReading : Splitter.on(' ').split(message)) {
+                final String parts[] = tempReading.split("=");
+                if (parts.length != 2) {
+                    continue;
+                }
+                final String name = parts[0].replace(".temp", "");
+                final Double reading = Double.valueOf(parts[1]);
+                temps.put(name, reading);
+            }
+            return new ThermoMessage(temps);
+        }
+    }
+
 
     static class InfoMessage extends NetworkMessage {
         static final String PREFIX = "info: ";
