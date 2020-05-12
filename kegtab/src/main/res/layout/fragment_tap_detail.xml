@@ -173,10 +173,37 @@
                     </LinearLayout>
 
                     <LinearLayout
-                        android:id="@+id/toggleSettings"
+                        android:id="@+id/thermoSettings"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_below="@+id/meterSettings"
+                        android:orientation="horizontal"
+                        android:weightSum="2">
+
+                        <TextView
+                            android:id="@+id/thermoTitle"
+                            style="@style/smallText"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="right|center_vertical"
+                            android:layout_marginBottom="4dp"
+                            android:layout_weight="1"
+                            android:text="Temp sensor connected to this tap (optional):"
+                            android:textAlignment="gravity"/>
+
+                        <Spinner
+                            android:id="@+id/thermoSelect"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            android:layout_weight="1"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/toggleSettings"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/thermoSettings"
                         android:orientation="horizontal"
                         android:weightSum="2">
 

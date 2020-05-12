@@ -71,38 +71,38 @@ public class LocalBackend implements Backend {
 
   @Override
   public KegTap startKeg(KegTap tap, String beerName, String brewerName, String styleName,
-      String kegType) throws BackendException {
+                         String kegType) throws BackendException {
     if (tap.hasCurrentKeg()) {
       endKeg(tap.getCurrentKeg());
     }
 
     final double volume = KegSizes.getVolumeMl(kegType);
     final Keg keg = mDb.createOrUpdateKeg(Keg.newBuilder()
-        .setId(0)
-        .setKegType(kegType)
-        .setFullVolumeMl(volume)
-        .setRemainingVolumeMl(volume)
-        .setServedVolumeMl(0)
-        .setSpilledVolumeMl(0)
-        .setPercentFull(100.0)
-        .setOnline(true)
-        .setBeverage(Beverage.newBuilder()
             .setId(0)
-            .setBeverageType("beer")
-            .setName(beerName)
-            .setStyle(styleName)
-            .setProducer(BeverageProducer.newBuilder()
-                .setId(0)
-                .setName(brewerName)
-                .build())
-            .build())
-        .build());
+            .setKegType(kegType)
+            .setFullVolumeMl(volume)
+            .setRemainingVolumeMl(volume)
+            .setServedVolumeMl(0)
+            .setSpilledVolumeMl(0)
+            .setPercentFull(100.0)
+            .setOnline(true)
+            .setBeverage(Beverage.newBuilder()
+                    .setId(0)
+                    .setBeverageType("beer")
+                    .setName(beerName)
+                    .setStyle(styleName)
+                    .setProducer(BeverageProducer.newBuilder()
+                            .setId(0)
+                            .setName(brewerName)
+                            .build())
+                    .build())
+            .build());
 
     Log.d(TAG, "Created keg: " + keg);
 
     final KegTap updatedTap = mDb.createOrUpdateTap(KegTap.newBuilder(tap)
-        .setCurrentKegId(keg.getId())
-        .build());
+            .setCurrentKegId(keg.getId())
+            .build());
 
     Log.d(TAG, "Updated tap: " + updatedTap);
 
@@ -111,7 +111,7 @@ public class LocalBackend implements Backend {
 
   @Override
   public AuthenticationToken assignToken(String authDevice, String tokenValue, String username)
-      throws BackendException {
+          throws BackendException {
     throw new OperationNotSupportedException("Local backend does not support users.");
   }
 
@@ -122,7 +122,7 @@ public class LocalBackend implements Backend {
 
   @Override
   public User createUser(String username, String email, String password, String imagePath)
-      throws BackendException {
+          throws BackendException {
     throw new OperationNotSupportedException("Local backend does not support users.");
   }
 
@@ -132,8 +132,8 @@ public class LocalBackend implements Backend {
 
     Log.i(TAG, "Taking keg " + kegId + " offline");
     final Keg newKeg = Keg.newBuilder(keg)
-        .setOnline(false)
-        .build();
+            .setOnline(false)
+            .build();
 
     final Keg result;
     try {
@@ -146,8 +146,8 @@ public class LocalBackend implements Backend {
     for (final KegTap tap : getTaps()) {
       if (tap.getCurrentKegId() == keg.getId()) {
         mDb.createOrUpdateTap(KegTap.newBuilder(tap)
-            .setCurrentKegId(0)
-            .build());
+                .setCurrentKegId(0)
+                .build());
         break;
       }
     }
@@ -157,7 +157,7 @@ public class LocalBackend implements Backend {
 
   @Override
   public AuthenticationToken getAuthToken(String authDevice, String tokenValue)
-      throws BackendException {
+          throws BackendException {
     return null;  // Not Implemented
   }
 
@@ -194,9 +194,9 @@ public class LocalBackend implements Backend {
   @Override
   public KegTap createTap(String tapName) throws BackendException {
     final KegTap tap = KegTap.newBuilder()
-        .setId(0)
-        .setName(tapName)
-        .build();
+            .setId(0)
+            .setName(tapName)
+            .build();
     try {
       return mDb.createOrUpdateTap(tap);
     } catch (SQLiteException e) {
@@ -222,8 +222,8 @@ public class LocalBackend implements Backend {
 
   @Override
   public Drink recordDrink(String tapName, long volumeMl, long ticks, @Nullable String shout,
-      @Nullable String username, @Nullable String recordDate, long durationMillis,
-      @Nullable TimeSeries timeSeries, @Nullable File picture) throws BackendException {
+                           @Nullable String username, @Nullable String recordDate, long durationMillis,
+                           @Nullable TimeSeries timeSeries, @Nullable File picture) throws BackendException {
     final Drink drink;
 
     String pictureUrl = "";
@@ -233,14 +233,14 @@ public class LocalBackend implements Backend {
 
       try {
         pictureUrl = MediaStore.Images.Media.insertImage(mContentResolver, imagePath,
-            picture.getName(), "Kegbot drink snapshot");
+                picture.getName(), "Kegbot drink snapshot");
       } catch (FileNotFoundException e) {
         Log.w(TAG, "Storing image '" + imagePath + "' failed: " + e);
       }
     }
     try {
       drink = mDb.recordDrink(tapName, volumeMl, ticks, shout, username, recordDate, durationMillis,
-          timeSeries, Strings.nullToEmpty(pictureUrl));
+              timeSeries, Strings.nullToEmpty(pictureUrl));
     } catch (SQLiteException e) {
       throw new BackendException("Error recording drink", e);
     }
@@ -257,8 +257,8 @@ public class LocalBackend implements Backend {
   @Override
   public FlowMeter calibrateMeter(FlowMeter meter, double ticksPerMl) throws BackendException {
     final FlowMeter newMeter = FlowMeter.newBuilder(meter)
-        .setTicksPerMl(ticksPerMl)
-        .build();
+            .setTicksPerMl(ticksPerMl)
+            .build();
     try {
       return mDb.createOrUpdateFlowMeter(newMeter);
     } catch (SQLiteException e) {
@@ -272,11 +272,11 @@ public class LocalBackend implements Backend {
     serialNumber = Strings.nullToEmpty(serialNumber);
     deviceType = Strings.nullToEmpty(deviceType);
     final Controller controller = Controller.newBuilder()
-        .setId(0)
-        .setName(name)
-        .setSerialNumber(serialNumber)
-        .setModelName(deviceType)
-        .build();
+            .setId(0)
+            .setName(name)
+            .setSerialNumber(serialNumber)
+            .setModelName(deviceType)
+            .build();
     return mDb.createOrUpdateController(controller);
   }
 
@@ -292,14 +292,14 @@ public class LocalBackend implements Backend {
 
   @Override
   public FlowMeter createFlowMeter(Controller controller, String portName, double ticksPerMl)
-      throws BackendException {
+          throws BackendException {
     final FlowMeter meter = FlowMeter.newBuilder()
-        .setId(0)
-        .setController(controller)
-        .setPortName(portName)
-        .setName(String.format("%s.%s", controller.getName(), portName))
-        .setTicksPerMl((float) ticksPerMl)
-        .build();
+            .setId(0)
+            .setController(controller)
+            .setPortName(portName)
+            .setName(String.format("%s.%s", controller.getName(), portName))
+            .setTicksPerMl((float) ticksPerMl)
+            .build();
     return mDb.createOrUpdateFlowMeter(meter);
   }
 
@@ -326,6 +326,24 @@ public class LocalBackend implements Backend {
   @Override
   public List<Models.FlowToggle> getFlowToggles() throws BackendException {
     return mDb.getAllFlowToggles();
+  }
+
+  @Override
+  public List<Models.ThermoSensor> getThermoSensors() throws BackendException {
+    // TODO
+    return null;
+  }
+
+  @Override
+  public KegTap connectThermo(KegTap tap, Models.ThermoSensor thermo) throws BackendException {
+    // TODO
+    return null;
+  }
+
+  @Override
+  public KegTap disconnectThermo(KegTap tap) throws BackendException {
+    // TODO
+    return null;
   }
 
   @Override

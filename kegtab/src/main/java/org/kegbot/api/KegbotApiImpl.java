@@ -49,6 +49,7 @@ import org.kegbot.app.util.Utils;
 import org.kegbot.app.util.Version;
 import org.kegbot.backend.Backend;
 import org.kegbot.backend.BackendException;
+import org.kegbot.core.ThermoSensor;
 import org.kegbot.proto.Api.RecordTemperatureRequest;
 import org.kegbot.proto.Models;
 import org.kegbot.proto.Models.AuthenticationToken;
@@ -117,8 +118,8 @@ public class KegbotApiImpl implements Backend {
     for (Map.Entry<String, String> param : params.entrySet()) {
       try {
         parts.add(String.format("%s=%s",
-            URLEncoder.encode(param.getKey(), "utf-8"),
-            URLEncoder.encode(param.getValue(), "utf-8")));
+                URLEncoder.encode(param.getKey(), "utf-8"),
+                URLEncoder.encode(param.getValue(), "utf-8")));
       } catch (UnsupportedEncodingException e) {
         throw new RuntimeException(e);
       }
@@ -128,8 +129,8 @@ public class KegbotApiImpl implements Backend {
 
   private static RequestBody formBody(Map<String, String> params) {
     return RequestBody.create(
-        MediaType.parse("application/x-www-form-urlencoded"),
-        getUrlParamsString(params).getBytes());
+            MediaType.parse("application/x-www-form-urlencoded"),
+            getUrlParamsString(params).getBytes());
   }
 
   private static String getBoundary() {
@@ -138,7 +139,7 @@ public class KegbotApiImpl implements Backend {
 
   /** Builds a multi-part form body. */
   private static RequestBody formBody(Map<String, String> params, Map<String, File> files)
-      throws KegbotApiException {
+          throws KegbotApiException {
     final String boundary = getBoundary();
     final byte[] boundaryBytes = boundary.getBytes();
 
@@ -152,7 +153,7 @@ public class KegbotApiImpl implements Backend {
         bos.write(boundaryBytes);
         bos.write(CRLF);
         bos.write(
-            String.format("Content-Disposition: form-data; name=\"%s\"", param.getKey()).getBytes());
+                String.format("Content-Disposition: form-data; name=\"%s\"", param.getKey()).getBytes());
         bos.write(CRLF);
         bos.write(CRLF);
         bos.write(param.getValue().getBytes());
@@ -168,8 +169,8 @@ public class KegbotApiImpl implements Backend {
         bos.write(boundaryBytes);
         bos.write(CRLF);
         bos.write(
-            String.format("Content-Disposition: form-data; name=\"%s\"; filename=\"%s\"",
-                entityName, file.getName()).getBytes()
+                String.format("Content-Disposition: form-data; name=\"%s\"; filename=\"%s\"",
+                        entityName, file.getName()).getBytes()
         );
         bos.write(CRLF);
         bos.write(CRLF);
@@ -194,7 +195,7 @@ public class KegbotApiImpl implements Backend {
     }
 
     return RequestBody.create(
-        MediaType.parse("multipart/form-data;boundary=" + boundary), outputBytes);
+            MediaType.parse("multipart/form-data;boundary=" + boundary), outputBytes);
   }
 
   private String apiUrl() {
@@ -211,9 +212,9 @@ public class KegbotApiImpl implements Backend {
 
   private Request.Builder newRequest(final String path) {
     Request.Builder builder = new Request.Builder()
-        .url(apiUrl() + path)
-        .addHeader("User-Agent", mUserAgent)
-        .addHeader("X-Kegbot-Api-Key", apiKey());
+            .url(apiUrl() + path)
+            .addHeader("User-Agent", mUserAgent)
+            .addHeader("X-Kegbot-Api-Key", apiKey());
     return builder;
   }
 
@@ -230,7 +231,7 @@ public class KegbotApiImpl implements Backend {
 
     final int responseCode = response.code();
     final String logMessage = String.format("--> %s %s [%s] %sms", request.method(), request.urlString(),
-        responseCode, endTime - startTime);
+            responseCode, endTime - startTime);
     if (responseCode >= 200 && responseCode < 300) {
       Log.d(TAG, logMessage);
     } else {
@@ -306,7 +307,7 @@ public class KegbotApiImpl implements Backend {
 
   private JsonNode postJson(String path, Map<String, String> params) throws KegbotApiException {
     final Request.Builder request = newRequest(path).
-        post(formBody(params));
+            post(formBody(params));
     return requestJson(request.build());
   }
 
@@ -316,7 +317,7 @@ public class KegbotApiImpl implements Backend {
   }
 
   private JsonNode postJson(String path, Map<String, String> params,
-      Map<String, File> files) throws KegbotApiException {
+                            Map<String, File> files) throws KegbotApiException {
     final Request.Builder request = newRequest(path).post(formBody(params, files));
     return requestJson(request.build());
   }
@@ -340,7 +341,7 @@ public class KegbotApiImpl implements Backend {
   }
 
   private <T extends GeneratedMessage> T getSingleProto(String path, Builder builder)
-      throws KegbotApiException {
+          throws KegbotApiException {
     JsonNode result = getJson(path);
     return getSingleProto(builder, result.get("object"));
   }
@@ -353,13 +354,13 @@ public class KegbotApiImpl implements Backend {
   }
 
   private <T extends GeneratedMessage> T postProto(String path, Builder builder, Map<String, String> params)
-      throws KegbotApiException {
+          throws KegbotApiException {
     JsonNode result = postJson(path, params);
     return getSingleProto(builder, result.get("object"));
   }
 
   private <T extends GeneratedMessage> T postProto(String path, Builder builder,
-      Map<String, String> params, Map<String, File> files) throws KegbotApiException {
+                                                   Map<String, String> params, Map<String, File> files) throws KegbotApiException {
     JsonNode result = postJson(path, params, files);
     return getSingleProto(builder, result.get("object"));
   }
@@ -439,8 +440,8 @@ public class KegbotApiImpl implements Backend {
   @Override
   public KegTap createTap(String tapName) throws BackendException {
     final Map<String, String> params = ImmutableMap.<String, String>builder()
-        .put("name", tapName)
-        .build();
+            .put("name", tapName)
+            .build();
 
     return postProto("/taps/", KegTap.newBuilder(), params);
   }
@@ -453,7 +454,7 @@ public class KegbotApiImpl implements Backend {
 
   @Override
   public AuthenticationToken getAuthToken(String authDevice, String tokenValue)
-      throws KegbotApiException {
+          throws KegbotApiException {
     try {
       authDevice = URLEncoder.encode(authDevice, Charsets.UTF_8.name());
       tokenValue = URLEncoder.encode(tokenValue, Charsets.UTF_8.name());
@@ -463,7 +464,7 @@ public class KegbotApiImpl implements Backend {
 
     try {
       return getSingleProto("/auth-tokens/" + authDevice + "/" + tokenValue + "/",
-          AuthenticationToken.newBuilder());
+              AuthenticationToken.newBuilder());
     } catch (KegbotApi404 e) {
       return null;
     }
@@ -476,13 +477,13 @@ public class KegbotApiImpl implements Backend {
 
   @Override
   public KegTap startKeg(KegTap tap, String beerName, String brewerName, String styleName,
-      String kegType) throws KegbotApiException {
+                         String kegType) throws KegbotApiException {
     final Map<String, String> params = ImmutableMap.<String, String>builder()
-        .put("beer_name", beerName)
-        .put("brewer_name", brewerName)
-        .put("style_name", styleName)
-        .put("keg_size", kegType)
-        .build();
+            .put("beer_name", beerName)
+            .put("brewer_name", brewerName)
+            .put("style_name", styleName)
+            .put("keg_size", kegType)
+            .build();
 
     return postProto("/taps/" + tap.getId() + "/activate/", KegTap.newBuilder(), params);
   }
@@ -505,9 +506,9 @@ public class KegbotApiImpl implements Backend {
   @Override
   public FlowMeter calibrateMeter(FlowMeter meter, double ticksPerMl) throws BackendException {
     final Map<String, String> params = ImmutableMap.<String, String>builder()
-        .put("ticks_per_ml", Double.valueOf(ticksPerMl).toString())
-        .put("ml_per_tick", Double.valueOf(1.0 / ticksPerMl).toString())
-        .build();
+            .put("ticks_per_ml", Double.valueOf(ticksPerMl).toString())
+            .put("ml_per_tick", Double.valueOf(1.0 / ticksPerMl).toString())
+            .build();
     return postProto("/flow-meters/" + meter.getId(), FlowMeter.newBuilder(), params);
   }
 
@@ -536,8 +537,8 @@ public class KegbotApiImpl implements Backend {
 
   @Override
   public Drink recordDrink(String tapName, long volumeMl, long ticks,
-      @Nullable String shout, @Nullable String username, @Nullable String recordDate, long durationMillis,
-      @Nullable TimeSeries timeSeries, @Nullable File picture) throws BackendException {
+                           @Nullable String shout, @Nullable String username, @Nullable String recordDate, long durationMillis,
+                           @Nullable TimeSeries timeSeries, @Nullable File picture) throws BackendException {
 
     final ImmutableMap.Builder<String, String> paramBuilder = ImmutableMap.builder();
     paramBuilder.put("ticks", String.valueOf(ticks));
@@ -583,7 +584,7 @@ public class KegbotApiImpl implements Backend {
 
   @Override
   public ThermoLog recordTemperature(final RecordTemperatureRequest request)
-      throws KegbotApiException {
+          throws KegbotApiException {
     if (!request.isInitialized()) {
       throw new KegbotApiException("Request is missing required field(s)");
     }
@@ -605,11 +606,11 @@ public class KegbotApiImpl implements Backend {
 
   @Override
   public User createUser(String username, String email, String password, String imagePath)
-      throws KegbotApiException {
+          throws KegbotApiException {
     final ImmutableMap.Builder<String, String> builder = ImmutableMap.<String, String>builder()
-        .put("username", username)
-        .put("email", email)
-        .put("accepted_terms", "true");
+            .put("username", username)
+            .put("email", email)
+            .put("accepted_terms", "true");
 
     if (!Strings.isNullOrEmpty(password)) {
       builder.put("password", password);
@@ -625,11 +626,11 @@ public class KegbotApiImpl implements Backend {
 
   @Override
   public AuthenticationToken assignToken(String authDevice, String tokenValue, String username)
-      throws KegbotApiException {
+          throws KegbotApiException {
     final String url = "/auth-tokens/" + authDevice + "/" + tokenValue + "/assign/";
     final Map<String, String> params = ImmutableMap.<String, String>builder()
-        .put("username", username)
-        .build();
+            .put("username", username)
+            .build();
     return postProto(url, AuthenticationToken.newBuilder(), params);
   }
 
@@ -650,7 +651,7 @@ public class KegbotApiImpl implements Backend {
     }
 
     return (Controller) postProto("/controllers/" + controller.getId(), Controller.newBuilder(),
-        params);
+            params);
   }
 
   @Override
@@ -664,7 +665,7 @@ public class KegbotApiImpl implements Backend {
     params.put("port_name", flowMeter.getPortName());
 
     return (FlowMeter) postProto("/flow-meters/" + flowMeter.getId(), FlowMeter.newBuilder(),
-        params);
+            params);
   }
 
   private synchronized void debug(String message) {
@@ -673,7 +674,7 @@ public class KegbotApiImpl implements Backend {
 
   @Override
   public Controller createController(String name, String serialNumber, String deviceType)
-      throws BackendException {
+          throws BackendException {
     final Map<String, String> params = Maps.newLinkedHashMap();
     params.put("name", name);
     if (!Strings.isNullOrEmpty(serialNumber)) {
@@ -708,6 +709,11 @@ public class KegbotApiImpl implements Backend {
   }
 
   @Override
+  public List<Models.ThermoSensor> getThermoSensors() throws BackendException {
+    return getProto("/thermo-sensors/", Models.ThermoSensor.newBuilder());
+  }
+
+  @Override
   public List<FlowToggle> getFlowToggles() throws BackendException {
     return getProto("/flow-toggles/", FlowToggle.newBuilder());
   }
@@ -718,7 +724,7 @@ public class KegbotApiImpl implements Backend {
     params.put("port_name", flowToggle.getPortName());
 
     return (FlowToggle) postProto("/flow-toggles/" + flowToggle.getId(), FlowToggle.newBuilder(),
-        params);
+            params);
   }
 
   @Override
@@ -731,6 +737,19 @@ public class KegbotApiImpl implements Backend {
   @Override
   public KegTap disconnectToggle(KegTap tap) throws BackendException {
     return (KegTap) postProto("/taps/" + tap.getId() + "/disconnect-toggle", KegTap.newBuilder(),
-        null);
+            null);
+  }
+
+  @Override
+  public KegTap connectThermo(KegTap tap, Models.ThermoSensor thermo) throws BackendException {
+    final Map<String, String> params = Maps.newLinkedHashMap();
+    params.put("thermo", String.valueOf(thermo.getId()));
+    return (KegTap) postProto("/taps/" + tap.getId() + "/connect-thermo", KegTap.newBuilder(), params);
+  }
+
+  @Override
+  public KegTap disconnectThermo(KegTap tap) throws BackendException {
+    return (KegTap) postProto("/taps/" + tap.getId() + "/disconnect-thermo", KegTap.newBuilder(),
+            null);
   }
 }
