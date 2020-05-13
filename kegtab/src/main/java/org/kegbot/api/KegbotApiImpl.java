@@ -50,7 +50,6 @@ import org.kegbot.app.util.Version;
 import org.kegbot.backend.Backend;
 import org.kegbot.backend.BackendException;
 import org.kegbot.proto.Api.RecordTemperatureRequest;
-import org.kegbot.proto.Models;
 import org.kegbot.proto.Models.AuthenticationToken;
 import org.kegbot.proto.Models.Controller;
 import org.kegbot.proto.Models.Drink;
@@ -63,6 +62,7 @@ import org.kegbot.proto.Models.Session;
 import org.kegbot.proto.Models.SoundEvent;
 import org.kegbot.proto.Models.SystemEvent;
 import org.kegbot.proto.Models.ThermoLog;
+import org.kegbot.proto.Models.ThermoSensor;
 import org.kegbot.proto.Models.User;
 
 import java.io.ByteArrayOutputStream;
@@ -708,12 +708,17 @@ public class KegbotApiImpl implements Backend {
   }
 
   @Override
+  public List<ThermoSensor> getThermoSensors() throws BackendException {
+    return getProto("/thermo-sensors/", ThermoSensor.newBuilder());
+  }
+
+  @Override
   public List<FlowToggle> getFlowToggles() throws BackendException {
     return getProto("/flow-toggles/", FlowToggle.newBuilder());
   }
 
   @Override
-  public Models.FlowToggle updateFlowToggle(Models.FlowToggle flowToggle) throws BackendException {
+  public FlowToggle updateFlowToggle(FlowToggle flowToggle) throws BackendException {
     final Map<String, String> params = Maps.newLinkedHashMap();
     params.put("port_name", flowToggle.getPortName());
 
@@ -722,7 +727,7 @@ public class KegbotApiImpl implements Backend {
   }
 
   @Override
-  public KegTap connectToggle(KegTap tap, Models.FlowToggle toggle) throws BackendException {
+  public KegTap connectToggle(KegTap tap, FlowToggle toggle) throws BackendException {
     final Map<String, String> params = Maps.newLinkedHashMap();
     params.put("toggle", String.valueOf(toggle.getId()));
     return (KegTap) postProto("/taps/" + tap.getId() + "/connect-toggle", KegTap.newBuilder(), params);
@@ -731,6 +736,19 @@ public class KegbotApiImpl implements Backend {
   @Override
   public KegTap disconnectToggle(KegTap tap) throws BackendException {
     return (KegTap) postProto("/taps/" + tap.getId() + "/disconnect-toggle", KegTap.newBuilder(),
+        null);
+  }
+
+  @Override
+  public KegTap connectThermo(KegTap tap, ThermoSensor thermo) throws BackendException {
+    final Map<String, String> params = Maps.newLinkedHashMap();
+    params.put("thermo", String.valueOf(thermo.getId()));
+    return (KegTap) postProto("/taps/" + tap.getId() + "/connect-thermo", KegTap.newBuilder(), params);
+  }
+
+  @Override
+  public KegTap disconnectThermo(KegTap tap) throws BackendException {
+    return (KegTap) postProto("/taps/" + tap.getId() + "/disconnect-thermo", KegTap.newBuilder(),
         null);
   }
 }

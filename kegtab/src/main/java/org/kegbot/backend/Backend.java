@@ -36,6 +36,7 @@ import org.kegbot.proto.Models.Session;
 import org.kegbot.proto.Models.SoundEvent;
 import org.kegbot.proto.Models.SystemEvent;
 import org.kegbot.proto.Models.ThermoLog;
+import org.kegbot.proto.Models.ThermoSensor;
 import org.kegbot.proto.Models.User;
 
 import java.io.File;
@@ -180,6 +181,15 @@ public interface Backend {
 
   /** Disconnect a meter. */
   public KegTap disconnectMeter(KegTap tap) throws BackendException;
+
+  /** Returns all {@link org.kegbot.proto.Models.ThermoSensor ThermoSensor} known to the backend. */
+  public List<ThermoSensor> getThermoSensors() throws BackendException;
+
+  /** Connect a toggle to a tap. */
+  public KegTap connectThermo(KegTap tap, ThermoSensor thermo) throws BackendException;
+
+  /** Disconnect a toggle. */
+  public KegTap disconnectThermo(KegTap tap) throws BackendException;
 
   /** Returns all {@link FlowMeter FlowMeters} known to the backend. */
   public List<FlowToggle> getFlowToggles() throws BackendException;

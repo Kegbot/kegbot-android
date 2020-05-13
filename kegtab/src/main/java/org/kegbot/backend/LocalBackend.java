@@ -32,13 +32,13 @@ import org.codehaus.jackson.JsonNode;
 import org.kegbot.app.util.KegSizes;
 import org.kegbot.app.util.TimeSeries;
 import org.kegbot.proto.Api.RecordTemperatureRequest;
-import org.kegbot.proto.Models;
 import org.kegbot.proto.Models.AuthenticationToken;
 import org.kegbot.proto.Models.Beverage;
 import org.kegbot.proto.Models.BeverageProducer;
 import org.kegbot.proto.Models.Controller;
 import org.kegbot.proto.Models.Drink;
 import org.kegbot.proto.Models.FlowMeter;
+import org.kegbot.proto.Models.FlowToggle;
 import org.kegbot.proto.Models.Image;
 import org.kegbot.proto.Models.Keg;
 import org.kegbot.proto.Models.KegTap;
@@ -46,6 +46,7 @@ import org.kegbot.proto.Models.Session;
 import org.kegbot.proto.Models.SoundEvent;
 import org.kegbot.proto.Models.SystemEvent;
 import org.kegbot.proto.Models.ThermoLog;
+import org.kegbot.proto.Models.ThermoSensor;
 import org.kegbot.proto.Models.User;
 
 import java.io.File;
@@ -324,17 +325,35 @@ public class LocalBackend implements Backend {
   }
 
   @Override
-  public List<Models.FlowToggle> getFlowToggles() throws BackendException {
+  public List<FlowToggle> getFlowToggles() throws BackendException {
     return mDb.getAllFlowToggles();
   }
 
   @Override
-  public Models.FlowToggle updateFlowToggle(Models.FlowToggle flowToggle) throws BackendException {
+  public List<ThermoSensor> getThermoSensors() throws BackendException {
+    // TODO
+    return null;
+  }
+
+  @Override
+  public KegTap connectThermo(KegTap tap, ThermoSensor thermo) throws BackendException {
+    // TODO
+    return null;
+  }
+
+  @Override
+  public KegTap disconnectThermo(KegTap tap) throws BackendException {
+    // TODO
+    return null;
+  }
+
+  @Override
+  public FlowToggle updateFlowToggle(FlowToggle flowToggle) throws BackendException {
     return mDb.createOrUpdateFlowToggle(flowToggle);
   }
 
   @Override
-  public KegTap connectToggle(KegTap tap, Models.FlowToggle flowToggle) throws BackendException {
+  public KegTap connectToggle(KegTap tap, FlowToggle flowToggle) throws BackendException {
     return mDb.connectTapToToggle(tap, flowToggle);
   }
 

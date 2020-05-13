@@ -52,8 +52,9 @@ import org.kegbot.backend.BackendException;
 import org.kegbot.core.KegbotCore;
 import org.kegbot.core.SyncManager;
 import org.kegbot.core.TapManager;
-import org.kegbot.proto.Models;
 import org.kegbot.proto.Models.FlowMeter;
+import org.kegbot.proto.Models.FlowToggle;
+import org.kegbot.proto.Models.ThermoSensor;
 import org.kegbot.proto.Models.Keg;
 import org.kegbot.proto.Models.KegTap;
 
@@ -81,10 +82,13 @@ public class TapDetailFragment extends Fragment {
   private ViewFlipper mFlipper;
 
   private Spinner mMeterSelect;
+  private Spinner mThermoSelect;
   private Spinner mToggleSelect;
   private final List<FlowMeter> mMeters = Lists.newArrayList();
-  private final List<Models.FlowToggle> mToggles = Lists.newArrayList();
+  private final List<ThermoSensor> mThermos = Lists.newArrayList();
+  private final List<FlowToggle> mToggles = Lists.newArrayList();
   private FlowMeterAdapter mAdapter;
+  private ThermoAdapter mThermoAdapter;
   private FlowToggleAdapter mToggleAdapter;
   private Switch mTapEnabledSwitch;
 
@@ -109,6 +113,9 @@ public class TapDetailFragment extends Fragment {
     mMeters.add(null); // "not connected"
     final SyncManager syncManager = KegbotCore.getInstance(getActivity()).getSyncManager();
     mMeters.addAll(syncManager.getCurrentFlowMeters());
+
+    mThermos.add(null);
+    mThermos.addAll(syncManager.getCurrentThermoSensors());
 
     mToggles.add(null); // "none"
     mToggles.addAll(syncManager.getCurrentFlowToggles());
@@ -142,11 +149,16 @@ public class TapDetailFragment extends Fragment {
     mMeterSelect = ButterKnife.findById(mView, R.id.meterSelect);
     mMeterSelect.setAdapter(mAdapter);
 
+    mThermoAdapter = new ThermoAdapter(getActivity());
+    mThermoSelect = ButterKnife.findById(mView, R.id.thermoSelect);
+    mThermoSelect.setAdapter(mThermoAdapter);
+
     mToggleAdapter = new FlowToggleAdapter(getActivity());
     mToggleSelect = ButterKnife.findById(mView, R.id.toggleSelect);
     mToggleSelect.setAdapter(mToggleAdapter);
 
     mAdapter.addAll(mMeters);
+    mThermoAdapter.addAll(mThermos);
     mToggleAdapter.addAll(mToggles);
     mDeleteTapButton = ButterKnife.findById(mView, R.id.deleteTapButton);
 
@@ -192,12 +204,54 @@ public class TapDetailFragment extends Fragment {
       }
     });
 
+    mThermoSelect.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+      @Override
+      public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        Log.d(TAG, "thermo selected: position=" + position + " id=" + id);
+
+        final ThermoSensor thermo = mThermos.get(position);
+        if (thermo == mTap.getThermoSensor() ||
+            (thermo != null && mTap.hasThermoSensor() && thermo.getId() == mTap.getThermoSensor().getId())) {
+          Log.d(TAG, "Not changed.");
+          return;
+        }
+
+        new AsyncTask<Void, Void, Void>() {
+          @Override
+          protected Void doInBackground(Void... params) {
+            final KegbotCore core = KegbotCore.getInstance(getActivity());
+            final Backend backend = core.getBackend();
+            final SyncManager sync = core.getSyncManager();
+
+            try {
+              if (thermo == null) {
+                Log.d(TAG, "Disconnecting thermo on tap.");
+                backend.disconnectThermo(mTap);
+              } else {
+                Log.d(TAG, "Connecting thermo on tap.");
+                backend.connectThermo(mTap, thermo);
+              }
+            } catch (BackendException e) {
+              Log.w(TAG, "Error: " + e, e);
+            }
+            sync.requestSync();
+            return null;
+          }
+        }.execute((Void) null);
+      }
+
+      @Override
+      public void onNothingSelected(AdapterView<?> parent) {
+        Log.d(TAG, "onNothingSelected");
+      }
+    });
+
     mToggleSelect.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
       @Override
       public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         Log.d(TAG, "toggle selected: position=" + position + " id=" + id);
 
-        final Models.FlowToggle toggle = mToggles.get(position);
+        final FlowToggle toggle = mToggles.get(position);
         if (toggle == mTap.getToggle() ||
             (toggle != null && mTap.hasToggle() && toggle.getId() == mTap.getToggle().getId())) {
           Log.d(TAG, "Not changed.");
@@ -305,8 +359,19 @@ public class TapDetailFragment extends Fragment {
     }
 
     position = 0;
-    final Models.FlowToggle currentToggle = mTap.getToggle();
-    for (final Models.FlowToggle toggle : mToggles) {
+    final ThermoSensor currentThermo = mTap.getThermoSensor();
+    for (final ThermoSensor thermo : mThermos) {
+      if ((thermo == null && currentThermo == null) ||
+          (thermo != null && thermo.getId() == currentThermo.getId())) {
+        mThermoSelect.setSelection(position);
+        break;
+      }
+      position += 1;
+    }
+
+    position = 0;
+    final FlowToggle currentToggle = mTap.getToggle();
+    for (final FlowToggle toggle : mToggles) {
       if ((toggle == null && currentToggle == null) ||
           (toggle != null && toggle.getId() == currentToggle.getId())) {
         mToggleSelect.setSelection(position);
@@ -531,7 +596,48 @@ public class TapDetailFragment extends Fragment {
 
   }
 
-  private class FlowToggleAdapter extends ArrayAdapter<Models.FlowToggle> {
+  private class ThermoAdapter extends ArrayAdapter<ThermoSensor> {
+    public ThermoAdapter(Context context) {
+      super(context, android.R.layout.simple_spinner_item);
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+      final View view;
+      if (convertView != null) {
+        view = convertView;
+      } else {
+        final LayoutInflater inflater =
+            (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        view = inflater.inflate(android.R.layout.simple_list_item_1, null);
+      }
+
+      final ThermoSensor item = getItem(position);
+      final TextView text = ButterKnife.findById(view, android.R.id.text1);
+      if (item == null) {
+        text.setText("None.");
+      } else {
+        text.setText(item.getSensorName());
+      }
+      return view;
+    }
+
+    @Override
+    public View getDropDownView(int position, View convertView, ViewGroup parent) {
+      return getView(position, convertView, parent);
+    }
+
+    @Override
+    public long getItemId(int position) {
+      if (position == 0) {
+        return 0;
+      }
+      return mThermos.get(position).getId();
+    }
+
+  }
+
+  private class FlowToggleAdapter extends ArrayAdapter<FlowToggle> {
     public FlowToggleAdapter(Context context) {
       super(context, android.R.layout.simple_spinner_item);
     }
@@ -547,7 +653,7 @@ public class TapDetailFragment extends Fragment {
         view = inflater.inflate(android.R.layout.simple_list_item_1, null);
       }
 
-      final Models.FlowToggle item = getItem(position);
+      final FlowToggle item = getItem(position);
       final TextView text = ButterKnife.findById(view, android.R.id.text1);
       if (item == null) {
         text.setText("None.");
