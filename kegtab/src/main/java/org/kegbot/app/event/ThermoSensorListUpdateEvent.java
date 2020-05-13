@@ -18,7 +18,7 @@
  */
 package org.kegbot.app.event;
 
-import org.kegbot.proto.Models;
+import org.kegbot.proto.Models.ThermoSensor;
 
 import java.util.List;
 
@@ -27,13 +27,13 @@ import java.util.List;
  */
 public class ThermoSensorListUpdateEvent implements Event {
 
-  private final List<Models.ThermoSensor> mThermos;
+  private final List<ThermoSensor> mThermos;
 
-  public ThermoSensorListUpdateEvent(List<Models.ThermoSensor> thermos) {
+  public ThermoSensorListUpdateEvent(List<ThermoSensor> thermos) {
     mThermos = thermos;
   }
 
-  public List<Models.ThermoSensor> getEvents() {
+  public List<ThermoSensor> getEvents() {
     return mThermos;
   }
 

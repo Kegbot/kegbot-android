@@ -24,7 +24,6 @@ import android.content.Context;
 import org.codehaus.jackson.JsonNode;
 import org.kegbot.app.util.TimeSeries;
 import org.kegbot.proto.Api.RecordTemperatureRequest;
-import org.kegbot.proto.Models;
 import org.kegbot.proto.Models.AuthenticationToken;
 import org.kegbot.proto.Models.Controller;
 import org.kegbot.proto.Models.Drink;
@@ -37,6 +36,7 @@ import org.kegbot.proto.Models.Session;
 import org.kegbot.proto.Models.SoundEvent;
 import org.kegbot.proto.Models.SystemEvent;
 import org.kegbot.proto.Models.ThermoLog;
+import org.kegbot.proto.Models.ThermoSensor;
 import org.kegbot.proto.Models.User;
 
 import java.io.File;
@@ -54,18 +54,18 @@ public interface Backend {
 
   /** Activates a new keg on the specified tap. */
   public KegTap startKeg(KegTap tap, String beerName, String brewerName, String styleName,
-                         String kegType) throws BackendException;
+      String kegType) throws BackendException;
 
   /** Assigns an authentication token to a user. */
   public AuthenticationToken assignToken(String authDevice, String tokenValue, String username)
-          throws BackendException;
+      throws BackendException;
 
   /** Attaches a picture to a drink record. */
   public Image attachPictureToDrink(int drinkId, File picture) throws BackendException;
 
   /** Creates a new user. */
   public User createUser(String username, String email, String password, String imagePath)
-          throws BackendException;
+      throws BackendException;
 
   /** Ends the given keg. */
   public Keg endKeg(Keg keg) throws BackendException;
@@ -76,7 +76,7 @@ public interface Backend {
    * @return the token record, or {@code null} if not assigned
    */
   public AuthenticationToken getAuthToken(String authDevice, String tokenValue)
-          throws BackendException;
+      throws BackendException;
 
   /**
    * Returns the currently-active drinking session.
@@ -145,20 +145,20 @@ public interface Backend {
   public
   @Nullable
   Drink recordDrink(String tapName, long volumeMl, long ticks, @Nullable String shout,
-                    @Nullable String username, @Nullable String recordDate, long durationMillis,
-                    @Nullable TimeSeries timeSeries, @Nullable File picture) throws BackendException;
+      @Nullable String username, @Nullable String recordDate, long durationMillis,
+      @Nullable TimeSeries timeSeries, @Nullable File picture) throws BackendException;
 
   /** Saves a new temperature sensor record. */
   public ThermoLog recordTemperature(RecordTemperatureRequest request)
-          throws BackendException;
+      throws BackendException;
 
   /** Sets the meter calibration factor. */
   public FlowMeter calibrateMeter(FlowMeter meter, double ticksPerMl)
-          throws BackendException;
+      throws BackendException;
 
   /** Creates a new {@link Controller}. */
   public Controller createController(String name, String serialNumber, String deviceType)
-          throws BackendException;
+      throws BackendException;
 
   /** Returns all {@link Controller Controllers} known to the backend. */
   public List<Controller> getControllers() throws BackendException;
@@ -168,7 +168,7 @@ public interface Backend {
 
   /** Creates a new {@link FlowMeter} on the specified {@link Controller}. */
   public FlowMeter createFlowMeter(Controller controller, String portName, double ticksPerMl)
-          throws BackendException;
+      throws BackendException;
 
   /** Returns all {@link FlowMeter FlowMeters} known to the backend. */
   public List<FlowMeter> getFlowMeters() throws BackendException;
@@ -183,10 +183,10 @@ public interface Backend {
   public KegTap disconnectMeter(KegTap tap) throws BackendException;
 
   /** Returns all {@link org.kegbot.proto.Models.ThermoSensor ThermoSensor} known to the backend. */
-  public List<Models.ThermoSensor> getThermoSensors() throws BackendException;
+  public List<ThermoSensor> getThermoSensors() throws BackendException;
 
   /** Connect a toggle to a tap. */
-  public KegTap connectThermo(KegTap tap, Models.ThermoSensor thermo) throws BackendException;
+  public KegTap connectThermo(KegTap tap, ThermoSensor thermo) throws BackendException;
 
   /** Disconnect a toggle. */
   public KegTap disconnectThermo(KegTap tap) throws BackendException;

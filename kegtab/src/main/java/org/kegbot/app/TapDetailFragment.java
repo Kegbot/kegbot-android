@@ -52,9 +52,9 @@ import org.kegbot.backend.BackendException;
 import org.kegbot.core.KegbotCore;
 import org.kegbot.core.SyncManager;
 import org.kegbot.core.TapManager;
-import org.kegbot.core.ThermoSensor;
-import org.kegbot.proto.Models;
 import org.kegbot.proto.Models.FlowMeter;
+import org.kegbot.proto.Models.FlowToggle;
+import org.kegbot.proto.Models.ThermoSensor;
 import org.kegbot.proto.Models.Keg;
 import org.kegbot.proto.Models.KegTap;
 
@@ -85,8 +85,8 @@ public class TapDetailFragment extends Fragment {
   private Spinner mThermoSelect;
   private Spinner mToggleSelect;
   private final List<FlowMeter> mMeters = Lists.newArrayList();
-  private final List<Models.ThermoSensor> mThermos = Lists.newArrayList();
-  private final List<Models.FlowToggle> mToggles = Lists.newArrayList();
+  private final List<ThermoSensor> mThermos = Lists.newArrayList();
+  private final List<FlowToggle> mToggles = Lists.newArrayList();
   private FlowMeterAdapter mAdapter;
   private ThermoAdapter mThermoAdapter;
   private FlowToggleAdapter mToggleAdapter;
@@ -125,7 +125,7 @@ public class TapDetailFragment extends Fragment {
 
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                           Bundle savedInstanceState) {
+      Bundle savedInstanceState) {
     Log.d(TAG, "onCreateView");
     mView = inflater.inflate(R.layout.fragment_tap_detail, container, false);
     ButterKnife.inject(this, mView);
@@ -169,7 +169,7 @@ public class TapDetailFragment extends Fragment {
 
         final FlowMeter meter = mMeters.get(position);
         if (meter == mTap.getMeter() ||
-                (meter != null && mTap.hasMeter() && meter.getId() == mTap.getMeter().getId())) {
+            (meter != null && mTap.hasMeter() && meter.getId() == mTap.getMeter().getId())) {
           Log.d(TAG, "Not changed.");
           return;
         }
@@ -209,9 +209,9 @@ public class TapDetailFragment extends Fragment {
       public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         Log.d(TAG, "thermo selected: position=" + position + " id=" + id);
 
-        final Models.ThermoSensor thermo = mThermos.get(position);
+        final ThermoSensor thermo = mThermos.get(position);
         if (thermo == mTap.getThermoSensor() ||
-                (thermo != null && mTap.hasThermoSensor() && thermo.getId() == mTap.getThermoSensor().getId())) {
+            (thermo != null && mTap.hasThermoSensor() && thermo.getId() == mTap.getThermoSensor().getId())) {
           Log.d(TAG, "Not changed.");
           return;
         }
@@ -251,9 +251,9 @@ public class TapDetailFragment extends Fragment {
       public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         Log.d(TAG, "toggle selected: position=" + position + " id=" + id);
 
-        final Models.FlowToggle toggle = mToggles.get(position);
+        final FlowToggle toggle = mToggles.get(position);
         if (toggle == mTap.getToggle() ||
-                (toggle != null && mTap.hasToggle() && toggle.getId() == mTap.getToggle().getId())) {
+            (toggle != null && mTap.hasToggle() && toggle.getId() == mTap.getToggle().getId())) {
           Log.d(TAG, "Not changed.");
           return;
         }
@@ -351,7 +351,7 @@ public class TapDetailFragment extends Fragment {
     final FlowMeter currentMeter = mTap.getMeter();
     for (final FlowMeter meter : mMeters) {
       if ((meter == null && currentMeter == null) ||
-              (meter != null && meter.getId() == currentMeter.getId())) {
+          (meter != null && meter.getId() == currentMeter.getId())) {
         mMeterSelect.setSelection(position);
         break;
       }
@@ -359,10 +359,10 @@ public class TapDetailFragment extends Fragment {
     }
 
     position = 0;
-    final Models.ThermoSensor currentThermo = mTap.getThermoSensor();
-    for (final Models.ThermoSensor thermo : mThermos) {
+    final ThermoSensor currentThermo = mTap.getThermoSensor();
+    for (final ThermoSensor thermo : mThermos) {
       if ((thermo == null && currentThermo == null) ||
-              (thermo != null && thermo.getId() == currentThermo.getId())) {
+          (thermo != null && thermo.getId() == currentThermo.getId())) {
         mThermoSelect.setSelection(position);
         break;
       }
@@ -370,10 +370,10 @@ public class TapDetailFragment extends Fragment {
     }
 
     position = 0;
-    final Models.FlowToggle currentToggle = mTap.getToggle();
-    for (final Models.FlowToggle toggle : mToggles) {
+    final FlowToggle currentToggle = mTap.getToggle();
+    for (final FlowToggle toggle : mToggles) {
       if ((toggle == null && currentToggle == null) ||
-              (toggle != null && toggle.getId() == currentToggle.getId())) {
+          (toggle != null && toggle.getId() == currentToggle.getId())) {
         mToggleSelect.setSelection(position);
         break;
       }
@@ -441,27 +441,27 @@ public class TapDetailFragment extends Fragment {
 
     final Keg keg = mTap.getCurrentKeg();
     final Spanned message = Html.fromHtml(
-            String.format(
-                    "Are you sure you want end <b>Keg %s</b> (<i>%s</i>) on tap <b>%s</b>?",
-                    Integer.valueOf(keg.getId()),
-                    keg.getBeverage().getName(),
-                    mTap.getName())
+        String.format(
+            "Are you sure you want end <b>Keg %s</b> (<i>%s</i>) on tap <b>%s</b>?",
+            Integer.valueOf(keg.getId()),
+            keg.getBeverage().getName(),
+            mTap.getName())
     );
 
     final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
     builder.setMessage(message)
-            .setCancelable(false)
-            .setPositiveButton("End Keg", new DialogInterface.OnClickListener() {
-              @Override
-              public void onClick(DialogInterface arg0, int arg1) {
-                doEndKeg();
-              }
-            })
-            .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-              @Override
-              public void onClick(DialogInterface dialog, int which) {
-              }
-            });
+        .setCancelable(false)
+        .setPositiveButton("End Keg", new DialogInterface.OnClickListener() {
+          @Override
+          public void onClick(DialogInterface arg0, int arg1) {
+            doEndKeg();
+          }
+        })
+        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+          @Override
+          public void onClick(DialogInterface dialog, int which) {
+          }
+        });
 
     final AlertDialog alert = builder.create();
     alert.show();
@@ -505,22 +505,22 @@ public class TapDetailFragment extends Fragment {
     }
 
     final Spanned message = Html.fromHtml(
-            String.format("Are you sure you want delete tap <b>%s</b>?", mTap.getName()));
+        String.format("Are you sure you want delete tap <b>%s</b>?", mTap.getName()));
 
     final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
     builder.setMessage(message)
-            .setCancelable(false)
-            .setPositiveButton("Delete Tap", new DialogInterface.OnClickListener() {
-              @Override
-              public void onClick(DialogInterface arg0, int arg1) {
-                doDeleteTap();
-              }
-            })
-            .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-              @Override
-              public void onClick(DialogInterface dialog, int which) {
-              }
-            });
+        .setCancelable(false)
+        .setPositiveButton("Delete Tap", new DialogInterface.OnClickListener() {
+          @Override
+          public void onClick(DialogInterface arg0, int arg1) {
+            doDeleteTap();
+          }
+        })
+        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+          @Override
+          public void onClick(DialogInterface dialog, int which) {
+          }
+        });
 
     final AlertDialog alert = builder.create();
     alert.show();
@@ -567,7 +567,7 @@ public class TapDetailFragment extends Fragment {
         view = convertView;
       } else {
         final LayoutInflater inflater =
-                (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         view = inflater.inflate(android.R.layout.simple_list_item_1, null);
       }
 
@@ -596,7 +596,7 @@ public class TapDetailFragment extends Fragment {
 
   }
 
-  private class ThermoAdapter extends ArrayAdapter<Models.ThermoSensor> {
+  private class ThermoAdapter extends ArrayAdapter<ThermoSensor> {
     public ThermoAdapter(Context context) {
       super(context, android.R.layout.simple_spinner_item);
     }
@@ -608,11 +608,11 @@ public class TapDetailFragment extends Fragment {
         view = convertView;
       } else {
         final LayoutInflater inflater =
-                (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         view = inflater.inflate(android.R.layout.simple_list_item_1, null);
       }
 
-      final Models.ThermoSensor item = getItem(position);
+      final ThermoSensor item = getItem(position);
       final TextView text = ButterKnife.findById(view, android.R.id.text1);
       if (item == null) {
         text.setText("None.");
@@ -637,7 +637,7 @@ public class TapDetailFragment extends Fragment {
 
   }
 
-  private class FlowToggleAdapter extends ArrayAdapter<Models.FlowToggle> {
+  private class FlowToggleAdapter extends ArrayAdapter<FlowToggle> {
     public FlowToggleAdapter(Context context) {
       super(context, android.R.layout.simple_spinner_item);
     }
@@ -649,11 +649,11 @@ public class TapDetailFragment extends Fragment {
         view = convertView;
       } else {
         final LayoutInflater inflater =
-                (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         view = inflater.inflate(android.R.layout.simple_list_item_1, null);
       }
 
-      final Models.FlowToggle item = getItem(position);
+      final FlowToggle item = getItem(position);
       final TextView text = ButterKnife.findById(view, android.R.id.text1);
       if (item == null) {
         text.setText("None.");

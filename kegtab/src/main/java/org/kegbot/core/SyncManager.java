@@ -59,14 +59,15 @@ import org.kegbot.proto.Api.RecordDrinkRequest;
 import org.kegbot.proto.Api.RecordTemperatureRequest;
 import org.kegbot.proto.Api.SyncResponse;
 import org.kegbot.proto.Internal.PendingPour;
-import org.kegbot.proto.Models;
 import org.kegbot.proto.Models.Controller;
 import org.kegbot.proto.Models.Drink;
 import org.kegbot.proto.Models.FlowMeter;
+import org.kegbot.proto.Models.FlowToggle;
 import org.kegbot.proto.Models.KegTap;
 import org.kegbot.proto.Models.Session;
 import org.kegbot.proto.Models.SoundEvent;
 import org.kegbot.proto.Models.SystemEvent;
+import org.kegbot.proto.Models.ThermoSensor;
 
 import java.io.File;
 import java.util.Collections;
@@ -97,8 +98,8 @@ public class SyncManager extends BackgroundManager {
   private List<SoundEvent> mLastSoundEventList = Lists.newArrayList();
   private List<Controller> mLastControllers = Lists.newArrayList();
   private List<FlowMeter> mLastFlowMeters = Lists.newArrayList();
-  private List<Models.ThermoSensor> mLastThermoSensor = Lists.newArrayList();
-  private List<Models.FlowToggle> mLastFlowToggles = Lists.newArrayList();
+  private List<ThermoSensor> mLastThermoSensor = Lists.newArrayList();
+  private List<FlowToggle> mLastFlowToggles = Lists.newArrayList();
   @Nullable
   private Session mLastSession = null;
   @Nullable
@@ -177,7 +178,7 @@ public class SyncManager extends BackgroundManager {
     }
     final RecordDrinkRequest request = getRequestForFlow(flow);
     final PendingPour.Builder builder = PendingPour.newBuilder()
-            .setDrinkRequest(request);
+        .setDrinkRequest(request);
     if (!Strings.isNullOrEmpty(flow.getImagePath())) {
       builder.addImages(flow.getImagePath());
     }
@@ -259,11 +260,11 @@ public class SyncManager extends BackgroundManager {
     return ImmutableList.copyOf(mLastFlowMeters);
   }
 
-  public List<Models.ThermoSensor> getCurrentThermoSensors() {
+  public List<ThermoSensor> getCurrentThermoSensors() {
     return ImmutableList.copyOf(mLastThermoSensor);
   }
 
-  public List<Models.FlowToggle> getCurrentFlowToggles() {
+  public List<FlowToggle> getCurrentFlowToggles() {
     return ImmutableList.copyOf(mLastFlowToggles);
   }
 
@@ -300,7 +301,7 @@ public class SyncManager extends BackgroundManager {
             syncError = syncNow();
           } finally {
             mNextSyncTime = SystemClock.elapsedRealtime() +
-                    (syncError ? SYNC_INTERVAL_AGGRESSIVE_MILLIS : SYNC_INTERVAL_MILLIS);
+                (syncError ? SYNC_INTERVAL_AGGRESSIVE_MILLIS : SYNC_INTERVAL_MILLIS);
           }
 
         }
@@ -352,8 +353,8 @@ public class SyncManager extends BackgroundManager {
         ts = TimeSeries.fromString(request.getTickTimeSeries());
       }
       drink = mBackend.recordDrink(request.getTapName(), (long) request.getVolumeMl(),
-              request.getTicks(), request.getShout(), request.getUsername(), request.getRecordDate(),
-              request.getDurationSeconds() * 1000L, ts, picture);
+          request.getTicks(), request.getShout(), request.getUsername(), request.getRecordDate(),
+          request.getDurationSeconds() * 1000L, ts, picture);
     } catch (NotFoundException e) {
       Log.w(TAG, "Tap does not exist, dropping pour.");
       return;
@@ -393,8 +394,8 @@ public class SyncManager extends BackgroundManager {
 
     // Fetch most recent entry.
     final Cursor cursor =
-            db.query(LocalDbHelper.TABLE_NAME,
-                    null, null, null, null, null, LocalDbHelper.COLUMN_NAME_ADDED_DATE + " ASC", "1");
+        db.query(LocalDbHelper.TABLE_NAME,
+            null, null, null, null, null, LocalDbHelper.COLUMN_NAME_ADDED_DATE + " ASC", "1");
     try {
       final int numPending = cursor.getCount();
       if (numPending == 0) {
@@ -402,7 +403,7 @@ public class SyncManager extends BackgroundManager {
       }
 
       Log.d(TAG, String.format("Processing %s deferred pour%s.",
-              Integer.valueOf(numPending), numPending == 1 ? "" : "s"));
+          Integer.valueOf(numPending), numPending == 1 ? "" : "s"));
       cursor.moveToFirst();
 
       boolean deleteRow = true;
@@ -462,7 +463,7 @@ public class SyncManager extends BackgroundManager {
 
   private boolean isConnected() {
     final ConnectivityManager cm =
-            (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+        (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
     final NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
     if (activeNetwork == null || !activeNetwork.isConnected()) {
       return false;
@@ -521,8 +522,8 @@ public class SyncManager extends BackgroundManager {
     try {
       Session currentSession = mBackend.getCurrentSession();
       if ((currentSession == null && mLastSession != null) ||
-              (mLastSession == null && currentSession != null) ||
-              (currentSession != null && !currentSession.equals(mLastSession))) {
+          (mLastSession == null && currentSession != null) ||
+          (currentSession != null && !currentSession.equals(mLastSession))) {
         JsonNode stats = null;
         if (currentSession != null) {
           stats = mBackend.getSessionStats(currentSession.getId());
@@ -578,7 +579,7 @@ public class SyncManager extends BackgroundManager {
 
     // Flow Toggles
     try {
-      List<Models.ThermoSensor> thermos = mBackend.getThermoSensors();
+      List<ThermoSensor> thermos = mBackend.getThermoSensors();
       if (!thermos.equals(mLastThermoSensor)) {
         mLastThermoSensor.clear();
         mLastThermoSensor.addAll(thermos);
@@ -591,7 +592,7 @@ public class SyncManager extends BackgroundManager {
 
     // Flow Toggles
     try {
-      List<Models.FlowToggle> toggles = mBackend.getFlowToggles();
+      List<FlowToggle> toggles = mBackend.getFlowToggles();
       if (!toggles.equals(mLastFlowToggles)) {
         mLastFlowToggles.clear();
         mLastFlowToggles.addAll(toggles);
@@ -607,16 +608,16 @@ public class SyncManager extends BackgroundManager {
 
   private static RecordDrinkRequest getRequestForFlow(final Flow ended) {
     return RecordDrinkRequest.newBuilder()
-            .setTapName(ended.getTap().getMeter().getName())
-            .setTicks(ended.getTicks())
-            .setVolumeMl((float) ended.getVolumeMl())
-            .setUsername(ended.getUsername())
-            .setSecondsAgo(0)
-            .setDurationSeconds((int) (ended.getDurationMs() / 1000.0))
-            .setSpilled(false)
-            .setShout(ended.getShout())
-            .setTickTimeSeries(ended.getTickTimeSeries().asString())
-            .buildPartial();
+        .setTapName(ended.getTap().getMeter().getName())
+        .setTicks(ended.getTicks())
+        .setVolumeMl((float) ended.getVolumeMl())
+        .setUsername(ended.getUsername())
+        .setSecondsAgo(0)
+        .setDurationSeconds((int) (ended.getDurationMs() / 1000.0))
+        .setSpilled(false)
+        .setShout(ended.getShout())
+        .setTickTimeSeries(ended.getTickTimeSeries().asString())
+        .buildPartial();
   }
 
 }
