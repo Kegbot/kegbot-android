@@ -49,6 +49,7 @@ import org.kegbot.app.event.FlowMeterListUpdateEvent;
 import org.kegbot.app.event.FlowToggleListUpdateEvent;
 import org.kegbot.app.event.SoundEventListUpdateEvent;
 import org.kegbot.app.event.SystemEventListUpdateEvent;
+import org.kegbot.app.event.ThermoSensorListUpdateEvent;
 import org.kegbot.app.storage.LocalDbHelper;
 import org.kegbot.app.util.TimeSeries;
 import org.kegbot.backend.Backend;
@@ -58,14 +59,15 @@ import org.kegbot.proto.Api.RecordDrinkRequest;
 import org.kegbot.proto.Api.RecordTemperatureRequest;
 import org.kegbot.proto.Api.SyncResponse;
 import org.kegbot.proto.Internal.PendingPour;
-import org.kegbot.proto.Models;
 import org.kegbot.proto.Models.Controller;
 import org.kegbot.proto.Models.Drink;
 import org.kegbot.proto.Models.FlowMeter;
+import org.kegbot.proto.Models.FlowToggle;
 import org.kegbot.proto.Models.KegTap;
 import org.kegbot.proto.Models.Session;
 import org.kegbot.proto.Models.SoundEvent;
 import org.kegbot.proto.Models.SystemEvent;
+import org.kegbot.proto.Models.ThermoSensor;
 
 import java.io.File;
 import java.util.Collections;
@@ -96,7 +98,8 @@ public class SyncManager extends BackgroundManager {
   private List<SoundEvent> mLastSoundEventList = Lists.newArrayList();
   private List<Controller> mLastControllers = Lists.newArrayList();
   private List<FlowMeter> mLastFlowMeters = Lists.newArrayList();
-  private List<Models.FlowToggle> mLastFlowToggles = Lists.newArrayList();
+  private List<ThermoSensor> mLastThermoSensor = Lists.newArrayList();
+  private List<FlowToggle> mLastFlowToggles = Lists.newArrayList();
   @Nullable
   private Session mLastSession = null;
   @Nullable
@@ -257,7 +260,11 @@ public class SyncManager extends BackgroundManager {
     return ImmutableList.copyOf(mLastFlowMeters);
   }
 
-  public List<Models.FlowToggle> getCurrentFlowToggles() {
+  public List<ThermoSensor> getCurrentThermoSensors() {
+    return ImmutableList.copyOf(mLastThermoSensor);
+  }
+
+  public List<FlowToggle> getCurrentFlowToggles() {
     return ImmutableList.copyOf(mLastFlowToggles);
   }
 
@@ -572,7 +579,20 @@ public class SyncManager extends BackgroundManager {
 
     // Flow Toggles
     try {
-      List<Models.FlowToggle> toggles = mBackend.getFlowToggles();
+      List<ThermoSensor> thermos = mBackend.getThermoSensors();
+      if (!thermos.equals(mLastThermoSensor)) {
+        mLastThermoSensor.clear();
+        mLastThermoSensor.addAll(thermos);
+        postOnMainThread(new ThermoSensorListUpdateEvent(mLastThermoSensor));
+      }
+    } catch (BackendException e) {
+      Log.w(TAG, "Error syncing thermo sensors: " + e);
+      error = true;
+    }
+
+    // Flow Toggles
+    try {
+      List<FlowToggle> toggles = mBackend.getFlowToggles();
       if (!toggles.equals(mLastFlowToggles)) {
         mLastFlowToggles.clear();
         mLastFlowToggles.addAll(toggles);
