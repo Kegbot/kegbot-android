@@ -26,6 +26,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
@@ -80,7 +81,8 @@ public class SharedPreferencesConfigurationStore implements ConfigurationStore {
 
   @Override
   public Set<String> getStringSet(String key, Set<String> defaultValues) {
-    return mSharedPreferences.getStringSet(key, defaultValues);
+    Set<String> ret = new LinkedHashSet<String>(mSharedPreferences.getStringSet(key, defaultValues));
+    return ret;
   }
 
   @Override
