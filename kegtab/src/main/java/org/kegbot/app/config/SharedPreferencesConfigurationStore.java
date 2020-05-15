@@ -39,7 +39,7 @@ public class SharedPreferencesConfigurationStore implements ConfigurationStore {
     mSharedPreferences = prefs;
   }
 
-  public static SharedPreferencesConfigurationStore getDefaultSharedPreferncesConfigurationStore(Context context){
+  public static SharedPreferencesConfigurationStore getDefaultSharedPreferencesConfigurationStore(Context context){
     return new SharedPreferencesConfigurationStore(PreferenceManager.getDefaultSharedPreferences(context));
   }
 
