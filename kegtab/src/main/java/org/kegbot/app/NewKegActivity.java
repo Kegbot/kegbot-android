@@ -126,13 +126,13 @@ public class NewKegActivity extends Activity {
 
   private void setLastUsedKegSize(String size){
     AppConfiguration appConfiguration = new AppConfiguration(
-            SharedPreferencesConfigurationStore.getDefaultSharedPreferncesConfigurationStore(this));
+            SharedPreferencesConfigurationStore.getDefaultSharedPreferencesConfigurationStore(this));
     appConfiguration.setLastUsedKegSize(size);
   }
 
   private int getLastUsedKegSizeIndex(){
     AppConfiguration appConfiguration = new AppConfiguration(
-            SharedPreferencesConfigurationStore.getDefaultSharedPreferncesConfigurationStore(this));
+            SharedPreferencesConfigurationStore.getDefaultSharedPreferencesConfigurationStore(this));
     String lastUsedKeg = appConfiguration.getLastUsedKegSize();
     if (mSizeAdapter != null && mSizeAdapter.getCount() > 1){
       for (int i = 0; i < mSizeAdapter.getCount(); i++){
