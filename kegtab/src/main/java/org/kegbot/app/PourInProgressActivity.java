@@ -343,6 +343,17 @@ public class PourInProgressActivity extends CoreActivity {
       }
     });
 
+    /* Build mTapList so we can find the active Tap before starting the camera */
+    if (mTapList.size() == 0) {
+      synchronized (mTapsLock) {
+        for (final KegTap tap : mCore.getTapManager().getVisibleTaps()) {
+          mTapList.add(tap);
+        }
+        mPouringTapAdapter.notifyDataSetChanged();
+      }
+    }
+    scrollToMostActiveTap();
+
     mShowCamera = true;
     mCameraFragment = (CameraFragment) getFragmentManager().findFragmentById(R.id.camera);
     if (!mConfig.getUseCamera() || !mConfig.getTakePhotosDuringPour()) {
@@ -429,11 +440,14 @@ public class PourInProgressActivity extends CoreActivity {
   @Override
   protected void onStart() {
     super.onStart();
-    synchronized (mTapsLock) {
-      for (final KegTap tap : mCore.getTapManager().getVisibleTaps()) {
-        mTapList.add(tap);
+    Log.d(TAG, "onStart");
+    if (mTapList.size() == 0) {
+      synchronized (mTapsLock) {
+        for (final KegTap tap : mCore.getTapManager().getVisibleTaps()) {
+          mTapList.add(tap);
+        }
+        mPouringTapAdapter.notifyDataSetChanged();
       }
-      mPouringTapAdapter.notifyDataSetChanged();
     }
   }
 
