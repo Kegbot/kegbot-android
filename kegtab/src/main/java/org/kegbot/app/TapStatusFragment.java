@@ -202,6 +202,8 @@ public class TapStatusFragment extends Fragment {
 
     final TextView title = ButterKnife.findById(mView, R.id.tapTitle);
     final TextView subtitle = ButterKnife.findById(mView, R.id.tapSubtitle);
+    final TextView abvText = ButterKnife.findById(mView, R.id.tapAbv);
+    final TextView ibuText = ButterKnife.findById(mView, R.id.tapIbu);
     final TextView tapNotes = ButterKnife.findById(mView, R.id.tapNotes);
     final ViewFlipper flipper = ButterKnife.findById(mView, R.id.tapStatusFlipper);
 
@@ -254,6 +256,21 @@ public class TapStatusFragment extends Fragment {
     }
     if (Strings.isNullOrEmpty(description)) {
       description = tap.getDescription();
+    }
+
+    // Find ABV and IBU values
+    final String abv = String.valueOf(keg.getBeverage().getAbvPercent());
+    if(mCore.getConfiguration().getAbvVisibleWhenZero()) {
+      abvText.setText("ABV: " + abv + "%");
+    } else{
+      abvText.setText(keg.getBeverage().getAbvPercent() == 0 ? "" : "ABV: " + abv + "%");
+    }
+
+    final String ibu = String.valueOf(Math.round(keg.getBeverage().getIbu()));
+    if(mCore.getConfiguration().getIbuVisibleWhenZero()){
+      ibuText.setText("IBU: " + ibu);
+    } else{
+      ibuText.setText(keg.getBeverage().getIbu() == 0 ? "" : "IBU: " + ibu);
     }
 
     final ImageView tapImage = (ImageView) mView.findViewById(R.id.tapImage);

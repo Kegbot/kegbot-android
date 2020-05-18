@@ -294,6 +294,17 @@ public class AppConfiguration {
     return getBoolean(ConfigKey.TEMPERATURE_UNITS_CELSIUS);
   }
 
+  public void setAbvVisibleWhenZero(boolean value) { setBoolean(ConfigKey.ABV_DISPLAY_WHEN_ZERO, value);
+  }
+  public boolean getAbvVisibleWhenZero() {
+    return getBoolean(ConfigKey.ABV_DISPLAY_WHEN_ZERO);
+  }
+  public void setIbuVisibleWhenZero(boolean value) { setBoolean(ConfigKey.IBU_DISPLAY_WHEN_ZERO, value);
+  }
+  public boolean getIbuVisibleWhenZero() {
+    return getBoolean(ConfigKey.IBU_DISPLAY_WHEN_ZERO);
+  }
+
   public boolean stayAwake() {
     return getBoolean(ConfigKey.STAY_AWAKE);
   }
