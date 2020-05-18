@@ -55,10 +55,25 @@
         </org.kegbot.app.view.BadgeView>
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/tapNotes"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tapStatsBadges"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="16dp"
+        android:layout_marginTop="2dip"
+        android:padding="16dp"
+        android:textAlignment="center"
+        android:textColor="#888"
+        android:textSize="24dp"
+        android:textStyle="italic"
+        android:gravity="center_horizontal" />
+
     <ViewFlipper
         android:id="@+id/illustrationFlipper"
         android:layout_width="fill_parent"
-        android:layout_below="@id/tapStatsBadges"
+        android:layout_below="@id/tapNotes"
         android:layout_centerHorizontal="true"
         android:layout_margin="16dip"
         android:layout_height="fill_parent">
@@ -72,22 +87,6 @@
             android:id="@+id/tapIllustration"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"/>
-
     </ViewFlipper>
-
-    <TextView
-        android:id="@+id/tapNotes"
-        android:layout_width="match_parent"
-        android:layout_height="fill_parent"
-        android:layout_alignParentBottom="true"
-        android:layout_below="@+id/tapStatsBadges"
-        android:layout_centerHorizontal="true"
-        android:layout_margin="16dp"
-        android:layout_marginTop="5dip"
-        android:padding="16dp"
-        android:textAlignment="center"
-        android:textColor="#888"
-        android:textSize="24dp"
-        android:textStyle="italic"/>
 
 </RelativeLayout>

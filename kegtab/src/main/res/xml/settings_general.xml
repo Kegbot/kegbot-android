@@ -55,6 +55,13 @@
             android:summaryOff="IBU will not be displayed when zero"
             android:defaultValue="false">
         </CheckBoxPreference>
+        <CheckBoxPreference
+            android:title="Show Tap Notes"
+            android:key="config:DISPLAY_TAP_NOTES"
+            android:summaryOn="Tap Notes will be displayed if available"
+            android:summaryOff="Tap Notes will not be displayed"
+            android:defaultValue="true">
+        </CheckBoxPreference>
     </PreferenceCategory>
 
 </PreferenceScreen>

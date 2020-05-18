@@ -308,13 +308,14 @@ public class TapStatusFragment extends Fragment {
       final Image image = keg.getBeverage().getPicture();
       final String imageUrl = image.getUrl();
       mImageDownloader.download(imageUrl, tapImage);
-    } else if (!Strings.isNullOrEmpty(description)) {
-      tapImage.setVisibility(View.GONE);
+    }
+
+    showIllustration(!keg.getBeverage().hasPicture());
+
+    if (!Strings.isNullOrEmpty(description) && mCore.getConfiguration().getDisplayTapNotes()) {
       tapNotes.setVisibility(View.VISIBLE);
       tapNotes.setText(description);
     }
-
-    showIllustration(true);
 
     // TODO(mikey): proper units support
     // Badge 1: Pints Poured
