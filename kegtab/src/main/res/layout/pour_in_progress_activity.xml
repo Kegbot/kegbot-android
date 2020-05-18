@@ -38,7 +38,7 @@
 
     <!-- Right box: Camera Preview & Controls -->
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/pourInProgressRightCol"
         android:layout_width="0dip"
         android:layout_height="match_parent"
@@ -94,7 +94,7 @@
                     <org.kegbot.app.util.SoftMultiLineEditText
                         android:id="@+id/shoutText"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="128dip"
                         android:layout_alignParentTop="true"
                         android:layout_toRightOf="@+id/pourDrinkerImage"
                         android:hint="@string/pour_shout_hint"
@@ -107,24 +107,22 @@
                     <Button
                         android:id="@+id/pourEndButton"
                         style="@style/mediumButton"
-                        android:layout_below="@+id/shoutText"
-                        android:layout_toRightOf="@+id/pourDrinkerImage"
-                        android:layout_alignBottom="@+id/pourDrinkerImage"
+                        android:layout_below="@+id/pourDrinkerImage"
                         android:text="@string/pour_button_done"/>
                 </RelativeLayout>
 
             </LinearLayout>
 
-            </ViewFlipper>
-
+        </ViewFlipper>
 
         <fragment
             android:id="@+id/camera"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
             class="org.kegbot.app.camera.CameraFragment"
             tools:layout="@layout/camera_fragment_layout">
         </fragment>
-    </LinearLayout>
+    </RelativeLayout>
 
 </LinearLayout>
