@@ -61,9 +61,6 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/tapStatsBadges"
         android:layout_centerHorizontal="true"
-        android:layout_margin="16dp"
-        android:layout_marginTop="2dip"
-        android:padding="16dp"
         android:textAlignment="center"
         android:textColor="#888"
         android:textSize="24dp"
@@ -75,7 +72,7 @@
         android:layout_width="fill_parent"
         android:layout_below="@id/tapNotes"
         android:layout_centerHorizontal="true"
-        android:layout_margin="16dip"
+        android:layout_margin="5dip"
         android:layout_height="fill_parent">
 
         <ImageView
