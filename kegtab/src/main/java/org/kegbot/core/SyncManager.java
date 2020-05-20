@@ -40,7 +40,9 @@ import com.squareup.otto.Subscribe;
 import org.codehaus.jackson.JsonNode;
 import org.kegbot.api.KegbotApiException;
 import org.kegbot.api.KegbotApiImpl;
+import org.kegbot.api.NotAuthorizedException;
 import org.kegbot.app.BuildConfig;
+import org.kegbot.app.alert.AlertCore;
 import org.kegbot.app.event.ConnectivityChangedEvent;
 import org.kegbot.app.event.ControllerListUpdateEvent;
 import org.kegbot.app.event.CurrentSessionChangedEvent;
@@ -546,6 +548,14 @@ public class SyncManager extends BackgroundManager {
         mLastSoundEventList.addAll(events);
         postOnMainThread(new SoundEventListUpdateEvent(mLastSoundEventList));
       }
+    } catch (NotAuthorizedException e) {
+      final AlertCore.Alert alert = AlertCore.newBuilder("API Auth Failure")
+              .setDescription(e.toString())
+              .severityError()
+              .setId(e.toString())
+              .build();
+      postAlert(alert);
+      error = true;
     } catch (BackendException e) {
       Log.w(TAG, "Error syncing sound events: " + e);
       error = true;
@@ -559,6 +569,14 @@ public class SyncManager extends BackgroundManager {
         mLastControllers.addAll(controllers);
         postOnMainThread(new ControllerListUpdateEvent(mLastControllers));
       }
+    } catch (NotAuthorizedException e) {
+      final AlertCore.Alert alert = AlertCore.newBuilder("API Auth Failure")
+              .setDescription(e.toString())
+              .severityError()
+              .setId(e.toString())
+              .build();
+      postAlert(alert);
+      error = true;
     } catch (BackendException e) {
       Log.w(TAG, "Error syncing controllers: " + e);
       error = true;
@@ -572,12 +590,20 @@ public class SyncManager extends BackgroundManager {
         mLastFlowMeters.addAll(meters);
         postOnMainThread(new FlowMeterListUpdateEvent(mLastFlowMeters));
       }
+    } catch (NotAuthorizedException e) {
+      final AlertCore.Alert alert = AlertCore.newBuilder("API Auth Failure")
+              .setDescription(e.toString())
+              .severityError()
+              .setId(e.toString())
+              .build();
+      postAlert(alert);
+      error = true;
     } catch (BackendException e) {
       Log.w(TAG, "Error syncing flow meters: " + e);
       error = true;
     }
 
-    // Flow Toggles
+    // Thermo Sensors
     try {
       List<ThermoSensor> thermos = mBackend.getThermoSensors();
       if (!thermos.equals(mLastThermoSensor)) {
@@ -598,6 +624,14 @@ public class SyncManager extends BackgroundManager {
         mLastFlowToggles.addAll(toggles);
         postOnMainThread(new FlowToggleListUpdateEvent(mLastFlowToggles));
       }
+    } catch (NotAuthorizedException e) {
+      final AlertCore.Alert alert = AlertCore.newBuilder("API Auth Failure")
+              .setDescription(e.toString())
+              .severityError()
+              .setId(e.toString())
+              .build();
+      postAlert(alert);
+      error = true;
     } catch (BackendException e) {
       Log.w(TAG, "Error syncing flow toggles: " + e);
       error = true;
