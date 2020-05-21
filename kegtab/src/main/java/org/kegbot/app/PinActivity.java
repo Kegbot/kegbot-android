@@ -170,4 +170,20 @@ public class PinActivity extends Activity {
     context.startActivity(intent);
   }
 
+  public static void startThroughPinActivityForResult(Context context, Intent startIntent, int requestCode) {
+    if (Strings.isNullOrEmpty(KegbotCore.getInstance(context).getConfiguration().getPin())) {
+      // Short circuit: no manager pin.
+      ((Activity) context).startActivityForResult(startIntent, requestCode);
+      return;
+    }
+    final Intent intent = new Intent(context, PinActivity.class);
+    intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+    if ((startIntent.getFlags() & Intent.FLAG_ACTIVITY_NEW_TASK) != 0) {
+      intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    }
+    intent.putExtra(EXTRA_KEY_START_INTENT, startIntent);
+
+    ((Activity) context).startActivityForResult(intent, requestCode);
+  }
+
 }

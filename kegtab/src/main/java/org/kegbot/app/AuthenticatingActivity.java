@@ -250,7 +250,8 @@ public class AuthenticatingActivity extends Activity {
   @Override
   protected void onResume() {
     super.onResume();
-    if (mConfig.getAllowRegistration()) {
+    if (mConfig.getAllowRegistration() || Strings.isNullOrEmpty(KegbotCore
+            .getInstance(AuthenticatingActivity.this).getConfiguration().getPin())) {
       mAssignButton.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -261,7 +262,17 @@ public class AuthenticatingActivity extends Activity {
         }
       });
     } else {
-      mAssignButton.setVisibility(View.GONE);
+      mAssignButton.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+          final Intent assignIntent = KegtabCommon
+                  .getAuthDrinkerActivityIntent(AuthenticatingActivity.this);
+          assignIntent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT);
+          Log.d(TAG, "Starting auth drinker activity");
+          PinActivity.startThroughPinActivityForResult(AuthenticatingActivity.this,
+                  assignIntent, REQUEST_SELECT_USER_TO_BIND);
+        }
+      });
     }
   }
 
