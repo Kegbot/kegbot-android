@@ -94,7 +94,7 @@
                     <org.kegbot.app.util.SoftMultiLineEditText
                         android:id="@+id/shoutText"
                         android:layout_width="match_parent"
-                        android:layout_height="128dip"
+                        android:layout_height="wrap_content"
                         android:layout_alignParentTop="true"
                         android:layout_toRightOf="@+id/pourDrinkerImage"
                         android:hint="@string/pour_shout_hint"
@@ -107,7 +107,9 @@
                     <Button
                         android:id="@+id/pourEndButton"
                         style="@style/mediumButton"
-                        android:layout_below="@+id/pourDrinkerImage"
+                        android:layout_below="@+id/shoutText"
+                        android:layout_toRightOf="@+id/pourDrinkerImage"
+                        android:layout_alignBottom="@+id/pourDrinkerImage"
                         android:text="@string/pour_button_done"/>
                 </RelativeLayout>
 
