@@ -53,6 +53,7 @@ android {
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 28
+        multiDexEnabled true
 
         testApplicationId "org.kegbot.app.test"
         testInstrumentationRunner "android.test.InstrumentationTestRunner"
@@ -106,8 +107,10 @@ dependencies {
     implementation 'com.github.kevinsawicki:http-request:5.6'
     implementation 'org.codehaus.jackson:jackson-mapper-asl:1.7.4'
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
-    implementation 'com.google.protobuf:protobuf-java:2.5.0'
+    implementation 'com.google.protobuf:protobuf-java:3.12.0'
     implementation 'joda-time:joda-time:2.3'
+    implementation 'com.android.support:multidex:1.0.3'
+
 
     implementation('com.crashlytics.sdk.android:crashlytics:2.10.1@aar') {
         transitive = true;

@@ -1,7 +1,7 @@
 TOP := $(shell pwd)
 SRCDIR := $(TOP)/../java
 PROTODIR := $(TOP)
-PROTOLIB := $(TOP)/protobuf-java-2.5.0.jar
+PROTOLIB := $(TOP)/protobuf-java-$(shell protoc --version | cut -d" " -f2).jar
 LIBDIR := $(TOP)/../../../libs/kegbot-api
 
 proto:

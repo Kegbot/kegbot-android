@@ -1,3 +1,4 @@
+syntax = "proto2";
 // Kegtap-internal messages.
 
 option java_package = "org.kegbot.proto";
