@@ -38,6 +38,18 @@
         android:layout_toRightOf="@+id/tapTitle"
         android:layout_alignBaseline="@+id/tapTitle"/>
 
+    <TextView
+        style="@style/beverageDetails"
+        android:id="@+id/tapAbv"
+        android:layout_alignParentRight="true"/>
+
+    <TextView
+        style="@style/beverageDetails"
+        android:id="@+id/tapIbu"
+        android:layout_alignBaseline="@id/tapTitle"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/tapAbv"/>
+
     <View
         android:id="@+id/tap_detail_divider"
         android:layout_width="match_parent"

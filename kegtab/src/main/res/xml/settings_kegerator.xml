@@ -74,6 +74,27 @@
             android:summaryOn="Kegbot will cycle taps on the main screen when idle"
             android:title="Rotate Taps">
         </CheckBoxPreference>
+        <CheckBoxPreference
+            android:title="Show ABV when zero"
+            android:key="config:ABV_DISPLAY_WHEN_ZERO"
+            android:summaryOn="ABV will be displayed even when zero"
+            android:summaryOff="ABV will not be displayed when zero"
+            android:defaultValue="false">
+        </CheckBoxPreference>
+        <CheckBoxPreference
+            android:title="Show IBU when zero"
+            android:key="config:IBU_DISPLAY_WHEN_ZERO"
+            android:summaryOn="IBU will be displayed even when zero"
+            android:summaryOff="IBU will not be displayed when zero"
+            android:defaultValue="false">
+        </CheckBoxPreference>
+        <CheckBoxPreference
+            android:title="Show Tap Notes"
+            android:key="config:DISPLAY_TAP_NOTES"
+            android:summaryOn="Tap Notes will be displayed if available"
+            android:summaryOff="Tap Notes will not be displayed"
+            android:defaultValue="true">
+        </CheckBoxPreference>
     </PreferenceCategory>
     <PreferenceCategory android:title="Advanced">
         <CheckBoxPreference
