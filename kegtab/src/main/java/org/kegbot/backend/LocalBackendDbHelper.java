@@ -426,6 +426,9 @@ public class LocalBackendDbHelper extends SQLiteOpenHelper {
     values.put(COLUMN_DRINK_SHOUT, shout);
     values.put(COLUMN_DRINK_USERNAME, username); // TODO
     values.put(COLUMN_DRINK_VOLUME_ML, Long.valueOf(volumeMl));
+    if(!Strings.isNullOrEmpty(recordDate)) {
+          values.put(COLUMN_DRINK_TIME, recordDate);
+    }
     if (!Strings.isNullOrEmpty(pictureUrl)) {
       values.put(COLUMN_DRINK_PICTURE_URL, pictureUrl);
     }
@@ -766,7 +769,7 @@ public class LocalBackendDbHelper extends SQLiteOpenHelper {
     final Drink drink = Drink.newBuilder()
         .setId(drinkId)
         .setSessionId(0)
-        .setTime("") // TODO
+        .setTime(cursor.getString(cursor.getColumnIndex(COLUMN_DRINK_TIME)))
         .setVolumeMl(cursor.getFloat(cursor.getColumnIndex(COLUMN_DRINK_VOLUME_ML)))
         .setTicks((int) cursor.getLong(cursor.getColumnIndex(COLUMN_DRINK_TICKS)))
         .setShout(cursor.getString(cursor.getColumnIndex(COLUMN_DRINK_SHOUT)))

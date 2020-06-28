@@ -72,9 +72,13 @@ import org.kegbot.proto.Models.SystemEvent;
 import org.kegbot.proto.Models.ThermoSensor;
 
 import java.io.File;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -360,6 +364,9 @@ public class SyncManager extends BackgroundManager {
     } catch (NotFoundException e) {
       Log.w(TAG, "Tap does not exist, dropping pour.");
       return;
+    } catch (KegbotApiException e) {
+      Log.w(TAG, "API error");
+      throw new KegbotApiException(e);
     } catch (BackendException e) {
       // TODO: Handle error.
       Log.w(TAG, "Other error.");
@@ -641,6 +648,10 @@ public class SyncManager extends BackgroundManager {
   }
 
   private static RecordDrinkRequest getRequestForFlow(final Flow ended) {
+    TimeZone tz = TimeZone.getTimeZone("UTC");
+    DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss+00:00");
+    df.setTimeZone(tz);
+    String nowAsISO = df.format(new Date());
     return RecordDrinkRequest.newBuilder()
         .setTapName(ended.getTap().getMeter().getName())
         .setTicks(ended.getTicks())
@@ -651,6 +662,7 @@ public class SyncManager extends BackgroundManager {
         .setSpilled(false)
         .setShout(ended.getShout())
         .setTickTimeSeries(ended.getTickTimeSeries().asString())
+        .setRecordDate(nowAsISO)
         .buildPartial();
   }
 

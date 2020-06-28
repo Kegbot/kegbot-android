@@ -554,7 +554,7 @@ public class KegbotApiImpl implements Backend {
       try {
         paramBuilder.put("record_date", recordDate); // new API
       } catch (IllegalArgumentException e) {
-        // Ignore.
+        Log.d(TAG,"Illegal Argument given to record date: " + recordDate);
       }
     }
 
