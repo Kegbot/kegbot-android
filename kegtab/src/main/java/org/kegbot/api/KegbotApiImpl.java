@@ -29,7 +29,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.io.ByteStreams;
-import com.google.protobuf.GeneratedMessage;
+import com.google.protobuf.GeneratedMessageV3;
 import com.google.protobuf.Message.Builder;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
@@ -321,7 +321,7 @@ public class KegbotApiImpl implements Backend {
     return requestJson(request.build());
   }
 
-  private <T extends GeneratedMessage> List<T> getProto(String path, Builder builder) throws KegbotApiException {
+  private <T extends GeneratedMessageV3> List<T> getProto(String path, Builder builder) throws KegbotApiException {
     JsonNode result = getJson(path);
     if (result.has("object")) {
       final T resultMessage = getSingleProto(builder, result.get("object"));
@@ -339,26 +339,26 @@ public class KegbotApiImpl implements Backend {
     }
   }
 
-  private <T extends GeneratedMessage> T getSingleProto(String path, Builder builder)
+  private <T extends GeneratedMessageV3> T getSingleProto(String path, Builder builder)
       throws KegbotApiException {
     JsonNode result = getJson(path);
     return getSingleProto(builder, result.get("object"));
   }
 
-  private <T extends GeneratedMessage> T getSingleProto(Builder builder, JsonNode root) {
+  private <T extends GeneratedMessageV3> T getSingleProto(Builder builder, JsonNode root) {
     builder.clear();
     @SuppressWarnings("unchecked")
     final T result = (T) ProtoEncoder.toProto(builder, root).build();
     return result;
   }
 
-  private <T extends GeneratedMessage> T postProto(String path, Builder builder, Map<String, String> params)
+  private <T extends GeneratedMessageV3> T postProto(String path, Builder builder, Map<String, String> params)
       throws KegbotApiException {
     JsonNode result = postJson(path, params);
     return getSingleProto(builder, result.get("object"));
   }
 
-  private <T extends GeneratedMessage> T postProto(String path, Builder builder,
+  private <T extends GeneratedMessageV3> T postProto(String path, Builder builder,
       Map<String, String> params, Map<String, File> files) throws KegbotApiException {
     JsonNode result = postJson(path, params, files);
     return getSingleProto(builder, result.get("object"));
