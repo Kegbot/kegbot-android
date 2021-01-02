@@ -27,6 +27,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.preference.PreferenceManager;
+import android.support.multidex.MultiDexApplication;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
@@ -39,7 +40,7 @@ import org.kegbot.app.util.Utils;
 /**
  * Kegbot customized application.
  */
-public class KegbotApplication extends Application {
+public class KegbotApplication extends MultiDexApplication {
 
   private static final String TAG = KegbotApplication.class.getSimpleName();
 
