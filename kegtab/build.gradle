@@ -27,13 +27,11 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:3.6.3'
         classpath 'io.fabric.tools:gradle:1.+'
-        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.14'
     }
 }
 
 apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
-apply plugin: 'com.google.protobuf'
 
 repositories {
     maven { url 'https://maven.fabric.io/public' }
@@ -88,34 +86,18 @@ android {
 
     sourceSets {
         main {
-            proto {
-                srcDir './src/main/proto'
-                include '**/*.protodevel'
+            java {
+                srcDirs = ['src/main/java']
             }
             manifest.srcFile 'src/main/AndroidManifest.xml'
-            java.srcDirs = ['src/main/java']
             resources.srcDirs = ['src/main/res']
             assets.srcDirs = ['src/main/assets']
         }
     }
 }
 
-protobuf {
-    protoc {
-        artifact = 'com.google.protobuf:protoc:3.12.0'
-    }
-    generateProtoTasks {
-        all().each { task ->
-            task.builtins {
-                java {
-
-                }
-            }
-        }
-    }
-}
-
 dependencies {
+//    implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'com.hoho.android:usbserial:0.3.0-rc1@aar'
     implementation 'com.google.android.gms:play-services-gcm:9.4.0'
     implementation 'com.android.support:support-v13:26.1.0'
@@ -123,6 +105,7 @@ dependencies {
     implementation 'com.squareup:otto:1.3.4'
     implementation 'com.google.guava:guava:24.1-jre'
     implementation 'com.jakewharton:butterknife:4.0.1'
+    implementation project(path: ':model')
     annotationProcessor 'com.jakewharton:butterknife:4.0.1'
     implementation 'com.github.kevinsawicki:http-request:5.6'
     implementation 'org.codehaus.jackson:jackson-mapper-asl:1.7.4'
