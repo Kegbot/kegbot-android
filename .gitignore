@@ -22,3 +22,4 @@ proguard/
 
 kegtab/crashlytics.properties
 .vscode
+.settings
