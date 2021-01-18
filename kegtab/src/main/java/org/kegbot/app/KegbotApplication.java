@@ -29,7 +29,6 @@ import android.content.pm.PackageInfo;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.crashlytics.android.Crashlytics;
 
 import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.app.config.SharedPreferencesConfigurationStore;
@@ -61,18 +60,6 @@ public class KegbotApplication extends Application {
     }
     mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
     mConfig = new AppConfiguration(new SharedPreferencesConfigurationStore(mSharedPreferences));
-
-    if (mReleaseBuild) {
-      Log.d(TAG, "Activating crashlytics ...");
-      try {
-        Crashlytics.setUserIdentifier(mConfig.getRegistrationId());
-        Log.d(TAG, "Crashlytics activated.");
-      } catch (Exception e) {
-        Log.w(TAG, "Crashlytics not activated: " + e, e);
-      } catch (NoClassDefFoundError e) {
-        Log.w(TAG, "Crashlytics not activated: " + e, e);
-      }
-    }
 
     final String userAgent = Utils.getUserAgent(getApplicationContext());
     Log.d(TAG, "Kegtab User-agent: " + userAgent);
