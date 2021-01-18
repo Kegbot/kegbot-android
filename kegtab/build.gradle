@@ -22,6 +22,7 @@ buildscript {
         google()
         jcenter()
         maven { url 'https://maven.fabric.io/public' }
+        google()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:4.1.1'
