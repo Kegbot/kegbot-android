@@ -15,8 +15,10 @@ import org.kegbot.core.ThermoSensor;
 import org.kegbot.kegboard.KegboardAuthTokenMessage;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.Collection;
 import java.util.Collections;
@@ -43,6 +45,7 @@ public class NetworkController implements Controller {
 
     private Socket mSocket;
     private BufferedReader mReader;
+    private BufferedWriter mWriter;
     private ExecutorService mExecutor;
     private boolean mConnected;
 
@@ -99,6 +102,7 @@ public class NetworkController implements Controller {
 
             final NetworkMessage message = readNextMessage();
             handleMessage(message);
+            sendWatchdogKick();
         }
         Log.d(TAG, "Worker exiting ...");
     }
@@ -161,6 +165,7 @@ public class NetworkController implements Controller {
         Log.d(TAG, "Connecting to host: " + mHost + ":" + mPort);
         mSocket = new Socket(mHost, mPort);
         mReader = new BufferedReader(new InputStreamReader(mSocket.getInputStream()));
+        mWriter = new BufferedWriter(new OutputStreamWriter(mSocket.getOutputStream()));
         mStatus = Controller.STATUS_NEED_SERIAL_NUMBER;
     }
 
@@ -178,6 +183,16 @@ public class NetworkController implements Controller {
             return null;
         }
         return NetworkMessage.fromString(line.replace("\n", ""));
+    }
+
+    private void sendWatchdogKick() {
+        Preconditions.checkState(mWriter != null);
+        try {
+            mWriter.write("watchdog kick");
+        } catch (IOException e) {
+            Log.w(TAG, "Error sending watchdog: " + e.getMessage());
+            disconnect();
+        }
     }
 
     private void disconnect() {

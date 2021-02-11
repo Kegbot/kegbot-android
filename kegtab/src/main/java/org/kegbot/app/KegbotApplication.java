@@ -27,6 +27,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.preference.PreferenceManager;
+import android.support.multidex.MultiDex;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
@@ -79,6 +80,16 @@ public class KegbotApplication extends Application {
     System.setProperty("http.agent", userAgent);
 
     CheckinService.startCheckinService(this, false);
+  }
+
+  @Override
+  public void attachBaseContext(Context base) {
+    super.attachBaseContext(base);
+    try {
+      MultiDex.install(this);
+    } catch (RuntimeException multiDexException) {
+      multiDexException.printStackTrace();
+    }
   }
 
   public AppConfiguration getConfig() {
