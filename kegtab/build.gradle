@@ -20,18 +20,19 @@
 buildscript {
     repositories {
         google()
-        jcenter()
-        maven { url 'https://maven.fabric.io/public' }
+        mavenCentral()
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.6.3'
-        classpath 'io.fabric.tools:gradle:1.+'
+        classpath 'com.google.gms:google-services:4.3.10'
+        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.5.2'
+        classpath 'com.android.tools.build:gradle:7.2.1'
     }
 }
 
 apply plugin: 'com.android.application'
-apply plugin: 'io.fabric'
+apply plugin: 'com.google.firebase.crashlytics'
+apply plugin: 'com.google.gms.google-services'
 
 repositories {
     maven { url 'https://maven.fabric.io/public' }
@@ -44,14 +45,13 @@ repositories {
 
 android {
     compileSdkVersion 28
-    buildToolsVersion '25.0.3'
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
     defaultConfig {
-        minSdkVersion 14
+        minSdkVersion 17
         targetSdkVersion 28
         multiDexEnabled true
 
@@ -95,14 +95,16 @@ android {
 }
 
 dependencies {
-    implementation 'com.hoho.android:usbserial:0.3.0-rc1@aar'
     implementation 'com.google.android.gms:play-services-gcm:9.4.0'
+    implementation 'com.github.mik3y:usb-serial-for-android:3.4.3'
     implementation files('libs/kegbot-api/kegbot-api.jar')
     implementation 'com.android.support:support-v13:26.1.0'
     implementation 'com.squareup.okhttp:okhttp:2.0.0'
     implementation 'com.squareup:otto:1.3.4'
     implementation 'com.google.guava:guava:24.1-jre'
     implementation 'com.jakewharton:butterknife:4.0.1'
+    implementation 'com.google.firebase:firebase-crashlytics:17.2.1'
+    implementation 'com.google.firebase:firebase-analytics:17.5.0'
     annotationProcessor 'com.jakewharton:butterknife:4.0.1'
     implementation 'com.github.kevinsawicki:http-request:5.6'
     implementation 'org.codehaus.jackson:jackson-mapper-asl:1.7.4'
@@ -111,10 +113,6 @@ dependencies {
     implementation 'joda-time:joda-time:2.3'
     implementation 'com.android.support:multidex:1.0.3'
 
-
-    implementation('com.crashlytics.sdk.android:crashlytics:2.10.1@aar') {
-        transitive = true;
-    }
 
     androidTestImplementation 'com.jayway.android.robotium:robotium-solo:5.1'
     androidTestImplementation 'org.mockito:mockito-core:1.9.5'
