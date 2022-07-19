@@ -275,29 +275,12 @@
                 <action android:name="org.kegbot.action.THERMO_UPDATE"/>
             </intent-filter>
         </receiver>
-        <receiver
-            android:name="org.kegbot.app.service.GCMBroadcastReceiver"
-            android:permission="com.google.android.c2dm.permission.SEND">
-            <intent-filter>
-                <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
-
-                <category android:name="org.kegbot.app"/>
-            </intent-filter>
-        </receiver>
-        <receiver
-            android:name="org.kegbot.app.service.CheckinBroadcastReceiver"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="org.kegbot.app.CHECKIN"/>
-            </intent-filter>
-        </receiver>
 
         <!-- ######## -->
         <!-- SERVICES -->
         <!-- ######## -->
 
         <service android:name="org.kegbot.app.service.KegbotCoreService"/>
-        <service android:name="org.kegbot.app.service.CheckinService"/>
 
         <activity
             android:name="org.kegbot.app.TapListActivity"

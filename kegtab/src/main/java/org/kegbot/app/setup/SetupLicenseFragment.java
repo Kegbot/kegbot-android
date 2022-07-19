@@ -26,7 +26,6 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 
 import org.kegbot.app.R;
-import org.kegbot.app.service.CheckinService;
 
 /**
  * {@link SetupFragment} which controls preference for running the Kegbot core.
@@ -48,11 +47,6 @@ public class SetupLicenseFragment extends SetupFragment {
 
     if (!licenseBox.isChecked() || !privacyBox.isChecked()) {
       return getActivity().getString(R.string.setup_license_error);
-    }
-
-    Context context = getActivity();
-    if (context != null) {
-      CheckinService.requestImmediateCheckin(context);
     }
 
     return "";

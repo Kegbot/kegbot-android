@@ -35,7 +35,6 @@ import com.google.common.base.Strings;
 import org.kegbot.app.KegbotApplication;
 import org.kegbot.app.R;
 import org.kegbot.app.config.AppConfiguration;
-import org.kegbot.app.service.CheckinService;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -121,7 +120,6 @@ public class SetupKegbotUrlFragment extends SetupFragment {
     Log.d(TAG, "Got base URL: " + baseUrl);
 
     final AppConfiguration prefs = ((KegbotApplication) getActivity().getApplication()).getConfig();
-    CheckinService.requestImmediateCheckin(getActivity());
     prefs.setKegbotUrl(baseUrl);
     return "";
   }

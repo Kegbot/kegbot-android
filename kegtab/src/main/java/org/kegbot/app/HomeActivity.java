@@ -24,7 +24,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -32,12 +31,8 @@ import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.MenuItem;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
-import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.squareup.otto.Subscribe;
 
@@ -46,7 +41,6 @@ import org.kegbot.app.alert.AlertCore;
 import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.app.event.ConnectivityChangedEvent;
 import org.kegbot.app.event.VisibleTapsChangedEvent;
-import org.kegbot.app.service.CheckinService;
 import org.kegbot.app.util.SortableFragmentStatePagerAdapter;
 import org.kegbot.app.util.Utils;
 import org.kegbot.core.KegbotCore;
@@ -103,15 +97,6 @@ public class HomeActivity extends CoreActivity {
   private HomeFragmentsAdapter mTapStatusAdapter;
   private ViewPager mTapStatusPager;
   private AppConfiguration mConfig;
-
-  /**
-   * Keep track of Google Play Services error codes, and don't annoy when the same error persists.
-   * (For some reason, {@link GooglePlayServicesUtil} treats absence of the apk as "user
-   * recoverable").
-   *
-   * @see #checkPlayServices()
-   */
-  private int mLastShownGooglePlayServicesError = Integer.MIN_VALUE;
 
   private final Object mTapsLock = new Object();
 
@@ -174,10 +159,6 @@ public class HomeActivity extends CoreActivity {
     mCore.getBus().register(this);
     mCore.getHardwareManager().refreshSoon();
     startAttractMode();
-
-    if (checkPlayServices()) {
-      doGcmRegistration();
-    }
   }
 
   @Override
@@ -331,58 +312,6 @@ public class HomeActivity extends CoreActivity {
 
   private void cancelAttractMode() {
     mAttractModeHandler.removeCallbacks(mAttractModeRunnable);
-  }
-
-  private void doGcmRegistration() {
-    final int versionCode = Utils.getOwnPackageInfo(getApplicationContext()).versionCode;
-    final int registeredVersionCode = mConfig.getGcmRegistrationAppVersion();
-    final String currentRegId = mConfig.getGcmRegistrationId();
-
-    // Fast path: reuse saved id.
-    if (versionCode == registeredVersionCode && !Strings.isNullOrEmpty(currentRegId)) {
-      return;
-    }
-
-    // Destroy stale regid, if any.
-    mConfig.setGcmRegistrationId("");
-
-    new AsyncTask<Void, Void, Void>() {
-      @Override
-      protected Void doInBackground(Void... params) {
-        Log.d(LOG_TAG, "Registering for GCM ...");
-        final GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(HomeActivity.this);
-        final String gcmId;
-        try {
-          gcmId = gcm.register(GCM_SENDER_ID);
-        } catch (IOException e) {
-          Log.w(LOG_TAG, "GCM registration failed.", e);
-          return null;
-        }
-        mConfig.setGcmRegistrationId(gcmId);
-        mConfig.setGcmRegistrationAppVersion(versionCode);
-        CheckinService.requestImmediateCheckin(getApplicationContext());
-        Log.d(LOG_TAG, "GCM registration success, id=" + gcmId);
-
-        return null;
-      }
-    }.execute(null, null, null);
-  }
-
-  private boolean checkPlayServices() {
-    int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
-    if (resultCode != ConnectionResult.SUCCESS) {
-      if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
-        Log.i(LOG_TAG, "GCM error: " + resultCode);
-        if (resultCode != mLastShownGooglePlayServicesError) {
-          Log.w(LOG_TAG, GooglePlayServicesUtil.getErrorString(resultCode));
-          //GooglePlayServicesUtil.getErrorDialog(
-          //    resultCode, this, REQUEST_PLAY_SERVICES_UPDATE).show();
-          mLastShownGooglePlayServicesError = resultCode;
-        }
-      }
-      return false;
-    }
-    return true;
   }
 
   /**

@@ -158,22 +158,6 @@ public class AppConfiguration {
     return getBoolean(ConfigKey.CACHE_CREDENTIALS);
   }
 
-  public String getGcmRegistrationId() {
-    return get(ConfigKey.GCM_REGISTRATION_ID);
-  }
-
-  public void setGcmRegistrationId(String regId) {
-    set(ConfigKey.GCM_REGISTRATION_ID, regId);
-  }
-
-  public void setGcmRegistrationAppVersion(int versionCode) {
-    setInteger(ConfigKey.GCM_REGISTRATION_APP_VERSION, versionCode);
-  }
-
-  public int getGcmRegistrationAppVersion() {
-    return getInteger(ConfigKey.GCM_REGISTRATION_APP_VERSION);
-  }
-
   public boolean getEnableFlowAutoStart() {
     return getBoolean(ConfigKey.ENABLE_AUTOMATIC_FLOW_START);
   }
@@ -228,38 +212,6 @@ public class AppConfiguration {
 
   public void setEnableAttractMode(boolean value) {
     setBoolean(ConfigKey.ATTRACT_MODE, value);
-  }
-
-  public long getLastCheckinAttempt() {
-    return getLong(ConfigKey.LAST_CHECKIN_ATTEMPT_MILLIS);
-  }
-
-  public void setLastCheckinAttempt(long value) {
-    setLong(ConfigKey.LAST_CHECKIN_ATTEMPT_MILLIS, value);
-  }
-
-  public long getLastCheckinSuccess() {
-    return getLong(ConfigKey.LAST_CHECKIN_SUCCESS_MILLIS);
-  }
-
-  public void setLastCheckinSuccess(long value) {
-    setLong(ConfigKey.LAST_CHECKIN_SUCCESS_MILLIS, value);
-  }
-
-  public String getLastCheckinStatus() {
-    return get(ConfigKey.LAST_CHECKIN_STATUS);
-  }
-
-  public void setLastCheckinStatus(String value) {
-    set(ConfigKey.LAST_CHECKIN_STATUS, value);
-  }
-
-  public String getRegistrationId() {
-    return get(ConfigKey.REGISTRATION_ID);
-  }
-
-  public void setRegistrationId(String value) {
-    set(ConfigKey.REGISTRATION_ID, value);
   }
 
   public void setUpdateAvailable(boolean value) {

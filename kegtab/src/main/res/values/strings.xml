@@ -76,9 +76,6 @@
     <string name="setup_license_title">Before You Continue…</string>
     <string name="setup_license_description">You\'re free to use this app, but your use is governed by the License Agreement and Privacy Policy linked at right.</string>
     <string name="setup_license_error">You must agree to continue.</string>
-    <string name="checkin_update_available_title">Kegbot update available</string>
-    <string name="checkin_update_required_title">Kegbot update required</string>
-    <string name="checkin_update_description">Tap to update Kegbot</string>
     <string name="alert_network">Network Problem</string>
     <string name="update_available">Update Available</string>
     <string name="menu_bugreport">Bugreport</string>

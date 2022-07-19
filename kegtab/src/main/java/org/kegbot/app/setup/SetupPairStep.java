@@ -50,7 +50,9 @@ public class SetupPairStep extends SetupStep {
 
   private final String TAG = SetupPairStep.class.getSimpleName();
 
-  private final Fragment mContentFragment = new Fragment() {
+  public static final class PairingFragment extends Fragment {
+
+    private static final String TAG = PairingFragment.class.getSimpleName();
 
     private final AtomicBoolean mQuit = new AtomicBoolean();
     private TextView mPairingPrompt;
@@ -58,6 +60,7 @@ public class SetupPairStep extends SetupStep {
     private TextView mPairingPromptContinued;
     private TextView mPairingCodeText;
     private TextView mPairingCompleteText;
+    private SetupActivity.SetupState mState;
 
     private AsyncTask<Void, Void, String> mPollTask;
     private String mPairingCode;
@@ -177,7 +180,9 @@ public class SetupPairStep extends SetupStep {
     }
 
     private void onPairingStarted() {
-      mState.setNextButtonEnabled(false);
+      if (mState != null) {
+        mState.setNextButtonEnabled(false);
+      }
 
       mPairingPrompt.setVisibility(View.VISIBLE);
       mPairingUrl.setVisibility(View.VISIBLE);
@@ -188,7 +193,9 @@ public class SetupPairStep extends SetupStep {
     }
 
     private void onPairingComplete() {
-      mState.setNextButtonEnabled(true);
+      if (mState != null) {
+        mState.setNextButtonEnabled(true);
+      }
 
       mPairingPrompt.setVisibility(View.GONE);
       mPairingUrl.setVisibility(View.GONE);
@@ -207,6 +214,8 @@ public class SetupPairStep extends SetupStep {
     }
 
   };
+
+  private final Fragment mContentFragment = new PairingFragment();
 
   public SetupPairStep(SetupActivity.SetupState state) {
     super(state);

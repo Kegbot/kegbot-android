@@ -345,7 +345,6 @@ public class KegbotCore {
       writer.increaseIndent();
       writer.printPair("mStarted", Boolean.valueOf(mStarted)).println();
       writer.printPair("deviceId", getDeviceId()).println();
-      writer.printPair("gcmId", mConfig.getGcmRegistrationId()).println();
       writer.printPair("enableFlowAutoStart", Boolean.valueOf(mConfig.getEnableFlowAutoStart()))
           .println();
       writer.printPair("allowManualLogin", Boolean.valueOf(mConfig.getAllowManualLogin()))
