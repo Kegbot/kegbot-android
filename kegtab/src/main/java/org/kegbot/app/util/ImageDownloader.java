@@ -32,8 +32,8 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
 import com.google.common.collect.Sets;
-import com.hoho.android.usbserial.util.HexDump;
 
+import org.apache.commons.codec.binary.Hex;
 import org.kegbot.app.R;
 
 import java.io.File;
@@ -321,7 +321,7 @@ public class ImageDownloader {
     }
     md.update(uri.getBytes());
     byte[] digest = md.digest();
-    return HexDump.toHexString(digest);
+    return Hex.encodeHexString(digest);
   }
 
   private File getCacheFilename(String url) {

@@ -26,9 +26,9 @@ import android.os.Binder;
 import android.util.Log;
 
 import com.google.common.base.Strings;
-import com.hoho.android.usbserial.util.HexDump;
 import com.squareup.otto.Bus;
 
+import org.apache.commons.codec.binary.Hex;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.kegbot.app.AuthenticatingActivity;
@@ -147,7 +147,6 @@ public class BluetoothManager extends BackgroundManager {
     while (true) {
       nBytes = inputStream.read(buffer);
       Log.d(TAG, "Read " + nBytes + " bytes.");
-      Log.d(TAG, HexDump.dumpHexString(buffer, 0, nBytes));
       JsonNode message = new ObjectMapper().readValue(buffer, 0, nBytes, JsonNode.class);
       Log.d(TAG, "Parsed message: " + message);
       handleMessage(message);

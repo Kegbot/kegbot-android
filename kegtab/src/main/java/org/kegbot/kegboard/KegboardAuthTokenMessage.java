@@ -18,7 +18,7 @@
  */
 package org.kegbot.kegboard;
 
-import com.hoho.android.usbserial.util.HexDump;
+import org.apache.commons.codec.binary.Hex;
 
 /**
  * @author mike
@@ -56,7 +56,7 @@ public class KegboardAuthTokenMessage extends KegboardMessage {
     for (int i = 0; i < reversedBytes.length; i++) {
       reversedBytes[tokenBytes.length - i - 1] = tokenBytes[i];
     }
-    mComputedToken = HexDump.toHexString(reversedBytes).toLowerCase();
+    mComputedToken = Hex.encodeHexString(reversedBytes, true);
 
     // Rename "onewire" -> "core.onewire"
     if ("onewire".equals(tagName)) {

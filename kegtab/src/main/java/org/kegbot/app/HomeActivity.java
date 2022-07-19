@@ -39,9 +39,9 @@ import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.hoho.android.usbserial.util.HexDump;
 import com.squareup.otto.Subscribe;
 
+import org.apache.commons.codec.binary.Hex;
 import org.kegbot.app.alert.AlertCore;
 import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.app.event.ConnectivityChangedEvent;
@@ -216,7 +216,7 @@ public class HomeActivity extends CoreActivity {
       Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
       byte[] id = tag.getId();
       if (id != null && id.length > 0) {
-        String tagId = HexDump.toHexString(id).toLowerCase(Locale.US);
+        String tagId = Hex.encodeHexString(id).toLowerCase();
         Log.d(LOG_TAG, "Read NFC tag with id: " + tagId);
         // TODO: use tag technology as part of id?
         AuthenticatingActivity.startAndAuthenticate(this, "nfc", tagId);

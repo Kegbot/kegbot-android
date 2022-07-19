@@ -36,8 +36,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.common.base.Strings;
-import com.hoho.android.usbserial.util.HexDump;
 
+import org.apache.commons.codec.binary.Hex;
 import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.backend.BackendException;
 import org.kegbot.core.AuthenticationToken;
@@ -131,7 +131,7 @@ public class AuthenticatingActivity extends Activity {
       Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
       byte[] id = tag.getId();
       if (id != null && id.length > 0) {
-        String tagId = HexDump.toHexString(id).toLowerCase();
+        String tagId = Hex.encodeHexString(id, true);
         Log.d(TAG, "Read NFC tag with id: " + tagId);
         // TODO: use tag technology as part of id?
         intent.putExtra(EXTRA_TOKEN_VALUE, tagId);  // needed by onActivityResult

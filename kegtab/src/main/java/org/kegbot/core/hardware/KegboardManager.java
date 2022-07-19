@@ -39,9 +39,9 @@ import com.hoho.android.usbserial.driver.ProbeTable;
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
 import com.hoho.android.usbserial.driver.UsbSerialPort;
 import com.hoho.android.usbserial.driver.UsbSerialProber;
-import com.hoho.android.usbserial.util.HexDump;
 import com.squareup.otto.Bus;
 
+import org.apache.commons.codec.binary.Hex;
 import org.kegbot.app.event.Event;
 import org.kegbot.app.util.IndentingPrintWriter;
 import org.kegbot.core.AuthenticationToken;
@@ -365,8 +365,7 @@ public class KegboardManager extends BackgroundManager implements ControllerMana
     final KegboardHelloMessage verified;
     try {
       port.open(connection);
-      port.setParameters(115200, UsbSerialPort.DATABITS_8, UsbSerialPort.STOPBITS_1,
-          UsbSerialPort.FLOWCONTROL_NONE);
+      port.setParameters(115200, 8, UsbSerialPort.STOPBITS_1, UsbSerialPort.PARITY_NONE);
       port.setDTR(true);
 
       controller = new KegboardController(port);
@@ -498,7 +497,7 @@ public class KegboardManager extends BackgroundManager implements ControllerMana
 
   private KegboardHelloMessage setControllerSerialNumber(final KegboardController controller) throws IOException {
     final int randInt = new SecureRandom().nextInt();
-    final String randStr = HexDump.toHexString(randInt);
+    final String randStr = Integer.toHexString(randInt);
     assert randStr.length() == 8;
     final String serialNumber = String.format("KB-0000-0000-%s", randStr);
 
