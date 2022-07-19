@@ -18,8 +18,6 @@
  */
 package org.kegbot.app.service;
 
-import android.app.Notification;
-import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -31,6 +29,7 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.os.SystemClock;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import org.kegbot.app.HomeActivity;
@@ -40,7 +39,6 @@ import org.kegbot.app.alert.AlertCore;
 import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.app.event.ConnectivityChangedEvent;
 import org.kegbot.app.event.FlowUpdateEvent;
-import org.kegbot.app.util.Utils;
 import org.kegbot.core.Flow;
 import org.kegbot.core.FlowManager;
 import org.kegbot.core.KegbotCore;
@@ -58,9 +56,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class KegbotCoreService extends Service {
 
-  private static String TAG = KegbotCoreService.class.getSimpleName();
-
-  private static final int NOTIFICATION_FOREGROUND = 1;
+  private final static String TAG = KegbotCoreService.class.getSimpleName();
 
   private static final long ACTIVITY_START_TIMEOUT_MILLIS = TimeUnit.SECONDS.toMillis(2);
   private long mLastPourActivityStart = 0;
@@ -120,12 +116,9 @@ public class KegbotCoreService extends Service {
         return;
       }
       mHardwareManager.toggleOutput(flow.getTap(), false);
-      final Runnable r = new Runnable() {
-        @Override
-        public void run() {
-          Log.d(TAG, "Flow ended: " + flow);
-          recordDrinkForFlow(flow);
-        }
+      final Runnable r = () -> {
+        Log.d(TAG, "Flow ended: " + flow);
+        recordDrinkForFlow(flow);
       };
       mExecutorService.submit(r);
     }
@@ -190,7 +183,7 @@ public class KegbotCoreService extends Service {
       // in the foreground; we only need to worry about holding a partial
       // wakelock.
       PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-      mWakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "kegbot-core");
+      mWakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "kegbot:kegbot-core");
       mWakeLock.acquire();
     } else {
       mWakeLock = null;
@@ -251,7 +244,7 @@ public class KegbotCoreService extends Service {
     if (runCore) {
       debugNotice("Running core!");
       mFlowManager.addFlowListener(mFlowListener);
-      startForeground(NOTIFICATION_FOREGROUND, buildForegroundNotification());
+      ContextCompat.startForegroundService(this, buildForegroundServiceIntent());
     } else {
       debugNotice("Stopping core.");
       mFlowManager.removeFlowListener(mFlowListener);
@@ -260,24 +253,13 @@ public class KegbotCoreService extends Service {
     }
   }
 
-  private Notification buildForegroundNotification() {
+  private Intent buildForegroundServiceIntent() {
     final Intent intent = new Intent(this, HomeActivity.class);
     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
     intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-    final PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent,
-        PendingIntent.FLAG_CANCEL_CURRENT);
-    final Notification notification = Utils.buildNotification(new Notification.Builder(this)
-        .setOngoing(true)
-        .setSmallIcon(R.drawable.icon)
-        .setWhen(System.currentTimeMillis())
-        .setContentTitle(getString(R.string.kegbot_core_running))
-        .setContentIntent(pendingIntent));
-    return notification;
+    return intent;
   }
 
-  /**
-   * @param ended
-   */
   private void recordDrinkForFlow(final Flow ended) {
     long minVolume = mConfig.getMinimumVolumeMl();
     if (ended.getVolumeMl() < minVolume) {
