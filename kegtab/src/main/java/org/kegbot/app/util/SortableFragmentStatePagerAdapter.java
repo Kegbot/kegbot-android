@@ -22,7 +22,9 @@ import android.app.FragmentTransaction;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.v4.view.PagerAdapter;
+
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.viewpager.widget.PagerAdapter;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,8 +39,8 @@ import java.util.Arrays;
  */
 
 /**
- * Implementation of {@link android.support.v4.view.PagerAdapter} that
- * uses a {@link android.support.v4.app.Fragment} to manage each page. This class also handles
+ * Implementation of {@link PagerAdapter} that
+ * uses a {@link androidx.fragment.app.Fragment} to manage each page. This class also handles
  * saving and restoring of fragment's state.
  *
  * <p>This version of the pager is more useful when there are a large number
@@ -46,7 +48,7 @@ import java.util.Arrays;
  * the user, their entire fragment may be destroyed, only keeping the saved
  * state of that fragment.  This allows the pager to hold on to much less
  * memory associated with each visited page as compared to
- * {@link android.support.v4.app.FragmentPagerAdapter} at the cost of potentially more overhead when
+ * {@link FragmentPagerAdapter} at the cost of potentially more overhead when
  * switching between pages.
  *
  * <p>When using FragmentPagerAdapter the host ViewPager must have a

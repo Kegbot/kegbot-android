@@ -27,7 +27,7 @@ import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.v4.view.ViewPager;
+import androidx.viewpager.widget.ViewPager;
 import android.util.Log;
 import android.view.MenuItem;
 
@@ -42,13 +42,10 @@ import org.kegbot.app.config.AppConfiguration;
 import org.kegbot.app.event.ConnectivityChangedEvent;
 import org.kegbot.app.event.VisibleTapsChangedEvent;
 import org.kegbot.app.util.SortableFragmentStatePagerAdapter;
-import org.kegbot.app.util.Utils;
 import org.kegbot.core.KegbotCore;
 import org.kegbot.proto.Models.KegTap;
 
-import java.io.IOException;
 import java.util.List;
-import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nullable;
