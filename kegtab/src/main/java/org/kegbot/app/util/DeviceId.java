@@ -22,7 +22,8 @@ import android.content.Context;
 import android.provider.Settings.Secure;
 
 import com.google.common.base.Strings;
-import com.hoho.android.usbserial.util.HexDump;
+
+import org.apache.commons.codec.binary.Hex;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -62,7 +63,7 @@ public class DeviceId {
     final byte[] digest = md.digest();
     final byte[] shortDigest = Arrays.copyOfRange(digest, 0, 8);
 
-    final String id = HexDump.toHexString(shortDigest);
+    final String id = Hex.encodeHexString(shortDigest, true);
     return id;
   }
 

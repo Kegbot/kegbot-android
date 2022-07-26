@@ -28,13 +28,13 @@
 
     <!-- Left box: PourStatusFragment -->
 
-    <android.support.v4.view.ViewPager
+    <androidx.viewpager.widget.ViewPager
         android:id="@+id/tapPager"
         android:layout_width="0dip"
         android:layout_height="match_parent"
         android:layout_marginRight="10dip"
         android:layout_weight="0.6">
-    </android.support.v4.view.ViewPager>
+    </androidx.viewpager.widget.ViewPager>
 
     <!-- Right box: Camera Preview & Controls -->
 

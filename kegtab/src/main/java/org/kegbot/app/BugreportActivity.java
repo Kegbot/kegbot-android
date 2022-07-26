@@ -40,7 +40,6 @@ import android.widget.TextView;
 import com.google.common.base.Strings;
 
 import org.kegbot.app.config.AppConfiguration;
-import org.kegbot.app.util.CheckinClient;
 import org.kegbot.core.KegbotCore;
 
 import java.io.BufferedReader;
@@ -282,13 +281,12 @@ public class BugreportActivity extends Activity {
     @Override
     protected Exception doInBackground(File... params) {
       final String messageText = Strings.nullToEmpty(mDetailText.getText().toString());
-      final CheckinClient client = CheckinClient.fromContext(getApplicationContext());
       final String email = mEmailText.getText().toString();
       if (!Strings.isNullOrEmpty(email)) {
         mConfig.setEmailAddress(email);
       }
       try {
-        client.submitBugreport(messageText, mBugreportFile, email);
+        // XXX Not implemented.
       } catch (Exception e) {
         return e;
       }

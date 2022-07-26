@@ -24,6 +24,7 @@
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
     <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
     <uses-permission android:name="android.permission.NFC"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
@@ -126,6 +127,7 @@
         <activity
             android:name="org.kegbot.app.KegtabLauncherActivity"
             android:label="@string/app_name"
+            android:exported="true"
             android:launchMode="singleTop"
             android:screenOrientation="sensorLandscape"
             android:theme="@style/AppTheme.NoActionBar"
@@ -147,6 +149,7 @@
         <activity
             android:name="org.kegbot.app.HomeActivity"
             android:label="@string/app_name"
+            android:exported="false"
             android:launchMode="singleTop"
             android:screenOrientation="sensorLandscape"
             android:windowSoftInputMode="stateAlwaysHidden|adjustPan">
@@ -154,6 +157,7 @@
         <activity
             android:name="org.kegbot.app.BugreportActivity"
             android:label="@string/app_name"
+            android:exported="false"
             android:launchMode="singleTop"
             android:screenOrientation="sensorLandscape">
             <intent-filter>
@@ -165,6 +169,7 @@
         <activity
             android:name="org.kegbot.app.CalibrationActivity"
             android:label="@string/app_name"
+            android:exported="false"
             android:launchMode="singleTop"
             android:screenOrientation="sensorLandscape"
             android:theme="@style/AppTheme.NoActionBar">
@@ -172,12 +177,14 @@
         <activity
             android:name="org.kegbot.app.NewControllerActivity"
             android:label="@string/app_name"
+            android:exported="false"
             android:screenOrientation="sensorLandscape"
             android:theme="@android:style/Theme.Holo.Dialog.NoActionBar">
         </activity>
         <activity
             android:name="org.kegbot.app.NewKegActivity"
             android:label="@string/app_name"
+            android:exported="false"
             android:launchMode="singleTop"
             android:screenOrientation="sensorLandscape"
             android:theme="@style/AppTheme.NoActionBar"
@@ -186,6 +193,7 @@
         <activity
             android:name="org.kegbot.app.NewTapActivity"
             android:label="@string/app_name"
+            android:exported="false"
             android:launchMode="singleTop"
             android:screenOrientation="sensorLandscape"
             android:theme="@style/AppTheme.NoActionBar"
@@ -194,6 +202,7 @@
         <activity
             android:name="org.kegbot.app.setup.SetupActivity"
             android:label="@string/app_name"
+            android:exported="false"
             android:launchMode="singleTop"
             android:screenOrientation="sensorLandscape"
             android:theme="@style/AppTheme.NoActionBar"
@@ -202,6 +211,7 @@
         <activity
             android:name="org.kegbot.app.PourInProgressActivity"
             android:label="@string/app_name"
+            android:exported="false"
             android:launchMode="singleTop"
             android:screenOrientation="sensorLandscape"
             android:theme="@style/AppTheme.NoActionBar"
@@ -221,12 +231,15 @@
         </activity>
         <activity
             android:name="org.kegbot.app.SettingsActivity"
+            android:exported="false"
             android:label="@string/settings_name"/>
         <activity
             android:name="org.kegbot.app.settings.ThirdPartyLicensesActivity"
+            android:exported="false"
             android:label="@string/settings_name"/>
         <activity
             android:name="org.kegbot.app.PinActivity"
+            android:exported="false"
             android:label="@string/app_name"/>
         <activity
             android:name="org.kegbot.app.DrinkerRegistrationActivity"
@@ -244,6 +257,7 @@
         <activity
             android:name="org.kegbot.app.AuthenticatingActivity"
             android:label="@string/app_name"
+            android:exported="false"
             android:launchMode="singleTop"
             android:theme="@android:style/Theme.Holo.Dialog.NoActionBar"/>
 
@@ -251,7 +265,8 @@
         <!-- BROADCAST RECEIVERS -->
         <!-- ################### -->
 
-        <receiver android:name="org.kegbot.app.DebugBroadcastReceiver">
+        <receiver android:name="org.kegbot.app.DebugBroadcastReceiver"
+            android:exported="true">
             <intent-filter android:priority="1">
                 <action android:name="org.kegbot.action.USER_AUTHED"/>
                 <action android:name="org.kegbot.action.METER_UPDATE"/>
@@ -261,33 +276,17 @@
                 <action android:name="org.kegbot.action.THERMO_UPDATE"/>
             </intent-filter>
         </receiver>
-        <receiver
-            android:name="org.kegbot.app.service.GCMBroadcastReceiver"
-            android:permission="com.google.android.c2dm.permission.SEND">
-            <intent-filter>
-                <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
-
-                <category android:name="org.kegbot.app"/>
-            </intent-filter>
-        </receiver>
-        <receiver
-            android:name="org.kegbot.app.service.CheckinBroadcastReceiver"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="org.kegbot.app.CHECKIN"/>
-            </intent-filter>
-        </receiver>
 
         <!-- ######## -->
         <!-- SERVICES -->
         <!-- ######## -->
 
         <service android:name="org.kegbot.app.service.KegbotCoreService"/>
-        <service android:name="org.kegbot.app.service.CheckinService"/>
 
         <activity
             android:name="org.kegbot.app.TapListActivity"
             android:label="@string/title_tap_list"
+            android:exported="false"
             android:parentActivityName="org.kegbot.app.HomeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>

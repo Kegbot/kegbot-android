@@ -28,8 +28,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.hoho.android.usbserial.driver.UsbSerialPort;
-import com.hoho.android.usbserial.util.HexDump;
 
+import org.apache.commons.codec.binary.Hex;
 import org.kegbot.core.FlowMeter;
 import org.kegbot.core.ThermoSensor;
 import org.kegbot.kegboard.KegboardHelloMessage;
@@ -41,6 +41,7 @@ import org.kegbot.kegboard.KegboardSetOutputCommand;
 import org.kegbot.kegboard.KegboardTemperatureReadingMessage;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
@@ -275,7 +276,7 @@ public class KegboardController implements Controller {
       Log.w(TAG, "Error!");
       throw new IOException("Device closed.");
     }
-    Log.d(TAG, "Read bytes: " + HexDump.dumpHexString(mReadBuffer, 0, amtRead));
+    Log.d(TAG, "Read bytes: " + Hex.encodeHex(ByteBuffer.wrap(mReadBuffer, 0, amtRead)));
     mReader.addBytes(mReadBuffer, amtRead);
   }
 

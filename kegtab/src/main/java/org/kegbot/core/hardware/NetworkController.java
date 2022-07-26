@@ -1,18 +1,16 @@
 package org.kegbot.core.hardware;
 
 import android.os.SystemClock;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.util.Log;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import org.kegbot.core.FlowMeter;
 import org.kegbot.core.ThermoSensor;
-import org.kegbot.kegboard.KegboardAuthTokenMessage;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -20,7 +18,6 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

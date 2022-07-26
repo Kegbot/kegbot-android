@@ -3,6 +3,17 @@
 Release History
 ===============
 
+Current Version (in development)
+--------------------------------
+
+**Breaking Changes**
+* Minimum Android SDK version bumped to 17 (was 14).
+
+**Other changes**
+* Removes analytics reporting, crash reporting, and app update checks. The app now communicates with no additional external services.
+* Internal: Updated to latest Android toolchains and dependencies.
+
+
 v1.0.0-b61 (2014-04-14)
 -----------------------
 
