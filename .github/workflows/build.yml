@@ -18,14 +18,34 @@ jobs:
       - name: Build the app
         run: ./gradlew build
 
+      - name: Sign debug apk with debug key
+        uses: ilharp/sign-android-release@v1
+        id: sign_debug_apk
+        with:
+          releaseDir: kegtab/build/outputs/apk/debug
+          signingKey: ${{ secrets.KEGBOT_DEBUG_KEYSTORE }}
+          keyAlias: kegbot-debug
+          keyStorePassword: ${{ secrets.KEGBOT_DEBUG_KEYSTORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEGBOT_DEBUG_KEYSTORE_PASSWORD }}
+
       - name: Archive debug APK
         uses: actions/upload-artifact@v3
         with:
           name: kegtab-debug
-          path: kegtab/build/outputs/apk/debug/kegtab-debug.apk
+          path: ${{ steps.sign_debug_apk.outputs.signedFile }}
+
+      - name: Sign release apk with debug key
+        uses: ilharp/sign-android-release@v1
+        id: sign_release_apk
+        with:
+          releaseDir: kegtab/build/outputs/apk/release
+          signingKey: ${{ secrets.KEGBOT_DEBUG_KEYSTORE }}
+          keyAlias: kegbot-debug
+          keyStorePassword: ${{ secrets.KEGBOT_DEBUG_KEYSTORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEGBOT_DEBUG_KEYSTORE_PASSWORD }}
 
       - name: Archive release APK
         uses: actions/upload-artifact@v3
         with:
-          name: kegtab-release-unsigned
-          path: kegtab/build/outputs/apk/release/kegtab-release-unsigned.apk
+          name: kegtab-release
+          path: ${{ steps.sign_release_apk.outputs.signedFile }}
