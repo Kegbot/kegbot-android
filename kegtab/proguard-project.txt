@@ -22,8 +22,6 @@
 -dontobfuscate
 -dontshrink
 
--libraryjars libs/GoogleAnalytics/libGoogleAnalyticsV2.jar
-
 -dontwarn net.sourceforge.retroweaver.runtime.java.**    # jscience
 -dontwarn com.google.common.**  # guava
 -dontwarn org.apache.commons.**  # httpcomponents-client
