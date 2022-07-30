@@ -21,6 +21,7 @@ package org.kegbot.app.util;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -57,6 +58,7 @@ public class Downloader {
     try {
       response = client.newCall(request).execute();
     } catch (IOException e) {
+      Log.e(LOG_TAG, "Error fetching " + url, e);
       return null;
     }
 
@@ -66,8 +68,11 @@ public class Downloader {
         try {
             bitmap = BitmapFactory.decodeStream(response.body().byteStream(), null, options);
         } catch (Exception e) {
+            Log.e(LOG_TAG, "Error decoding bitmap for " + url, e);
             return null;
         }
+    } else {
+      Log.e(LOG_TAG, "Error fetching " + url + " status=" + response.code());
     }
 
     return bitmap;
