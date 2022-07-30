@@ -66,7 +66,7 @@ public class ImageDownloader {
 
   private static final int HANDLER_KEY_DOWNLOAD_COMPLETE = 1;
 
-  private static final boolean DEBUG = false;
+  private static final boolean DEBUG = true;
 
   /**
    * All ImageViews and the URL they have requested.
