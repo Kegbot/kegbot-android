@@ -246,6 +246,18 @@ public class AppConfiguration {
     return getBoolean(ConfigKey.TEMPERATURE_UNITS_CELSIUS);
   }
 
+  public boolean getAbvVisibleWhenZero() {
+    return getBoolean(ConfigKey.ABV_DISPLAY_WHEN_ZERO);
+  }
+
+  public boolean getIbuVisibleWhenZero() {
+    return getBoolean(ConfigKey.IBU_DISPLAY_WHEN_ZERO);
+  }
+
+  public boolean getDisplayTapNotes() {
+    return getBoolean(ConfigKey.DISPLAY_TAP_NOTES);
+  }
+
   public boolean stayAwake() {
     return getBoolean(ConfigKey.STAY_AWAKE);
   }

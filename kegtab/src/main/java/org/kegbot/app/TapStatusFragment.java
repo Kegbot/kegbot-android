@@ -202,6 +202,8 @@ public class TapStatusFragment extends Fragment {
 
     final TextView title = ButterKnife.findById(mView, R.id.tapTitle);
     final TextView subtitle = ButterKnife.findById(mView, R.id.tapSubtitle);
+    final TextView abvText = ButterKnife.findById(mView, R.id.tapAbv);
+    final TextView ibuText = ButterKnife.findById(mView, R.id.tapIbu);
     final TextView tapNotes = ButterKnife.findById(mView, R.id.tapNotes);
     final ViewFlipper flipper = ButterKnife.findById(mView, R.id.tapStatusFlipper);
 
@@ -256,6 +258,21 @@ public class TapStatusFragment extends Fragment {
       description = tap.getDescription();
     }
 
+    // Find ABV and IBU values
+    final String abv = String.valueOf(keg.getBeverage().getAbvPercent());
+    if(keg.getBeverage().getAbvPercent() == 0 && !mCore.getConfiguration().getAbvVisibleWhenZero()) {
+      abvText.setVisibility(View.GONE);
+    } else {
+      abvText.setText(abv + "% ABV");
+    }
+
+    final String ibu = String.valueOf(Math.round(keg.getBeverage().getIbu()));
+    if(keg.getBeverage().getIbu() == 0 && !mCore.getConfiguration().getIbuVisibleWhenZero()){
+      ibuText.setVisibility(View.GONE);
+    } else{
+      ibuText.setText(ibu + " IBUs");
+    }
+
     final ImageView tapImage = (ImageView) mView.findViewById(R.id.tapImage);
     final ImageView tapIllustration = (ImageView) mView.findViewById(R.id.tapIllustration);
 
@@ -291,13 +308,14 @@ public class TapStatusFragment extends Fragment {
       final Image image = keg.getBeverage().getPicture();
       final String imageUrl = image.getUrl();
       mImageDownloader.download(imageUrl, tapImage);
-    } else if (!Strings.isNullOrEmpty(description)) {
-      tapImage.setVisibility(View.GONE);
+    }
+
+    showIllustration(!keg.getBeverage().hasPicture());
+
+    if (!Strings.isNullOrEmpty(description) && mCore.getConfiguration().getDisplayTapNotes()) {
       tapNotes.setVisibility(View.VISIBLE);
       tapNotes.setText(description);
     }
-
-    showIllustration(true);
 
     // TODO(mikey): proper units support
     // Badge 1: Pints Poured
