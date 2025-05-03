@@ -244,7 +244,7 @@ public class CoreActivity extends Activity {
     };
 
     final Intent intent = AuthenticatingActivity.getStartForNfcIntent(getApplicationContext());
-    final PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+    final PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
     mNfcAdapter.enableForegroundDispatch(this, pendingIntent, null, techLists);
     Log.d(TAG, "NFC dispatch registered.");
   }
