@@ -24,7 +24,7 @@ buildscript {
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.2.1'
+        classpath 'com.android.tools.build:gradle:8.10.0-rc04'
     }
 }
 
@@ -40,7 +40,7 @@ repositories {
 }
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 35
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -55,10 +55,6 @@ android {
         testInstrumentationRunner "android.test.InstrumentationTestRunner"
     }
 
-    lintOptions {
-        checkReleaseBuilds true
-        abortOnError false
-    }
 
     buildTypes {
         debug {
@@ -72,13 +68,12 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-project.txt'
         }
     }
-
     packagingOptions {
-        exclude 'META-INF/ASL2.0'
-        exclude 'META-INF/LICENSE'
-        exclude 'META-INF/DEPENDENCIES'
-        exclude 'META-INF/NOTICE'
+        resources {
+            excludes += ['META-INF/ASL2.0', 'META-INF/LICENSE', 'META-INF/DEPENDENCIES', 'META-INF/NOTICE']
+        }
     }
+
 
     sourceSets {
         main {
@@ -87,6 +82,14 @@ android {
             resources.srcDirs = ['src/main/res']
             assets.srcDirs = ['src/main/assets']
         }
+    }
+    namespace 'org.kegbot.app'
+    lint {
+        abortOnError false
+        checkReleaseBuilds true
+    }
+    buildFeatures {
+        buildConfig true
     }
 }
 
@@ -101,9 +104,9 @@ dependencies {
     implementation 'com.github.kevinsawicki:http-request:5.6'
     implementation 'org.codehaus.jackson:jackson-mapper-asl:1.7.4'
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
-    implementation 'com.google.protobuf:protobuf-java:3.12.0'
+    implementation 'com.google.protobuf:protobuf-java:3.25.5'
     implementation 'joda-time:joda-time:2.3'
-    implementation 'androidx.multidex:multidex:2.0.0'
+    implementation 'androidx.multidex:multidex:2.0.1'
     implementation 'commons-codec:commons-codec:1.13'
 
     androidTestImplementation 'com.jayway.android.robotium:robotium-solo:5.1'
