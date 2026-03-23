@@ -39,9 +39,7 @@ import butterknife.ButterKnife;
  */
 public class SetupSelectBackendFragment extends SetupFragment {
 
-  private View mView;
-
-  private final DialogFragment mDialogFragment = new DialogFragment() {
+  public static class LocalBackendWarningDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
       AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -51,7 +49,9 @@ public class SetupSelectBackendFragment extends SetupFragment {
       builder.setCancelable(false);
       return builder.create();
     }
-  };
+  }
+
+  private View mView;
 
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -69,7 +69,7 @@ public class SetupSelectBackendFragment extends SetupFragment {
     button.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        mDialogFragment.show(getFragmentManager(), null);
+        new LocalBackendWarningDialog().show(getFragmentManager(), null);
       }
     });
 
