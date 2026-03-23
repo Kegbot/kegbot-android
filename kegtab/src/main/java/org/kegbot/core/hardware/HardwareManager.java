@@ -63,6 +63,9 @@ public class HardwareManager extends Manager {
 
   /** All controllers, by operational status. */
   private final Map<Controller, Boolean> mControllers = Maps.newLinkedHashMap();
+  
+  /** Track which controller names have been notified to prevent duplicate events. */
+  private final Set<String> mNotifiedControllerNames = Sets.newHashSet();
 
   private final Set<ControllerManager> mManagers = Sets.newLinkedHashSet();
   private KegboardManager mKegboardManager;
@@ -91,6 +94,7 @@ public class HardwareManager extends Manager {
     mManagers.add(mKegboardManager);
     mManagers.add(new FakeControllerManager(getBus(), mListener));
     mManagers.add(new NetworkControllerManager(getBus(), mListener, config));
+    mManagers.add(new MQTTControllerManager(getBus(), mListener, config));
   }
 
   @Override
@@ -108,17 +112,58 @@ public class HardwareManager extends Manager {
   }
 
   private synchronized void onControllerAttached(Controller controller) {
-    Log.d(TAG, "Controller attached: " + controller);
-    if (mControllers.containsKey(controller)) {
-      Log.w(TAG, "Controller already attached!");
+    Log.d(TAG, "Controller attached: " + controller + " with name: " + controller.getName());
+    
+    // Check if a controller with the same name already exists
+    Controller existingController = null;
+    for (Controller c : mControllers.keySet()) {
+      if (c.getName().equals(controller.getName())) {
+        existingController = c;
+        break;
+      }
+    }
+    
+    if (existingController != null) {
+      // Check if it's actually the same controller instance
+      if (existingController == controller) {
+        Log.w(TAG, "Same controller instance '" + controller.getName() + "' attached again! Ignoring duplicate.");
+        return;
+      }
+      
+      Log.w(TAG, "Controller with name '" + controller.getName() + "' already attached! This appears to be a reconnection, updating controller instance.");
+      // Remove the old controller instance and replace with new one (for reconnection scenarios)
+      Boolean wasEnabled = mControllers.get(existingController);
+      mControllers.remove(existingController);
+      mControllers.put(controller, wasEnabled); // Preserve the enabled state
+      // Don't post ControllerAttachedEvent for reconnections to avoid duplicate notifications
       return;
     }
+    
+    // Check if we've already notified about this controller name
+    if (mNotifiedControllerNames.contains(controller.getName())) {
+      Log.w(TAG, "Controller with name '" + controller.getName() + "' has already been notified, skipping duplicate notification.");
+      mControllers.put(controller, Boolean.FALSE);
+      return;
+    }
+    
+    // This is a truly new controller
+    Log.d(TAG, "Adding new controller: " + controller.getName());
     mControllers.put(controller, Boolean.FALSE);
+    mNotifiedControllerNames.add(controller.getName());
     postOnMainThread(new ControllerAttachedEvent(controller));
   }
 
   private synchronized void onControllerEvent(Controller controller, Event event) {
-    if (!mControllers.containsKey(controller)) {
+    // Check if a controller with the same name exists
+    Controller existingController = null;
+    for (Controller c : mControllers.keySet()) {
+      if (c.getName().equals(controller.getName())) {
+        existingController = c;
+        break;
+      }
+    }
+    
+    if (existingController == null) {
       Log.w(TAG, "Received event from unknown controller: " + controller);
       return;
     }
@@ -131,11 +176,21 @@ public class HardwareManager extends Manager {
   }
 
   private synchronized void onControllerRemoved(Controller controller) {
-    if (!mControllers.containsKey(controller)) {
+    // Find and remove controller with the same name
+    Controller controllerToRemove = null;
+    for (Controller c : mControllers.keySet()) {
+      if (c.getName().equals(controller.getName())) {
+        controllerToRemove = c;
+        break;
+      }
+    }
+    
+    if (controllerToRemove == null) {
       Log.w(TAG, "Unknown controller was detached: " + controller);
       return;
     }
-    mControllers.remove(controller);
+    mControllers.remove(controllerToRemove);
+    mNotifiedControllerNames.remove(controller.getName()); // Clear notification tracking
     postOnMainThread(new ControllerDetachedEvent(controller));
 
     postAlert(AlertCore.newBuilder("Controller Removed")

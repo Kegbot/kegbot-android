@@ -28,6 +28,9 @@
 -dontwarn org.codehaus.jackson.**  # jackson
 -dontwarn android.net.http.**
 -dontwarn org.joda.**
+-dontwarn javax.lang.model.**
+-dontwarn javax.annotation.processing.**
+-dontwarn com.google.errorprone.annotations.**
 
 -dontwarn butterknife.internal.**
 -dontwarn com.squareup.okhttp.**
@@ -45,4 +48,3 @@
 -keep class * extends java.util.ListResourceBundle {
     protected Object[][] getContents();
 }
-

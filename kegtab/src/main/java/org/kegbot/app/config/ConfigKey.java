@@ -67,8 +67,13 @@ enum ConfigKey {
   LAST_USED_KEG_SIZE(""),
 
   NETWORK_CONTROLLER_HOST(""),
-  NETWORK_CONTROLLER_PORT("8321");
+  NETWORK_CONTROLLER_PORT("8321"),
 
+  MQTT_SERVER(""),
+  MQTT_PORT("1883"),
+  MQTT_USERNAME(""),
+  MQTT_PASSWORD(""),
+  MQTT_TOPIC_PREFIX("kegbot");
 
   private final String mDefaultValue;
 
@@ -90,4 +95,3 @@ enum ConfigKey {
   }
 
 }
-

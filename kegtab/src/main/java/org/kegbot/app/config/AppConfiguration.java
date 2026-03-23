@@ -294,4 +294,23 @@ public class AppConfiguration {
     return Integer.valueOf(get(ConfigKey.NETWORK_CONTROLLER_PORT)).intValue();
   }
 
+  public String getMqttServer() {
+    return get(ConfigKey.MQTT_SERVER);
+  }
+
+  public int getMqttPort() {
+    return Integer.valueOf(get(ConfigKey.MQTT_PORT)).intValue();
+  }
+
+  public String getMqttUsername() {
+    return get(ConfigKey.MQTT_USERNAME);
+  }
+
+  public String getMqttPassword() {
+    return get(ConfigKey.MQTT_PASSWORD);
+  }
+
+  public String getMqttTopicPrefix() {
+    return get(ConfigKey.MQTT_TOPIC_PREFIX);
+  }
 }

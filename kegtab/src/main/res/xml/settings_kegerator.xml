@@ -66,6 +66,43 @@
             android:title="Kegboard Port">
         </EditTextPreference>
     </PreferenceCategory>
+    <PreferenceCategory android:title="MQTT Settings">
+        <EditTextPreference
+            android:defaultValue=""
+            android:inputType="text"
+            android:key="config:MQTT_SERVER"
+            android:summary="IP or hostname of the MQTT server. Restart app to apply."
+            android:title="MQTT Server">
+        </EditTextPreference>
+        <EditTextPreference
+            android:defaultValue="1883"
+            android:inputType="number"
+            android:key="config:MQTT_PORT"
+            android:summary="TCP port number of the MQTT server"
+            android:title="MQTT Port">
+        </EditTextPreference>
+        <EditTextPreference
+            android:defaultValue=""
+            android:inputType="text"
+            android:key="config:MQTT_USERNAME"
+            android:summary="Username for the MQTT server"
+            android:title="MQTT Username">
+        </EditTextPreference>
+        <EditTextPreference
+            android:defaultValue=""
+            android:inputType="textPassword"
+            android:key="config:MQTT_PASSWORD"
+            android:summary="Password for the MQTT server"
+            android:title="MQTT Password">
+        </EditTextPreference>
+        <EditTextPreference
+            android:defaultValue="kegbot"
+            android:inputType="text"
+            android:key="config:MQTT_TOPIC_PREFIX"
+            android:summary="Topic prefix for MQTT messages"
+            android:title="MQTT Topic Prefix">
+        </EditTextPreference>
+    </PreferenceCategory>
     <PreferenceCategory android:title="User Interface">
         <CheckBoxPreference
             android:defaultValue="true"
