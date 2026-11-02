@@ -18,6 +18,10 @@
  */
 package org.kegbot.app.service;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -26,9 +30,11 @@ import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Binder;
+import android.os.Build;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.os.SystemClock;
+import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 import android.util.Log;
 
@@ -239,25 +245,62 @@ public class KegbotCoreService extends Service {
     context.stopService(intent);
   }
 
+  private static final String CHANNEL_ID = "kegbot_core_service";
+  private static final int NOTIFICATION_ID = 1001;
+
   private void updateFromPreferences() {
     final boolean runCore = mConfig.getRunCore();
     if (runCore) {
       debugNotice("Running core!");
       mFlowManager.addFlowListener(mFlowListener);
-      ContextCompat.startForegroundService(this, buildForegroundServiceIntent());
+      startForegroundWithNotification();
     } else {
       debugNotice("Stopping core.");
       mFlowManager.removeFlowListener(mFlowListener);
       mCore.stop();
-      stopForeground(true);
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        stopForeground(STOP_FOREGROUND_REMOVE);
+      } else {
+        stopForeground(true);
+      }
     }
   }
 
-  private Intent buildForegroundServiceIntent() {
-    final Intent intent = new Intent(this, HomeActivity.class);
-    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-    intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-    return intent;
+  private void startForegroundWithNotification() {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      NotificationChannel channel = new NotificationChannel(
+          CHANNEL_ID,
+          "Kegbot Service",
+          NotificationManager.IMPORTANCE_LOW
+      );
+      NotificationManager manager = getSystemService(NotificationManager.class);
+      if (manager != null) {
+        manager.createNotificationChannel(channel);
+      }
+    }
+
+    Intent activityIntent = new Intent(this, HomeActivity.class);
+    activityIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+    PendingIntent pendingIntent = PendingIntent.getActivity(
+        this,
+        0,
+        activityIntent,
+        PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
+    );
+
+    Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+        .setContentTitle(getString(R.string.app_name))
+        .setContentText("Kegbot core service is running")
+        .setSmallIcon(R.drawable.icon)
+        .setContentIntent(pendingIntent)
+        .setOngoing(true)
+        .build();
+
+    if (Build.VERSION.SDK_INT >= 34) {
+      startForeground(NOTIFICATION_ID, notification, android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE);
+    } else {
+      startForeground(NOTIFICATION_ID, notification);
+    }
   }
 
   private void recordDrinkForFlow(final Flow ended) {

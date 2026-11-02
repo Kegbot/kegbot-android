@@ -49,7 +49,6 @@ public abstract class KegboardMessage {
   protected final Map<Integer, byte[]> mTags = Maps.newLinkedHashMap();
 
   protected KegboardMessage() {
-    assert (false);
   }
 
   protected KegboardMessage(byte[] wholeMessage) throws KegboardMessageException {

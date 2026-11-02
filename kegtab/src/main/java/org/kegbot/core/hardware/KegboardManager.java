@@ -19,15 +19,21 @@
 
 package org.kegbot.core.hardware;
 
+import static android.content.Context.RECEIVER_EXPORTED;
+
 import android.content.BroadcastReceiver;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbManager;
+import android.os.Build;
 import android.os.SystemClock;
 import android.util.Log;
+
+import androidx.annotation.RequiresApi;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
@@ -165,6 +171,7 @@ public class KegboardManager extends BackgroundManager implements ControllerMana
     mListener = listener;
   }
 
+  @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
   @Override
   public synchronized void start() {
     Log.d(TAG, "Starting ...");
@@ -175,7 +182,7 @@ public class KegboardManager extends BackgroundManager implements ControllerMana
     final IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
     filter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED);
     filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED); // never fired by framework :(
-    mContext.registerReceiver(mUsbReceiver, filter);
+    mContext.registerReceiver(mUsbReceiver, filter, RECEIVER_EXPORTED);
 
     super.start();
   }
@@ -309,9 +316,15 @@ public class KegboardManager extends BackgroundManager implements ControllerMana
   }
 
   private synchronized void onNeedDevicePermission(UsbDevice device) {
-    // We use an intent-filter to capture devices, so no need to request
-    // permission: Android will do it for us.
-    mConnectedDevicesNeedingPermission.put(Integer.valueOf(device.getDeviceId()), device);
+    if (!mConnectedDevicesNeedingPermission.containsKey(Integer.valueOf(device.getDeviceId()))) {
+      mConnectedDevicesNeedingPermission.put(Integer.valueOf(device.getDeviceId()), device);
+      final Intent intent = new Intent(ACTION_USB_PERMISSION);
+      intent.setPackage(mContext.getPackageName());
+      final int flags = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ? PendingIntent.FLAG_IMMUTABLE : 0;
+      final PendingIntent permissionIntent = PendingIntent.getBroadcast(mContext, 0,
+          intent, flags);
+      mUsbManager.requestPermission(device, permissionIntent);
+    }
   }
 
   /**
@@ -429,8 +442,10 @@ public class KegboardManager extends BackgroundManager implements ControllerMana
 
   private synchronized void removeDriver(final UsbSerialDriver driver) {
     Log.d(TAG, "-- Removing driver " + driver);
-    for (final UsbSerialPort port : driver.getPorts()) {
-      removeSerialPort(port);
+    if (driver != null && driver.getPorts() != null) {
+      for (final UsbSerialPort port : driver.getPorts()) {
+        removeSerialPort(port);
+      }
     }
     mOpenConnections.remove(driver);
   }

@@ -169,20 +169,19 @@ public class HomeActivity extends CoreActivity {
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
     final int itemId = item.getItemId();
-    switch (itemId) {
-      case R.id.settings:
-        SettingsActivity.startSettingsActivity(this);
-        return true;
-      case R.id.manageTaps:
-        TapListActivity.startActivity(this);
-        return true;
-      case R.id.bugreport:
-        BugreportActivity.startBugreportActivity(this);
-        return true;
-      case android.R.id.home:
-        return true;
-      default:
-        return super.onOptionsItemSelected(item);
+    if (itemId == R.id.settings) {
+      SettingsActivity.startSettingsActivity(this);
+      return true;
+    } else if (itemId == R.id.manageTaps) {
+      TapListActivity.startActivity(this);
+      return true;
+    } else if (itemId == R.id.bugreport) {
+      BugreportActivity.startBugreportActivity(this);
+      return true;
+    } else if (itemId == android.R.id.home) {
+      return true;
+    } else {
+      return super.onOptionsItemSelected(item);
     }
   }
 
