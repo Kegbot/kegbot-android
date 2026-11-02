@@ -82,15 +82,12 @@ public class SetupSelectBackendFragment extends SetupFragment {
     final RadioGroup group = ButterKnife.findById(mView, R.id.backend_group);
     final int checkedId = group.getCheckedRadioButtonId();
 
-    switch (checkedId) {
-      case R.id.radio_backend_local:
-        prefs.setIsLocalBackend(true);
-        break;
-      case R.id.radio_backend_server:
-        prefs.setIsLocalBackend(false);
-        break;
-      default:
-        return "Please select one of the backend modes.";
+    if (checkedId == R.id.radio_backend_local) {
+      prefs.setIsLocalBackend(true);
+    } else if (checkedId == R.id.radio_backend_server) {
+      prefs.setIsLocalBackend(false);
+    } else {
+      return "Please select one of the backend modes.";
     }
 
     return "";

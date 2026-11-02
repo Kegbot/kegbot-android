@@ -163,22 +163,22 @@ public class CoreActivity extends Activity {
 
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
-    switch (item.getItemId()) {
-      case android.R.id.home:
-        Intent intent = new Intent(this, HomeActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(intent);
-        return true;
-      case R.id.alertUpdate:
-        Intent marketIntent = new Intent(Intent.ACTION_VIEW);
-        marketIntent.setData(Uri.parse("market://details?id=org.kegbot.app"));
-        PinActivity.startThroughPinActivity(this, marketIntent);
-        return true;
-      case R.id.alertGeneral:
-        AlertActivity.showDialogs(this);
-        return true;
-      default:
-        return super.onOptionsItemSelected(item);
+    int itemId = item.getItemId();
+    if (itemId == android.R.id.home) {
+      Intent intent = new Intent(this, HomeActivity.class);
+      intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+      startActivity(intent);
+      return true;
+    } else if (itemId == R.id.alertUpdate) {
+      Intent marketIntent = new Intent(Intent.ACTION_VIEW);
+      marketIntent.setData(Uri.parse("market://details?id=org.kegbot.app"));
+      PinActivity.startThroughPinActivity(this, marketIntent);
+      return true;
+    } else if (itemId == R.id.alertGeneral) {
+      AlertActivity.showDialogs(this);
+      return true;
+    } else {
+      return super.onOptionsItemSelected(item);
     }
   }
 

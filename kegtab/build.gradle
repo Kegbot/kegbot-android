@@ -17,38 +17,18 @@
  * with Kegtab. If not, see <http://www.gnu.org/licenses/>.
  */
 
-buildscript {
-    repositories {
-        google()
-        mavenCentral()
-        google()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:8.10.0-rc04'
-    }
-}
-
 apply plugin: 'com.android.application'
 
-repositories {
-    maven { url 'https://maven.fabric.io/public' }
-    maven {
-        url 'https://maven.google.com/'
-        name 'Google'
-    }
-    google()
-}
-
 android {
-    compileSdkVersion 35
+    compileSdk 35
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
     defaultConfig {
-        minSdkVersion 17
-        targetSdkVersion 30
+        minSdk 17
+        targetSdk 35
         multiDexEnabled true
 
         testApplicationId "org.kegbot.app.test"
@@ -65,7 +45,7 @@ android {
             debuggable false
             jniDebuggable false
             ext.enableCrashlytics = true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-project.txt'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-project.txt'
         }
     }
     packagingOptions {
@@ -94,20 +74,20 @@ android {
 }
 
 dependencies {
-    implementation 'com.github.mik3y:usb-serial-for-android:3.4.3'
+    implementation 'com.github.mik3y:usb-serial-for-android:3.11.0'
     implementation 'androidx.legacy:legacy-support-v13:1.0.0'
     implementation 'com.squareup.okhttp:okhttp:2.0.0'
     implementation 'com.squareup:otto:1.3.4'
-    implementation 'com.google.guava:guava:31.1-android'
+    implementation 'com.google.guava:guava:33.4.0-android'
     implementation 'com.jakewharton:butterknife:4.0.1'
     annotationProcessor 'com.jakewharton:butterknife:4.0.1'
     implementation 'com.github.kevinsawicki:http-request:5.6'
     implementation 'org.codehaus.jackson:jackson-mapper-asl:1.7.4'
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
-    implementation 'com.google.protobuf:protobuf-java:3.25.5'
-    implementation 'joda-time:joda-time:2.3'
+    implementation 'com.google.protobuf:protobuf-java:3.25.6'
+    implementation 'joda-time:joda-time:2.15.1'
     implementation 'androidx.multidex:multidex:2.0.1'
-    implementation 'commons-codec:commons-codec:1.13'
+    implementation 'commons-codec:commons-codec:1.23.0'
 
     androidTestImplementation 'com.jayway.android.robotium:robotium-solo:5.1'
     androidTestImplementation 'org.mockito:mockito-core:1.9.5'
