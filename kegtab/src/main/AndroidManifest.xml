@@ -32,6 +32,9 @@
     <uses-permission android:name="android.permission.BLUETOOTH_SCAN"/>
     <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE"/>
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE"/>
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID"/>
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE"/>
     <uses-permission android:name="org.kegbot.app.permission.C2D_MESSAGE"/>
 
@@ -59,57 +62,11 @@
         android:required="false"/>
 
     <supports-screens
+        android:anyDensity="true"
         android:largeScreens="true"
-        android:normalScreens="false"
-        android:smallScreens="false"
+        android:normalScreens="true"
+        android:smallScreens="true"
         android:xlargeScreens="true"/>
-
-    <!-- Hack for Nexus 7 support, per http://stackoverflow.com/a/11745425/642485 -->
-    <!-- TODO(mikey): figure out what's really going on here. -->
-    <compatible-screens>
-
-        <!-- no small size screens -->
-
-
-        <!-- Only hdpi and xhdpi for normal size screens -->
-        <!-- <screen android:screenSize="normal" android:screenDensity="mdpi" /> -->
-        <!-- <screen android:screenSize="normal" android:screenDensity="hdpi" /> -->
-        <!-- <screen android:screenSize="normal" android:screenDensity="xhdpi" /> -->
-
-
-        <!-- all large size screens -->
-        <screen
-            android:screenDensity="ldpi"
-            android:screenSize="large"/>
-        <screen
-            android:screenDensity="mdpi"
-            android:screenSize="large"/>
-        <screen
-            android:screenDensity="hdpi"
-            android:screenSize="large"/>
-        <screen
-            android:screenDensity="xhdpi"
-            android:screenSize="large"/>
-
-        <!-- all xlarge size screens -->
-        <screen
-            android:screenDensity="ldpi"
-            android:screenSize="xlarge"/>
-        <screen
-            android:screenDensity="mdpi"
-            android:screenSize="xlarge"/>
-        <screen
-            android:screenDensity="hdpi"
-            android:screenSize="xlarge"/>
-        <screen
-            android:screenDensity="xhdpi"
-            android:screenSize="xlarge"/>
-
-        <!-- Special case for Nexus 7 -->
-        <screen
-            android:screenDensity="213"
-            android:screenSize="large"/>
-    </compatible-screens>
 
     <application
         android:name="org.kegbot.app.KegbotApplication"
@@ -209,7 +166,7 @@
             android:windowSoftInputMode="stateHidden|adjustPan"/>
         <activity
             android:name="org.kegbot.app.DrinkerSelectActivity"
-            android:exported="false"
+            android:exported="true"
             android:launchMode="singleTop"
             android:screenOrientation="sensorLandscape"
             android:windowSoftInputMode="stateHidden|adjustPan">
@@ -232,7 +189,7 @@
             android:exported="false"/>
         <activity
             android:name="org.kegbot.app.DrinkerRegistrationActivity"
-            android:exported="false"
+            android:exported="true"
             android:launchMode="singleTop"
             android:screenOrientation="sensorLandscape"
             android:windowSoftInputMode="stateVisible|adjustPan">
@@ -253,8 +210,8 @@
         <!-- ################### -->
 
         <receiver android:name="org.kegbot.app.DebugBroadcastReceiver"
-            android:exported="true"
-            android:permission="TODO">
+            android:exported="true">
+<!--            android:permission="TODO">-->
             <intent-filter android:priority="1">
                 <action android:name="org.kegbot.action.USER_AUTHED"/>
                 <action android:name="org.kegbot.action.METER_UPDATE"/>
@@ -269,7 +226,9 @@
         <!-- SERVICES -->
         <!-- ######## -->
 
-        <service android:name="org.kegbot.app.service.KegbotCoreService"/>
+        <service android:name="org.kegbot.app.service.KegbotCoreService"
+            android:foregroundServiceType="connectedDevice"
+        />
 
         <activity
             android:name="org.kegbot.app.TapListActivity"
